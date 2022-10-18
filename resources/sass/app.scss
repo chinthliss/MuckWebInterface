@@ -6,3 +6,11 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+.site-navigation {
+    background-color: $site-navigation-background;
+}
+
+#site-navigation-top .navbar-brand {
+    color: $primary;
+}

@@ -31,12 +31,12 @@
 </head>
 <body>
 
-<header class="navbar">
+<header id="site-navigation-top" class="navbar navbar-dark site-navigation">
     <!-- Row 1 - Logo and account related -->
     <div class="container-fluid flex-column flex-md-row">
-        <a class="navbar-brand flex-grow-1" href="{{ url('/') }}">
-            <img src="/public/sitelogo.png" alt="Site Logo" width="30" height="24" class="d-inline-block align-text-top">
-            {{ config('app.name', 'MuckWebInterface') }}
+        <a class="navbar-brand flex-grow-1 d-inline-flex" href="{{ url('/') }}">
+            <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
+            <div>{{ config('app.name', 'MuckWebInterface') }}</div>
         </a>
         <a class="navbar-nav nav-link px-2" href="#">Character name and Avatar</a>
         <a class="navbar-nav nav-link px-2" href="#">Notifications</a>
