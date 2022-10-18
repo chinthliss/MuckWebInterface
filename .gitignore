@@ -16,7 +16,7 @@ yarn-error.log
 /.vscode
 
 /public/sitelogo.png
-/public/favicon.ico
+/public/favicon*
 
 .phpstorm.meta.php
 _ide_helper.php
