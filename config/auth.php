@@ -61,8 +61,7 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'driver' => 'accounts' // Accounts is the custom one loaded by MuckWebInterfaceAuthServiceProvider
         ],
 
         // 'users' => [
