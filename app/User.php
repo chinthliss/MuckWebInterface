@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Support\Facades\App;
 
 class User implements Authenticatable
 {
@@ -72,6 +73,15 @@ class User implements Authenticatable
     public function __toString()
     {
         return "User#" . $this->id;
+    }
+
+    /**
+     * Shortcut to getting the user provider
+     * @return MuckWebInterfaceUserProvider
+     */
+    public static function getProvider(): MuckWebInterfaceUserProvider
+    {
+        return App::make(MuckWebInterfaceUserProvider::class);
     }
 
     #region Authenticatable methods

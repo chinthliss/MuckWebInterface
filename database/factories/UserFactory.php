@@ -2,39 +2,24 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\User;
+use App\MuckWebInterfaceUserProvider;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * Utility class to create a new user for testing purposes
  */
-class UserFactory extends Factory
+class UserFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition()
+    public static function create(array $attributes = [])
     {
-        return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
-        ];
-    }
+        $provider = User::getProvider();
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @return static
-     */
-    public function unverified()
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        $email = fake()->unique()->safeEmail();
+        $password = '0A095F587AFCB082:EC2F0D2ACB7788E26E0A36C32C6475C589860589'; // Encrypted version of 'password'
+
+        $user = $provider->createUser($email, $password);
+
+        return $user;
     }
 }

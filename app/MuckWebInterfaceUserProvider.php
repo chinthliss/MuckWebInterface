@@ -5,8 +5,10 @@ namespace App;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use MuckInterop;
 
 class MuckWebInterfaceUserProvider implements UserProvider
@@ -155,4 +157,30 @@ class MuckWebInterfaceUserProvider implements UserProvider
             ->update([$user->getRememberTokenName() => $token]);
     }
 
+    /**
+     * Creates an account and returns the User object representing it
+     * @param string $email
+     * @param string $password
+     * @return User
+     */
+    public function createUser(string $email, string $password): User
+    {
+        // Need to insert into DB first in order to get the id assigned
+        DB::table('accounts')->insert([
+            'email' => $email,
+            'uuid' => Str::uuid(),
+            'password' => MuckInterop::createSHA1SALTPassword($password),
+            'password_type' => 'SHA1SALT',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        $accountQuery = DB::table('accounts')->where('email', $email)->first();
+        $user = User::fromDatabaseResponse($accountQuery);
+        DB::table('account_emails')->insert([
+            'email' => $email,
+            'aid' => $user->id(),
+            'created_at' => Carbon::now()
+        ]);
+        return $user;
+    }
 }
