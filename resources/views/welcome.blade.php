@@ -1,7 +1,7 @@
-@extends('layout.default')
+@extends('layout.page-no-navigation')
 
 @section('content')
-    Test body content
+    Welcome Test
 @endsection
 
 

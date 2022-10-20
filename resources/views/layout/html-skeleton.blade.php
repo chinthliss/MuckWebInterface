@@ -31,10 +31,11 @@
 </head>
 <body>
 
+<!-- Header bar -->
 <header id="site-navigation-top" class="navbar navbar-dark site-navigation">
     <!-- Row 1 - Logo and account related -->
     <div class="container-fluid flex-column flex-md-row">
-        <a class="navbar-brand flex-grow-1 d-inline-flex" href="{{ url('/') }}">
+        <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center" href="{{ url('/') }}">
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
             <div>{{ config('app.name', 'MuckWebInterface') }}</div>
         </a>
@@ -46,8 +47,47 @@
     </div>
 </header>
 
-<main class="py-4">
-    @yield('content')
-</main>
+
+@hasSection('page-navigation')
+    <!-- Button to open Navigation if on mobile -->
+    <div class="container-fluid">
+        <button id="site_navigation_button" type="button" class="d-md-none btn btn-primary my-2">
+            <i class="fas fa-bars btn-icon-left"></i>
+            Navigation
+        </button>
+    </div>
+
+    <div class="container-fluid">
+        <div id="site-below-header" class="row flex-xl-nowrap">
+
+            <!-- Left side bar -->
+            <nav id="site_navigation_left" class="col-12 col-md-3 col-xl-2">
+                @yield('page-navigation')
+            </nav>
+
+            <!-- Body -->
+            <div id="site_content" class="col-12 col-md-9 col-xl-10">
+                <!-- Javascript check -->
+                <noscript>
+                    <div class="p-3 mb-2 bg-danger text-light rounded">
+                        This page requires javascript enabled in order to work.
+                    </div>
+                </noscript>
+
+                <main class="py-4">
+                    @yield('page-content')
+                </main>
+
+            </div>
+        </div>
+        @else
+            <!-- No navigation set, using a single container for body -->
+            <div class="container-fluid">
+                <main id="site-below-header" class="py-4">
+                    @yield('page-content')
+                </main>
+            </div>
+@endif
+
 </body>
 </html>

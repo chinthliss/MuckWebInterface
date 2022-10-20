@@ -14,3 +14,26 @@
 #site-navigation-top .navbar-brand {
     color: $primary;
 }
+
+.nav-link {
+    padding: 0.25em 0.5em;
+    color: $primary;
+    &:hover {
+        background-color: $primary;
+        color: $black;
+    }
+}
+
+#site-below-header {
+    //Shadow from the top bar region
+    position:relative;
+    box-shadow: inset rgba(0, 0, 0, 60%) 0 4px 6px -4px,
+    inset rgba(0, 0, 0, 20%) 0 12px 14px -12px;
+}
+
+// Overrides for nav-tabs
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    background-color: $primary;
+    color: $black;
+}

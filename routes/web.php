@@ -15,4 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
+
+Route::get('/singleplayer/', function () {
+    return view('singleplayer.home');
+})->name('singleplayer.home');
+
+Route::get('/multiplayer/', function () {
+    return view('multiplayer.home');
+})->name('multiplayer.home');
