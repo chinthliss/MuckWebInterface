@@ -74,7 +74,7 @@
                     </div>
                 </noscript>
 
-                <main class="py-4">
+                <main class="py-4 mt-2">
                     @yield('page-content')
                 </main>
 
@@ -83,7 +83,7 @@
         @else
             <!-- No navigation set, using a single container for body -->
             <div class="container-fluid">
-                <main id="site-below-header" class="py-4">
+                <main id="site-below-header" class="py-4 mt-2">
                     @yield('page-content')
                 </main>
             </div>

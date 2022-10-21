@@ -1,15 +1,23 @@
+@import 'bootstrap/scss/functions';
+
 // Our colours
 $primary: #caFF80;
 $secondary: #2BAB5C;
 $tertiary: #6EAFA6;
 
 $site-navigation-background: #2a451c;
+$content-background: #1e1e1e;
 
-// Bootstrap overrides
+// Color overrides
 $body-color: #f8fafc;
 $body-bg: #0e1e0e;
+// $form-label-color: #ffff;
 
-// Typography
-$font-family-sans-serif: 'Nunito', sans-serif;
-$font-size-base: 0.9rem;
-$line-height-base: 1.6;
+
+// Typography overrides
+// $font-family-sans-serif: 'Nunito', sans-serif;
+// $font-size-base: 0.9rem;
+// $line-height-base: 1.6;
+
+@import 'bootstrap/scss/variables';
+$form-check-input-border: 1px solid $gray-400;

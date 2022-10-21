@@ -1,7 +1,7 @@
 @extends('layout.page-no-navigation')
 
-@section('title', 'Verify Email')
+@section('title', 'Forgotten Password')
 
 @section('content')
-    Verify email
+    Forgotten Password
 @endsection

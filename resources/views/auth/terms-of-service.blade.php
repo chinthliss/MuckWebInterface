@@ -1,7 +1,7 @@
 @extends('layout.page-no-navigation')
 
-@section('title', 'Verify Email')
+@section('title', 'Terms of Service')
 
 @section('content')
-    Verify email
+    Terms of Service
 @endsection

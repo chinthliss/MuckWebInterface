@@ -1,8 +1,6 @@
 @extends('layout.page-singleplayer')
 
-@section('title')
-    Singleplayer
-@endsection
+@section('title', 'Singleplayer')
 
 @section('content')
     Test body content

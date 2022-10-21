@@ -23,6 +23,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link {
     padding: 0.25em 0.5em;
     color: $primary;
+
     &:hover {
         background-color: $primary;
         color: $black;
@@ -31,9 +32,15 @@ h1, h2, h3, h4, h5, h6 {
 
 #site-below-header {
     //Shadow from the top bar region
-    position:relative;
+    position: relative;
     box-shadow: inset rgba(0, 0, 0, 60%) 0 4px 6px -4px,
     inset rgba(0, 0, 0, 20%) 0 12px 14px -12px;
+}
+
+main {
+    background-color: $content-background;
+    border: 1px solid #2a451c;
+    box-shadow: 0 8px 12px -8px rgba(0, 0, 0, .6), 0 20px 26px -20px rgba(0, 0, 0, .2)
 }
 
 // Overrides for nav-tabs
@@ -41,4 +48,19 @@ h1, h2, h3, h4, h5, h6 {
 .nav-tabs .nav-item.show .nav-link {
     background-color: $primary;
     color: $black;
+}
+
+// Fix for Chrome's autocomplete reverting input colors
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    transition: background-color 5000s ease-in-out 0s; // Stupid; can't set background color so make the change huge
+    -webkit-text-fill-color: $input-color;
 }

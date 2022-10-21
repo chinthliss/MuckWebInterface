@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\EmailController;
+use App\Http\Controllers\Auth\TermsOfServiceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -11,6 +12,10 @@ Route::get('/', function () {
 Route::get('login', [LoginController::class, 'showLogin'])->name('auth.login');
 
 Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
+
+Route::get('forgotpassword', [LoginController::class, 'showForgottenPassword'])->name('auth.password.forgot');
+
+Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfService'])->name('auth.terms-of-service');
 
 /*
 |--------------------------------------------------------------------------
