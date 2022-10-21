@@ -1,26 +1,41 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\EmailController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/singleplayer/', function () {
-    return view('singleplayer.home');
-})->name('singleplayer.home');
+Route::get('login', [LoginController::class, 'showLogin'])->name('auth.login');
 
-Route::get('/multiplayer/', function () {
-    return view('multiplayer.home');
-})->name('multiplayer.home');
+Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
+
+/*
+|--------------------------------------------------------------------------
+| Singleplayer Content
+|--------------------------------------------------------------------------
+*/
+Route::prefix('/singleplayer/')->group(function() {
+    Route::get('', function() {
+        return view('singleplayer.home');
+    })->name('singleplayer.home');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Multiplayer Content
+|--------------------------------------------------------------------------
+*/
+Route::prefix('/multiplayer/')->group(function() {
+
+    // ----------------------------- Stuff that doesn't require a character
+    Route::group(['middleware' => ['auth']], function() {
+        Route::get('', function () {
+            return view('multiplayer.home');
+        })->name('multiplayer.home');
+    });
+
+
+});
