@@ -47,18 +47,16 @@
     </div>
 </header>
 
+<div id="site-below-header" class="container-fluid">
 
-@hasSection('page-navigation')
-    <!-- Button to open Navigation if on mobile -->
-    <div class="container-fluid">
+    @hasSection('page-navigation')
+        <!-- Button to open Navigation if on mobile -->
         <button id="site_navigation_button" type="button" class="d-md-none btn btn-primary my-2">
             <i class="fas fa-bars btn-icon-left"></i>
             Navigation
         </button>
-    </div>
 
-    <div class="container-fluid">
-        <div id="site-below-header" class="row flex-xl-nowrap">
+        <div class="row flex-xl-nowrap">
 
             <!-- Left side bar -->
             <nav id="site_navigation_left" class="col-12 col-md-3 col-xl-2">
@@ -67,27 +65,17 @@
 
             <!-- Body -->
             <div id="site_content" class="col-12 col-md-9 col-xl-10">
-                <!-- Javascript check -->
-                <noscript>
-                    <div class="p-3 mb-2 bg-danger text-light rounded">
-                        This page requires javascript enabled in order to work.
-                    </div>
-                </noscript>
-
-                <main class="py-4 mt-2">
-                    @yield('page-content')
-                </main>
-
+                @include('layout.html-content')
             </div>
+
         </div>
-        @else
-            <!-- No navigation set, using a single container for body -->
-            <div class="container-fluid">
-                <main id="site-below-header" class="py-4 mt-2">
-                    @yield('page-content')
-                </main>
-            </div>
-@endif
+    @endif
+    @sectionMissing('page-navigation')
+        <div id="site_content">
+            @include('layout.html-content')
+        </div>
+    @endif
+</div>
 
 </body>
 </html>
