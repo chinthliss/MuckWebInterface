@@ -5,30 +5,26 @@
 @section('content')
     <form action="" method="POST">
 
-        <div class="row justify-content-md-center">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input class="form-control" id="email" name="email" autocomplete="email" autofocus
-                           placeholder="Enter a valid email address or the name of a character.">
-                    <label for="email">Email address or Character Name</label>
-                </div>
+        <div class="row justify-content-center">
+
+            <div class="col-md-4 col-lg-3">
+                <label for="email" class="form-label">Email</label>
+                <input class="form-control" id="email" name="email" autocomplete="email" autofocus
+                       placeholder="Enter a valid email address or the name of a character.">
                 @error('email')
                 <div class="invalid-feedback" role="alert">{{ $message }}</div>
                 @enderror
             </div>
-        </div>
 
-        <div class="row justify-content-md-center mt-2">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input class="form-control" id="password" name="password" type="password" autocomplete="password"
-                           placeholder="Enter password.">
-                    <label for="email">Password</label>
-                </div>
+            <div class="col-md-4 col-lg-3">
+                <label for="password" class="form-label">Password</label>
+                <input class="form-control" id="password" name="password" type="password" autocomplete="password"
+                       placeholder="Enter password.">
                 @error('password')
                 <div class="invalid-feedback" role="alert">{{ $message }}</div>
                 @enderror
             </div>
+
         </div>
 
         <div class="row justify-content-md-center mt-2">
@@ -44,7 +40,17 @@
             </div>
         </div>
 
-        <div class="row mt-4">
+        <div class="row mt-2">
+            <div class="col">
+                <div class="text-center">
+                    <button class="btn btn-primary" type="submit" name="action" value="login">Login</button>
+                    <button class="btn btn-primary" type="submit" name="action" value="create">Create Account</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mt-2">
             <div class="col">
                 <div class="text-center">
                     <a href="{{ route('auth.password.forgot') }}">Reset a forgotten password.</a>
