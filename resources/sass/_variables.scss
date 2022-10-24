@@ -1,5 +1,3 @@
-@import 'bootstrap/scss/functions';
-
 // Our colours
 $primary: #caFF80;
 $secondary: #2BAB5C;
@@ -11,13 +9,12 @@ $content-background: #1e1e1e;
 // Color overrides
 $body-color: #f8fafc;
 $body-bg: #0e1e0e;
-// $form-label-color: #ffff;
 
+// Form overrides
+$input-bg: #ffffff;
+$input-color: #000000;
 
 // Typography overrides
 // $font-family-sans-serif: 'Nunito', sans-serif;
 // $font-size-base: 0.9rem;
 // $line-height-base: 1.6;
-
-@import 'bootstrap/scss/variables';
-$form-check-input-border: 1px solid $gray-400;
