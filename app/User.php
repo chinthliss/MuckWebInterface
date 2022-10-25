@@ -136,8 +136,7 @@ class User implements Authenticatable
      */
     public function getRememberToken(): ?string
     {
-        //This should only be called during authentication where it will have already been loaded.
-        if (!$this->rememberToken) throw new \Error("Attempt to query User's rememberToken when it hasn't been loaded.");
+        //This can be genuinely null from the DB if it isn't set.
         return $this->rememberToken;
     }
 
@@ -150,6 +149,16 @@ class User implements Authenticatable
     }
 
     #endregion Authenticatable methods
+
+    /**
+     * Gets a user's primary email
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        if (!$this->email) throw new \Error("Attempt to query User's email when it hasn't been loaded.");
+        return $this->email->email;
+    }
 
     public static function fromDatabaseResponse(\stdClass $query): User
     {
@@ -167,6 +176,7 @@ class User implements Authenticatable
         if (property_exists($query, 'created_at') && $query->created_at) $user->createdAt = new Carbon($query->created_at);
         if (property_exists($query, 'updated_at') && $query->updated_at) $user->updatedAt = new Carbon($query->updated_at);
         if (property_exists($query, 'locked_at') && $query->locked_at) $user->lockedAt = new Carbon($query->locked_at);
+        if (property_exists($query, 'remember_token') && $query->remember_token) $user->rememberToken = $query->remember_token;
 
         $email = new UserEmail($query->email);
         if (property_exists($query, 'email_created_at') && $query->email_created_at) $email->created_at = new Carbon($query->email_created_at);

@@ -174,7 +174,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        $accountQuery = DB::table('accounts')->where('email', $email)->first();
+        $accountQuery = $this->baseRetrievalQuery()->where('accounts.email', $email)->first();
         $user = User::fromDatabaseResponse($accountQuery);
         DB::table('account_emails')->insert([
             'email' => $email,

@@ -3,7 +3,6 @@
 
 namespace App\Helpers;
 
-
 class MuckInterop
 {
     //Taken from https://stackoverflow.com/questions/14674834/php-convert-string-to-hex-and-hex-to-string
