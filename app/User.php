@@ -15,9 +15,9 @@ class User implements Authenticatable
     protected int $id;
 
     /**
-     * @var UserEmail|null Users primary/active email. Loaded on demand.
+     * @var UserEmail|null Users primary/active email.
      */
-    protected ?UserEmail $email;
+    protected UserEmail $email;
 
     /**
      * All emails. Loaded on demand.
@@ -26,17 +26,17 @@ class User implements Authenticatable
     protected ?array $emails = null;
 
     /**
-     * @var string|null Encrypted password. Loaded on demand.
+     * @var string|null Encrypted password.
      */
     protected ?string $password = null;
 
     /**
-     * @var string|null The type of encryption. Loaded on demand.
+     * @var string|null The type of encryption.
      */
     protected ?string $passwordType = null;
 
     /**
-     * @var string|null Remember token. Loaded on demand.
+     * @var string|null Remember token.
      */
     protected ?string $rememberToken = null;
 
@@ -46,17 +46,17 @@ class User implements Authenticatable
     protected ?Carbon $lastConnect = null;
 
     /**
-     * @var Carbon|null Loaded on demand
+     * @var Carbon|null Can be null in the case of older accounts
      */
     protected ?Carbon $createdAt = null;
 
     /**
-     * @var Carbon|null Loaded on demand
+     * @var Carbon|null Can be null in the case of older accounts
      */
     protected ?Carbon $updatedAt = null;
 
     /**
-     * @var Carbon|null Loaded on demand
+     * @var Carbon|null Can be null.
      */
     protected ?Carbon $lockedAt = null;
 
