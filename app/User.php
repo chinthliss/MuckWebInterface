@@ -4,7 +4,6 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Support\Facades\App;
 
 class User implements Authenticatable
@@ -15,7 +14,7 @@ class User implements Authenticatable
     protected int $id;
 
     /**
-     * @var UserEmail|null Users primary/active email.
+     * @var UserEmail Users primary/active email.
      */
     protected UserEmail $email;
 
@@ -150,14 +149,43 @@ class User implements Authenticatable
 
     #endregion Authenticatable methods
 
+    #region Email functionality
     /**
      * Gets a user's primary email
      * @return string
      */
     public function getEmail(): string
     {
-        if (!$this->email) throw new \Error("Attempt to query User's email when it hasn't been loaded.");
         return $this->email->email;
+    }
+
+    /**
+     * Mark the given user's present primary email as verified.
+     *
+     * @return bool
+     */
+    public function setEmailAsVerified(): bool
+    {
+        $this->getProvider()->setEmailAsVerified($this, $this->email->email);
+        $this->email->verified_at = Carbon::now();
+        return true;
+    }
+
+    public function getEmailVerifiedAt(): Carbon
+    {
+        return $this->email->verified_at;
+    }
+    #endregion Email functionality
+
+    public function setIsLocked(bool $isLocked)
+    {
+        $this->getProvider()->setIsLocked($this, $isLocked);
+        $this->lockedAt = $isLocked ? Carbon::now() : null;
+    }
+
+    public function getLockedAt(): ?Carbon
+    {
+        return $this->lockedAt;
     }
 
     public static function fromDatabaseResponse(\stdClass $query): User

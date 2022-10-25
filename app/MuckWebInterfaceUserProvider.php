@@ -183,4 +183,34 @@ class MuckWebInterfaceUserProvider implements UserProvider
         ]);
         return $user;
     }
+
+    #region Email Related
+
+    public function setEmailAsVerified(User $user, string $email)
+    {
+        // Verify email - this may not exist if it was created from outside
+        DB::table('account_emails')->updateOrInsert(
+            ['aid' => $user->id(), 'email' => $email],
+            ['verified_at' => Carbon::now()]
+        );
+        // And make it active email
+        DB::table('accounts')->where([
+            'aid' => $user->id()
+        ])->update([
+            'email' => $email,
+            'updated_at' => Carbon::now()
+        ]);
+    }
+
+    #endregion Email Related
+
+    public function setIsLocked(User $user, bool $isLocked)
+    {
+        DB::table('accounts')->where([
+            'aid' => $user->id()
+        ])->update([
+            'locked_at' => $isLocked ? Carbon::now() : null,
+            'updated_at' => Carbon::now()
+        ]);
+    }
 }

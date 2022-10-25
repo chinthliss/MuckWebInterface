@@ -2,17 +2,19 @@
 
 namespace Database\Factories;
 
-use App\Helpers\MuckInterop;
 use App\User;
-use App\MuckWebInterfaceUserProvider;
-use Illuminate\Support\Str;
 
 /**
  * Utility class to create a new user for testing purposes
  */
 class UserFactory
 {
-    public static function create(array $attributes = [])
+    /**
+     * Returns a user in good standing unless given options to change this
+     * @param array $options
+     * @return User
+     */
+    public static function create(array $options = [])
     {
         $provider = User::getProvider();
 
@@ -21,6 +23,15 @@ class UserFactory
 
         $user = $provider->createUser($email, $password);
 
+        if (!array_key_exists('unverified', $options)) {
+            $user->setEmailAsVerified();
+        }
+
+        if (array_key_exists('locked', $options)) {
+            $user->setIsLocked(true);
+        }
+
         return $user;
     }
+
 }

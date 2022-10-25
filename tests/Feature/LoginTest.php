@@ -77,4 +77,75 @@ class LoginTest extends TestCase
         $this->assertGuest();
     }
 
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
+    public function test_login_sets_remember_token()
+    {
+        $user = UserFactory::create();
+        $this->json('POST', route('auth.login', [
+            'email' => $user->getEmail(),
+            'password' => 'password'
+        ]));
+        //Re-fetch user
+        $user = auth()->user();
+        $this->assertNotNull($user->getRememberToken(), "Remember token was not set.");
+    }
+
+    public function test_login_does_not_set_remember_token_if_opted_out()
+    {
+        $user = UserFactory::create();
+        $this->json('POST', route('auth.login', [
+            'email' => $user->getEmail(),
+            'password' => 'password',
+            'forget' => true
+        ]));
+        //Re-fetch user
+        $user = auth()->user();
+        $this->assertNull($user->getRememberToken(), "Remember token was set.");
+    }
+
+    public function test_too_many_login_requests_are_throttled()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $response = $this->json('POST', route('auth.login', [
+                'email' => 'fake@test.com',
+                'password' => 'fake'
+            ]));
+        }
+        $response->assertStatus(429);
+    }
+
+    public function test_locked_user_is_redirected_to_locked_page()
+    {
+        $user = UserFactory::create(['locked']);
+        $response = $this->actingAs($user)->get(route('multiplayer.home'));
+        $response->assertRedirect(route('auth.locked'));
+    }
+
+    public function test_unlocked_user_is_redirected_away_from_locked_page()
+    {
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->get(route('auth.locked'));
+        $response->assertRedirect(route('welcome'));
+    }
+
+    public function test_can_not_use_alternative_email_to_login()
+    {
+        throw new \Exception("Unimplemented Test");
+    }
+
+    public function test_can_login_with_muck_character_and_credentials()
+    {
+        throw new \Exception("Unimplemented Test");
+    }
+
+    public function test_cannot_login_with_muck_character_and_incorrect_credentials()
+    {
+        throw new \Exception("Unimplemented Test");
+    }
+
+
+
+
 }

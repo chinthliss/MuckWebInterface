@@ -13,7 +13,7 @@ use App\Http\Controllers\Auth\HomeController;
 */
 Route::get('/', [HomeController::class, 'showWelcome'])->name('welcome');
 Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfService'])->name('auth.terms-of-service');
-
+Route::get('accountlocked', [HomeController::class, 'showLocked'])->name('auth.locked');
 /*
 |--------------------------------------------------------------------------
 | Pages that are available only when NOT logged in
@@ -54,7 +54,7 @@ Route::prefix('/singleplayer/')->group(function() {
 Route::prefix('/multiplayer/')->group(function() {
 
     // ----------------------------- Stuff that doesn't require a character
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth', 'not.locked']], function() {
         Route::get('', function () {
             return view('multiplayer.home');
         })->name('multiplayer.home');
