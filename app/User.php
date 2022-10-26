@@ -150,6 +150,7 @@ class User implements Authenticatable
     #endregion Authenticatable methods
 
     #region Email functionality
+
     /**
      * Gets a user's primary email
      * @return string
@@ -157,6 +158,17 @@ class User implements Authenticatable
     public function getEmail(): string
     {
         return $this->email->email;
+    }
+
+    /**
+     * @return UserEmail[]
+     */
+    public function getEmails($forceUpdate = false): array
+    {
+        if (is_null($this->emails) || $forceUpdate) {
+            $this->emails = $this->getProvider()->getEmails($this);
+        }
+        return $this->emails;
     }
 
     /**
@@ -175,6 +187,18 @@ class User implements Authenticatable
     {
         return $this->email->verified_at;
     }
+
+    /**
+     * Updates email.
+     * If the record already exists, it will switch to it otherwise create a new entry
+     * @param string $email
+     * @return void
+     */
+    public function setEmail(string $email): void
+    {
+        $this->email = $this->getProvider()->setEmail($this, $email);
+    }
+
     #endregion Email functionality
 
     public function setIsLocked(bool $isLocked)
@@ -211,6 +235,9 @@ class User implements Authenticatable
         if (property_exists($query, 'verified_at') && $query->verified_at) $email->verified_at = new Carbon($query->verified_at);
         $email->isPrimary = true;
         $user->email = $email;
+
+        //Legacy support - if password type is set to none, the user is considered locked out
+        if ($user->passwordType == 'NONE') $user->lockedAt = Carbon::now();
 
         return $user;
     }

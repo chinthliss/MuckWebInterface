@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class LoginController extends Controller
 {
@@ -19,12 +21,12 @@ class LoginController extends Controller
         return auth()->guard();
     }
 
-    public function showLogin()
+    public function showLogin(): View
     {
         return view('auth.login');
     }
 
-    public function loginAccount(Request $request)
+    public function loginAccount(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => 'required|max:255',
@@ -45,12 +47,7 @@ class LoginController extends Controller
             //TODO: Remove test message in login
             $request->session()->flash('message-success', 'You have logged in! (And this is a test message.)');
 
-            $response = array(
-                'status' => 'success',
-                'redirectUrl' => redirect()->intended(route('multiplayer.home'))->getTargetUrl(),
-                'message' => 'Login successful. Please refresh page.'
-            );
-            return response()->json($response);
+            return redirect()->intended(route('multiplayer.home'));
         } else {
             $user = $this->guard()->getProvider()->retrieveByCredentials($request->only('email'));
             event(new Failed($this->guard()::class, $user, $request->only('email', 'password')));
@@ -59,7 +56,7 @@ class LoginController extends Controller
 
     }
 
-    public function logoutAccount(Request $request)
+    public function logoutAccount(Request $request): RedirectResponse
     {
         $user = $this->guard()->user();
         $this->guard()->logout();
@@ -68,7 +65,7 @@ class LoginController extends Controller
         return redirect()->route('auth.login');
     }
 
-    public function showForgottenPassword()
+    public function showForgottenPassword(): View
     {
         return view('auth.password-forgotten');
     }

@@ -54,7 +54,7 @@ class LoginTest extends TestCase
             'email' => $user->getEmail(),
             'password' => 'password'
         ]));
-        $response->assertSuccessful();
+        $response->assertRedirect();
         $this->assertAuthenticated();
     }
 
@@ -92,6 +92,9 @@ class LoginTest extends TestCase
         $this->assertNotNull($user->getRememberToken(), "Remember token was not set.");
     }
 
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
     public function test_login_does_not_set_remember_token_if_opted_out()
     {
         $user = UserFactory::create();
@@ -103,6 +106,15 @@ class LoginTest extends TestCase
         //Re-fetch user
         $user = auth()->user();
         $this->assertNull($user->getRememberToken(), "Remember token was set.");
+    }
+
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
+    public function test_login_redirect_returns_to_originally_intended_page()
+    {
+        // Need another page to actually be able to test this!
+        throw new \Exception("Unimplemented Test");
     }
 
     public function test_too_many_login_requests_are_throttled()
@@ -118,7 +130,7 @@ class LoginTest extends TestCase
 
     public function test_locked_user_is_redirected_to_locked_page()
     {
-        $user = UserFactory::create(['locked']);
+        $user = UserFactory::create(['locked' => true]);
         $response = $this->actingAs($user)->get(route('multiplayer.home'));
         $response->assertRedirect(route('auth.locked'));
     }
@@ -130,9 +142,22 @@ class LoginTest extends TestCase
         $response->assertRedirect(route('welcome'));
     }
 
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
     public function test_can_not_use_alternative_email_to_login()
     {
-        throw new \Exception("Unimplemented Test");
+        $user = UserFactory::create(['alternativeEmails' => true]);
+        $alternativeEmail = null;
+        foreach ($user->getEmails() as $email) {
+            if (!$email->isPrimary) $alternativeEmail = $email->email;
+        }
+        $response = $this->json('POST', route('auth.login', [
+            'email' => $alternativeEmail,
+            'password' => 'password'
+        ]));
+        $response->assertUnprocessable();
+        $this->assertGuest();
     }
 
     public function test_can_login_with_muck_character_and_credentials()

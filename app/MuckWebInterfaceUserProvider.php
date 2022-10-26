@@ -202,6 +202,98 @@ class MuckWebInterfaceUserProvider implements UserProvider
         ]);
     }
 
+    /**
+     * Sets the user's email.
+     * Setting an email always makes it the primary email.
+     * @param User $user
+     * @param string $email
+     * @return UserEmail
+     */
+    public function setEmail(User $user, string $email): UserEmail
+    {
+        Log::debug("UserProvider setting email of $user to $email");
+        //Because historic code may not have made an entry for the user's existing mail, check on such
+        if ($user->getEmail()) {
+            $query = DB::table('account_emails')->where([
+                'email' => $user->getEmail()
+            ])->first();
+            if (!$query) {
+                DB::table('account_emails')->insert([
+                    'email' => $user->getEmail(),
+                    'aid' => $user->id(),
+                    'created_at' => Carbon::now()
+                ]);
+            }
+        }
+
+        //Need to make sure there's a reference in account_emails for the new email
+        $newEmailQuery = DB::table('account_emails')->where([
+            'email' => $email
+        ])->first();
+        if (!$newEmailQuery) {
+            DB::table('account_emails')->insert([
+                'email' => $email,
+                'aid' => $user->id(),
+                'created_at' => Carbon::now()
+            ]);
+        }
+
+        // Set primary email to this new one
+        DB::table('accounts')->where([
+            'aid' => $user->id()
+        ])->update([
+            'email' => $email,
+            'updated_at' => Carbon::now()
+        ]);
+
+        $result = new UserEmail($email);
+        $result->verified_at = $newEmailQuery ? new Carbon($newEmailQuery->verified_at) : null;
+        $result->created_at = $newEmailQuery ? new Carbon($newEmailQuery->created_at) : Carbon::now();
+        $result->isPrimary = true;
+        return $result;
+    }
+
+    /**
+     * Get all emails to do with a user in the form
+     * @param User $user
+     * @return UserEmail[]
+     */
+    public function getEmails(User $user): array
+    {
+        Log::debug("UserProvider getEmails query for $user");
+        $emails = [];
+
+        $rows = DB::table('account_emails')->select([
+            'email', 'created_at', 'verified_at'
+        ])->where([
+            'aid' => $user->id()
+        ])->get();
+        foreach ($rows as $row) {
+            $nextEmail = new UserEmail($row->email);
+            $nextEmail->created_at = $row->created_at ? new Carbon($row->created_at) : null;
+            $nextEmail->verified_at = $row->verified_at ? new Carbon($row->verified_at) : null;
+            $nextEmail->isPrimary = false;
+            $emails[] = $nextEmail;
+        }
+
+        // Historical system didn't always put primary email into the emails table
+        $primary = DB::table('accounts')
+            ->select([
+                'email', 'created_at'
+            ])
+            ->where('aid', '=', $user->id())
+            ->first();
+        if (!array_key_exists($primary->email, $emails)) {
+            $nextEmail = new UserEmail($primary->email);
+            $nextEmail->isPrimary = true;
+            $emails[] = $nextEmail;
+        }
+
+        Log::debug("UserProvider getEmails result for $user: " . json_encode($emails));
+        return $emails;
+
+    }
+
     #endregion Email Related
 
     public function setIsLocked(User $user, bool $isLocked)
