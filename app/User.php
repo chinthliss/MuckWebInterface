@@ -219,6 +219,40 @@ class User implements Authenticatable
         return $this->lockedAt;
     }
 
+    #region Account Properties
+
+    public function getAccountProperty(string $property): mixed
+    {
+        return self::getProvider()->getAccountProperty($this, $property);
+    }
+
+    public function setAccountProperty(string $property, $value)
+    {
+        self::getProvider()->setAccountProperty($this, $property, $value);
+    }
+
+    #endregion Account Properties
+
+    #region Terms of service
+
+    protected ?bool $agreedToTermsOfService = null; // Loaded on demand
+
+    public function getAgreedToTermsOfService(): bool
+    {
+        if ($this->agreedToTermsOfService === null) {
+            $hash = $this->getAccountProperty('tos-hash-viewed');
+            $this->agreedToTermsOfService = ($hash == TermsOfService::getTermsOfServiceHash());
+        }
+        return $this->agreedToTermsOfService;
+    }
+
+    public function setAgreedToTermsOfService(string $hash): void
+    {
+        $this->setAccountProperty('tos-hash-viewed', $hash);
+    }
+
+    #endregion Terms of service
+
     public static function fromDatabaseResponse(\stdClass $query): User
     {
         if (
