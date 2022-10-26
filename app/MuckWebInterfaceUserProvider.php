@@ -213,15 +213,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
     {
         Log::debug("UserProvider setting email of $user to $email");
         //Because historic code may not have made an entry for the user's existing mail, check on such
-        if ($user->getEmail()) {
+        $existing = $user->getEmail();
+        if ($existing) {
             $query = DB::table('account_emails')->where([
-                'email' => $user->getEmail()
+                'email' => $existing
             ])->first();
             if (!$query) {
+                Log::debug("UserProvider fixing missing EXISTING email of $user: " . $existing);
                 DB::table('account_emails')->insert([
-                    'email' => $user->getEmail(),
-                    'aid' => $user->id(),
-                    'created_at' => Carbon::now()
+                    'email' => $existing,
+                    'aid' => $user->id()
                 ]);
             }
         }
@@ -245,7 +246,6 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'email' => $email,
             'updated_at' => Carbon::now()
         ]);
-
         $result = new UserEmail($email);
         $result->verified_at = $newEmailQuery ? new Carbon($newEmailQuery->verified_at) : null;
         $result->created_at = $newEmailQuery ? new Carbon($newEmailQuery->created_at) : Carbon::now();
@@ -261,8 +261,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
     public function getEmails(User $user): array
     {
         Log::debug("UserProvider getEmails query for $user");
-        $emails = [];
 
+        $emails = [];
         $rows = DB::table('account_emails')->select([
             'email', 'created_at', 'verified_at'
         ])->where([
@@ -277,14 +277,18 @@ class MuckWebInterfaceUserProvider implements UserProvider
         }
 
         // Historical system didn't always put primary email into the emails table
-        $primary = DB::table('accounts')
-            ->select([
-                'email', 'created_at'
-            ])
+        $primaryEmail = DB::table('accounts')
             ->where('aid', '=', $user->id())
-            ->first();
-        if (!array_key_exists($primary->email, $emails)) {
-            $nextEmail = new UserEmail($primary->email);
+            ->value('email');
+        $needToAddPrimary = true;
+        foreach($emails as $email) {
+            if ($email->email == $primaryEmail) {
+                $needToAddPrimary = false;
+                $email->isPrimary = true;
+            }
+        }
+        if ($needToAddPrimary) {
+            $nextEmail = new UserEmail($primaryEmail);
             $nextEmail->isPrimary = true;
             $emails[] = $nextEmail;
         }

@@ -160,13 +160,18 @@ class User implements Authenticatable
         return $this->email->email;
     }
 
+    private function loadEmails()
+    {
+        $this->emails = $this->getProvider()->getEmails($this);
+    }
+
     /**
      * @return UserEmail[]
      */
-    public function getEmails($forceUpdate = false): array
+    public function getEmails(): array
     {
-        if (is_null($this->emails) || $forceUpdate) {
-            $this->emails = $this->getProvider()->getEmails($this);
+        if (is_null($this->emails)) {
+            $this->loadEmails();
         }
         return $this->emails;
     }
@@ -197,6 +202,8 @@ class User implements Authenticatable
     public function setEmail(string $email): void
     {
         $this->email = $this->getProvider()->setEmail($this, $email);
+        // Refresh emails because an alternative one might already be set up as primary
+        $this->loadEmails();
     }
 
     #endregion Email functionality
