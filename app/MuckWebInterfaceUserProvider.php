@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Muck\MuckDbref;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Query\Builder;
@@ -299,6 +300,61 @@ class MuckWebInterfaceUserProvider implements UserProvider
     }
 
     #endregion Email Related
+
+    #region Properties
+
+    public function getAccountProperty(User $user, string $property)
+    {
+        $row = DB::table('account_properties')
+            ->where(['aid' => $user->id(), 'propname' => $property])
+            ->first();
+        if (!$row) return null;
+        switch ($row->proptype) {
+            case 'INTEGER':
+                return (int)$row->propdata;
+            case 'FLOAT':
+                return (float)$row->propdata;
+            case 'OBJECT':
+                return $this->muckObjectService->getByDbref($row->propdata);
+            // Other values are 'STRING'
+            default:
+                return $row->propdata;
+        }
+    }
+
+    public function setAccountProperty(User $user, string $propertyName, $propertyValue)
+    {
+        $propertyType = null;
+        switch (gettype($propertyValue)) {
+            case 'integer':
+                $propertyType = 'INTEGER';
+                break;
+            case 'double':
+                $propertyType = 'FLOAT';
+                break;
+            case 'string':
+                $propertyType = 'STRING';
+                break;
+            case 'boolean':
+                $propertyType = 'STRING';
+                $propertyValue = $propertyValue ? 'Y' : 'N';
+                break;
+            case 'object':
+                if (is_a($propertyValue, MuckDbref::class)) {
+                    $propertyType = 'Object';
+                    $propertyValue = $propertyValue->toInt();
+                } else throw new Error('Attempt to set account property to unknown value: ' . $propertyValue);
+                break;
+            default:
+                throw new Error('Unknown property type to save: ' . typeof($propertyValue));
+        }
+        DB::table('account_properties')->updateOrInsert(
+            ['aid' => $user->getAid(), 'propname' => $propertyName],
+            ['propdata' => $propertyValue, 'proptype' => $propertyType]
+        );
+    }
+
+    #endregion Properties
 
     public function setIsLocked(User $user, bool $isLocked)
     {
