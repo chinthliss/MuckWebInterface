@@ -55,7 +55,7 @@ Route::prefix('/singleplayer/')->group(function() {
 Route::prefix('/multiplayer/')->group(function() {
 
     // ----------------------------- Stuff that doesn't require a character
-    Route::group(['middleware' => ['auth', 'not.locked', 'verified']], function() {
+    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function() {
         Route::get('', function () {
             return view('multiplayer.home');
         })->name('multiplayer.home');

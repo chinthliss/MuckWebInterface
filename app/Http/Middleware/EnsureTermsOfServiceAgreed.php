@@ -26,7 +26,7 @@ class EnsureTermsOfServiceAgreed
             redirect()->setIntendedUrl($request->getRequestUri());
             return $request->expectsJson()
                 ? abort(403, "Latest Terms of Service hasn't been agreed to.")
-                : redirect()->route('auth.account.termsofservice');
+                : redirect()->route('auth.terms-of-service');
         }
 
         return $next($request);

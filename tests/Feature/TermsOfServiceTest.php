@@ -12,7 +12,7 @@ class TermsOfServiceTest extends TestCase
 
     public function test_terms_of_service_viewable_Without_login()
     {
-        $response = $this->get('/account/termsofservice');
+        $response = $this->get(route('auth.terms-of-service'));
         $response->assertSuccessful();
         $response->assertViewIs('auth.terms-of-service');
     }
@@ -20,7 +20,7 @@ class TermsOfServiceTest extends TestCase
     public function test_terms_of_service_viewable_with_login()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->get('/account/termsofservice');
+        $response = $this->actingAs($user)->get(route('auth.terms-of-service'));
         $response->assertSuccessful();
         $response->assertViewIs('auth.terms-of-service');
     }
@@ -48,7 +48,7 @@ class TermsOfServiceTest extends TestCase
         $user = UserFactory::create(['notagreedtotos' => true]);
         $termsOfService = $this->app->make('App\TermsOfService');
         $hash = $termsOfService::getTermsOfServiceHash();
-        $this->post(route('auth.termsofservice'),
+        $this->post(route('auth.terms-of-service'),
             [
                 '_token' => csrf_token(),
                 '_hash' => $hash
