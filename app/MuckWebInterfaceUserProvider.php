@@ -343,13 +343,13 @@ class MuckWebInterfaceUserProvider implements UserProvider
                 if (is_a($propertyValue, MuckDbref::class)) {
                     $propertyType = 'Object';
                     $propertyValue = $propertyValue->toInt();
-                } else throw new Error('Attempt to set account property to unknown value: ' . $propertyValue);
+                } else throw new \Error('Attempt to set account property to unknown value: ' . $propertyValue);
                 break;
             default:
-                throw new Error('Unknown property type to save: ' . typeof($propertyValue));
+                throw new \Error('Unknown property type to save: ' . typeof($propertyValue));
         }
         DB::table('account_properties')->updateOrInsert(
-            ['aid' => $user->getAid(), 'propname' => $propertyName],
+            ['aid' => $user->id(), 'propname' => $propertyName],
             ['propdata' => $propertyValue, 'proptype' => $propertyType]
         );
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\TermsOfService;
 use App\User;
 
 /**
@@ -14,6 +15,7 @@ class UserFactory
      * unverified - Prevents flagging the account as verified
      * locked - Sets user as locked if true
      * alternativeEmails - If true, gives the user 1 alternativeEmail. If a number, adds that many.
+     * notAgreedToTOS - If true, terms of service agreement isn't set.
      * @param array $options
      * @return User
      */
@@ -32,6 +34,10 @@ class UserFactory
 
         if (array_key_exists('locked', $options)) {
             $user->setIsLocked(true);
+        }
+
+        if (!array_key_exists('notAgreedToTOS', $options)) {
+            $user->setAgreedToTermsOfService(TermsOfService::getTermsOfServiceHash());
         }
 
         if (array_key_exists('alternativeEmails', $options)) {

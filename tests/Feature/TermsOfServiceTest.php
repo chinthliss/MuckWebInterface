@@ -35,7 +35,7 @@ class TermsOfServiceTest extends TestCase
 
     public function test_user_who_has_not_accepted_terms_of_service_is_redirected()
     {
-        $user = UserFactory::create(['notagreedtotos' => true]);
+        $user = UserFactory::create(['notAgreedToTOS' => true]);
         $response = $this->actingAs($user)->get(route('multiplayer.home'));
         $response->assertRedirect(route('auth.terms-of-service'));
     }
@@ -45,14 +45,16 @@ class TermsOfServiceTest extends TestCase
      */
     public function test_terms_of_service_can_be_accepted()
     {
-        $user = UserFactory::create(['notagreedtotos' => true]);
+        $user = UserFactory::create(['notAgreedToTOS' => true]);
         $termsOfService = $this->app->make('App\TermsOfService');
         $hash = $termsOfService::getTermsOfServiceHash();
-        $this->post(route('auth.terms-of-service'),
+        $response = $this->actingAs($user)->post(route('auth.terms-of-service'),
             [
                 '_token' => csrf_token(),
                 '_hash' => $hash
             ]);
+        $response->assertRedirect(route('welcome'));
+
         $this->assertDatabaseHas('account_properties', [
             'aid' => $user->id(),
             'propname' => 'tos-hash-viewed',

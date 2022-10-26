@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('logout', [LoginController::class, 'logoutAccount'])->name('auth.logout');
     Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
     Route::get('resendverifyemail', [EmailController::class, 'resendVerificationEmail'])->name('auth.email.resendVerification');
+    Route::post('termsofservice', [TermsOfServiceController::class, 'acceptTermsOfService']);
 });
 
 /*
