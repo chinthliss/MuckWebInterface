@@ -188,7 +188,7 @@ class User implements Authenticatable
         return true;
     }
 
-    public function getEmailVerifiedAt(): Carbon
+    public function getEmailVerifiedAt(): ?Carbon
     {
         return $this->email->verified_at;
     }

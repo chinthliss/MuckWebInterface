@@ -10,9 +10,9 @@ use Carbon\Carbon;
 class UserEmail
 {
 
-    public ?Carbon $created_at; // Can be null due to legacy data
+    public ?Carbon $created_at = null; // Can be null due to legacy data
 
-    public ?Carbon $verified_at;
+    public ?Carbon $verified_at = null;
 
     public bool $isPrimary = false;
 

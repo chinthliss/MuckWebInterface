@@ -33,6 +33,7 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::post('logout', [LoginController::class, 'logoutAccount'])->name('auth.logout');
     Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
+    Route::get('resendverifyemail', [EmailController::class, 'resendVerificationEmail'])->name('auth.email.resendVerification');
 });
 
 /*
@@ -54,7 +55,7 @@ Route::prefix('/singleplayer/')->group(function() {
 Route::prefix('/multiplayer/')->group(function() {
 
     // ----------------------------- Stuff that doesn't require a character
-    Route::group(['middleware' => ['auth', 'not.locked']], function() {
+    Route::group(['middleware' => ['auth', 'not.locked', 'verified']], function() {
         Route::get('', function () {
             return view('multiplayer.home');
         })->name('multiplayer.home');
