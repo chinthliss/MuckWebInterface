@@ -6,7 +6,7 @@ use Closure;
 use App\User as User;
 use Illuminate\Http\Request;
 
-// Redirects an account to the locked page if it's locked.
+// Redirects an account to email verification if their email isn't verified
 class EnsureEmailIsVerified
 {
     /**
