@@ -3,6 +3,9 @@
 namespace App;
 
 use App\Muck\MuckDbref;
+use App\Muck\MuckObjectService;
+use App\Muck\MuckService;
+use Error;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Query\Builder;
@@ -18,6 +21,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
      * @var array<int, User>
      */
     private array $cachedUserById = [];
+
+    /**
+     * @param MuckService $muckService
+     * @param MuckObjectService $muckObjectService
+     */
+    public function __construct(
+        private MuckService $muckService,
+        private MuckObjectService $muckObjectService)
+    {
+    }
 
     /**
      * Gets a base query that contains the required columns for creating a User object.
@@ -92,16 +105,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
             if ($accountQuery) return User::fromDatabaseResponse($accountQuery);
         }
 
-        /* To be reimplemented later
         //If it's an email that might be a character name we try the muck
         if (array_key_exists('email', $credentials) && !strpos($credentials['email'], '@')) {
             $character = $this->muckObjectService->getByPlayerName($credentials['email']);
             if ($character) {
                 $accountQuery = $this->baseRetrievalQuery()
-                    ->where('accounts.aid', $character->aid())
+                    ->where('accounts.aid', $character->accountId)
                     ->first();
                 if (!$accountQuery) return null; //Account referenced by muck but wasn't found in DB!
                 $user = User::fromDatabaseResponse($accountQuery);
+                throw new Error("Not Implemented Yet");
                 $user->setCharacter($character);
                 return $user;
             }
@@ -111,8 +124,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
         if (array_key_exists('api_token', $credentials)) {
             $character = $this->muckObjectService->getByApiToken($credentials['api_token']);
             if ($character) {
-                $accountQuery = $this->getRetrievalQuery()
-                    ->where('accounts.aid', $character->aid())
+                $accountQuery = $this->baseRetrievalQuery()
+                    ->where('accounts.aid', $character->accountId)
                     ->first();
                 if (!$accountQuery) return null; //Account referenced by muck but wasn't found in DB!
                 $user = User::fromDatabaseResponse($accountQuery);
@@ -121,7 +134,6 @@ class MuckWebInterfaceUserProvider implements UserProvider
             }
 
         }
-        */
 
         return null;
     }
@@ -142,8 +154,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
         //Otherwise try the muck
         if (method_exists($user, 'getCharacter') && $user->getCharacter()) {
-            throw new \Error("To be reimplemented.");
-            // return $this->muckConnection->validateCredentials($user->getCharacter(), $credentials);
+            return $this->muckService->validateCredentials($user->getCharacter(), $credentials);
         }
         return false;
     }
@@ -324,7 +335,6 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     public function setAccountProperty(User $user, string $propertyName, $propertyValue)
     {
-        $propertyType = null;
         switch (gettype($propertyValue)) {
             case 'integer':
                 $propertyType = 'INTEGER';
@@ -342,11 +352,11 @@ class MuckWebInterfaceUserProvider implements UserProvider
             case 'object':
                 if (is_a($propertyValue, MuckDbref::class)) {
                     $propertyType = 'Object';
-                    $propertyValue = $propertyValue->toInt();
-                } else throw new \Error('Attempt to set account property to unknown value: ' . $propertyValue);
+                    $propertyValue = $propertyValue->dbref;
+                } else throw new Error('Attempt to set account property to unknown value: ' . $propertyValue);
                 break;
             default:
-                throw new \Error('Unknown property type to save: ' . typeof($propertyValue));
+                throw new Error('Unknown property type to save: ' . typeof($propertyValue));
         }
         DB::table('account_properties')->updateOrInsert(
             ['aid' => $user->id(), 'propname' => $propertyName],

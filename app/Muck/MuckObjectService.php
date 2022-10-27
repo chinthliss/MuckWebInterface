@@ -5,15 +5,14 @@ namespace App\Muck;
 use App\User;
 use Illuminate\Support\Facades\Log;
 
-/*
- * Acts as:
+/**
+ * Works on top of MuckService to provide:
  *   A cache of verified objects from the muck to save repeated requests to the database.
  *   Verification of cached objects loaded from the database.
  */
-
 class MuckObjectService
 {
-    private MuckConnection $connection;
+    private MuckService $service;
     private MuckObjectsProvider $provider;
 
     /**
@@ -35,9 +34,9 @@ class MuckObjectService
      */
     private array $byMuckObjectId = [];
 
-    public function __construct(MuckConnection $connection, MuckObjectsProvider $provider)
+    public function __construct(MuckService $service, MuckObjectsProvider $provider)
     {
-        $this->connection = $connection;
+        $this->service = $service;
         $this->provider = $provider;
     }
 
@@ -68,7 +67,7 @@ class MuckObjectService
             return $object;
         }
 
-        $object = $this->connection->getByDbref($dbref);
+        $object = $this->service->getByDbref($dbref);
         $this->cacheAsRequired($object);
 
         Log::debug("MuckObjectService.getByDbref looked up - $dbref: $object");
@@ -90,7 +89,7 @@ class MuckObjectService
             return $object;
         }
 
-        $object = $this->connection->getByPlayerName($name);
+        $object = $this->service->getByPlayerName($name);
         $this->cacheAsRequired($object);
 
         Log::debug("MuckObjectService.getByPlayerName looked up - $name: $object");
@@ -106,7 +105,7 @@ class MuckObjectService
     {
         // No cache to look through for the API token as we'd only be using it during page load
         // But we still cache the results
-        $object = $this->connection->getByApiToken($apiToken);
+        $object = $this->service->getByApiToken($apiToken);
         $this->cacheAsRequired($object);
 
         return $object;
@@ -183,7 +182,7 @@ class MuckObjectService
      */
     public function getCharactersOf(User $user): array
     {
-        $characters = $this->connection->getCharactersOf($user);
+        $characters = $this->service->getCharactersOf($user);
         foreach ($characters as $character) {
             $this->cacheAsRequired($character);
         }

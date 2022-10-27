@@ -2,9 +2,13 @@
 
 namespace App;
 
+use App\Muck\MuckDbref;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\App;
+use Error;
+use InvalidArgumentException;
+use stdClass;
 
 class User implements Authenticatable
 {
@@ -107,7 +111,7 @@ class User implements Authenticatable
     public function getAuthPassword(): string
     {
         //This should only be called during authentication where it will have already been loaded.
-        if (!$this->password) throw new \Error("Attempt to query User's password when it hasn't been loaded.");
+        if (!$this->password) throw new Error("Attempt to query User's password when it hasn't been loaded.");
         return $this->password;
     }
 
@@ -118,7 +122,7 @@ class User implements Authenticatable
     public function getPasswordType(): string
     {
         //This should only be called during authentication where it will have already been loaded.
-        if (!$this->passwordType) throw new \Error("Attempt to query User's passwordType when it hasn't been loaded.");
+        if (!$this->passwordType) throw new Error("Attempt to query User's passwordType when it hasn't been loaded.");
         return $this->passwordType;
     }
 
@@ -253,14 +257,24 @@ class User implements Authenticatable
 
     #endregion Terms of service
 
-    public static function fromDatabaseResponse(\stdClass $query): User
+    /**
+     * @param MuckDbref $character
+     * @return void
+     */
+    public function setCharacter(MuckDbref $character): void
+    {
+        //TODO: Reimplement SetCharacter
+        throw new Error("User.setcharacter not implemented.");
+    }
+
+    public static function fromDatabaseResponse(stdClass $query): User
     {
         if (
             !property_exists($query, 'aid') ||
             !property_exists($query, 'email') ||
             !property_exists($query, 'password')
         ) {
-            throw new \InvalidArgumentException('Database response must at least contain aid, password and email');
+            throw new InvalidArgumentException('Database response must at least contain aid, password and email');
         }
         $user = new self(intval($query->aid));
         $user->password = $query->password;

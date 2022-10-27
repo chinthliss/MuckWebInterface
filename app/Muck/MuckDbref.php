@@ -3,6 +3,7 @@
 
 namespace App\Muck;
 
+use Error;
 use Illuminate\Support\Carbon;
 
 /**
@@ -25,10 +26,10 @@ class MuckDbref
      * @param string $name
      * @param string $typeFlag
      * @param Carbon $createdTimestamp The created timestamp - in conjunction with the dbref acts as a signature since dbrefs can be reused
+     * @param int|null $accountId This is just an int to allow lazy loading the account details
      * @param int $staffLevel 1 for 'staff', 2 for 'admin'
      * @param bool $approved
      * @param int|null $level
-     * @param int|null $accountId
      */
     public function __construct(
         public int    $dbref,
@@ -36,14 +37,14 @@ class MuckDbref
         public string $typeFlag,
         public Carbon $createdTimestamp,
         // The rest are only set on certain types
+        public ?int   $accountId = null,
         public int    $staffLevel = 0,
         public bool   $approved = true,
-        public ?int   $level = null,
-        public ?int   $accountId = null
+        public ?int   $level = null
     )
     {
         if (!array_key_exists($this->typeFlag, self::$typeFlags)) {
-            throw new \Error('Unrecognized type flag specified: ' . $this->typeFlag);
+            throw new Error('Unrecognized type flag specified: ' . $this->typeFlag);
         }
 
     }
@@ -97,11 +98,10 @@ class MuckDbref
     /**
      * Returns an array representing a player object
      * @return array
-     * @throws \Exception
      */
     public function toPlayerArray(): array
     {
-        if ($this->typeFlag !== 'p') throw new \Exception("Attempt to get a PlayerArray out of something that isn't a player");
+        if ($this->typeFlag !== 'p') throw new Error("Attempt to get a PlayerArray out of something that isn't a player");
         $array = [
             'dbref' => $this->dbref,
             'name' => $this->name,

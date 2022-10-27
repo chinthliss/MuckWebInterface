@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Muck\MuckObjectService;
+use App\Muck\MuckService;
 use App\MuckWebInterfaceUserProvider;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +29,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Auth::provider('accounts', function($app, array $config) {
-            return new MuckWebInterfaceUserProvider();
+            return new MuckWebInterfaceUserProvider(
+                $app->make(MuckService::class),
+                $app->make(MuckObjectService::class)
+            );
         });
 
         //

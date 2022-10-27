@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Muck\MuckConnection;
+use App\Muck\MuckConnectionFaker;
+use App\Muck\MuckConnectionHttp;
 use App\Muck\MuckObjectService;
+use App\Muck\MuckObjectsProvider;
+use App\Muck\MuckService;
+use Error;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
 
@@ -13,27 +19,40 @@ class MuckServiceProvider extends ServiceProvider implements DeferrableProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $connection = null;
+        $this->app->singleton(MuckConnection::class, function($app) {
 
-        if (!config()->has('muck'))
-            throw new \Error('Muck configuration not set.');
+            $connection = null;
 
-        $config = config('muck');
-        $driver = $config['driver'];
-        if ($driver == 'fake') $connection = new FakeMuckConnection($config);
-        if ($driver == 'http') $connection = new HttpMuckConnection($config);
-        if (!$driver) throw new Error('Unrecognized muck driver: ' . $driver);
+            if (!config()->has('muck'))
+                throw new Error('Muck configuration not set. Check the MUCK_* variables are set in .env and that the configuration cache has been cleared.');
+            $config = config('muck');
 
-        $provider = new MuckObjectsProvider();
+            $driver = $config['driver'];
+            if (!$driver) throw new Error("Driver hasn't been set in Muck connection config. Ensure MUCK_DRIVER is set.");
 
-        $this->app->singleton(MuckConnection::class, function($app) use ($connection) {
+            $salt = $config['salt'];
+            if (!$salt) throw new Error("Salt hasn't been set in Muck connection config. Ensure MUCK_SALT is set.");
+
+            if (!$config['host'] || !$config['port'] || !$config['uri'])
+                throw new Error('Configuration for muck is missing host, port or uri');
+            $baseUrl = ($config['useHttps'] ? 'https' : 'http') . '://' . $config['host'] . ':' . $config['port'];
+            $uri = $config['uri'];
+
+            if ($driver == 'fake') $connection = new MuckConnectionFaker();
+            if ($driver == 'http') $connection = new MuckConnectionHttp($baseUrl, $uri, $salt);
+            if (!$connection) throw new Error('Unrecognized muck driver: ' . $driver);
+
             return $connection;
         });
 
-        $this->app->singleton(MuckObjectService::class, function($app) use ($connection, $provider) {
-            return new MuckObjectService($connection, $provider);
+        $this->app->singleton(MuckService::class, function($app) {
+            return new MuckService($app->make(MuckConnection::class));
+        });
+
+        $this->app->singleton(MuckObjectService::class, function($app) {
+            return new MuckObjectService($app->make(MuckService::class), new MuckObjectsProvider());
         });
     }
 
@@ -42,8 +61,18 @@ class MuckServiceProvider extends ServiceProvider implements DeferrableProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides(): array
+    {
+        return [MuckConnection::class, MuckService::class, MuckObjectService::class];
     }
 }
