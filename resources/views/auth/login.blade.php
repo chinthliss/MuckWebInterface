@@ -4,6 +4,7 @@
 
 @section('content')
     <form action="" method="POST">
+        @csrf
 
         <div class="row justify-content-center">
 
