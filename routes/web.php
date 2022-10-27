@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\EmailController;
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
     Route::get('resendverifyemail', [EmailController::class, 'resendVerificationEmail'])->name('auth.email.resendVerification');
     Route::post('termsofservice', [TermsOfServiceController::class, 'acceptTermsOfService']);
+    Route::get('account', [AccountController::class, 'showAccount'])->name('account');
 });
 
 /*

@@ -113,8 +113,14 @@ class LoginTest extends TestCase
      */
     public function test_login_redirect_returns_to_originally_intended_page()
     {
-        // Need another page to actually be able to test this!
-        throw new \Exception("Unimplemented Test");
+        $this->get(route('account'));
+        $user = UserFactory::create();
+        $response = $this->json('POST', route('auth.login', [
+            'email' => $user->getEmail(),
+            'password' => 'password',
+            'forget' => true
+        ]));
+        $response->assertRedirect(route('account'));
     }
 
     public function test_too_many_login_requests_are_throttled()
