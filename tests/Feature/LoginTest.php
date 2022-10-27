@@ -54,8 +54,8 @@ class LoginTest extends TestCase
             'email' => $user->getEmail(),
             'password' => 'password'
         ]));
-        $response->assertRedirect();
-        $this->assertAuthenticated();
+        $response->assertRedirect(route('welcome'));
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_cannot_login_with_incorrect_credentials()

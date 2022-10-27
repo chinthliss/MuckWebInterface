@@ -10,7 +10,8 @@
 
             <div class="col-md-4 col-lg-3">
                 <label for="email" class="form-label">Email</label>
-                <input class="form-control" id="email" name="email" autocomplete="email" autofocus
+                <input @class(['form-control', 'is-invalid' => $errors->get('email')]) id="email" name="email"
+                       autocomplete="email" autofocus
                        placeholder="Enter a valid email address or the name of a character.">
                 @error('email')
                 <div class="invalid-feedback" role="alert">{{ $message }}</div>
@@ -19,7 +20,8 @@
 
             <div class="col-md-4 col-lg-3">
                 <label for="password" class="form-label">Password</label>
-                <input class="form-control" id="password" name="password" type="password" autocomplete="password"
+                <input @class(['form-control', 'is-invalid' => $errors->get('password')]) id="password" name="password"
+                       type="password" autocomplete="password"
                        placeholder="Enter password.">
                 @error('password')
                 <div class="invalid-feedback" role="alert">{{ $message }}</div>
@@ -27,6 +29,16 @@
             </div>
 
         </div>
+
+        @error('login')
+        <div class="row justify-content-md-center mt-2">
+            <div class="col-md-6">
+                <div class="text-center invalid-feedback d-block">
+                    {{ $message }}
+                </div>
+            </div>
+        </div>
+        @enderror
 
         <div class="row justify-content-md-center mt-2">
             <div class="col-md-6">

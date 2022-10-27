@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -26,7 +27,7 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function loginAccount(Request $request): RedirectResponse
+    public function loginAccount(Request $request)
     {
         $request->validate([
             'email' => 'required|max:255',
@@ -37,8 +38,10 @@ class LoginController extends Controller
 
         $attemptResult = $this->guard()->attempt($request->only('email', 'password'), $remember);
         if ($attemptResult) {
+
             $request->session()->regenerate();
             $user = $this->guard()->user();
+            Log::debug("Successful Login by " . $request['email'] . " as: $user");
             event(new Login($this->guard()::class, $user, $remember));
 
             //TODO: Look better at implementing loginThrottle
@@ -47,11 +50,12 @@ class LoginController extends Controller
             //TODO: Remove test message in login
             $request->session()->flash('message-success', 'You have logged in! (And this is a test message.)');
 
-            return redirect()->intended(route('multiplayer.home'));
+            return redirect()->intended(route('welcome'));
         } else {
             $user = $this->guard()->getProvider()->retrieveByCredentials($request->only('email'));
+            Log::debug("Failed Login by " . $request['email'] . " as: $user");
             event(new Failed($this->guard()::class, $user, $request->only('email', 'password')));
-            throw ValidationException::withMessages(['password' => ['Unrecognized Email/Password or Character/Password combination.']]);
+            throw ValidationException::withMessages(['login' => ['Unrecognized Email/Password or Character/Password combination.']]);
         }
 
     }
