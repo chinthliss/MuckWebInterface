@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Error;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -27,13 +28,8 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function loginAccount(Request $request)
+    public function handleAccountLogin(Request $request)
     {
-        $request->validate([
-            'email' => 'required|max:255',
-            'password' => 'required|max:255'
-        ]);
-
         $remember = $request->has('forget') ? !$request['forget'] : true;
 
         $attemptResult = $this->guard()->attempt($request->only('email', 'password'), $remember);
@@ -57,6 +53,30 @@ class LoginController extends Controller
             event(new Failed($this->guard()::class, $user, $request->only('email', 'password')));
             throw ValidationException::withMessages(['login' => ['Unrecognized Email/Password or Character/Password combination.']]);
         }
+    }
+
+    public function handleAccountCreation(Request $request)
+    {
+        throw new Error("Not implemented yet.");
+    }
+
+    public function loginOrCreateAccount(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|max:255',
+            'password' => 'required|max:255'
+        ]);
+
+        switch ($request->input('action')) {
+            case 'login':
+                return $this->handleAccountLogin($request);
+            case 'create':
+                return $this->handleAccountCreation($request);
+            default:
+                throw new Error("Unrecognized use of the login form.");
+        }
+
+
 
     }
 

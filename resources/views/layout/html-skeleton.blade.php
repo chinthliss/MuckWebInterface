@@ -39,11 +39,23 @@
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
             <div>{{ config('app.name', 'MuckWebInterface') }}</div>
         </a>
-        <a class="navbar-nav nav-link px-2" href="#">Character name and Avatar</a>
-        <a class="navbar-nav nav-link px-2" href="#">Notifications</a>
-        <a class="navbar-nav nav-link px-2" href="#">Account</a>
-        <a class="navbar-nav nav-link px-2" href="#">Logout</a>
+        @guest
+            <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
+        @else
+            <a class="navbar-nav nav-link px-2" href="#">Character name</a>
+            <a class="navbar-nav nav-link px-2" href="#">Notifications</a>
+            <a class="navbar-nav nav-link px-2" href="{{ route('account') }}">Account</a>
 
+            <a class="navbar-nav nav-link px-2" href="#"
+               onclick="event.preventDefault(); document.getElementById('site-logout-form').submit();">
+                Logout
+            </a>
+
+            <form id="site-logout-form" action="{{ route('auth.logout') }}" method="POST"
+                  style="display: none;">
+                @csrf
+            </form>
+        @endguest
     </div>
 </header>
 

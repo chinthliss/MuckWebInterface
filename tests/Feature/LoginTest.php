@@ -52,7 +52,8 @@ class LoginTest extends TestCase
         $user = UserFactory::create();
         $response = $this->json('POST', route('auth.login', [
             'email' => $user->getEmail(),
-            'password' => 'password'
+            'password' => 'password',
+            'action' => 'login'
         ]));
         $response->assertRedirect(route('welcome'));
         $this->assertAuthenticatedAs($user);
@@ -62,7 +63,8 @@ class LoginTest extends TestCase
     {
         $response = $this->json('POST', route('auth.login', [
             'email' => 'test@test.com',
-            'password' => 'wrong'
+            'password' => 'wrong',
+            'action' => 'login'
         ]));
         $response->assertStatus(422);
         $this->assertGuest();
@@ -85,7 +87,8 @@ class LoginTest extends TestCase
         $user = UserFactory::create();
         $this->json('POST', route('auth.login', [
             'email' => $user->getEmail(),
-            'password' => 'password'
+            'password' => 'password',
+            'action' => 'login'
         ]));
         //Re-fetch user
         $user = auth()->user();
@@ -101,7 +104,8 @@ class LoginTest extends TestCase
         $this->json('POST', route('auth.login', [
             'email' => $user->getEmail(),
             'password' => 'password',
-            'forget' => true
+            'forget' => true,
+            'action' => 'login'
         ]));
         //Re-fetch user
         $user = auth()->user();
@@ -118,7 +122,8 @@ class LoginTest extends TestCase
         $response = $this->json('POST', route('auth.login', [
             'email' => $user->getEmail(),
             'password' => 'password',
-            'forget' => true
+            'forget' => true,
+            'action' => 'login'
         ]));
         $response->assertRedirect(route('account'));
     }
@@ -160,7 +165,8 @@ class LoginTest extends TestCase
         }
         $response = $this->json('POST', route('auth.login', [
             'email' => $alternativeEmail,
-            'password' => 'password'
+            'password' => 'password',
+            'action' => 'login'
         ]));
         $response->assertUnprocessable();
         $this->assertGuest();
