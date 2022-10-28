@@ -12,4 +12,13 @@ class AccountController extends Controller
         return view('account');
     }
 
+    public function findIssuesWithPassword(string $password)
+    {
+        $issues = array();
+        if (strlen($password) < 3) array_push($issues, 'Password is too short (minimum width is 3 characters)');
+        if (preg_match("/[\s]/", $password)) array_push($issues, 'Password can not contain spaces.');
+        if (preg_match("/[^\x20-\x7E]/", $password)) array_push($issues, 'Password can only contain characters representable by ANSI.');
+        return $issues;
+    }
+
 }

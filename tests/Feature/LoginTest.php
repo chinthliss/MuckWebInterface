@@ -174,12 +174,28 @@ class LoginTest extends TestCase
 
     public function test_can_login_with_muck_character_and_credentials()
     {
-        throw new \Exception("Unimplemented Test");
+        //This test requires the dev dummy data in since there's no factory for muck characters
+        $this->seed();
+        $response = $this->json('POST', route('auth.login', [
+            'email' => 'TestCharacter',
+            'password' => 'password',
+            'action' => 'login'
+        ]));
+        $response->assertRedirect(route('welcome'));
+        $this->assertAuthenticated();
     }
 
     public function test_cannot_login_with_muck_character_and_incorrect_credentials()
     {
-        throw new \Exception("Unimplemented Test");
+        //This test requires the dev dummy data in since there's no factory for muck characters
+        $this->seed();
+        $response = $this->json('POST', route('auth.login', [
+            'email' => 'TestCharacter',
+            'password' => 'wrongpassword',
+            'action' => 'login'
+        ]));
+        $response->assertUnprocessable();
+        $this->assertGuest();
     }
 
 

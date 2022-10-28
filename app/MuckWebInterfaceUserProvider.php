@@ -168,6 +168,17 @@ class MuckWebInterfaceUserProvider implements UserProvider
             ->update([$user->getRememberTokenName() => $token]);
     }
 
+    public function updatePassword(User $user, string $password, $password_type)
+    {
+        DB::table('accounts')->where([
+            'aid' => $user->id()
+        ])->update([
+            'password' => $password,
+            'password_type' => $password_type,
+            'updated_at' => Carbon::now()
+        ]);
+    }
+
     /**
      * Creates an account and returns the User object representing it
      * @param string $email

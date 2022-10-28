@@ -5,13 +5,19 @@ namespace App;
 use App\Muck\MuckDbref;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\App;
 use Error;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use stdClass;
+use MuckInterop;
 
 class User implements Authenticatable
 {
+    use Notifiable;
+
     /**
      * @var int Primary key. This is the accountId / aid.
      */
@@ -66,6 +72,23 @@ class User implements Authenticatable
     public function id() : int
     {
         return $this->id;
+    }
+
+    //Used by notifiable
+    public function getKey(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     * Required so notifications know where to find the user's email
+     * @param  Notification  $notification
+     * @return array|string
+     */
+    public function routeNotificationForMail(Notification $notification): array|string
+    {
+        return $this->email->email;
     }
 
     public function __construct(int $accountId)
@@ -264,7 +287,16 @@ class User implements Authenticatable
     public function setCharacter(MuckDbref $character): void
     {
         //TODO: Reimplement SetCharacter
-        throw new Error("User.setcharacter not implemented.");
+        Log::error("User.setcharacter not implemented.");
+    }
+
+    public function setPassword(string $password)
+    {
+        $password = MuckInterop::createSHA1SALTPassword($password);
+        $this->password = $password;
+        $this->passwordType = 'SHA1SALT';
+        $this->getProvider()->updatePassword($this, $password, 'SHA1SALT');
+        //$this->updateLastUpdated(); //Done automatically with update
     }
 
     public static function fromDatabaseResponse(stdClass $query): User

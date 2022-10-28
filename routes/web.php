@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\EmailController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
 use App\Http\Controllers\Auth\HomeController;
@@ -23,7 +24,15 @@ Route::get('accountlocked', [HomeController::class, 'showLocked'])->name('auth.l
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [LoginController::class, 'showLogin'])->name('auth.login');
     Route::post('login', [LoginController::class, 'loginOrCreateAccount'])->middleware('throttle:8,1');
-    Route::get('forgotpassword', [LoginController::class, 'showForgottenPassword'])->name('auth.password.forgot');
+
+    //Password forgot / reset
+    Route::get('forgotpassword', [PasswordController::class, 'showForgottenPassword'])->name('auth.password.forgot');
+    Route::post('forgotpassword', [PasswordController::class, 'requestPasswordReset'])->middleware('throttle:3,1');
+    Route::get('account/passwordreset/{id}/{hash}', [PasswordController::class, 'showPasswordReset'])
+        ->name('auth.password.reset')->middleware('signed', 'throttle:8,1');
+    Route::post('account/passwordreset/{id}/{hash}', [PasswordController::class, 'resetPassword'])
+        ->middleware('signed', 'throttle:8,1');
+
 });
 
 /*

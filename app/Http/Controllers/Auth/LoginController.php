@@ -15,30 +15,22 @@ use Illuminate\View\View;
 
 class LoginController extends Controller
 {
-    /**
-     * Utility class to return the auth guard
-     */
-    public function guard()
-    {
-        return auth()->guard();
-    }
-
     public function showLogin(): View
     {
         return view('auth.login');
     }
 
-    public function handleAccountLogin(Request $request)
+    public function handleAccountLogin(Request $request): RedirectResponse
     {
         $remember = $request->has('forget') ? !$request['forget'] : true;
 
-        $attemptResult = $this->guard()->attempt($request->only('email', 'password'), $remember);
+        $attemptResult = auth()->guard()->attempt($request->only('email', 'password'), $remember);
         if ($attemptResult) {
 
             $request->session()->regenerate();
-            $user = $this->guard()->user();
+            $user = auth()->guard()->user();
             Log::debug("Successful Login by " . $request['email'] . " as: $user");
-            event(new Login($this->guard()::class, $user, $remember));
+            event(new Login(auth()->guard()::class, $user, $remember));
 
             //TODO: Look better at implementing loginThrottle
             // $this->clearLoginAttempts($request);
@@ -48,9 +40,9 @@ class LoginController extends Controller
 
             return redirect()->intended(route('welcome'));
         } else {
-            $user = $this->guard()->getProvider()->retrieveByCredentials($request->only('email'));
+            $user = auth()->guard()->getProvider()->retrieveByCredentials($request->only('email'));
             Log::debug("Failed Login by " . $request['email'] . " as: $user");
-            event(new Failed($this->guard()::class, $user, $request->only('email', 'password')));
+            event(new Failed(auth()->guard()::class, $user, $request->only('email', 'password')));
             throw ValidationException::withMessages(['login' => ['Unrecognized Email/Password or Character/Password combination.']]);
         }
     }
@@ -60,7 +52,7 @@ class LoginController extends Controller
         throw new Error("Not implemented yet.");
     }
 
-    public function loginOrCreateAccount(Request $request)
+    public function loginOrCreateAccount(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => 'required|max:255',
@@ -75,23 +67,15 @@ class LoginController extends Controller
             default:
                 throw new Error("Unrecognized use of the login form.");
         }
-
-
-
     }
 
     public function logoutAccount(Request $request): RedirectResponse
     {
-        $user = $this->guard()->user();
-        $this->guard()->logout();
+        $user = auth()->guard()->user();
+        auth()->guard()->logout();
         $request->session()->invalidate();
-        event(new Logout($this->guard()::class, $user));
+        event(new Logout(auth()->guard()::class, $user));
         return redirect()->route('auth.login');
-    }
-
-    public function showForgottenPassword(): View
-    {
-        return view('auth.password-forgotten');
     }
 
 }
