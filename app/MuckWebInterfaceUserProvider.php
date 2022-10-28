@@ -114,7 +114,6 @@ class MuckWebInterfaceUserProvider implements UserProvider
                     ->first();
                 if (!$accountQuery) return null; //Account referenced by muck but wasn't found in DB!
                 $user = User::fromDatabaseResponse($accountQuery);
-                throw new Error("Not Implemented Yet");
                 $user->setCharacter($character);
                 return $user;
             }

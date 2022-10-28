@@ -4,7 +4,7 @@
 namespace App\Muck;
 
 use Error;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 /**
  * Utility class to represent a loaded muck dbRef.

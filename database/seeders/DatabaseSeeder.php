@@ -11,6 +11,10 @@ use MuckInterop;
 
 class DatabaseSeeder extends Seeder
 {
+    //These are public statics to allow the muck connection faker to ensure it uses the same IDs.
+    public static int $normalUserAccountId = 1;
+    public static int $adminUserAccountId = 2;
+
     /**
      * Seed the application's database.
      *
@@ -20,9 +24,8 @@ class DatabaseSeeder extends Seeder
     {
         // *************************************
         // Regular User Account - user@test.com
-        $accountId = 1;
         DB::table('accounts')->insert([
-            'aid' => $accountId,
+            'aid' => self::$normalUserAccountId,
             'uuid' => 'fake-uuid-1',
             'email' => 'user@test.com',
             'password' => MuckInterop::createSHA1SALTPassword('password'),
@@ -30,13 +33,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('account_emails')->insert([
-            'aid' => $accountId,
+            'aid' => self::$normalUserAccountId,
             'email' => 'user@test.com',
             'verified_at' => Carbon::now()
         ]);
 
         DB::table('account_properties')->insert([
-            'aid' => $accountId,
+            'aid' => self::$normalUserAccountId,
             'propname' => 'tos-hash-viewed',
             'proptype' => 'STRING',
             'propdata' => TermsOfService::getTermsOfServiceHash()
@@ -44,9 +47,8 @@ class DatabaseSeeder extends Seeder
 
         // *************************************
         // Admin Account - admin@test.com
-        $accountId = 2;
         DB::table('accounts')->insert([
-            'aid' => $accountId,
+            'aid' => self::$adminUserAccountId,
             'uuid' => 'fake-uuid-2',
             'email' => 'admin@test.com',
             'password' => MuckInterop::createSHA1SALTPassword('password'),
@@ -54,13 +56,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('account_emails')->insert([
-            'aid' => $accountId,
+            'aid' => self::$adminUserAccountId,
             'email' => 'admin@test.com',
             'verified_at' => Carbon::now()
         ]);
 
         DB::table('account_properties')->insert([
-            'aid' => $accountId,
+            'aid' => self::$adminUserAccountId,
             'propname' => 'tos-hash-viewed',
             'proptype' => 'STRING',
             'propdata' => TermsOfService::getTermsOfServiceHash()

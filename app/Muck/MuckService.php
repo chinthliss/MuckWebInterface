@@ -3,6 +3,7 @@
 namespace App\Muck;
 
 use App\User;
+use Carbon\Carbon;
 use InvalidArgumentException;
 
 class MuckService
@@ -36,7 +37,7 @@ class MuckService
         if (in_array('staff', $flags)) $staffLevel = 1;
         if (in_array('admin', $flags)) $staffLevel = 2;
 
-        return new MuckDbref($dbref, $name, $typeFlag, $creationTimestamp, $owningAccount, $staffLevel, $approved);
+        return new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $owningAccount, $staffLevel, $approved);
     }
 
     /**
