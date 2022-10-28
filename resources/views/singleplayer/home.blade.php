@@ -3,7 +3,9 @@
 @section('title', 'Singleplayer')
 
 @section('content')
-    Test body content
+    <div class="container">
+        Test body content
+    </div>
 @endsection
 
 
