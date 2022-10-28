@@ -1,4 +1,4 @@
-@extends('layout.page-no-navigation')
+@extends('layout.page-simple-navigation')
 
 @section('title', 'Password Reset Request Processed')
 

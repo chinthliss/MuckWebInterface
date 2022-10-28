@@ -1,8 +1,8 @@
 @extends('layout.html-skeleton')
 
 @section('page-navigation')
-    <div class="navbar-text">Multiplayer</div>
-    <a class="nav-link" href="{{ route('multiplayer.home') }}">Home</a>
+    <a class="nav-link" href="{{ route('singleplayer.home') }}">Singleplayer</a>
+    <a class="nav-link" href="{{ route('multiplayer.home') }}">Multiplayer</a>
 @endsection
 
 @section('page-content')
