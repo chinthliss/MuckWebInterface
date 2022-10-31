@@ -35,6 +35,40 @@ class EmailTest extends TestCase
         $response->assertRedirect(route('auth.email.verify'));
     }
 
+    public function test_cannot_access_verification_page_without_account()
+    {
+
+    }
+
+    public function test_can_access_verification_page_with_account()
+    {
+
+    }
+
+    public function test_verification_email_has_link()
+    {
+
+    }
+
+    public function test_new_user_is_not_verified()
+    {
+
+    }
+
+    public function test_new_user_is_verified_after_using_link()
+    {
+
+    }
+
+    public function test_verification_link_can_be_resent()
+    {
+
+    }
+
+    public function test_verification_works_on_legacy_account_with_incomplete_email_record()
+    {
+
+    }
 
 
 }
