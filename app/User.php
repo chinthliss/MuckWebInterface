@@ -280,6 +280,35 @@ class User implements Authenticatable
 
     #endregion Terms of service
 
+    #region Retrieval
+
+    /**
+     * Utility function to lookup user
+     * @param $id
+     * @return User|null
+     */
+    public static function find($id): ?User
+    {
+        return self::getProvider()->retrieveById($id);
+    }
+
+    /**
+     * Utility function to lookup user by email.
+     * If true is passed to $allowAlternative will return any match, otherwise will only return primary emails.
+     * @param string $email
+     * @param bool $allowAlternative
+     * @return User|null
+     */
+    public static function findByEmail(string $email, bool $allowAlternative = false): ?User
+    {
+        if ($allowAlternative)
+            return self::getProvider()->retrieveByAnyEmail($email);
+        else
+            return self::getProvider()->retrieveByCredentials(['email' => $email]);
+    }
+
+    #endregion Retrieval
+
     /**
      * @param MuckDbref $character
      * @return void
@@ -297,6 +326,21 @@ class User implements Authenticatable
         $this->passwordType = 'SHA1SALT';
         $this->getProvider()->updatePassword($this, $password, 'SHA1SALT');
         //$this->updateLastUpdated(); //Done automatically with update
+    }
+
+    public function getUpdatedAt(): ?Carbon
+    {
+        return $this->updatedAt;
+    }
+
+    public function getCreatedAt(): ?Carbon
+    {
+        return $this->createdAt;
+    }
+
+    public function getReferralCount(): int
+    {
+        return $this->getProvider()->getReferralCount($this);
     }
 
     public static function fromDatabaseResponse(stdClass $query): User

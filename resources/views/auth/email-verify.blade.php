@@ -12,13 +12,13 @@
         @if (session('resent'))
             <div class="row">
                 <div class="col alert alert-success" role="alert">
-                    {{ __('A fresh verification link has been sent to your email address.') }}
+                    A fresh verification link has been sent to your email address.
                 </div>
             </div>
         @else
             <div class="row">
                 <div class="col">
-                    <p>If you did not receive the email, <a href="{{ route('auth.email.resendverification') }}">click
+                    <p>If you did not receive the email, <a href="{{ route('auth.email.resendVerification') }}">click
                             here to request another</a>.</p>
                     <p>If you made your account on the old website, it won't have sent the email
                         and you will need to use the link above to send an email.</p>

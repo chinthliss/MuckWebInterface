@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\User as User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function showWelcome(): View
+    public function showWelcome(Request $request): View
     {
+        if ($request->has('refer')) {
+            $request->session()->put('account.referral', $request->input('refer'));
+        }
         return view('welcome');
     }
 

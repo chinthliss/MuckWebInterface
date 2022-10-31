@@ -49,6 +49,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
         return $credentials;
     }
 
+    #region Retrieval
+
     /**
      * @inheritDoc
      */
@@ -136,6 +138,26 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
         return null;
     }
+
+    /**
+     * Function to find an account by any email, not just the primary one.
+     * @param string $email
+     * @return User|null User
+     */
+    public function retrieveByAnyEmail(string $email): ?User
+    {
+        Log::debug('UserProvider RetrieveByAnyEmail attempt for ' . $email);
+        $accountId = DB::table('account_emails')
+            ->where('account_emails.email', '=', $email)
+            ->value('aid');
+
+        if ($accountId)
+            return $this->retrieveById($accountId);
+
+        return null;
+    }
+
+    #endregion Retrieval
 
     /**
      * @inheritDoc
@@ -317,7 +339,18 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
         Log::debug("UserProvider getEmails result for $user: " . json_encode($emails));
         return $emails;
+    }
 
+    public function isEmailAvailable(string $email): bool
+    {
+        $aid = DB::table('accounts')->where([
+            'email' => $email
+        ])->value('aid');
+        if ($aid) return false;
+        $aid = DB::table('account_emails')->where([
+            'email' => $email
+        ])->value('aid');
+        return $aid ? false : true;
     }
 
     #endregion Email Related
@@ -384,5 +417,13 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'locked_at' => $isLocked ? Carbon::now() : null,
             'updated_at' => Carbon::now()
         ]);
+    }
+
+    public function getReferralCount(User $user): int
+    {
+        $count = DB::table('account_properties')
+            ->where(['propname' => 'tutor', 'propdata' => $user->id()])
+            ->count();
+        return $count;
     }
 }

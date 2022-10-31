@@ -59,7 +59,8 @@
                 <div class="col">
                     <div class="text-center">
                         <button class="btn btn-primary" type="submit" name="action" value="login">Login</button>
-                        <button class="btn btn-primary" type="submit" name="action" value="create">Create Account
+                        <button class="btn btn-primary" type="submit" name="action" value="create"
+                                formaction="{{ route('auth.create') }}">Create Account
                         </button>
                     </div>
                 </div>

@@ -23,7 +23,8 @@ Route::get('accountlocked', [HomeController::class, 'showLocked'])->name('auth.l
 */
 Route::group(['middleware' => ['guest']], function () {
     Route::get('login', [LoginController::class, 'showLogin'])->name('auth.login');
-    Route::post('login', [LoginController::class, 'loginOrCreateAccount'])->middleware('throttle:8,1');
+    Route::post('login', [LoginController::class, 'loginAccount'])->middleware('throttle:8,1');
+    Route::post('createaccount', [AccountController::class, 'createAccount'])->name('auth.create');
 
     //Password forgot / reset
     Route::get('forgotpassword', [PasswordController::class, 'showForgottenPassword'])->name('auth.password.forgot');
