@@ -25,7 +25,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-3 col-form-label text-md-right"><label for="password_confirmation">New Password
                             Again</label></div>
                     <div class="col">
@@ -39,8 +39,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="row">
-                    <div class="col text-center">
+                <div class="row mt-2">
+                    <div class="col">
                         <button type="submit" value="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>

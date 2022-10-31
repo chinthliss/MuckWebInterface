@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                If there is an account associated with that email then a message containing a reset link has now been sent to it.
+                If there is an account associated with that email then a message containing a reset link has now been sent to it. Please check your email for the link.
             </div>
         </div>
     </div>

@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
+use Log;
 
 class ResetPassword extends Notification // implements ShouldQueue
 {
@@ -42,6 +43,7 @@ class ResetPassword extends Notification // implements ShouldQueue
     public function toMail(mixed $notifiable): MailMessage
     {
         $resetUrl = $this->resetUrl($notifiable);
+        Log::debug("Password reset - new temporary URL created: $resetUrl");
         return (new MailMessage)
             ->subject('Reset Password Request')
             ->line('Please click the button below to reset your password.')
