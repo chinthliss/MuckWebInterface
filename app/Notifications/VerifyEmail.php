@@ -46,7 +46,7 @@ class VerifyEmail extends LaravelVerifyEmail
     protected function verificationUrl($notifiable): string
     {
         return URL::temporarySignedRoute(
-            'auth.email.verify',
+            'auth.email.verification',
             Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
             [
                 'id' => $notifiable->getKey(),

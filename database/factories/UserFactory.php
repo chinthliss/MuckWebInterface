@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\TermsOfService;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Utility class to create a new user for testing purposes
@@ -16,6 +17,7 @@ class UserFactory
      * locked - Sets user as locked if true
      * alternativeEmails - If true, gives the user 1 alternativeEmail. If a number, adds that many.
      * notAgreedToTOS - If true, terms of service agreement isn't set.
+     * legacyEmail - If true, the account_emails record is removed to represent an account created before such was used.
      * @param array $options
      * @return User
      */
@@ -29,7 +31,7 @@ class UserFactory
         $user = $provider->createUser($email, $password);
 
         if (!array_key_exists('unverified', $options)) {
-            $user->setEmailAsVerified();
+            $user->markEmailAsVerified();
         }
 
         if (array_key_exists('locked', $options)) {
@@ -49,6 +51,10 @@ class UserFactory
             $user->setEmail($initialEmail);
         }
 
+        if (array_key_exists('legacyEmail', $options)) {
+            // Remove the account_emails record to simulate an old record without one.
+            DB::table('account_emails')->where('email', $user->getEmail())->delete();
+        }
         return $user;
     }
 

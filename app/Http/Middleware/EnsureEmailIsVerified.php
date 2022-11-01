@@ -22,7 +22,7 @@ class EnsureEmailIsVerified
         $user = $request->user();
         if (!$user) abort(500, "User should have been set before this call");
 
-        if (!$user->getEmailVerifiedAt())
+        if (!$user->hasVerifiedEmail())
             return $request->expectsJson()
                 ? abort(403, "Your email hasn't been verified.")
                 : redirect()->route('auth.email.verify');

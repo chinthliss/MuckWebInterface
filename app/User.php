@@ -3,7 +3,9 @@
 namespace App;
 
 use App\Muck\MuckDbref;
+use App\Notifications\VerifyEmail;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -14,7 +16,7 @@ use InvalidArgumentException;
 use stdClass;
 use MuckInterop;
 
-class User implements Authenticatable
+class User implements Authenticatable, MustVerifyEmail
 {
     use Notifiable;
 
@@ -203,21 +205,44 @@ class User implements Authenticatable
         return $this->emails;
     }
 
+    public function getEmailVerifiedAt(): ?Carbon
+    {
+        return $this->email->verified_at;
+    }
+
     /**
      * Mark the given user's present primary email as verified.
-     *
      * @return bool
      */
-    public function setEmailAsVerified(): bool
+    public function markEmailAsVerified(): bool
     {
         $this->getProvider()->setEmailAsVerified($this, $this->email->email);
         $this->email->verified_at = Carbon::now();
         return true;
     }
 
-    public function getEmailVerifiedAt(): ?Carbon
+    /**
+     * Determine if the user has verified their email address.
+     * @return bool
+     */
+    public function hasVerifiedEmail()
     {
-        return $this->email->verified_at;
+        return $this->getEmailVerifiedAt() != null;
+    }
+
+    /**
+     * Get the email address that should be used for verification.
+     * @return string
+     */
+    public function getEmailForVerification()
+    {
+        return $this->email->email;
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        //TODO: Maybe queue this later
+        $this->notify(new VerifyEmail());
     }
 
     /**

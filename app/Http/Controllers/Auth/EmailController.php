@@ -3,27 +3,53 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Notifications\VerifyEmail;
+use App\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class EmailController extends Controller
 {
-    public function showVerifyEmail(): View
+    public function showVerifyEmail(): View|RedirectResponse
     {
+        /** @var User $user */
+        $user = auth()->user();
+        if ($user->hasVerifiedEmail()) return redirect(route('welcome'));
+
         return view('auth.email-verify');
     }
 
     public function resendVerificationEmail(Request $request) : RedirectResponse
     {
-        if ($request->user()->getEmailVerifiedAt()) {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->hasVerifiedEmail()) {
             return redirect(route('welcome'));
         }
 
-        //TODO: Consider queuing email
-        $request->user()->notify(new VerifyEmail());
+        $user->sendEmailVerificationNotification();
 
         return back()->with('resent', true);
+    }
+
+    /**
+     * Should be protected by the 'signed' middleware!
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function verifyEmail(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->hasVerifiedEmail()) return redirect(route('welcome'));
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect(route('welcome'));
     }
 }

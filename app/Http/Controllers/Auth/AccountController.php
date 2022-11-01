@@ -53,8 +53,7 @@ class AccountController extends Controller
 
         event(new Login(auth()->guard()::class, $user, $remember));
 
-        //TODO: Consider moving notification to being queued
-        $user->notify(new VerifyEmail());
+        $user->sendEmailVerificationNotification();
 
         // Set referral on new account if one is in the session
         if ($request->session()->has('account.referral')) {

@@ -44,6 +44,9 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::post('logout', [LoginController::class, 'logoutAccount'])->name('auth.logout');
     Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])->name('auth.email.verify');
+    Route::get('verifyemail/{id}/{hash}', [EmailController::class, 'verifyEmail'])
+        ->name('auth.email.verification')->middleware('signed', 'throttle:8,1');
+
     Route::get('resendverifyemail', [EmailController::class, 'resendVerificationEmail'])->name('auth.email.resendVerification');
     Route::post('termsofservice', [TermsOfServiceController::class, 'acceptTermsOfService']);
     Route::get('account', [AccountController::class, 'showAccount'])->name('account');
