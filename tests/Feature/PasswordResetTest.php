@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Notifications\ResetPassword;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
@@ -60,7 +62,7 @@ class PasswordResetTest extends TestCase
             'email' => $user->getEmail()
         ]));
         Notification::assertSentTo($user, ResetPassword::class);
-        Notification::assertTimesSent(1, ResetPassword::class);
+        Notification::assertSentTimes(ResetPassword::class, 1);
     }
 
     /**
@@ -117,6 +119,26 @@ class PasswordResetTest extends TestCase
             $user = auth()->guard()->getProvider()->retrieveByCredentials(['email' => $user->getEmail()]);
             $this->assertTrue(auth()->guard()->getProvider()->validateCredentials($user, ['password' => 'passwordchanged']));
             $response->assertSuccessful();
+            return true;
+        });
+    }
+
+    /**
+     * @depends test_reset_password_works
+     */
+    public function test_password_reset_event_fires_on_password_reset()
+    {
+        Event::fake();
+        Notification::fake();
+        $user = UserFactory::create();
+        $this->json('POST', route('auth.password.forgot', [
+            'email' => $user->getEmail()
+        ]));
+        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification, $channels) use ($user) {
+            $mail = $notification->toMail($user)->toArray();
+            $response = $this->json('POST', $mail['actionUrl'],
+                ['password' => 'passwordchanged', 'password_confirmation' => 'passwordchanged']);
+            Event::assertDispatchedTimes(PasswordReset::class, 1);
             return true;
         });
     }

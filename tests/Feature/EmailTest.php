@@ -4,8 +4,9 @@ namespace Tests\Feature;
 
 use App\Notifications\VerifyEmail;
 use App\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
@@ -135,5 +136,25 @@ class EmailTest extends TestCase
         });
     }
 
+    /**
+     * @depends test_new_user_is_verified_after_using_link
+     */
+    public function test_verification_event_fires_on_verification()
+    {
+        Notification::fake();
+        $this->json('POST', route('auth.create', [
+            'email' => 'testnew@test.com',
+            'password' => 'password'
+        ]));
+        /** @var User $user */
+        $user = auth()->user();
+        Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification, $channels) use ($user) {
+            Event::fake();
+            $mail = $notification->toMail($user)->toArray();
+            $response = $this->get($mail['actionUrl']);
+            Event::assertDispatchedTimes(Verified::class, 1);
+            return true;
+        });
+    }
 
 }

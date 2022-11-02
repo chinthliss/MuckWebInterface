@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Notifications\VerifyEmail;
 use App\User as User;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +50,8 @@ class AccountController extends Controller
         $remember = $request->has('forget') ? !$request['forget'] : true;
         auth()->guard()->login($user, $remember);
 
-        event(new Login(auth()->guard()::class, $user, $remember));
+        // Fired by Laravel
+        // event(new Login(auth()->guard()::class, $user, $remember));
 
         // Laravel is sending this in reaction to its own events
         // $user->sendEmailVerificationNotification();

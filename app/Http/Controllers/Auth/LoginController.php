@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Failed;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +33,9 @@ class LoginController extends Controller
             $request->session()->regenerate();
             $user = auth()->guard()->user();
             Log::debug("Successful Login by " . $request['email'] . " as: $user");
-            event(new Login(auth()->guard()::class, $user, $remember));
+
+            // Fired by Laravel
+            // event(new Login(auth()->guard()::class, $user, $remember));
 
             //TODO: Look better at implementing loginThrottle
             // $this->clearLoginAttempts($request);
@@ -46,7 +47,8 @@ class LoginController extends Controller
         } else {
             $user = auth()->guard()->getProvider()->retrieveByCredentials($request->only('email'));
             Log::debug("Failed Login by " . $request['email'] . " as: $user");
-            event(new Failed(auth()->guard()::class, $user, $request->only('email', 'password')));
+            // Fired by Laravel
+            // event(new Failed(auth()->guard()::class, $user, $request->only('email', 'password')));
             throw ValidationException::withMessages(['login' => ['Unrecognized Email/Password or Character/Password combination.']]);
         }
     }
@@ -56,7 +58,8 @@ class LoginController extends Controller
         $user = auth()->guard()->user();
         auth()->guard()->logout();
         $request->session()->invalidate();
-        event(new Logout(auth()->guard()::class, $user));
+        // Dispatched by Laravel
+        // event(new Logout(auth()->guard()::class, $user));
         return redirect()->route('auth.login');
     }
 

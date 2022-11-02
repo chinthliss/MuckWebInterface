@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Notifications\VerifyEmail;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use App\User;
@@ -165,5 +167,19 @@ class AccountCreationTest extends TestCase
 
         //Check account's referral count is correct
         $this->assertEquals(1, $accountToRefer->getReferralCount());
+    }
+
+    /**
+     * @depends test_can_create_account_with_valid_credentials
+     */
+    public function test_registered_and_login_event_fires_on_success()
+    {
+        Event::fake();
+        $this->json('POST', route('auth.create', [
+            'email' => 'testnew@test.com',
+            'password' => 'password'
+        ]));
+        Event::assertDispatchedTimes(Registered::class, 1);
+        Event::assertDispatchedTimes(Login::class, 1);
     }
 }

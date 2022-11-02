@@ -2,7 +2,12 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Auth\Events\Attempting;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use App\User;
 use Database\Factories\UserFactory;
@@ -198,7 +203,46 @@ class LoginTest extends TestCase
         $this->assertGuest();
     }
 
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
+    public function test_login_and_attempting_events_fire_on_login()
+    {
+        Event::fake();
+        $user = UserFactory::create();
+        $this->json('POST', route('auth.login', [
+            'email' => $user->getEmail(),
+            'password' => 'password',
+            'action' => 'login'
+        ]));
+        Event::assertDispatchedTimes(Attempting::class, 1);
+        Event::assertDispatchedTimes(Login::class, 1);
+    }
 
+    /**
+     * @depends test_can_login_with_correct_credentials
+     */
+    public function test_failed_event_fires_on_failed_login()
+    {
+        Event::fake();
+        $user = UserFactory::create();
+        $this->json('POST', route('auth.login', [
+            'email' => $user->getEmail(),
+            'password' => 'wrongpassword',
+            'action' => 'login'
+        ]));
+        Event::assertDispatchedTimes(Failed::class, 1);
+    }
 
-
+    /**
+     * @depends test_can_logout
+     */
+    public function test_logout_event_fires_on_logout()
+    {
+        Event::fake();
+        $user = UserFactory::create();
+        $this->actingAs($user);
+        $this->post(route('auth.logout'));
+        Event::assertDispatchedTimes(Logout::class, 1);
+    }
 }
