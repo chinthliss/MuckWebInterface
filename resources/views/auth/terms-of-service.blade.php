@@ -2,8 +2,20 @@
 
 @section('title', 'Terms of Service')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'label' => 'Terms of Service' ]
+    ]) }}
+@endsection
+
 @section('content')
     <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Terms of Service</h1>
+            </div>
+        </div>
         <div>
             @foreach ($termsOfService as $line)
                 {{ $line }} <br/>

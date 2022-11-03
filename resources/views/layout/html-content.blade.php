@@ -5,6 +5,7 @@
     </div>
 </noscript>
 
-<main class="py-4 mt-2 p-2">
+@yield('breadcrumbs')
+<main class="py-2 mb-3">
     @yield('page-content')
 </main>

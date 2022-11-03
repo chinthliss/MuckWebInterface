@@ -2,8 +2,21 @@
 
 @section('title', 'Password Reset Request')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'label' => 'Password Reset' ]
+    ]) }}
+@endsection
+
 @section('content')
     <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Password Reset</h1>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <p>If you're forgotten your password you can use this page to request a reset by entering your email

@@ -2,6 +2,13 @@
 
 @section('title', 'Login')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'label' => 'Login' ]
+    ]) }}
+@endsection
+
 @section('content')
     <div class="container">
         <form action="" method="POST">

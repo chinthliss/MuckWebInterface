@@ -2,8 +2,22 @@
 
 @section('title', 'Verify Email')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'label' => 'Verify Email' ]
+    ]) }}
+@endsection
+
 @section('content')
     <div class="container">
+
+        <div class="row">
+            <div class="col">
+                <h1>Verify Email</h1>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <p>Before proceeding, please check your email for a verification link.</p>

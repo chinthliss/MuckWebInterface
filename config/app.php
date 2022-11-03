@@ -210,6 +210,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Breadcrumbs' => App\Helpers\Breadcrumbs::class,
         'MuckInterop' => App\Helpers\MuckInterop::class,
     ])->toArray(),
 

@@ -2,6 +2,13 @@
 
 @section('title', 'Password Reset Request Sent')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'label' => 'Password Reset' ]
+    ]) }}
+@endsection
+
 @section('content')
     <div class="container">
         <div class="row">
