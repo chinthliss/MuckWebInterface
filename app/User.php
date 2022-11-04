@@ -71,7 +71,7 @@ class User implements Authenticatable, MustVerifyEmail
      */
     protected ?Carbon $lockedAt = null;
 
-    public function id() : int
+    public function id(): int
     {
         return $this->id;
     }
@@ -85,7 +85,7 @@ class User implements Authenticatable, MustVerifyEmail
     /**
      * Route notifications for the mail channel.
      * Required so notifications know where to find the user's email
-     * @param  Notification  $notification
+     * @param Notification $notification
      * @return array|string
      */
     public function routeNotificationForMail(Notification $notification): array|string
@@ -261,17 +261,6 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Email functionality
 
-    public function setIsLocked(bool $isLocked)
-    {
-        $this->getProvider()->setIsLocked($this, $isLocked);
-        $this->lockedAt = $isLocked ? Carbon::now() : null;
-    }
-
-    public function getLockedAt(): ?Carbon
-    {
-        return $this->lockedAt;
-    }
-
     #region Account Properties
 
     public function getAccountProperty(string $property): mixed
@@ -334,6 +323,17 @@ class User implements Authenticatable, MustVerifyEmail
     }
 
     #endregion Retrieval
+
+    public function setIsLocked(bool $isLocked)
+    {
+        $this->getProvider()->setIsLocked($this, $isLocked);
+        $this->lockedAt = $isLocked ? Carbon::now() : null;
+    }
+
+    public function getLockedAt(): ?Carbon
+    {
+        return $this->lockedAt;
+    }
 
     /**
      * @param MuckDbref $character

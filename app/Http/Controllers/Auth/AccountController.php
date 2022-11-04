@@ -15,7 +15,11 @@ class AccountController extends Controller
 {
     public function showAccount(): View
     {
-        return view('account');
+        /** @var User $user */
+        $user = auth()->user();
+        return view('account', [
+            'accountCreated' => $user->getCreatedAt()
+        ]);
     }
 
     public function findIssuesWithPassword(string $password): array

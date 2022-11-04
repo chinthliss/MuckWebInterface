@@ -6,6 +6,6 @@
 </noscript>
 
 @yield('breadcrumbs')
-<main class="py-2 mb-3">
+<main id="app" class="py-2 mb-3">
     @yield('page-content')
 </main>

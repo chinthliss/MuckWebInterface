@@ -1,4 +1,4 @@
-@extends('layout.page-no-navigation')
+@extends('layout.page-simple-navigation')
 
 @section('title', 'Account')
 
@@ -10,9 +10,8 @@
 @endsection
 
 @section('content')
-    <div>
-        To be completed.
-    </div>
+    <account
+        account-created="{{ $accountCreated }}"
+        subscription-status="TBC"
+    ></account>
 @endsection
-
-
