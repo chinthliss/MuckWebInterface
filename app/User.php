@@ -341,8 +341,18 @@ class User implements Authenticatable, MustVerifyEmail
      */
     public function setCharacter(MuckDbref $character): void
     {
-        //TODO: Reimplement SetCharacter
+        //TODO: Reimplement setCharacter
         Log::error("User.setcharacter not implemented.");
+    }
+
+    /**
+     * @return MuckDbref|null
+     */
+    public function getCharacter(): ?MuckDbref
+    {
+        //TODO: Reimplement getCharacter
+        Log::error("User.getcharacter not implemented.");
+        return null;
     }
 
     public function setPassword(string $password)
