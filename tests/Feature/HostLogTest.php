@@ -29,7 +29,8 @@ class HostLogTest extends TestCase
         //TODO: Reimplement test once character setting is back in
         //This test requires the dev dummy data in since there's no factory for muck characters
         $this->seed();
-        $response = $this->json('POST', route('auth.login', [
+        //Logging in with a character should set that character
+        $this->json('POST', route('auth.login', [
             'email' => 'TestCharacter',
             'password' => 'password',
             'action' => 'login'
