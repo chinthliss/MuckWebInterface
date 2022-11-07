@@ -61,20 +61,30 @@
 import {onMounted} from 'vue';
 
 const props = defineProps({
-    accountCreated: String,
-    subscriptionStatus: String,
+    accountCreated: {type: String, required: true},
+    subscriptionStatus: {type: String, required: true},
     /** @type {Email[]} */
-    emails: Array
+    emails: {type: Array}
 });
+
+const carbonToString = (carbonString) => {
+    if (!carbonString) return '--';
+    return new Date(carbonString).toLocaleString();
+}
+
+const capital = (text) => {
+    if (typeof(text) !== 'string') text = text.toString();
+    return text && text.substring(0, 1).toUpperCase() + text.slice(1);
+}
 
 onMounted(() => {
     document.getElementById('email-table');
     $('#email-table').DataTable({
         columns: [
-            { data: 'email' },
-            { data: 'isPrimary' },
-            { data: 'createdAt' },
-            { data: 'verifiedAt' }
+            {data: 'email'},
+            {data: 'isPrimary', render: capital, className: 'dt-center'},
+            {data: 'createdAt', render: carbonToString},
+            {data: 'verifiedAt', render: carbonToString}
         ],
         data: props.emails,
         paging: false,
