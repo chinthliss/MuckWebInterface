@@ -207,7 +207,7 @@ class User implements Authenticatable, MustVerifyEmail
 
     public function getEmailVerifiedAt(): ?Carbon
     {
-        return $this->email->verified_at;
+        return $this->email->verifiedAt;
     }
 
     /**
@@ -217,7 +217,7 @@ class User implements Authenticatable, MustVerifyEmail
     public function markEmailAsVerified(): bool
     {
         $this->getProvider()->setEmailAsVerified($this, $this->email->email);
-        $this->email->verified_at = Carbon::now();
+        $this->email->verifiedAt = Carbon::now();
         return true;
     }
 
@@ -398,8 +398,8 @@ class User implements Authenticatable, MustVerifyEmail
         if (property_exists($query, 'remember_token') && $query->remember_token) $user->rememberToken = $query->remember_token;
 
         $email = new UserEmail($query->email);
-        if (property_exists($query, 'email_created_at') && $query->email_created_at) $email->created_at = new Carbon($query->email_created_at);
-        if (property_exists($query, 'verified_at') && $query->verified_at) $email->verified_at = new Carbon($query->verified_at);
+        if (property_exists($query, 'email_created_at') && $query->email_created_at) $email->createdAt = new Carbon($query->email_created_at);
+        if (property_exists($query, 'verified_at') && $query->verified_at) $email->verifiedAt = new Carbon($query->verified_at);
         $email->isPrimary = true;
         $user->email = $email;
 

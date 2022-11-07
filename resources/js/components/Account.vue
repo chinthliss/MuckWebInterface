@@ -18,7 +18,7 @@
         </dl>
 
         <h2 class="mt-2">Emails</h2>
-        <table id="emails" class="table table-striped" style="width:100%">
+        <table id="email-table" class="table table-striped" style="width:100%">
             <thead>
             <tr>
                 <th scope="col">Email</th>
@@ -50,15 +50,24 @@
 </template>
 
 <script setup>
+/**
+ * @typedef {object} Email
+ * @property {string} email
+ * @property {string} createdAt
+ * @property {string} verifiedAt
+ * @property {boolean} isPrimary
+ */
 import {onMounted} from 'vue';
 
 const props = defineProps({
     accountCreated: String,
-    subscriptionStatus: String
+    subscriptionStatus: String,
+    emails: Array
 });
 
 onMounted(() => {
-    $('#emails').DataTable({
+    document.getElementById('email-table');
+    $('#email-table').DataTable({
         paging: false,
         info: false,
         searching: false

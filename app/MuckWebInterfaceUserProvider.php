@@ -291,8 +291,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'updated_at' => Carbon::now()
         ]);
         $result = new UserEmail($email);
-        $result->verified_at = $newEmailQuery ? new Carbon($newEmailQuery->verified_at) : null;
-        $result->created_at = $newEmailQuery ? new Carbon($newEmailQuery->created_at) : Carbon::now();
+        $result->verifiedAt = $newEmailQuery ? new Carbon($newEmailQuery->verified_at) : null;
+        $result->createdAt = $newEmailQuery ? new Carbon($newEmailQuery->created_at) : Carbon::now();
         $result->isPrimary = true;
         return $result;
     }
@@ -314,8 +314,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
         ])->get();
         foreach ($rows as $row) {
             $nextEmail = new UserEmail($row->email);
-            $nextEmail->created_at = $row->created_at ? new Carbon($row->created_at) : null;
-            $nextEmail->verified_at = $row->verified_at ? new Carbon($row->verified_at) : null;
+            $nextEmail->createdAt = $row->created_at ? new Carbon($row->created_at) : null;
+            $nextEmail->verifiedAt = $row->verified_at ? new Carbon($row->verified_at) : null;
             $nextEmail->isPrimary = false;
             $emails[] = $nextEmail;
         }
