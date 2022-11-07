@@ -38,6 +38,11 @@ class DatabaseSeeder extends Seeder
             'verified_at' => Carbon::now()
         ]);
 
+        DB::table('account_emails')->insert([
+            'aid' => self::$normalUserAccountId,
+            'email' => 'unverifiedAlternative@test.com'
+        ]);
+
         DB::table('account_properties')->insert([
             'aid' => self::$normalUserAccountId,
             'propname' => 'tos-hash-viewed',

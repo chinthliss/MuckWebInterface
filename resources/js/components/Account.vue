@@ -57,17 +57,26 @@
  * @property {string} verifiedAt
  * @property {boolean} isPrimary
  */
+
 import {onMounted} from 'vue';
 
 const props = defineProps({
     accountCreated: String,
     subscriptionStatus: String,
+    /** @type {Email[]} */
     emails: Array
 });
 
 onMounted(() => {
     document.getElementById('email-table');
     $('#email-table').DataTable({
+        columns: [
+            { data: 'email' },
+            { data: 'isPrimary' },
+            { data: 'createdAt' },
+            { data: 'verifiedAt' }
+        ],
+        data: props.emails,
         paging: false,
         info: false,
         searching: false

@@ -18,8 +18,12 @@ class AccountController extends Controller
         /** @var User $user */
         $user = auth()->user();
         return view('account', [
-            'accountCreated' => $user->getCreatedAt()
+            'accountCreated' => $user->getCreatedAt(),
+            //TODO Wire up subscription status
+            'subscriptionStatus' => 'TBC',
+            'emails' => $user->getEmails()
         ]);
+
     }
 
     public function findIssuesWithPassword(string $password): array

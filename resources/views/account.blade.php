@@ -12,6 +12,7 @@
 @section('content')
     <account
         account-created="{{ $accountCreated }}"
-        subscription-status="TBC"
+        subscription-status="{{ $subscriptionStatus }}"
+        :emails="{{ json_encode($emails) }}"
     ></account>
 @endsection
