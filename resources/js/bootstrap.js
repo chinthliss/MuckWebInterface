@@ -38,6 +38,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import jQuery from 'jquery';
 window.$ = jQuery;
 
+//The styled version of datatables setup will import the core datatables library.
 import setupDataTables from 'datatables.net-bs5';
 setupDataTables(window, jQuery);
 
