@@ -1,20 +1,50 @@
 /**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
+ * Load and configure dependencies for our app here.
  */
 
-import './bootstrap';
-import { createApp } from 'vue';
+// TODO: Removed lodash as pretty sure nothing is using it now
+// import _ from 'lodash';
+// window._ = _;
 
 /**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
+ * Bootstrap
  */
+
+import 'bootstrap';
+
+/**
+ * Axios HTTP Library
+ */
+
+// This library automatically handles sending the CSRF token as a header based on the value of the "XSRF" token cookie.
+import axios from 'axios';
+window.axios = axios;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+/**
+ * jQuery
+ */
+
+import jQuery from 'jquery';
+window.$ = jQuery;
+
+/**
+ * DataTables
+ */
+
+// The styled version of datatables setup will import the core datatables library.
+import setupDataTables from 'datatables.net-bs5';
+setupDataTables(window, jQuery);
+
+/**
+ * Vue
+ */
+
+import { createApp } from 'vue';
 
 const app = createApp({});
 
+// Core to load components manually:
 // import ExampleComponent from './components/ExampleComponent.vue';
 // app.component('example-component', ExampleComponent);
 
@@ -30,10 +60,5 @@ const app = createApp({});
      app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
  });
 
-/**
- * Finally, we will attach the application instance to a HTML element with
- * an "id" attribute of "app". This element is included with the "auth"
- * scaffolding. Otherwise, you will need to add an element yourself.
- */
-
+// Attach Vue to the app, which is the <main> part of the page in our case.
 app.mount('#app');
