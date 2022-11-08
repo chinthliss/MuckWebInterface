@@ -18,6 +18,7 @@ import 'bootstrap';
 
 // This library automatically handles sending the CSRF token as a header based on the value of the "XSRF" token cookie.
 import axios from 'axios';
+
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -26,6 +27,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 import jQuery from 'jquery';
+
 window.$ = jQuery;
 
 /**
@@ -34,17 +36,18 @@ window.$ = jQuery;
 
 // The styled version of datatables setup will import the core datatables library.
 import setupDataTables from 'datatables.net-bs5';
+
 setupDataTables(window, jQuery);
 
 /**
  * Vue
  */
 
-import { createApp } from 'vue';
+import {createApp} from 'vue';
 
 const app = createApp({});
 
-// Core to load components manually:
+// Code to load components manually:
 // import ExampleComponent from './components/ExampleComponent.vue';
 // app.component('example-component', ExampleComponent);
 
@@ -56,9 +59,9 @@ const app = createApp({});
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
- Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
- });
+Object.entries(import.meta.glob('./**/*.vue', {eager: true})).forEach(([path, definition]) => {
+    app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
+});
 
 // Attach Vue to the app, which is the <main> part of the page in our case.
 app.mount('#app');

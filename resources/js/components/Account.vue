@@ -59,6 +59,7 @@
  */
 
 import {onMounted} from 'vue';
+import {carbonToString, capital} from "../formatting";
 
 const props = defineProps({
     accountCreated: {type: String, required: true},
@@ -66,16 +67,6 @@ const props = defineProps({
     /** @type {Email[]} */
     emails: {type: Array}
 });
-
-const carbonToString = (carbonString) => {
-    if (!carbonString) return '--';
-    return new Date(carbonString).toLocaleString();
-}
-
-const capital = (text) => {
-    if (typeof(text) !== 'string') text = text.toString();
-    return text && text.substring(0, 1).toUpperCase() + text.slice(1);
-}
 
 onMounted(() => {
     document.getElementById('email-table');
