@@ -18,7 +18,8 @@
         </dl>
 
         <h2 class="mt-2">Emails</h2>
-        <table id="email-table" class="table table-striped" style="width:100%">
+
+        <DataTable class="table table-striped" :options="emailTableConfiguration" :data="emails">
             <thead>
             <tr>
                 <th scope="col">Email</th>
@@ -27,7 +28,7 @@
                 <th scope="col">Verified</th>
             </tr>
             </thead>
-        </table>
+        </DataTable>
 
         <h2 class="mt-2">Account Controls</h2>
         <div class="row g-2">
@@ -58,31 +59,30 @@
  * @property {boolean} isPrimary
  */
 
-import {onMounted} from 'vue';
+import {ref, onMounted} from 'vue';
+import DataTable from 'datatables.net-vue3';
 import {carbonToString, capital} from "../formatting";
 
 const props = defineProps({
     accountCreated: {type: String, required: true},
     subscriptionStatus: {type: String, required: true},
     /** @type {Email[]} */
-    emails: {type: Array}
+    emailsIn: {type: Array}
 });
 
-onMounted(() => {
-    document.getElementById('email-table');
-    $('#email-table').DataTable({
-        columns: [
-            {data: 'email'},
-            {data: 'isPrimary', render: capital, className: 'dt-center'},
-            {data: 'createdAt', render: carbonToString},
-            {data: 'verifiedAt', render: carbonToString}
-        ],
-        data: props.emails,
-        paging: false,
-        info: false,
-        searching: false
-    });
-});
+const emails = ref(props.emailsIn);
+
+const emailTableConfiguration = {
+    columns: [
+        {data: 'email'},
+        {data: 'isPrimary', render: capital, className: 'dt-center'},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString}
+    ],
+    paging: false,
+    info: false,
+    searching: false
+};
 </script>
 
 <style scoped>

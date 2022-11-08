@@ -13,6 +13,6 @@
     <account
         account-created="{{ $accountCreated }}"
         subscription-status="{{ $subscriptionStatus }}"
-        :emails="{{ json_encode($emails) }}"
+        :emails-in="{{ json_encode($emails) }}"
     ></account>
 @endsection
