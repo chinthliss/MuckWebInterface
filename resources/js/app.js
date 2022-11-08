@@ -34,10 +34,9 @@ window.$ = jQuery;
  * DataTables
  */
 
-// The styled version of datatables setup will import the core datatables library.
-import setupDataTables from 'datatables.net-bs5';
-
-setupDataTables(window, jQuery);
+// These both run and setup automatically as imports.
+import 'datatables.net';
+import 'datatables.net-bs5';
 
 /**
  * Vue
