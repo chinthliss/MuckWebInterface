@@ -8,6 +8,7 @@ use App\User as User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -53,6 +54,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = auth()->guard()->getProvider()->createUser($request['email'], $request['password']);
 
+        Log::info("AUTH Created $user with email " . $request['email']);
         event(new Registered($user));
 
         $remember = $request->has('forget') ? !$request['forget'] : true;

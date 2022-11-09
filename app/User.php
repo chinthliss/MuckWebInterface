@@ -241,7 +241,7 @@ class User implements Authenticatable, MustVerifyEmail
 
     public function sendEmailVerificationNotification()
     {
-        Log::debug("Sending Email Verification email to $this");
+        Log::debug("AUTH Sending Email Verification email to $this");
         //TODO: Maybe queue this later
         $this->notify(new VerifyEmail());
     }

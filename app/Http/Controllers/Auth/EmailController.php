@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class EmailController extends Controller
@@ -46,6 +47,7 @@ class EmailController extends Controller
 
         if ($user->hasVerifiedEmail()) return redirect(route('welcome'));
 
+        Log::info("AUTH Email verified for $user");
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }

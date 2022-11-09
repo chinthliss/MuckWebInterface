@@ -28,10 +28,10 @@ class PasswordController extends Controller
         /** @var User $user */
         $user = auth()->guard()->getProvider()->retrieveByCredentials($request->only('email'));
         if ($user) {
-            Log::info("Password reset requested for $user");
+            Log::info("AUTH Password reset requested for $user");
             $user->notify(new ResetPassword);
         } else {
-            Log::info("Password reset attempted for unknown email: " . $request['email']);
+            Log::info("AUTH Password reset attempted for unknown email: " . $request['email']);
         }
         //Show view either way
         return view('auth.password-reset-sent');
@@ -52,6 +52,7 @@ class PasswordController extends Controller
         }
         $user = auth()->guard()->getProvider()->retrieveById($id);
         $user->setPassword($request['password']);
+        Log::info("AUTH $user reset their password.");
         event(new PasswordReset($user));
         //TODO: Maybe log in user after successful password reset
         //TODO: Look for other things to do on password change - such as change remember_me
