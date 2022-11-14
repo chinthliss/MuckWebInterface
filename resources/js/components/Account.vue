@@ -33,7 +33,7 @@
         <h2 class="mt-2">Account Controls</h2>
         <div class="row g-2">
             <div class="col-12 col-sm-6">
-                <button class="w-100 btn btn-primary">Change Password</button>
+                <a :href="links.changepassword"><button class="w-100 btn btn-primary">Change Password</button></a>
             </div>
             <div class="col-12 col-sm-6">
                 <button class="w-100 btn btn-primary">Change to New Email</button>
@@ -66,6 +66,7 @@ import {carbonToString, capital} from "../formatting";
 const props = defineProps({
     accountCreated: {type: String, required: true},
     subscriptionStatus: {type: String, required: true},
+    links: {type: Object, required: true},
     /** @type {Email[]} */
     emailsIn: {type: Array}
 });
