@@ -89,7 +89,7 @@ class PasswordController extends Controller
 
         Log::Info("AUTH Accepted password change request for $user");
         $user->setPassword($request['password']);
-        //TODO: Look for other things to do on password change - such as change remember_me or event
+        event(new PasswordReset($user));
         return view('auth.password-change-processed');
     }
 }

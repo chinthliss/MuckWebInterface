@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Notifications\ResetPassword;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
 
@@ -38,6 +36,24 @@ class PasswordChangeTest extends TestCase
         ]);
         $response->assertSuccessful();
         $response->assertViewIs('auth.password-change-processed');
+        //Need to re-fetch user to see updated password
+        $user = auth()->guard()->getProvider()->retrieveByCredentials(['email' => $user->getEmail()]);
+        $this->assertTrue(auth()->guard()->getProvider()->validateCredentials($user, ['password' => 'newpassword']));
+    }
+
+    /**
+     * @depends test_change_password_works
+     */
+    public function test_change_password_throws_password_reset_event()
+    {
+        Event::fake();
+        $user = UserFactory::create();
+        $this->actingAs($user)->post(route('auth.password.change'), [
+            'oldpassword' => 'password',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword'
+        ]);
+        Event::assertDispatchedTimes(PasswordReset::class, 1);
     }
 
     public function test_new_password_must_not_equal_old_password()
@@ -62,7 +78,15 @@ class PasswordChangeTest extends TestCase
         $response->assertInvalid(['oldpassword' => 'existing password']);
     }
 
-    //TODO : Other change password tests
-
+    public function test_change_password_requires_confirmed_password()
+    {
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->post(route('auth.password.change'), [
+            'oldpassword' => 'password',
+            'password' => 'newpassword',
+            'password_confirmation' => 'anotherpassword'
+        ]);
+        $response->assertInvalid(['password' => 'confirm']);
+    }
 
 }
