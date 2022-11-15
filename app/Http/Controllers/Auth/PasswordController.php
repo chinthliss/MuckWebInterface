@@ -50,6 +50,7 @@ class PasswordController extends Controller
         if ($passwordCheck = $accountController->findIssuesWithPassword($request['password'])) {
             throw ValidationException::withMessages(['password' => $passwordCheck]);
         }
+        /** @var User $user */
         $user = auth()->guard()->getProvider()->retrieveById($id);
         $user->setPassword($request['password']);
         Log::info("AUTH $user reset their password.");
@@ -64,8 +65,9 @@ class PasswordController extends Controller
         return view('auth.password-change');
     }
 
-    public function changePassword(Request $request, AccountController $accountController)
+    public function changePassword(Request $request, AccountController $accountController): View
     {
+        /** @var User $user */
         $user = auth()->user();
         Log::Info("AUTH Received password change request for $user");
         $request->validate([
@@ -79,7 +81,6 @@ class PasswordController extends Controller
             'password.confirmation' => "The new password entered did not match the one entered for confirmation.",
             'password.different' => "The new password can't match your existing password"
         ]);
-        $user = auth()->user();
         if (!auth()->guard()->getProvider()->validateCredentials($user, ['password' => $request['oldpassword']])) {
             throw ValidationException::withMessages(['oldpassword' => ["Password provided doesn't match existing password"]]);
         }
