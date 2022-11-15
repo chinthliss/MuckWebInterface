@@ -241,6 +241,7 @@ class User implements Authenticatable, MustVerifyEmail
 
     public function sendEmailVerificationNotification()
     {
+        //TODO: Add check to see if this is required, in case changing email is using an already verified one.
         Log::debug("AUTH Sending Email Verification email to $this");
         //TODO: Maybe queue this later
         $this->notify(new VerifyEmail());

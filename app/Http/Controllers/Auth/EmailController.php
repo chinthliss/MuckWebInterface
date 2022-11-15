@@ -76,6 +76,10 @@ class EmailController extends Controller
             throw ValidationException::withMessages(['password' => ["Password provided doesn't match existing password"]]);
         }
 
+        if (auth()->guard()->getProvider()->retrieveByCredentials(['email' => $request['email']])) {
+            throw ValidationException::withMessages(['email' => ["That email is already in use. If you believe this to be in error then please raise a support ticket."]]);
+        }
+
         Log::Info("AUTH Accepted email change request for $user");
         $user->setEmail($request['email']);
         $user->sendEmailVerificationNotification();

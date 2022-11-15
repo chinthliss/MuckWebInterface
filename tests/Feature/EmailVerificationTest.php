@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
 
-class EmailTest extends TestCase
+class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -15,7 +15,8 @@
         subscription-status="{{ $subscriptionStatus }}"
         :emails-in="{{ json_encode($emails) }}"
         :links="{{ json_encode([
-            "changepassword" => route('auth.password.change')
+            "changepassword" => route('auth.password.change'),
+            "changeemail" => route('auth.email.change')
         ]) }}"
     ></account>
 @endsection

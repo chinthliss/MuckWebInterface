@@ -36,7 +36,7 @@
                 <a :href="links.changepassword"><button class="w-100 btn btn-primary">Change Password</button></a>
             </div>
             <div class="col-12 col-sm-6">
-                <button class="w-100 btn btn-primary">Change to New Email</button>
+                <a :href="links.changeemail"><button class="w-100 btn btn-primary">Change to new Email</button></a>
             </div>
             <div class="col-12 col-sm-6">
                 <button class="w-100 btn btn-primary">Card Management</button>
