@@ -12,9 +12,10 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <div class="col">
-                You should now be able to login with the new password.
-            </div>
+            <h1>Password changed</h1>
+        </div>
+        <div class="row">
+            <p>You should now be able to login with the new password.</p>
         </div>
     </div>
 @endsection
