@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Notifications\VerifyEmail;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -37,7 +38,8 @@ class EmailChangeTest extends TestCase
         ]);
         $response->assertSuccessful();
         $response->assertViewIs('auth.email-change-processed');
-        //Test used can be fetched with updated email
+        //Test user can be fetched with updated email
+        /** @var User $user */
         $user = auth()->guard()->getProvider()->retrieveByCredentials(['email' => $newEmail]);
         $this->assertEquals($userId, $user->id());
         $this->assertEquals($user->getEmail(), $newEmail);
