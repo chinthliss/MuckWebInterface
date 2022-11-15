@@ -53,7 +53,7 @@ class EmailChangeTest extends TestCase
         $response->assertInvalid(['password' => 'existing password']);
     }
 
-    public function test_email_change_does_not_work_with_existing_email()
+    public function test_email_change_does_not_work_with_existing_primary_email()
     {
         $user = UserFactory::create();
         $response = $this->actingAs($user)->post(route('auth.email.change'), [
@@ -62,6 +62,22 @@ class EmailChangeTest extends TestCase
         ]);
         $response->assertInvalid(['email' => 'already in use']);
     }
+
+    public function test_email_change_does_not_work_with_existing_alternative_email()
+    {
+        $user = UserFactory::create(['alternativeEmails' => 1]);
+        $alternativeEmail = null;
+        foreach ($user->getEmails() as $email) {
+            if (!$email->isPrimary) $alternativeEmail = $email->email;
+        }
+
+        $response = $this->actingAs($user)->post(route('auth.email.change'), [
+            'email' => $alternativeEmail,
+            'password' => 'password'
+        ]);
+        $response->assertInvalid(['email' => 'already in use']);
+    }
+
 
     public function test_email_change_sends_verification()
     {
