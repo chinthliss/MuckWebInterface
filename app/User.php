@@ -225,7 +225,7 @@ class User implements Authenticatable, MustVerifyEmail
      * Determine if the user has verified their email address.
      * @return bool
      */
-    public function hasVerifiedEmail()
+    public function hasVerifiedEmail(): bool
     {
         return $this->getEmailVerifiedAt() != null;
     }
@@ -234,7 +234,7 @@ class User implements Authenticatable, MustVerifyEmail
      * Get the email address that should be used for verification.
      * @return string
      */
-    public function getEmailForVerification()
+    public function getEmailForVerification(): string
     {
         return $this->email->email;
     }
