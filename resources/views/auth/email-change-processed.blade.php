@@ -5,6 +5,7 @@
 @section('breadcrumbs')
     {{ Breadcrumbs::render([
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'route' => 'account', 'label' => 'Account' ],
         [ 'label' => 'Email Changed' ]
     ]) }}
 @endsection
