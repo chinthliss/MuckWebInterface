@@ -39,10 +39,10 @@
                 <a :href="links.changeemail"><button class="w-100 btn btn-primary">Change to new Email</button></a>
             </div>
             <div class="col-12 col-sm-6">
-                <button class="w-100 btn btn-primary">Card Management</button>
+                <a :href="links.cardmanagement"><button class="w-100 btn btn-primary">Card Management</button></a>
             </div>
             <div class="col-12 col-sm-6">
-                <button class="w-100 btn btn-primary">Account Transactions</button>
+                <a :href="links.transactions"><button class="w-100 btn btn-primary">Account Transactions</button></a>
             </div>
         </div>
 

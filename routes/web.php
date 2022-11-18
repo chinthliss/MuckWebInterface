@@ -53,6 +53,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changepassword', [PasswordController::class, 'changePassword']);
     Route::get('changeemail', [EmailController::class, 'showChangeEmail'])->name('auth.email.change');
     Route::post('changeemail', [EmailController::class, 'changeEmail']);
+    Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
+    Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
 });
 
 /*

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Notifications\VerifyEmail;
 use App\User as User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -73,5 +72,16 @@ class AccountController extends Controller
 
         return redirect()->intended(route('welcome'));
     }
+
+    public function showTransactions(): View
+    {
+        return view('account.transactions');
+    }
+
+    public function showCardManagement(): View
+    {
+        return view('account.card-management');
+    }
+
 
 }

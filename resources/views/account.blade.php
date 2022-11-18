@@ -16,7 +16,9 @@
         :emails-in="{{ json_encode($emails) }}"
         :links="{{ json_encode([
             "changepassword" => route('auth.password.change'),
-            "changeemail" => route('auth.email.change')
+            "changeemail" => route('auth.email.change'),
+            "cardmanagement" => route('account.cardmanagement'),
+            "transactions" => route('account.transactions'),
         ]) }}"
     ></account>
 @endsection
