@@ -26,6 +26,7 @@
                 <th scope="col" class="text-center">Primary?</th>
                 <th scope="col">Registered</th>
                 <th scope="col">Verified</th>
+                <th scope="col"></th>
             </tr>
             </thead>
         </DataTable>
@@ -73,16 +74,53 @@ const props = defineProps({
 
 const emails = ref(props.emailsIn);
 
+const makeEmailPrimary = (e) => {
+    const email = $(e.currentTarget).data('email');
+    if (email) {
+        for(let i = emails.value.length - 1; i >= 0; i--) {
+            //TODO Actually set primary on server
+            emails.value[i].isPrimary = (emails.value[i].email === email);
+        }
+    }
+}
+
+const deleteEmail = (e) => {
+    const email = $(e.currentTarget).data('email');
+    if (email) {
+        for(let i = emails.value.length - 1; i >= 0; i--) {
+            //TODO Actually delete from server
+            if (emails.value[i].email === email) emails.value.splice(i, 1);
+        }
+    }}
+
+const displayEmailRowForControls = (data, type, row) => {
+    let controls = '';
+    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
+    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-delete ms-2">Delete</button>`;
+    return controls;
+};
+
+const displayEmailRowForIsPrimary = (data) => {
+    return data ? 'Primary' : '';
+};
+
+const emailTableDrawCallback = () => {
+    $('.btn-make-primary').click(makeEmailPrimary);
+    $('.btn-delete').click(deleteEmail);
+};
+
 const emailTableConfiguration = {
     columns: [
         {data: 'email'},
-        {data: 'isPrimary', render: capital, className: 'dt-center'},
+        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
         {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString}
+        {data: 'verifiedAt', render: carbonToString},
+        {render: displayEmailRowForControls, sortable: false}
     ],
     paging: false,
     info: false,
-    searching: false
+    searching: false,
+    drawCallback: emailTableDrawCallback
 };
 </script>
 
