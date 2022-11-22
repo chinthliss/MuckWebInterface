@@ -60,9 +60,9 @@
  * @property {boolean} isPrimary
  */
 
-import {ref, onMounted} from 'vue';
+import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
-import {carbonToString, capital} from "../formatting";
+import {carbonToString} from "../formatting";
 
 const props = defineProps({
     accountCreated: {type: String, required: true},
@@ -72,6 +72,9 @@ const props = defineProps({
     emailsIn: {type: Array}
 });
 
+/**
+ * @type {Ref<Email[]>}
+ */
 const emails = ref(props.emailsIn);
 
 const makeEmailPrimary = (e) => {
