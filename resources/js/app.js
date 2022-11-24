@@ -10,7 +10,8 @@
  * Bootstrap
  */
 
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
 
 /**
  * Axios HTTP Library
