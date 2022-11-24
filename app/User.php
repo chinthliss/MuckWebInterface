@@ -76,6 +76,17 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->id;
     }
 
+    /**
+     * Checks whether two user objects share the same accountId
+     * @param User|null $otherUser
+     * @return bool
+     */
+    public function is(?User $otherUser): bool
+    {
+        return $this->id === $otherUser?->id();
+    }
+
+
     //Used by notifiable
     public function getKey(): ?int
     {
