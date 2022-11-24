@@ -34,20 +34,40 @@
         <h2 class="mt-2">Account Controls</h2>
         <div class="row g-2">
             <div class="col-12 col-sm-6">
-                <a :href="links.changepassword"><button class="w-100 btn btn-primary">Change Password</button></a>
+                <a :href="links.changepassword">
+                    <button class="w-100 btn btn-primary">Change Password</button>
+                </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.changeemail"><button class="w-100 btn btn-primary">Change to new Email</button></a>
+                <a :href="links.changeemail">
+                    <button class="w-100 btn btn-primary">Change to new Email</button>
+                </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.cardmanagement"><button class="w-100 btn btn-primary">Card Management</button></a>
+                <a :href="links.cardmanagement">
+                    <button class="w-100 btn btn-primary">Card Management</button>
+                </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.transactions"><button class="w-100 btn btn-primary">Account Transactions</button></a>
+                <a :href="links.transactions">
+                    <button class="w-100 btn btn-primary">Account Transactions</button>
+                </a>
             </div>
         </div>
 
         <h2 class="mt-2">Preferences</h2>
+
+        <!-- Change primary email modal -->
+        <modal-confirmation id="confirm-primary-email" @yes="makeEmailPrimary"
+                            title="Change Primary Email?" yes-label="Change" no-label="Cancel">
+            <form id="changeEmailForm" :action="links.changeemail" method="POST">
+                <input type="hidden" name="_token" :value="csrf">
+                <input type="hidden" name="email" :value="emailToMakePrimary">
+            </form>
+            <p>Your primary email is the one you use to login and where notifications are sent to.</p>
+            <p>If it hasn't been verified, you'll be prompted to verify it after changing to it.</p>
+        </modal-confirmation>
+
     </div>
 </template>
 
@@ -62,6 +82,7 @@
 
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
+import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 
 const props = defineProps({
@@ -76,30 +97,22 @@ const props = defineProps({
  * @type {Ref<Email[]>}
  */
 const emails = ref(props.emailsIn);
+const emailToMakePrimary = ref();
+const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
-const makeEmailPrimary = (e) => {
-    const email = $(e.currentTarget).data('email');
-    if (email) {
-        for(let i = emails.value.length - 1; i >= 0; i--) {
-            //TODO Actually set primary on server
-            emails.value[i].isPrimary = (emails.value[i].email === email);
-        }
-    }
+const confirmMakeEmailPrimary = (e) => {
+    emailToMakePrimary.value = $(e.currentTarget).data('email');
+    const modal = new bootstrap.Modal(document.getElementById('confirm-primary-email'));
+    modal.show();
 }
 
-const deleteEmail = (e) => {
-    const email = $(e.currentTarget).data('email');
-    if (email) {
-        for(let i = emails.value.length - 1; i >= 0; i--) {
-            //TODO Actually delete from server
-            if (emails.value[i].email === email) emails.value.splice(i, 1);
-        }
-    }}
+const makeEmailPrimary = (e) => {
+    $('#changeEmailForm').submit();
+}
 
 const displayEmailRowForControls = (data, type, row) => {
     let controls = '';
     if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
-    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-delete ms-2">Delete</button>`;
     return controls;
 };
 
@@ -108,8 +121,7 @@ const displayEmailRowForIsPrimary = (data) => {
 };
 
 const emailTableDrawCallback = () => {
-    $('.btn-make-primary').click(makeEmailPrimary);
-    $('.btn-delete').click(deleteEmail);
+    $('.btn-make-primary').click(confirmMakeEmailPrimary);
 };
 
 const emailTableConfiguration = {
