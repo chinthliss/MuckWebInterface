@@ -97,5 +97,36 @@ class EmailChangeTest extends TestCase
         });
     }
 
-    //TODO: Write tests for primary email CHANGE
+    public function test_change_email_request_works()
+    {
+        $user = UserFactory::create(['alternativeEmails' => 1]);
+        $alternativeEmail = null;
+        foreach ($user->getEmails() as $email) {
+            if (!$email->isPrimary) $alternativeEmail = $email->email;
+        }
+        $response = $this->actingAs($user)->post(route('auth.email.change'), [
+            'email' => $alternativeEmail,
+        ]);
+        $response->assertViewIs('auth.email-change-processed');
+    }
+
+    public function test_change_email_requires_email_existing()
+    {
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->post(route('auth.email.change'), [
+            'email' => 'someotheremail@test.com',
+        ]);
+        $response->assertServerError();
+    }
+
+    public function test_change_email_requires_email_on_same_account()
+    {
+        $user = UserFactory::create();
+        $otherUser = UserFactory::create();
+        $response = $this->actingAs($user)->post(route('auth.email.change'), [
+            'email' => $otherUser->getEmail(),
+        ]);
+        $response->assertServerError();
+    }
+
 }
