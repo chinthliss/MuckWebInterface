@@ -61,7 +61,7 @@
         <modal-confirmation id="confirm-primary-email" @yes="makeEmailPrimary"
                             title="Change Primary Email?" yes-label="Change" no-label="Cancel">
             <form id="changeEmailForm" :action="links.changeemail" method="POST">
-                <input type="hidden" name="_token" :value="csrf">
+                <input type="hidden" name="_token" :value="csrf()">
                 <input type="hidden" name="email" :value="emailToMakePrimary">
             </form>
             <p>Your primary email is the one you use to login and where notifications are sent to.</p>
@@ -84,6 +84,7 @@ import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
+import {csrf} from "../siteutils";
 
 const props = defineProps({
     accountCreated: {type: String, required: true},
@@ -98,7 +99,6 @@ const props = defineProps({
  */
 const emails = ref(props.emailsIn);
 const emailToMakePrimary = ref();
-const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
 const confirmMakeEmailPrimary = (e) => {
     emailToMakePrimary.value = $(e.currentTarget).data('email');
