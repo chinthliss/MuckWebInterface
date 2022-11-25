@@ -33,7 +33,6 @@
 
 <!-- Header bar -->
 <header id="site-navigation-top" class="navbar navbar-dark site-navigation">
-    <!-- Row 1 - Logo and account related -->
     <div class="container-fluid flex-column flex-md-row">
         <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center" href="{{ url('/') }}">
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
@@ -42,19 +41,23 @@
         @guest
             <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
         @else
-            <a class="navbar-nav nav-link px-2" href="#">Character name</a>
-            <a class="navbar-nav nav-link px-2" href="#">Notifications</a>
+            <a class="navbar-nav nav-link px-2 h-100" href="#">Notifications</a>
             <a class="navbar-nav nav-link px-2" href="{{ route('account') }}">Account</a>
 
             <a class="navbar-nav nav-link px-2" href="#"
                onclick="event.preventDefault(); document.getElementById('site-logout-form').submit();">
                 Logout
             </a>
-
             <form id="site-logout-form" action="{{ route('auth.logout') }}" method="POST"
                   style="display: none;">
                 @csrf
             </form>
+
+            <a class="navbar-nav nav-link px-2" href="#">
+                @Character
+                {{ Auth::user()->getCharacter()->name }}
+                @else -Select Character- @endCharacter
+            </a>
         @endguest
     </div>
 </header>
