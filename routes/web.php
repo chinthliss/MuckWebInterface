@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\AccountController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\EmailController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Auth\EmailController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
-use App\Http\Controllers\Auth\HomeController;
+use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
