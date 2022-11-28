@@ -53,7 +53,9 @@
                 @csrf
             </form>
 
-            <a class="navbar-nav nav-link px-2" href="#">
+            <a class="navbar-nav nav-link px-2" href="#site-character-select" role="button"
+               data-bs-toggle="offcanvas" aria-controls="site-character-select"
+            >
                 @Character
                 {{ Auth::user()->getCharacter()->name }}
                 @else -Select Character- @endCharacter
@@ -91,6 +93,5 @@
         </div>
     @endif
 </div>
-
 </body>
 </html>

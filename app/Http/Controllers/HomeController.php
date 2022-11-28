@@ -26,5 +26,9 @@ class HomeController extends Controller
         return view('auth.locked');
     }
 
+    public function getCharacters()
+    {
+        return [];
+    }
 
 }
