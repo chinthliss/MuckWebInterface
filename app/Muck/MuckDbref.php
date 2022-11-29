@@ -26,27 +26,19 @@ class MuckDbref
      * @param string $name
      * @param string $typeFlag
      * @param Carbon $createdTimestamp The created timestamp - in conjunction with the dbref acts as a signature since dbrefs can be reused
-     * @param int|null $accountId This is just an int to allow lazy loading the account details
-     * @param int $staffLevel 1 for 'staff', 2 for 'admin'
-     * @param bool $approved
-     * @param int|null $level
+     * @param array $properties Additional properties, normally unique to the type of object
      */
     public function __construct(
         public int    $dbref,
         public string $name,
         public string $typeFlag,
         public Carbon $createdTimestamp,
-        // The rest are only set on certain types
-        public ?int   $accountId = null,
-        public int    $staffLevel = 0,
-        public bool   $approved = true,
-        public ?int   $level = null
+        public array  $properties = []
     )
     {
         if (!array_key_exists($this->typeFlag, self::$typeFlags)) {
             throw new Error('Unrecognized type flag specified: ' . $this->typeFlag);
         }
-
     }
 
     public function __toString(): string
@@ -69,7 +61,7 @@ class MuckDbref
      */
     public function isStaff(): bool
     {
-        return $this->staffLevel > 0;
+        return $this->isPlayer() && array_key_exists('staffLevel', $this->properties) && $this->properties['staffLevel'] > 0;
     }
 
     /**
@@ -78,7 +70,34 @@ class MuckDbref
      */
     public function isAdmin(): bool
     {
-        return $this->staffLevel > 1;
+        return $this->isPlayer() && array_key_exists('staffLevel', $this->properties) && $this->properties['staffLevel'] > 1;
+    }
+
+    /**
+     * This object's level, if applicable and set
+     * @return int
+     */
+    public function level(): int
+    {
+        return array_key_exists('level', $this->properties) ? (int)$this->properties['level'] : 0;
+    }
+
+    /**
+     * Account id owning this object, if applicable and set
+     * @return int|null
+     */
+    public function accountId(): ?int
+    {
+        return array_key_exists('accountId', $this->properties) ? (int)$this->properties['accountId'] : null;
+    }
+
+    /**
+     * If this is a player, have they finished character generation?
+     * @return bool
+     */
+    public function approved(): bool
+    {
+        return array_key_exists('approved', $this->properties) && $this->properties['approved'] == '1';
     }
 
     /**
@@ -105,10 +124,10 @@ class MuckDbref
         $array = [
             'dbref' => $this->dbref,
             'name' => $this->name,
-            'level' => $this->level,
-            'approved' => $this->approved
+            'level' => $this->level(),
+            'approved' => $this->approved()
         ];
-        if ($this->staffLevel) $array['staffLevel'] = $this->staffLevel;
+        if (array_key_exists('staffLevel', $this->properties)) $array['staffLevel'] = (int)$this->properties['staffLevel'];
         return $array;
     }
 

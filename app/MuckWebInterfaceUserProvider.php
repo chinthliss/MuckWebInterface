@@ -112,7 +112,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             $character = $this->muckObjectService->getByPlayerName($credentials['email']);
             if ($character) {
                 $accountQuery = $this->baseRetrievalQuery()
-                    ->where('accounts.aid', $character->accountId)
+                    ->where('accounts.aid', $character->accountId())
                     ->first();
                 if (!$accountQuery) return null; //Account referenced by muck but wasn't found in DB!
                 $user = User::fromDatabaseResponse($accountQuery);
@@ -126,7 +126,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             $character = $this->muckObjectService->getByApiToken($credentials['api_token']);
             if ($character) {
                 $accountQuery = $this->baseRetrievalQuery()
-                    ->where('accounts.aid', $character->accountId)
+                    ->where('accounts.aid', $character->accountId())
                     ->first();
                 if (!$accountQuery) return null; //Account referenced by muck but wasn't found in DB!
                 $user = User::fromDatabaseResponse($accountQuery);

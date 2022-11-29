@@ -17,11 +17,11 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getByPlayerName(array $data): string
     {
-        // Format - dbref,creationTimestamp,typeFlag,"name",owningAccount,flagList
+        // Format - dbref,creationTimestamp,typeFlag,"name", .. otherProperties
         $characterArray = null;
         switch ($data['name']) {
             case 'TestCharacter':
-                $characterArray = [1234, Carbon::now()->getTimestamp(), 'p', 'TestCharacter', DatabaseSeeder::$normalUserAccountId, null];
+                $characterArray = [1234, Carbon::now()->getTimestamp(), 'p', 'TestCharacter', '"accountId=' . DatabaseSeeder::$normalUserAccountId . '"'];
                 break;
         }
         if ($characterArray) return join(',', $characterArray);
@@ -39,7 +39,7 @@ class MuckConnectionFaker implements MuckConnection
         switch ($data['aid']) {
             case '1':
                 $characters = [
-                    [1234, Carbon::now()->getTimestamp(), 'p', 'TestCharacter', DatabaseSeeder::$normalUserAccountId, null]
+                    [1234, Carbon::now()->getTimestamp(), 'p', 'TestCharacter', '"accountId=' . DatabaseSeeder::$normalUserAccountId . '"']
                 ];
         }
         return  join(chr(13) . chr(10), array_map(function($characterArray) {

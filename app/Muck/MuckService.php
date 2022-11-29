@@ -19,25 +19,23 @@ class MuckService
     }
 
     /**
-     * Expected format: 'dbref,creationTimestamp,typeFlag,"name",owningAccount,flagList'
-     * FlagList is a : separated list of keywords
+     * Expected format: 'dbref,creationTimestamp,typeFlag,"name","property1=value1",.."propertyN=valueN"'
      * @param string $response
      * @return MuckDbref
      */
     private function parseDbrefFromResponse(string $response): MuckDbref
     {
         $parts = str_getcsv($response, ',', '"', '\\');
-        if (count($parts) != 6)
-            throw new InvalidArgumentException("getDbrefFromResponse: Response contains the wrong number of parts: $response");
-        list($dbref, $creationTimestamp, $typeFlag, $name, $owningAccount, $flagList) = $parts;
-
-        $flags = explode(':', $flagList);
-        $approved = !in_array('unapproved', $flags);
-        $staffLevel = 0;
-        if (in_array('staff', $flags)) $staffLevel = 1;
-        if (in_array('admin', $flags)) $staffLevel = 2;
-
-        return new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $owningAccount, $staffLevel, $approved);
+        if (count($parts) < 4)
+            throw new InvalidArgumentException("getDbrefFromResponse: Response doesn't contain enough parts (minimum of 4): $response");
+        list($dbref, $creationTimestamp, $typeFlag, $name) = $parts;
+        // Extended properties
+        $properties = [];
+        for ($i = 4; $i < count($parts); $i++) {
+            list($key, $value) = explode('=', $parts[$i], 2);
+            $properties[$key] = $value;
+        }
+        return new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $properties);
     }
 
     /**
