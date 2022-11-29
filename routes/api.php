@@ -14,4 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/characters', [HomeController::class, 'getCharacters']);
+
+/*
+ * Presently not using any API routes for this application
+Route::group(['middleware' => ['api']], function () {
+    Route::get('characters', [HomeController::class, 'getCharacters'])->name('api.multiplayer.characters');
+});
+*/

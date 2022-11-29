@@ -26,9 +26,14 @@ class HomeController extends Controller
         return view('auth.locked');
     }
 
-    public function getCharacters()
+    public function getCharacters(): array
     {
-        return [];
+        /** @var User $user */
+        $user = auth()->guard()->user();
+        return array_map(function($character) {
+            return $character->toPlayerArray();
+        }, $user->getCharacters());
+
     }
 
 }

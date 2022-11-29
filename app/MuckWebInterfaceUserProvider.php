@@ -426,4 +426,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
             ->count();
         return $count;
     }
+
+    /**
+     * Get characters for user
+     * @param User $user
+     * @return array<int,MuckDbref>
+     */
+    public function getCharacters(User $user): array
+    {
+        Log::debug("UserProvider getCharacters looking up: $user");
+        return $this->muckObjectService->getCharactersOf($user);
+    }
+
 }

@@ -35,7 +35,16 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getCharacters(array $data): string
     {
-        throw new Error("Not implemented.");
+        $characters = [];
+        switch ($data['aid']) {
+            case '1':
+                $characters = [
+                    [1234, Carbon::now()->getTimestamp(), 'p', 'TestCharacter', DatabaseSeeder::$normalUserAccountId, null]
+                ];
+        }
+        return  join(chr(13) . chr(10), array_map(function($characterArray) {
+            return join(',', $characterArray);
+        }, $characters));
     }
 
     public function fake_validateCredentials(array $data): string

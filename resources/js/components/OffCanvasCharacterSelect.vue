@@ -11,7 +11,7 @@
             <div v-if="initialLoading">Loading..</div>
             <div v-else-if="!characters.length">No characters.</div>
             <div v-else>
-                <div v-for="character in characters">Character</div>
+                <div v-for="character in characters">{{ character.name }}</div>
             </div>
         </div>
     </div>
@@ -22,15 +22,27 @@
 <script setup>
 import {ref, onMounted} from 'vue';
 
+/**
+ * @typedef {object} Character
+ * @property {string} name
+ * @property {boolean} approved
+ * @property {number} dbref
+ * @property {number} level
+ */
+
+/**
+ *
+ * @type {Ref<Character[]>}
+ */
 const characters = ref([]);
 const self = ref();
 let initialLoading = ref(false);
 
 const refreshCharacterList = () => {
     console.log("(site) Refreshing character list");
-    axios.get('/api/characters')
+    axios.get('/characters')
         .then(response => {
-            console.log("Loaded character list:", response.data);
+            characters.value = response.data;
         })
         .catch(error => {
             console.log("An error occurred whilst refreshing the character list: ", error.message || error);

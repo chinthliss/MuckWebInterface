@@ -67,6 +67,12 @@ class User implements Authenticatable, MustVerifyEmail
     protected ?Carbon $updatedAt = null;
 
     /**
+     * Characters of this user. Null if they haven't been loaded yet.
+     * @var array<int, MuckDbref>|null
+     */
+    private ?array $characters = null;
+
+    /**
      * @var Carbon|null Can be null.
      */
     protected ?Carbon $lockedAt = null;
@@ -366,6 +372,16 @@ class User implements Authenticatable, MustVerifyEmail
         Log::error("User.getcharacter not implemented.");
         return null;
     }
+
+    /**
+     * @return array<int,MuckDbref>
+     */
+    public function getCharacters(): array
+    {
+        if (!$this->characters) $this->characters = $this->getProvider()->getCharacters($this);
+        return $this->characters;
+    }
+
 
     public function setPassword(string $password)
     {

@@ -85,11 +85,11 @@ class MuckService
     {
         $characters = [];
         $response = $this->connection->request('getCharacters', ['aid' => $user->id()]);
-        //Form of result is \r\n separated lines of dbref,name,level,flags
+        //Form of result is characters separated by \r\n.
         foreach (explode(chr(13) . chr(10), $response) as $line) {
             if (!trim($line)) continue;
             $character = $this->parseDbrefFromResponse($line);
-            $characters[$character->dbref] = $character;
+            $characters[] = $character;
         }
         return $characters;
     }

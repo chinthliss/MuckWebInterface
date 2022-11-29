@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
     Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
+
+    Route::get('characters', [HomeController::class, 'getCharacters'])->name('multiplayer.characters');
 });
 
 /*
