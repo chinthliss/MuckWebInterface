@@ -183,7 +183,7 @@ class LoginTest extends TestCase
         $this->seed();
         $response = $this->json('POST', route('auth.login', [
             'email' => 'TestCharacter',
-            'password' => 'password',
+            'password' => 'muckpassword',
             'action' => 'login'
         ]));
         $response->assertRedirect(route('welcome'));
@@ -196,7 +196,7 @@ class LoginTest extends TestCase
         $this->seed();
         $response = $this->json('POST', route('auth.login', [
             'email' => 'TestCharacter',
-            'password' => 'wrongpassword',
+            'password' => 'wrongmuckpassword',
             'action' => 'login'
         ]));
         $response->assertUnprocessable();
