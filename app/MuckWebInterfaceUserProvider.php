@@ -167,16 +167,17 @@ class MuckWebInterfaceUserProvider implements UserProvider
         // return Hash::check($credentials['password'], $user->getAuthPassword());
         Log::debug("UserProvider ValidateCredentials attempt for $user with " . json_encode($this->redactCredentials($credentials)));
 
-        //Try the database retrieved details first
-        if (method_exists($user, 'getPasswordType')
-            && $user->getPasswordType() == 'SHA1SALT'
-            && MuckInterop::verifySHA1SALTPassword($credentials['password'], $user->getAuthPassword()))
-            return true;
-
-        //Otherwise try the muck
+        // If we have a character set, validate via them
         if (method_exists($user, 'getCharacter') && $user->getCharacter()) {
             return $this->muckService->validateCredentials($user->getCharacter(), $credentials);
         }
+        else { // Verify by the database
+            if (method_exists($user, 'getPasswordType')
+                && $user->getPasswordType() == 'SHA1SALT'
+                && MuckInterop::verifySHA1SALTPassword($credentials['password'], $user->getAuthPassword()))
+                return true;
+        }
+
         return false;
     }
 
@@ -421,10 +422,9 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     public function getReferralCount(User $user): int
     {
-        $count = DB::table('account_properties')
+        return DB::table('account_properties')
             ->where(['propname' => 'tutor', 'propdata' => $user->id()])
             ->count();
-        return $count;
     }
 
     /**

@@ -84,7 +84,9 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_validateCredentials(array $data): string
     {
-        throw new Error("Not implemented.");
+        // All passwords are 'muckpassword' during faking.
+        $password = $data['password'];
+        return ($password && $password == 'muckpassword');
     }
 
     public function request(string $request, array $data = []): string

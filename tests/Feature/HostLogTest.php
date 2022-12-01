@@ -26,17 +26,16 @@ class HostLogTest extends TestCase
 
     public function test_host_logged_if_logged_in_with_character()
     {
-        //TODO: Reimplement test once character setting is back in
         //This test requires the dev dummy data in since there's no factory for muck characters
         $this->seed();
-        //Logging in with a character should set that character
+        //Logging in with a character should set that character AND log the host
         $this->json('POST', route('auth.login', [
             'email' => 'TestCharacter',
-            'password' => 'password',
+            'password' => 'muckpassword',
             'action' => 'login'
         ]));
+        $this->assertAuthenticated();
         $user = auth()->user();
-        $this->get('/');
         $this->assertDatabaseHas('log_hosts', ['aid' => $user->id(), 'plyr_ref' => 1234]);
     }
 

@@ -188,6 +188,9 @@ class LoginTest extends TestCase
         ]));
         $response->assertRedirect(route('welcome'));
         $this->assertAuthenticated();
+        /** @var User $user */
+        $user = auth()->user();
+        $this->assertNotNull($user->getCharacter());
     }
 
     public function test_cannot_login_with_muck_character_and_incorrect_credentials()
@@ -197,6 +200,19 @@ class LoginTest extends TestCase
         $response = $this->json('POST', route('auth.login', [
             'email' => 'TestCharacter',
             'password' => 'wrongmuckpassword',
+            'action' => 'login'
+        ]));
+        $response->assertUnprocessable();
+        $this->assertGuest();
+    }
+
+    public function test_cannot_login_with_muck_character_name_and_account_password()
+    {
+        //This test requires the dev dummy data in since there's no factory for muck characters
+        $this->seed();
+        $response = $this->json('POST', route('auth.login', [
+            'email' => 'TestCharacter',
+            'password' => 'password',
             'action' => 'login'
         ]));
         $response->assertUnprocessable();
