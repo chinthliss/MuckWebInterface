@@ -116,7 +116,7 @@ class EmailChangeTest extends TestCase
         $response = $this->actingAs($user)->post(route('auth.email.change'), [
             'email' => 'someotheremail@test.com',
         ]);
-        $response->assertServerError();
+        $response->assertRedirect(route('welcome'));
     }
 
     public function test_change_email_requires_email_on_same_account()
@@ -126,7 +126,7 @@ class EmailChangeTest extends TestCase
         $response = $this->actingAs($user)->post(route('auth.email.change'), [
             'email' => $otherUser->getEmail(),
         ]);
-        $response->assertServerError();
+        $response->assertRedirect(route('welcome'));
     }
 
 }

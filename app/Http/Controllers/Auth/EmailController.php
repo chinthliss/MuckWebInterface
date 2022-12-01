@@ -55,23 +55,31 @@ class EmailController extends Controller
         return redirect(route('welcome'));
     }
 
-    // Used for making an already existing email into the primary one
-    // Done by a hidden form
-    public function changeEmail(Request $request): View
+    /**
+     * Used for making an already existing/registered email into the primary one
+     * Called by a hidden form, so no feedback
+     * @param Request $request
+     * @return View|RedirectResponse
+     */
+    public function changeEmail(Request $request): View | RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
         $email = $request['email'];
 
-        if (!$email)
-            throw new \Error("AUTH Email change request for $user didn't have an email specified!");
+        if (!$email) {
+            Log::error("AUTH Email change request for $user didn't have an email specified!");
+            return redirect(route('welcome'));
+        }
 
         Log::Info("AUTH Received request to change primary email for $user to $email");
 
         $emailOwner = User::findByEmail($email, true);
 
-        if (!$user->is($emailOwner))
-            throw new \Error("AUTH Email change request for $user was to an email that either doesn't exist or is owned by someone else!");
+        if (!$user->is($emailOwner)) {
+            Log::error("AUTH Email change request for $user was to an email that either doesn't exist or is owned by someone else!");
+            return redirect(route('welcome'));
+        }
 
         Log::Info("AUTH Accepted email change request for $user");
         $user->setEmail($email);
