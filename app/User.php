@@ -73,6 +73,12 @@ class User implements Authenticatable, MustVerifyEmail
     private ?array $characters = null;
 
     /**
+     * Active character, if set. Set by middleware if present.
+     * @var MuckDbref|null
+     */
+    private ?MuckDbref $character = null;
+
+    /**
      * @var Carbon|null Can be null.
      */
     protected ?Carbon $lockedAt = null;
@@ -354,23 +360,23 @@ class User implements Authenticatable, MustVerifyEmail
     }
 
     /**
+     * This only sets the character on the User object at this point
+     * Preserving it between sessions is done by middleware
      * @param MuckDbref $character
      * @return void
      */
     public function setCharacter(MuckDbref $character): void
     {
-        //TODO: Reimplement setCharacter
-        Log::error("User.setcharacter not implemented.");
+        $this->character = $character;
     }
 
     /**
+     * Get present active character, if set.
      * @return MuckDbref|null
      */
     public function getCharacter(): ?MuckDbref
     {
-        //TODO: Reimplement getCharacter
-        Log::error("User.getcharacter not implemented.");
-        return null;
+        return $this->character;
     }
 
     /**
