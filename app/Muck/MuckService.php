@@ -4,6 +4,7 @@ namespace App\Muck;
 
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class MuckService
@@ -25,6 +26,7 @@ class MuckService
      */
     private function parseDbrefFromResponse(string $response): MuckDbref
     {
+        Log::debug("getDbrefFromResponse: Parsing:  $response");
         $parts = str_getcsv($response, ',', '"', '\\');
         if (count($parts) < 4)
             throw new InvalidArgumentException("getDbrefFromResponse: Response doesn't contain enough parts (minimum of 4): $response");
@@ -35,7 +37,9 @@ class MuckService
             list($key, $value) = explode('=', $parts[$i], 2);
             $properties[$key] = $value;
         }
-        return new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $properties);
+        $result = new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $properties);
+        Log::debug("getDbrefFromResponse: Parsed as: $result");
+        return $result;
     }
 
     /**

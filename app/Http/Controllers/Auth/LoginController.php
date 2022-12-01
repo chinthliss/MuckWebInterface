@@ -32,7 +32,7 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
             $user = auth()->guard()->user();
-            Log::info("AUTH Successful Login by " . $request['email'] . " as: $user");
+            Log::info("AUTH Successful Login for " . $request['email'] . " as: $user");
 
             // Fired by Laravel
             // event(new Login(auth()->guard()::class, $user, $remember));
@@ -46,7 +46,7 @@ class LoginController extends Controller
             return redirect()->intended(route('welcome'));
         } else {
             $user = auth()->guard()->getProvider()->retrieveByCredentials($request->only('email'));
-            Log::info("AUTH Failed Login by " . $request['email'] . " as: $user");
+            Log::info("AUTH Failed Login for " . $request['email'] . " as: " . ($user ?: '-Unrecognized-'));
             // Fired by Laravel
             // event(new Failed(auth()->guard()::class, $user, $request->only('email', 'password')));
             throw ValidationException::withMessages(['login' => ['Unrecognized Email/Password or Character/Password combination.']]);
