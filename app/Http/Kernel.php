@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         'not.locked' => \App\Http\Middleware\RedirectIfLocked::class,
         'tos.agreed' => \App\Http\Middleware\EnsureTermsOfServiceAgreed::class,
+        'character' => \App\Http\Middleware\HasApprovedCharacterSet::class,
     ];
 }
