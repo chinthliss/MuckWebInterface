@@ -22,11 +22,22 @@ class HasApprovedCharacterSet
         if (!$user) abort(500, "User should have been set before this call");
 
         $character = $user->getCharacter();
-        if (!$character || !$character->approved()) {
+
+        if (!$character) {
             if (!$request->expectsJson()) {
-                return view('multiplayer.character.select');
+                return view('multiplayer.character-required');
             }
-            abort(400, "An active character either isn't set or they have not completed character generation.");
+            abort(400, "Active character hasn't been set or specified correctly.");
+        }
+
+        if (!$character->approved()) {
+            if (!$request->expectsJson()) {
+                session()->flash('message-success', 'You need to complete character generation to continue.');
+                redirect()->setIntendedUrl($request->getRequestUri());
+                return redirect(route('multiplayer.character.generate'));
+
+            }
+            abort(400, "Active character hasn't been set or specified correctly.");
         }
 
         return $next($request);
