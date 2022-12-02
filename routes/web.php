@@ -5,7 +5,9 @@ use App\Http\Controllers\Auth\EmailController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
+use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MultiplayerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,8 +58,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
     Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
-
-    Route::get('characters', [HomeController::class, 'getCharacters'])->name('multiplayer.characters');
 });
 
 /*
@@ -80,9 +80,21 @@ Route::prefix('/multiplayer/')->group(function() {
 
     // ----------------------------- Stuff that doesn't require a character
     Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function() {
-        Route::get('', function () {
-            return view('multiplayer.home');
-        })->name('multiplayer.home');
+        Route::get('', [MultiplayerController::class, 'showHome'])->name('multiplayer.home');
+
+        // Character selection handling
+        Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
+        Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
+
+    });
+
+    // ----------------------------- Stuff that requires a character set and approved
+    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed', 'character']], function() {
+
+        // Character editing
+        Route::get('character', [CharacterController::class, 'showCharacterHub'])->name('multiplayer.character');
+
+
     });
 
 

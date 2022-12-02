@@ -38,7 +38,10 @@ class CharacterController extends Controller
             $request->session()->flash('message-success', 'Attempt to change character failed');
         }
         return redirect()->back();
+    }
 
+    public function showCharacterHub() {
+        return view('multiplayer.home');
     }
 
 }
