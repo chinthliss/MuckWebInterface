@@ -15,6 +15,13 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Account if logged in -->
+    @auth<meta name="account-id" content="{{ Auth::user()->id() }}">@endauth
+
+    <!-- Character if set -->
+    @Character<meta name="character-dbref" content="{{ Auth::user()->getCharacter()->dbref }}">
+    <meta name="character-name" content="{{ Auth::user()->getCharacter()->name }}">@endCharacter
+
     <!-- Title -->
     @hasSection('title')
         <title>@yield('title') ({{ config('app.name', 'MuckWebInterface') }})</title>
