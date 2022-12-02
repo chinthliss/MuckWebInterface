@@ -19,6 +19,7 @@ class ActiveCharacterTest extends TestCase
     {
         $this->seed();
         $response = $this->get(route('multiplayer.home'));
+        $response->assertRedirect();
         $response->assertDontSee('<meta name="character-dbref"');
         //$response->assertSessionMissing('character-dbref');
         $response->assertCookieMissing('character-dbref');
@@ -29,12 +30,14 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.set'), ['dbref' => '1234']);
+        $response->assertRedirect();
         $user = auth()->user();
         $this->assertNotNull($user->getCharacter(), "Character wasn't set on User");
         $response->assertCookie('character-dbref', '1234');
 
         //On the next call, the character should have loaded again and the header should be set
         $response = $this->withCookie('character-dbref', 1234)->get(route('multiplayer.home'));
+        $response->assertOk();
         /** @var User $user */
         $user = auth()->user();
         $this->assertNotNull($user->getCharacter(), "Character wasn't set on User");
@@ -50,6 +53,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.set'), ['dbref' => 2]);
+        $response->assertRedirect();
         /** @var User $user */
         $user = auth()->user();
         $this->assertNull($user->getCharacter(), "Character was set on User");
@@ -62,6 +66,7 @@ class ActiveCharacterTest extends TestCase
         $this->loginAsValidatedUser();
         $response = $this->withCookie('character-dbref', 1234)
             ->get(route('multiplayer.home'));
+        $response->assertOk();
         // If the cookie was rejected, it will have been set to expired
         $response->assertCookieNotExpired('character-dbref');
         /** @var User $user */
@@ -74,6 +79,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->withCookie('character-dbref', 2)->get(route('multiplayer.home'));
+        $response->assertOk();
         // 'Unset' cookies are set to null but expire, so we need to test it's expired rather than missing
         $response->assertCookieExpired('character-dbref');
     }
@@ -86,6 +92,7 @@ class ActiveCharacterTest extends TestCase
             'password' => 'muckpassword',
             'action' => 'login'
         ]));
+        $response->assertRedirect();
         $this->assertAuthenticated();
         /** @var User $user */
         $user = auth()->user();
@@ -98,7 +105,8 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->get(route('multiplayer.character'));
-        $response->assertViewIs('multiplayer.character-required-prompt');
+        $response->assertOk();
+        $response->assertViewIs('multiplayer.character-required');
     }
 
     public function test_page_that_requires_character_works_if_character_set()
@@ -106,8 +114,8 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
-        $request = $this->get(route('multiplayer.character'));
-        $request->assertOk();
+        $response = $this->get(route('multiplayer.character'));
+        $response->assertOk();
     }
 
     public function test_unapproved_character_is_redirected_to_character_generation()
@@ -115,8 +123,8 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 3456]);
-        $request = $this->get(route('multiplayer.character'));
-        $request->assertRedirect(route('multiplayer.character.generate'));
+        $response = $this->get(route('multiplayer.character'));
+        $response->assertRedirect(route('multiplayer.character.generate'));
     }
 
 }
