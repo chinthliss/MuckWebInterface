@@ -60,7 +60,7 @@ class MuckConnectionFaker implements MuckConnection
     {
         $nameWanted = $data['name'];
         foreach ($this->muckDatabase as $dbref) {
-            if ($dbref->name == $nameWanted) return $this->dbrefToMuckResponse($dbref);
+            if (strtolower($dbref->name) == strtolower($nameWanted)) return $this->dbrefToMuckResponse($dbref);
         }
         return '';
     }

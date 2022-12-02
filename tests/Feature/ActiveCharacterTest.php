@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cookie;
 use Tests\TestCase;
 
 /**
@@ -13,10 +14,6 @@ use Tests\TestCase;
 class ActiveCharacterTest extends TestCase
 {
     use RefreshDatabase;
-
-    public function loginAsValidatedUser() {
-        auth()->loginUsingId('1');
-    }
 
     public function test_no_character_set_initially()
     {
@@ -31,9 +28,10 @@ class ActiveCharacterTest extends TestCase
     {
         $this->seed();
         $this->loginAsValidatedUser();
-        $response = $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
+        $response = $this->post(route('multiplayer.character.set'), ['dbref' => '1234']);
+        $user = auth()->user();
         $this->assertNotNull($user->getCharacter(), "Character wasn't set on User");
-        $response->assertCookie('character-dbref', 1234);
+        $response->assertCookie('character-dbref', '1234');
 
         //On the next call, the character should have loaded again and the header should be set
         $response = $this->withCookie('character-dbref', 1234)->get(route('multiplayer.home'));
@@ -52,6 +50,8 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.set'), ['dbref' => 2]);
+        /** @var User $user */
+        $user = auth()->user();
         $this->assertNull($user->getCharacter(), "Character was set on User");
         $response->assertCookieMissing('character-dbref');
     }
@@ -78,13 +78,13 @@ class ActiveCharacterTest extends TestCase
         $response->assertCookieExpired('character-dbref');
     }
 
-    // Related - AccountLoginTest::testCanLoginWithCorrectMuckCredentials
     public function test_character_is_set_if_used_to_login()
     {
         $this->seed();
         $response = $this->json('POST', route('auth.login', [
             'email' => 'testCharacter',
-            'password' => 'muckpassword'
+            'password' => 'muckpassword',
+            'action' => 'login'
         ]));
         $this->assertAuthenticated();
         /** @var User $user */
@@ -97,8 +97,8 @@ class ActiveCharacterTest extends TestCase
     {
         $this->seed();
         $this->loginAsValidatedUser();
-        $response = $this->get(route('multiplayer.home'));
-        $response->assertView('multiplayer.character-required-prompt');
+        $response = $this->get(route('multiplayer.character'));
+        $response->assertViewIs('multiplayer.character-required-prompt');
     }
 
     public function test_page_that_requires_character_works_if_character_set()
@@ -106,7 +106,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
-        $request = $this->get(route('multiplayer.home'));
+        $request = $this->get(route('multiplayer.character'));
         $request->assertOk();
     }
 
@@ -115,7 +115,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 3456]);
-        $request = $this->get(route('multiplayer.avatar'));
+        $request = $this->get(route('multiplayer.character'));
         $request->assertRedirect(route('multiplayer.character.generate'));
     }
 
