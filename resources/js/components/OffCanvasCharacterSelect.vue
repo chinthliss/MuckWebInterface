@@ -40,7 +40,7 @@ let initialLoading = ref(false);
 
 const refreshCharacterList = () => {
     console.log("(site) Refreshing character list");
-    axios.get('/characters')
+    axios.get('/multiplayer/characters')
         .then(response => {
             characters.value = response.data;
         })

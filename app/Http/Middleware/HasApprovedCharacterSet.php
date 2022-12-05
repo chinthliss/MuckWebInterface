@@ -25,7 +25,10 @@ class HasApprovedCharacterSet
 
         if (!$character) {
             if (!$request->expectsJson()) {
-                return view('multiplayer.character-required');
+                // Don't use the flash since the page content includes more detail.
+                // session()->flash('message-success', 'You need to select an existing character or create a new one to continue.');
+                redirect()->setIntendedUrl($request->getRequestUri());
+                return redirect(route('multiplayer.character.required'));
             }
             abort(400, "Active character hasn't been set or specified correctly.");
         }
@@ -35,7 +38,6 @@ class HasApprovedCharacterSet
                 session()->flash('message-success', 'You need to complete character generation to continue.');
                 redirect()->setIntendedUrl($request->getRequestUri());
                 return redirect(route('multiplayer.character.generate'));
-
             }
             abort(400, "Active character hasn't been set or specified correctly.");
         }

@@ -12,8 +12,8 @@
 
 @section('content')
     <div class="container">
-        You need to select an active character in order to see this content.
-        Use the character selection in the top bar to set a character.
+        You need to have an active character in order to see this content.
+        Use the character selection in the top bar to select an existing character or to create a new one.
     </div>
 @endsection
 

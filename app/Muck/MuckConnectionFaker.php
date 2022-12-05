@@ -29,7 +29,7 @@ class MuckConnectionFaker implements MuckConnection
             'level' => '2',
             'approved' => '1'
         ]);
-        $this->muckDatabase[] = new MuckDbref(1235, 'unapprovedCharacter', 'p', Carbon::now(), [
+        $this->muckDatabase[] = new MuckDbref(1236, 'unapprovedCharacter', 'p', Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '1'
         ]);

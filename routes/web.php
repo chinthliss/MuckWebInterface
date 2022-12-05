@@ -85,6 +85,8 @@ Route::prefix('/multiplayer/')->group(function() {
         // Character selection handling
         Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
         Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
+        Route::get('charactergeneration', [CharacterController::class, 'showCharacterGeneration'])->name('multiplayer.character.generate');
+        Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
 
     });
 

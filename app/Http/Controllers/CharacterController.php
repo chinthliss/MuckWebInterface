@@ -44,4 +44,14 @@ class CharacterController extends Controller
         return view('multiplayer.home');
     }
 
+    public function showCharacterGeneration()
+    {
+        return view('multiplayer.character-generation');
+    }
+
+    public function showCharacterRequired()
+    {
+        return view('multiplayer.character-required');
+    }
+
 }
