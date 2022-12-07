@@ -24,7 +24,7 @@ const styleObject = {
 };
 
 const clicked = () => {
-    if (this.$listeners.click)
+    if (this.$attrs.onClick)
         this.$emit('click');
     else
         window.location = '/c/' + this.character.name;
