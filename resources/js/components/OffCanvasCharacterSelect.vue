@@ -10,8 +10,9 @@
         <div class="offcanvas-body">
             <div v-if="initialLoading">Loading..</div>
             <div v-else-if="!characters.length">No characters.</div>
-            <div v-else>
-                <div v-for="character in characters">{{ character.name }}</div>
+            <div v-else class="d-flex flex-column align-items-center">
+                <character-card v-for="character in characters" :character="character"
+                                @click="selectCharacter(character)"></character-card>
             </div>
         </div>
     </div>
@@ -20,7 +21,10 @@
 </template>
 
 <script setup>
+//TODO: Pass in references to get characters location and set character location instead of hard coding
+//TODO: Check Character structure matches the one presently output
 import {ref, onMounted} from 'vue';
+import CharacterCard from './CharacterCard.vue';
 
 /**
  * @typedef {object} Character
@@ -36,23 +40,30 @@ import {ref, onMounted} from 'vue';
  */
 const characters = ref([]);
 const self = ref();
-let initialLoading = ref(false);
+let initialLoading = ref(true);
 
 const refreshCharacterList = () => {
     console.log("(site) Refreshing character list");
     axios.get('/multiplayer/characters')
         .then(response => {
             characters.value = response.data;
+            initialLoading.value = false;
         })
         .catch(error => {
             console.log("An error occurred whilst refreshing the character list: ", error.message || error);
+            initialLoading.value = false;
         });
-    initialLoading.value = false;
-}
+
+};
 
 onMounted(() => {
     self.value.addEventListener('show.bs.offcanvas', refreshCharacterList);
 });
+
+const selectCharacter = (character) => {
+    console.log("Character selected: ", character);
+};
+
 
 defineExpose({refreshCharacterList});
 </script>

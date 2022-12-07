@@ -14,20 +14,22 @@
 </template>
 
 <script setup>
-defineProps({
+
+const props = defineProps({
     character: {type: Object, required: true},
-    mode: {type: String, required: false, default: 'tag'}
+    mode: {type: String, required: false, default: 'tag'},
+    onClick: {type: Function, required: false}
 });
 
 const styleObject = {
-    'backgroundImage': 'url(/a/' + this.character.name + '.png)'
+    'backgroundImage': 'url(/a/' + props.character.name + '.png)'
 };
 
 const clicked = () => {
-    if (this.$attrs.onClick)
-        this.$emit('click');
+    if (props.onClick)
+        props.onClick();
     else
-        window.location = '/c/' + this.character.name;
+        window.location = '/c/' + props.character.name;
 };
 
 </script>
@@ -38,16 +40,18 @@ const clicked = () => {
 .avatar {
     position: relative;
     text-align: center;
-    background-position-x:-120px !important;
+    background-position-x: -120px !important;
     background-position-y: -70px !important;
 }
+
 .avatar i {
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     vertical-align: text-bottom;
 }
+
 .character-card {
     cursor: pointer;
     border: 1px solid $primary;
@@ -125,7 +129,7 @@ const clicked = () => {
     }
 
     .unapproved {
-        color: $primary;
+        color: $secondary;
     }
 }
 
