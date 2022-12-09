@@ -21,7 +21,6 @@
 </template>
 
 <script setup>
-//TODO: Pass in references to get characters location and set character location instead of hard coding
 import {ref, onMounted} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 
