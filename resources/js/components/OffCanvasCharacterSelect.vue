@@ -25,13 +25,17 @@
 import {ref, onMounted} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 
+const props = defineProps({
+    links: {type: Object, required: true}
+});
+
 const characters = ref([]);
 const self = ref();
 let initialLoading = ref(true);
 
 const refreshCharacterList = () => {
-    console.log("(site) Refreshing character list");
-    axios.get('/multiplayer/characters')
+    console.log("(site) Refreshing character list from " + props.links.getCharacter);
+    axios.get(props.links.getCharacters)
         .then(response => {
             characters.value = response.data;
             initialLoading.value = false;
