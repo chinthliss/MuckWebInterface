@@ -115,12 +115,12 @@ class MuckDbref
     }
 
     /**
-     * Returns an array representing a player object
+     * Returns a public array representing a player object
      * @return array
      */
     public function toPlayerArray(): array
     {
-        if ($this->typeFlag !== 'p') throw new Error("Attempt to get a PlayerArray out of something that isn't a player");
+        if (!$this->isPlayer()) throw new Error("Attempt to get a PlayerArray out of something that isn't a player");
         $array = [
             'dbref' => $this->dbref,
             'name' => $this->name,

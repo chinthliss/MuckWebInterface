@@ -22,22 +22,9 @@
 
 <script setup>
 //TODO: Pass in references to get characters location and set character location instead of hard coding
-//TODO: Check Character structure matches the one presently output
 import {ref, onMounted} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 
-/**
- * @typedef {object} Character
- * @property {string} name
- * @property {boolean} approved
- * @property {number} dbref
- * @property {number} level
- */
-
-/**
- *
- * @type {Ref<Character[]>}
- */
 const characters = ref([]);
 const self = ref();
 let initialLoading = ref(true);

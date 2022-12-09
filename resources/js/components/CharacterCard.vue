@@ -5,17 +5,27 @@
                 <!--<i class="fas fa-user-alt fa-5x"></i>-->
             </div>
             <div class="name">{{ character.name }}</div>
-            <div v-if="!character.wizLevel" class="level">{{ character.level }}</div>
-            <div v-else-if="character.wizLevel === 1" class="flag staff">Staff</div>
-            <div v-else-if="character.wizLevel === 2" class="flag staff">Admin</div>
-            <div v-if="character.unapproved" class="flag unapproved">Unapproved</div>
+            <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>
+            <div v-else-if="character.staffLevel === 1" class="flag staff">Staff</div>
+            <div v-else-if="character.staffLevel === 2" class="flag staff">Admin</div>
+            <div v-if="!character.approved" class="flag unapproved">Unapproved</div>
         </div>
     </div>
 </template>
 
 <script setup>
 
+/**
+ * @typedef {object} Character
+ * @property {string} name
+ * @property {boolean} approved
+ * @property {number} dbref
+ * @property {number} level
+ * @property {number} [staffLevel]
+ */
+
 const props = defineProps({
+    /** @type {Character} */
     character: {type: Object, required: true},
     mode: {type: String, required: false, default: 'tag'},
     onClick: {type: Function, required: false}
