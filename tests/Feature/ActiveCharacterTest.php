@@ -105,7 +105,7 @@ class ActiveCharacterTest extends TestCase
     {
         $this->seed();
         $this->loginAsValidatedUser();
-        $response = $this->get(route('multiplayer.character'));
+        $response = $this->get(route('multiplayer.character.edit'));
         $response->assertRedirect(route('multiplayer.character.required'));
     }
 
@@ -117,10 +117,10 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         // Need to try to get intended redirect set
-        $response = $this->get(route('multiplayer.character'));
+        $response = $this->get(route('multiplayer.character.edit'));
         $response->assertSessionHas('url.intended');
         $secondResponse = $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
-        $secondResponse->assertRedirect(route('multiplayer.character'));
+        $secondResponse->assertRedirect(route('multiplayer.character.edit'));
     }
 
     public function test_page_that_requires_character_works_if_character_set()
@@ -128,7 +128,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
-        $response = $this->get(route('multiplayer.character'));
+        $response = $this->get(route('multiplayer.character.edit'));
         $response->assertOk();
     }
 
@@ -137,7 +137,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 1236]);
-        $response = $this->get(route('multiplayer.character'));
+        $response = $this->get(route('multiplayer.character.edit'));
         $response->assertRedirect(route('multiplayer.character.generate'));
     }
 

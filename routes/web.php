@@ -94,7 +94,7 @@ Route::prefix('/multiplayer/')->group(function() {
     Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed', 'character']], function() {
 
         // Character editing
-        Route::get('character', [CharacterController::class, 'showCharacterHub'])->name('multiplayer.character');
+        Route::get('character', [CharacterController::class, 'showCharacterEdit'])->name('multiplayer.character.edit');
 
 
     });
