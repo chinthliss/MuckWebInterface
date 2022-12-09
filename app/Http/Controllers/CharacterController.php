@@ -21,7 +21,7 @@ class CharacterController extends Controller
         }, $user->getCharacters());
     }
 
-    public function setActiveCharacter(Request $request, MuckObjectService $muckObjectService): RedirectResponse
+    public function setActiveCharacter(Request $request, MuckObjectService $muckObjectService): array|RedirectResponse
     {
         /** @var User $user */
         $user = $request->user();
@@ -31,16 +31,22 @@ class CharacterController extends Controller
         if (!$dbref) abort(400);
 
         $character = $muckObjectService->getByDbref($dbref);
-        if ($character && $character->accountId() == $user->id()) {
-            // This is sufficient, middleware will set the cookie in the response
-            $user->setCharacter($character);
-        } else {
-            $request->session()->flash('message-success', 'Attempt to change character failed');
-        }
-        return redirect()->back();
+        if (!$character || $character->accountId() != $user->id()) abort(403);
+
+        // This is sufficient, middleware will set the cookie in the response
+        $user->setCharacter($character);
+        // Redirect to an intended page if set, otherwise default to present page.
+        $redirect = redirect()->intended(redirect()->back()->getTargetUrl());
+        if ($request->expectsJson()) {
+            return [
+                'result' => 'OK',
+                'redirect' => $redirect->getTargetUrl()
+            ];
+        } else return $redirect;
     }
 
-    public function showCharacterHub() {
+    public function showCharacterHub()
+    {
         return view('multiplayer.home');
     }
 

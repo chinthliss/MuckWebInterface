@@ -33,7 +33,7 @@ const self = ref();
 let initialLoading = ref(true);
 
 const refreshCharacterList = () => {
-    console.log("(site) Refreshing character list from " + props.links.getCharacter);
+    // console.log("(site) Refreshing character list from " + props.links.getCharacter);
     axios.get(props.links.getCharacters)
         .then(response => {
             characters.value = response.data;
@@ -43,7 +43,6 @@ const refreshCharacterList = () => {
             console.log("An error occurred whilst refreshing the character list: ", error.message || error);
             initialLoading.value = false;
         });
-
 };
 
 onMounted(() => {
@@ -51,7 +50,21 @@ onMounted(() => {
 });
 
 const selectCharacter = (character) => {
-    console.log("Character selected: ", character);
+    // console.log("(site) Character selected: ", character);
+    axios.post(props.links.setCharacter, {'dbref': character.dbref})
+        .then(response => {
+            if (response?.data?.result === 'OK') {
+                if (response.data?.redirect)
+                    location = response.data.redirect;
+                else
+                    location.reload();
+            }
+        })
+        .catch(error => {
+            console.log("An error occurred whilst refreshing the character list: ", error.message || error);
+            initialLoading.value = false;
+        });
+
 };
 
 

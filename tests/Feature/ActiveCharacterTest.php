@@ -31,6 +31,7 @@ class ActiveCharacterTest extends TestCase
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.set'), ['dbref' => '1234']);
         $response->assertRedirect();
+
         $user = auth()->user();
         $this->assertNotNull($user->getCharacter(), "Character wasn't set on User");
         $response->assertCookie('character-dbref', '1234');
@@ -53,7 +54,7 @@ class ActiveCharacterTest extends TestCase
         $this->seed();
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.set'), ['dbref' => 2]);
-        $response->assertRedirect();
+        $response->assertForbidden();
         /** @var User $user */
         $user = auth()->user();
         $this->assertNull($user->getCharacter(), "Character was set on User");
@@ -118,7 +119,7 @@ class ActiveCharacterTest extends TestCase
         // Need to try to get intended redirect set
         $response = $this->get(route('multiplayer.character'));
         $response->assertSessionHas('url.intended');
-        $secondResponse = $this->post(route('multiplayer.character.set'));
+        $secondResponse = $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
         $secondResponse->assertRedirect(route('multiplayer.character'));
     }
 
