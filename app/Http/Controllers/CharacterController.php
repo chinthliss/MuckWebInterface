@@ -45,9 +45,9 @@ class CharacterController extends Controller
         } else return $redirect;
     }
 
-    public function showCharacterEdit()
+    public function showCharacterHub()
     {
-        return view('multiplayer.character-edit');
+        return view('multiplayer.character-hub');
     }
 
     public function showCharacterGeneration()
