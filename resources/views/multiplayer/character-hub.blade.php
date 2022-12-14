@@ -37,10 +37,12 @@
         </div>
         <div class="row g-2">
             @foreach ($pages as $page)
-                <div class="card col-6">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $page['title'] }}</h5>
-                        <div class="card-text">{{ $page['description'] }}</div>
+                <div class="col-12 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $page['title'] }}</h5>
+                            <div class="card-text">{{ $page['description'] }}</div>
+                        </div>
                     </div>
                 </div>
             @endforeach
