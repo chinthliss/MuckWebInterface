@@ -120,7 +120,7 @@ class ActiveCharacterTest extends TestCase
         $response = $this->get(route('multiplayer.character'));
         $response->assertSessionHas('url.intended');
         $secondResponse = $this->post(route('multiplayer.character.set'), ['dbref' => 1234]);
-        $secondResponse->assertRedirect(route('multiplayer.character.edit'));
+        $secondResponse->assertRedirect(route('multiplayer.character'));
     }
 
     public function test_page_that_requires_character_works_if_character_set()
