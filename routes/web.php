@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
     Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
+
 });
 
 /*
@@ -87,6 +88,10 @@ Route::prefix('/multiplayer/')->group(function() {
         Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
         Route::get('charactergeneration', [CharacterController::class, 'showCharacterGeneration'])->name('multiplayer.character.generate');
         Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
+
+        // Character password recovery
+        Route::get('changecharacterpassword', [CharacterController::class, 'showChangeCharacterPassword'])->name('multiplayer.character.changepassword');
+        Route::post('changecharacterpassword', [CharacterController::class, 'changeCharacterPassword']);
 
     });
 

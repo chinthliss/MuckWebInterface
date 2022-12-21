@@ -12,9 +12,9 @@ class CharacterPasswordChangeTest extends TestCase
     {
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.changepassword'), [
-            'accountpassword' => 'password',
+            'account_password' => 'password',
             'character' => 1234,
-            'password' => 'newpassword'
+            'character_password' => 'newpassword'
         ]);
         $response->assertRedirect(route('multiplayer.home'));
         $response->assertSessionHas('message-success');
@@ -25,9 +25,9 @@ class CharacterPasswordChangeTest extends TestCase
     {
         $this->loginAsOtherValidatedUser();
         $response = $this->post(route('multiplayer.character.changepassword'), [
-            'accountpassword' => 'password',
+            'account_password' => 'password',
             'character' => 1234,
-            'password' => 'newpassword'
+            'character_password' => 'newpassword'
         ]);
         $response->assertSessionHasErrors();
     }
@@ -36,9 +36,9 @@ class CharacterPasswordChangeTest extends TestCase
     {
         $this->loginAsValidatedUser();
         $response = $this->post(route('multiplayer.character.changepassword'), [
-            'accountpassword' => 'wrongpassword',
+            'account_password' => 'wrongpassword',
             'character' => 1234,
-            'password' => 'newpassword'
+            'character_password' => 'newpassword'
         ]);
         $response->assertSessionHasErrors();
     }

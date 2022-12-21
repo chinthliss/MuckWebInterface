@@ -110,4 +110,47 @@ class MuckService
             'password' => $credentials['password']
         ]);
     }
+
+    /**
+     * Gets a string containing a list of any problems with the specified name being used on the MUCK.
+     * Returns an empty string if everything is okay
+     * @param string $name
+     * @return string
+     */
+    public function findProblemsWithCharacterName(String $name): string
+    {
+        return $this->connection->request('findProblemsWithCharacterName', [
+            'name' => $name
+        ]);
+    }
+
+
+    /**
+     * Gets a string containing a list of any problems with the specified password being used on the MUCK.
+     * Returns an empty string if everything is okay
+     * @param string $password
+     * @return string
+     */
+    public function findProblemsWithCharacterPassword(String $password): string
+    {
+        return $this->connection->request('findProblemsWithCharacterPassword', [
+            'password' => $password
+        ]);
+    }
+
+    /**
+     * @param User $user
+     * @param MuckDbref $character
+     * @param string $password
+     * @return bool
+     */
+    public function changeCharacterPassword(User $user, MuckDbref $character, String $password): bool
+    {
+        $response = $this->connection->request('changeCharacterPassword', [
+            'aid' => $user->id(),
+            'dbref' => $character->dbref,
+            'password' => $password
+        ]);
+        return ($response === 'OK');
+    }
 }
