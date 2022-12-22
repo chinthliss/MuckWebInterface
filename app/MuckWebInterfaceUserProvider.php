@@ -27,7 +27,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
      * @param MuckObjectService $muckObjectService
      */
     public function __construct(
-        private MuckService $muckService,
+        private MuckService       $muckService,
         private MuckObjectService $muckObjectService)
     {
     }
@@ -100,16 +100,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
         Log::debug('UserProvider RetrieveByCredentials attempt with: ' . json_encode($this->redactCredentials($credentials)));
 
         //If it's an email address we can try the database
-        if (array_key_exists('email', $credentials) && strpos($credentials['email'], '@')) {
+        if (array_key_exists('email', $credentials)) {
             $accountQuery = $this->baseRetrievalQuery()
                 ->where('accounts.email', $credentials['email'])
                 ->first();
             if ($accountQuery) return User::fromDatabaseResponse($accountQuery);
         }
 
-        //If it's an email that might be a character name we try the muck
-        if (array_key_exists('email', $credentials) && !strpos($credentials['email'], '@')) {
-            $character = $this->muckObjectService->getByPlayerName($credentials['email']);
+        //If it's a character we try the muck
+        if (array_key_exists('character', $credentials)) {
+            $character = $this->muckObjectService->getByPlayerName($credentials['character']);
             if ($character) {
                 $accountQuery = $this->baseRetrievalQuery()
                     ->where('accounts.aid', $character->accountId())
@@ -160,25 +160,26 @@ class MuckWebInterfaceUserProvider implements UserProvider
     #endregion Retrieval
 
     /**
-     * @inheritDoc
+     * Validate a user against the given credentials.
+     * Actual validation depends on the context of what's provided
      */
     public function validateCredentials($user, array $credentials): bool
     {
         // return Hash::check($credentials['password'], $user->getAuthPassword());
         Log::debug("UserProvider ValidateCredentials attempt for $user with " . json_encode($this->redactCredentials($credentials)));
 
-        // If we have a character set, validate via them
-        if (method_exists($user, 'getCharacter') && $user->getCharacter()) {
-            return $this->muckService->validateCredentials($user->getCharacter(), $credentials);
-        }
-        else { // Verify by the database
-            if (method_exists($user, 'getPasswordType')
-                && $user->getPasswordType() == 'SHA1SALT'
-                && MuckInterop::verifySHA1SALTPassword($credentials['password'], $user->getAuthPassword()))
-                return true;
+        // If we have a character set, validate via the muck
+        if (array_key_exists('character', $credentials)) {
+            return method_exists($user, 'getCharacter')
+                && $user->getCharacter()
+                && $this->muckService->validateCredentials($user->getCharacter(), $credentials);
         }
 
-        return false;
+        // Otherwise try the database
+        return method_exists($user, 'getPasswordType')
+            && $user->getPasswordType() == 'SHA1SALT'
+            && MuckInterop::verifySHA1SALTPassword($credentials['password'], $user->getAuthPassword());
+
     }
 
     /**
@@ -326,7 +327,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             ->where('aid', '=', $user->id())
             ->value('email');
         $needToAddPrimary = true;
-        foreach($emails as $email) {
+        foreach ($emails as $email) {
             if ($email->email == $primaryEmail) {
                 $needToAddPrimary = false;
                 $email->isPrimary = true;
