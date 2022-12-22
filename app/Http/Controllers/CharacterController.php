@@ -101,8 +101,10 @@ class CharacterController extends Controller
         }
 
         $characters = $user->getCharacters();
-        /** @var MuckDbref $character */
-        $character = array_key_exists($request['character'], $characters) ? $characters[$request['character']] : null;
+        $character = null;
+        foreach($characters as $possible) {
+            if ($possible->dbref == $request['character']) $character = $possible;
+        }
         if (!$character) {
             throw ValidationException::withMessages(['character'=>["The provided character was incorrect."]]);
         }
