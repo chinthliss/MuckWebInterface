@@ -86,7 +86,27 @@ class MuckConnectionFaker implements MuckConnection
     {
         // All passwords are 'muckpassword' during faking.
         $password = $data['password'];
-        return ($password && $password == 'muckpassword');
+        return ($password == 'muckpassword');
+    }
+
+    public function fake_findProblemsWithCharacterName(array $data): string
+    {
+        $name = $data['name'];
+        if (strtolower($name) == 'test') return 'That name is a test.';
+        if (str_contains($name, ' ')) return 'That name contains a space.';
+        return '';
+    }
+
+    public function fake_findProblemsWithCharacterPassword(array $data): string
+    {
+        $password = $data['password'];
+        if (strtolower($password) == 'test') return 'That password is a test.';
+        return '';
+    }
+
+    public function fake_changeCharacterPassword(array $data): string
+    {
+        return "OK";
     }
 
     public function request(string $request, array $data = []): string
