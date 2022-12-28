@@ -18,8 +18,8 @@
         </div>
 
         <div class="row">
-            <p>Use this page to change your present password.</p>
-            <p>For security, you need to provide your account password in order to do this.</p>
+            <p>Use this page to change the password for one of your characters.</p>
+            <p>For security purposes, you need to provide your account password in order to do this.</p>
         </div>
 
         <form action="" method="POST">
@@ -65,7 +65,7 @@
                     <div class="col">
                         <input id="character_password" type="password" name="character_password"
                                @class(['form-control', 'is-invalid' => $errors->get('character_password')])
-                               placeholder="Re-enter new password again">
+                               placeholder="Enter character's new password">
                         @error('character_password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
