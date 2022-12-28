@@ -28,6 +28,7 @@ class EmailController extends Controller
         $user = auth()->user();
 
         if ($user->hasVerifiedEmail()) {
+            session()->flash('message-success', 'Email already verified!');
             return redirect(route('welcome'));
         }
 
@@ -83,9 +84,9 @@ class EmailController extends Controller
 
         Log::Info("AUTH Accepted email change request for $user");
         $user->setEmail($email);
-        //TODO: Handle not needing to verify an email
-        $user->sendEmailVerificationNotification();
-        return view('auth.email-change-processed', ['verificationRequired' => true]);
+        $verificationRequired = !$user->getEmailVerifiedAt();
+        if ($verificationRequired) $user->sendEmailVerificationNotification();
+        return view('auth.email-change-processed', ['verificationRequired' => $verificationRequired]);
     }
 
     public function showNewEmail(): View
