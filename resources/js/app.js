@@ -35,9 +35,9 @@ window.$ = jQuery;
  * DataTables
  */
 
-// These both run and setup automatically as imports.
-import 'datatables.net';
-import 'datatables.net-bs5';
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 /**
  * Vue

@@ -19,7 +19,7 @@
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-striped" :options="emailTableConfiguration" :data="emails">
+        <DataTable class="table table-dark table-hover table-striped" :options="emailTableConfiguration" :data="emails">
             <thead>
             <tr>
                 <th scope="col">Email</th>
