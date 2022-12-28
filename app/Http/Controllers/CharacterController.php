@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Muck\MuckDbref;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
 use App\User as User;
@@ -49,17 +48,17 @@ class CharacterController extends Controller
         } else return $redirect;
     }
 
-    public function showCharacterHub()
+    public function showCharacterHub(): View
     {
         return view('multiplayer.character-hub');
     }
 
-    public function showCharacterGeneration()
+    public function showCharacterGeneration(): View
     {
         return view('multiplayer.character-generation');
     }
 
-    public function showCharacterRequired()
+    public function showCharacterRequired(): View
     {
         return view('multiplayer.character-required');
     }
@@ -81,7 +80,7 @@ class CharacterController extends Controller
      * @return RedirectResponse
      * @throws ValidationException
      */
-    public function changeCharacterPassword(Request $request, MuckService $muck)
+    public function changeCharacterPassword(Request $request, MuckService $muck): RedirectResponse
     {
         $request->validate([
             'account_password' => 'required',
@@ -95,18 +94,18 @@ class CharacterController extends Controller
 
         /** @var User $user */
         $user = auth()->user();
-        //TODO: Need to unset character to ensure we don't test against them.
-        if (!auth()->guard()->getProvider()->validateCredentials($user, ['password'=>$request['account_password']])) {
-            throw ValidationException::withMessages(['account_password'=>["The provided password for the account was incorrect."]]);
+
+        if (!auth()->guard()->getProvider()->validateCredentials($user, ['password' => $request['account_password']])) {
+            throw ValidationException::withMessages(['account_password' => ["The provided password for the account was incorrect."]]);
         }
 
         $characters = $user->getCharacters();
         $character = null;
-        foreach($characters as $possible) {
+        foreach ($characters as $possible) {
             if ($possible->dbref == $request['character']) $character = $possible;
         }
         if (!$character) {
-            throw ValidationException::withMessages(['character'=>["The provided character was incorrect."]]);
+            throw ValidationException::withMessages(['character' => ["The provided character was incorrect."]]);
         }
 
         $passwordIssues = $muck->findProblemsWithCharacterPassword($request['character_password']);
@@ -117,10 +116,8 @@ class CharacterController extends Controller
         if ($result) {
             $request->session()->flash('message-success', "The password for {$character->name} was changed as requested. You can now use this password to logon via a telnet client.");
             return redirect(route('multiplayer.home'));
-        }
-        else throw ValidationException::withMessages(['character'=>["Something went wrong, if this continues please notify staff."]]);
+        } else throw ValidationException::withMessages(['character' => ["Something went wrong, if this continues please notify staff."]]);
     }
-
 
 
 }
