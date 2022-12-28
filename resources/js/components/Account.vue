@@ -19,7 +19,7 @@
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-dark table-hover table-striped" :options="emailTableConfiguration" :data="emails">
+        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="emails">
             <thead>
             <tr>
                 <th scope="col">Email</th>
@@ -130,7 +130,7 @@ const emailTableConfiguration = {
         {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
         {data: 'createdAt', render: carbonToString},
         {data: 'verifiedAt', render: carbonToString},
-        {render: displayEmailRowForControls, sortable: false}
+        {render: displayEmailRowForControls, sortable: false, className: 'dt-center'}
     ],
     paging: false,
     info: false,
