@@ -31,5 +31,11 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             return $user && $user->getCharacter();
         });
+
+        // Add blade directive for whether a site notice is set
+        Blade::if('SiteNoticeExists', function(){
+            $filePath = public_path('site-notice.txt');
+            return file_exists($filePath);
+        });
     }
 }

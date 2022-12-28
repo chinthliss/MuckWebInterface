@@ -28,7 +28,7 @@ class EmailController extends Controller
         $user = auth()->user();
 
         if ($user->hasVerifiedEmail()) {
-            session()->flash('message-success', 'Email already verified!');
+            session()->flash('message-warning', 'Email already verified!');
             return redirect(route('welcome'));
         }
 
