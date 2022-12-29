@@ -317,9 +317,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'aid' => $user->id()
         ])->get();
         foreach ($rows as $row) {
-            $nextEmail = new UserEmail($row->email);
-            $nextEmail->createdAt = $row->created_at ? new Carbon($row->created_at) : null;
-            $nextEmail->verifiedAt = $row->verified_at ? new Carbon($row->verified_at) : null;
+            $nextEmail = UserEmail::fromDatabaseResponse($row);
             $nextEmail->isPrimary = false;
             $emails[] = $nextEmail;
         }
