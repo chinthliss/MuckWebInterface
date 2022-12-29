@@ -11,7 +11,7 @@
 
 @section('content')
     <div class="container">
-        Test body content
+        TODO: Multiplayer home content
 
         <!-- Here until finding a better place for such -->
         <div class="row">

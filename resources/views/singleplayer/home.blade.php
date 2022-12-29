@@ -11,7 +11,7 @@
 
 @section('content')
     <div class="container">
-        Test body content
+        TODO: Singleplayer home content
     </div>
 @endsection
 
