@@ -117,7 +117,7 @@ const displayEmailRowForControls = (data, type, row) => {
 };
 
 const displayEmailRowForIsPrimary = (data) => {
-    return data ? 'Primary' : '';
+    return data ? '<i class="fa-solid fa-check"></i>' : '';
 };
 
 const emailTableDrawCallback = () => {
