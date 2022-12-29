@@ -12,15 +12,16 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Pages always available
+| Core resources that are always available
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'showWelcome'])->name('welcome');
 Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfService'])->name('auth.terms-of-service');
 Route::get('accountlocked', [HomeController::class, 'showLocked'])->name('auth.locked');
+
 /*
 |--------------------------------------------------------------------------
-| Pages that are available only when NOT logged in
+| Core resources that are available only when NOT logged in
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['guest']], function () {
@@ -40,7 +41,7 @@ Route::group(['middleware' => ['guest']], function () {
 
 /*
 |--------------------------------------------------------------------------
-| Pages that require being logged in
+| Core resources that require being logged in
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth']], function () {
@@ -63,31 +64,31 @@ Route::group(['middleware' => ['auth']], function () {
 
 /*
 |--------------------------------------------------------------------------
-| Singleplayer Content
+| Singleplayer resources
 |--------------------------------------------------------------------------
 */
-Route::prefix('/singleplayer/')->group(function() {
-    Route::get('', function() {
+Route::prefix('/singleplayer/')->group(function () {
+    Route::get('', function () {
         return view('singleplayer.home');
     })->name('singleplayer.home');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Multiplayer Content
+| Multiplayer Resources
 |--------------------------------------------------------------------------
 */
-Route::prefix('/multiplayer/')->group(function() {
+Route::prefix('/multiplayer/')->group(function () {
 
     // ----------------------------- Stuff that only requires a login
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth']], function () {
         Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
         Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
         Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
     });
 
     // ----------------------------- Stuff that doesn't require a character
-    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function() {
+    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function () {
         Route::get('', [MultiplayerController::class, 'showHome'])->name('multiplayer.home');
 
         // Character generation
@@ -100,7 +101,7 @@ Route::prefix('/multiplayer/')->group(function() {
     });
 
     // ----------------------------- Stuff that requires a character set and approved
-    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed', 'character']], function() {
+    Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed', 'character']], function () {
 
         // Character Editing
         Route::get('character', [CharacterController::class, 'showCharacterHub'])->name('multiplayer.character');
@@ -118,8 +119,6 @@ Route::prefix('/multiplayer/')->group(function() {
         Route::get('forms', [MultiplayerController::class, 'showPending'])->name('multiplayer.forms');
         Route::get('inventory', [MultiplayerController::class, 'showPending'])->name('multiplayer.inventory');
 
-
     });
-
 
 });
