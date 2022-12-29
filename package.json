@@ -10,6 +10,7 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.2.1",
         "@popperjs/core": "^2.10.2",
         "axios": "^0.27.2",
         "bootstrap": "^5.2.1",
@@ -18,8 +19,8 @@
         "datatables.net-vue3": "^2.0.0",
         "jquery": "^3.6.1",
         "lodash": "^4.17.19",
-        "vue": "^3.2.37",
+        "postcss": "^8.1.14",
         "sass": "^1.32.11",
-        "postcss": "^8.1.14"
+        "vue": "^3.2.37"
     }
 }
