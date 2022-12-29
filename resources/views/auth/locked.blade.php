@@ -1,4 +1,4 @@
-@extends('layout.page-no-navigation')
+@extends('layout.page-without-navigation')
 
 @section('title', 'Account Locked')
 

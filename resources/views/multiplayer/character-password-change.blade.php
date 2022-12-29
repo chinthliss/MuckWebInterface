@@ -1,4 +1,4 @@
-@extends('layout.page-multiplayer')
+@extends('layout.page-with-navigation')
 
 @section('title', 'Change Character Password')
 
@@ -46,7 +46,7 @@
                     </div>
                     <div class="col">
                         <select name="character" id="character"
-                            @class(['form-select', 'is-invalid' => $errors->get('character')])>
+                                @class(['form-select', 'is-invalid' => $errors->get('character')])>
                             <option value="" selected>Select a character</option>
                             @foreach ($characters as $character)
                                 <option value="{{ $character['dbref'] }}">{{ $character['name'] }}</option>

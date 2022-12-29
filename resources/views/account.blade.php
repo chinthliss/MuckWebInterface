@@ -1,4 +1,4 @@
-@extends('layout.page-simple-navigation')
+@extends('layout.page-with-navigation')
 
 @section('title', 'Account')
 

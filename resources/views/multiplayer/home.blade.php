@@ -1,4 +1,4 @@
-@extends('layout.page-multiplayer')
+@extends('layout.page-with-navigation')
 
 @section('title', 'Multiplayer')
 
@@ -15,7 +15,8 @@
 
         <!-- Here until finding a better place for such -->
         <div class="row">
-            <a class="btn btn-secondary" href="{{ route('multiplayer.character.changepassword') }}">Reset Character Password</a>
+            <a class="btn btn-secondary" href="{{ route('multiplayer.character.changepassword') }}">Reset Character
+                Password</a>
         </div>
     </div>
 

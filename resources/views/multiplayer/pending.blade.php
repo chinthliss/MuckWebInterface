@@ -1,4 +1,4 @@
-@extends('layout.page-multiplayer')
+@extends('layout.page-with-navigation')
 
 @section('title', 'Pending Multiplayer Content')
 

@@ -1,4 +1,4 @@
-@extends('layout.page-no-navigation')
+@extends('layout.page-without-navigation')
 
 @section('content')
     <div class="d-flex flex-column">

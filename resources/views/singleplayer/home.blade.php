@@ -1,4 +1,4 @@
-@extends('layout.page-singleplayer')
+@extends('layout.page-with-navigation')
 
 @section('title', 'Singleplayer')
 
