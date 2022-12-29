@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'not.locked' => \App\Http\Middleware\RedirectIfLocked::class,
         'tos.agreed' => \App\Http\Middleware\EnsureTermsOfServiceAgreed::class,
         'character' => \App\Http\Middleware\HasApprovedCharacterSet::class,
+        'role' => \App\Http\Middleware\HasRole::class,
     ];
 }

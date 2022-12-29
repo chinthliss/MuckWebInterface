@@ -55,6 +55,14 @@ class UserFactory
             // Remove the account_emails record to simulate an old record without one.
             DB::table('account_emails')->where('email', $user->getEmail())->delete();
         }
+
+        if (array_key_exists('roles', $options)) {
+            DB::table('account_roles')->insert([
+                'aid' => $user->id(),
+                'roles' => $options['roles']
+            ]);
+        }
+
         return $user;
     }
 

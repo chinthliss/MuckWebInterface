@@ -439,4 +439,29 @@ class MuckWebInterfaceUserProvider implements UserProvider
         return $this->muckObjectService->getCharactersOf($user);
     }
 
+    /**
+     * @param User $user
+     * @return string[] Roles user has
+     */
+    public function getRolesFor(User $user): array
+    {
+        $row = DB::table('account_roles')
+            ->where('aid', $user->id())
+            ->first();
+        return $row ? explode(',', $row->roles) : [];
+    }
+
+    /**
+     * @return User[] All users that have some sort of role
+     */
+    public function getAllUsersWithRoles(): array
+    {
+        $rows = DB::table('account_roles')->get();
+        $users = [];
+        foreach ($rows as $row) {
+            $users[] = User::find($row->aid);
+        }
+        return $users;
+    }
+
 }

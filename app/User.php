@@ -347,6 +347,80 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Retrieval
 
+    #region Roles
+
+    /**
+     * @var array|null Roles this user has. Loaded on demand.
+     */
+    protected ?array $roles = null;
+
+    /**
+     * @return void
+     */
+    private function loadRolesIfRequired()
+    {
+        if ($this->roles == null) $this->roles = $this->getProvider()->getRolesFor($this);
+    }
+
+    /**
+     * Tests if a user has a role or counts as having a role
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        $this->loadRolesIfRequired();
+
+        // Site admin has every role
+        if (in_array('siteadmin', $this->roles)) return true;
+
+        // Admin can be granted by the logged in character
+        if ($role == 'admin') {
+            return in_array('admin', $this->roles) || ($this->character && $this->character->isAdmin());
+        }
+
+        // Staff can be granted by the logged in character AND the admin role
+        if ($role == 'staff') {
+            return in_array('staff', $this->roles) || in_array('admin', $this->roles)
+                || ($this->character && ($this->character->isAdmin() || $this->character->isStaff()));
+        }
+
+        //Normal handling
+        return in_array($role, $this->roles);
+    }
+
+    /**
+     * Helper to check if a user has a staff role.
+     * This can be true on a non-permanent basis if they're logged in as a staff (W1 - W2) character.
+     * @return bool
+     */
+    public function isStaff(): bool
+    {
+        return $this->hasRole('staff');
+    }
+
+    /**
+     * Helper to check if a user has an admin role.
+     * This can be true on a non-permanent basis if they're logged in as an admin (W3+) character.
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
+     * Helper to checking if the user has the site admin role.
+     * This can only be granted by the database at account level.
+     * @return bool
+     */
+    public function isSiteAdmin(): bool
+    {
+        return $this->hasRole('siteadmin');
+    }
+
+    #endregion Roles
+
     public function setIsLocked(bool $isLocked)
     {
         $this->getProvider()->setIsLocked($this, $isLocked);

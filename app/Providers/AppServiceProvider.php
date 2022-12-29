@@ -37,5 +37,26 @@ class AppServiceProvider extends ServiceProvider
             $filePath = public_path('site-notice.txt');
             return file_exists($filePath);
         });
+
+        // Add blade directive to tell if user is Game Staff
+        Blade::if('Staff', function() {
+            /** @var User $user */
+            $user = auth()->user();
+            return $user && $user->hasRole('staff');
+        });
+
+        // Add blade directive to tell if user is Admin
+        Blade::if('Admin', function() {
+            /** @var User $user */
+            $user = auth()->user();
+            return $user && $user->hasRole('admin');
+        });
+
+        // Add blade directive to tell if user is Site Admin
+        Blade::if('SiteAdmin', function() {
+            /** @var User $user */
+            $user = auth()->user();
+            return $user && $user->hasRole('siteadmin');
+        });
     }
 }

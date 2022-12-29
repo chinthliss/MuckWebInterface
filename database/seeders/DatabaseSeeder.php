@@ -74,6 +74,11 @@ class DatabaseSeeder extends Seeder
             'propdata' => TermsOfService::getTermsOfServiceHash()
         ]);
 
+        DB::table('account_roles')->insert([
+            'aid' => self::$adminUserAccountId,
+            'roles' => 'siteadmin'
+        ]);
+
         // *************************************
         // Second Regular User Account - anotheruser@test.com
         DB::table('accounts')->insert([

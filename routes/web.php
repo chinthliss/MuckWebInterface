@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Auth\EmailController;
 use App\Http\Controllers\Auth\LoginController;
@@ -59,6 +60,20 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
     Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Core resources that require some sort of administrative power
+|--------------------------------------------------------------------------
+*/
+Route::prefix('/admin/')->group(function () {
+
+    // ----------------------------- Staff level
+    Route::group(['middleware' => ['auth', 'role:staff']], function () {
+        Route::get('', [AdminController::class, 'showHome'])->name('admin.home');
+    });
 
 });
 
