@@ -2,7 +2,7 @@
     <div class="card character-card" :class="'mode-' + mode" @click="clicked">
         <div class="card-body">
             <div class="avatar" v-bind:style="styleObject">
-                <!--<i class="fas fa-user-alt fa-5x"></i>-->
+                <i class="fas fa-user-alt fa-5x"></i>
             </div>
             <div class="name">{{ character.name }}</div>
             <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>

@@ -79,15 +79,19 @@ Route::prefix('/singleplayer/')->group(function() {
 */
 Route::prefix('/multiplayer/')->group(function() {
 
+    // ----------------------------- Stuff that only requires a login
+    Route::group(['middleware' => ['auth']], function() {
+        Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
+        Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
+        Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
+    });
+
     // ----------------------------- Stuff that doesn't require a character
     Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function() {
         Route::get('', [MultiplayerController::class, 'showHome'])->name('multiplayer.home');
 
-        // Character selection handling
-        Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
-        Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
+        // Character generation
         Route::get('charactergeneration', [CharacterController::class, 'showCharacterGeneration'])->name('multiplayer.character.generate');
-        Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
 
         // Character password recovery
         Route::get('changecharacterpassword', [CharacterController::class, 'showChangeCharacterPassword'])->name('multiplayer.character.changepassword');
