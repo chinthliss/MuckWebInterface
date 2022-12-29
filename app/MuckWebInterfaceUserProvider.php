@@ -277,12 +277,16 @@ class MuckWebInterfaceUserProvider implements UserProvider
         $newEmailQuery = DB::table('account_emails')->where([
             'email' => $email
         ])->first();
-        if (!$newEmailQuery) {
+        if ($newEmailQuery) {
+            $result = UserEmail::fromDatabaseResponse($newEmailQuery);
+        } else {
             DB::table('account_emails')->insert([
                 'email' => $email,
                 'aid' => $user->id(),
                 'created_at' => Carbon::now()
             ]);
+            $result = new UserEmail($email);
+            $result->createdAt = Carbon::now();
         }
 
         // Set primary email to this new one
@@ -292,10 +296,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'email' => $email,
             'updated_at' => Carbon::now()
         ]);
-        $result = new UserEmail($email);
-        $result->verifiedAt = $newEmailQuery ? new Carbon($newEmailQuery->verified_at) : null;
-        $result->createdAt = $newEmailQuery ? new Carbon($newEmailQuery->created_at) : Carbon::now();
         $result->isPrimary = true;
+
         return $result;
     }
 
