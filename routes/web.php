@@ -78,9 +78,10 @@ Route::prefix('/admin/')->group(function () {
 
     // ----------------------------- Admin level
     Route::group(['middleware' => ['auth', 'role:admin']], function () {
-        Route::get('accounts', [HomeController::class, 'showPending'])->name('admin.accounts');
-    });
 
+        Route::get('accounts', [AdminController::class, 'showAccountBrowser'])->name('admin.accounts');
+        Route::get('accounts.api', [AdminController::class, 'lookupAccounts'])->name('admin.accounts.api');
+    });
 
 });
 
