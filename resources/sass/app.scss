@@ -51,6 +51,21 @@ main {
     box-shadow: 0 8px 12px -8px rgba(0, 0, 0, .6), 0 20px 26px -20px rgba(0, 0, 0, .2)
 }
 
+// Better icon placements on buttons
+.btn-icon-left {
+    padding-top: 0.375em;
+    padding-bottom: 0.375em;
+    float: left;
+    margin-right: 0.375em;
+}
+
+.btn-icon-right {
+    padding-top: 0.375em;
+    padding-bottom: 0.375em;
+    float: right;
+    margin-left: 0.375em;
+}
+
 // Overrides for nav-tabs
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
