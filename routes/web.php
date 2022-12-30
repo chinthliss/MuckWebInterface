@@ -73,7 +73,14 @@ Route::prefix('/admin/')->group(function () {
     // ----------------------------- Staff level
     Route::group(['middleware' => ['auth', 'role:staff']], function () {
         Route::get('', [AdminController::class, 'showHome'])->name('admin.home');
+        Route::get('tickets', [HomeController::class, 'showPending'])->name('admin.tickets');
     });
+
+    // ----------------------------- Admin level
+    Route::group(['middleware' => ['auth', 'role:admin']], function () {
+        Route::get('accounts', [HomeController::class, 'showPending'])->name('admin.accounts');
+    });
+
 
 });
 
@@ -120,19 +127,19 @@ Route::prefix('/multiplayer/')->group(function () {
 
         // Character Editing
         Route::get('character', [CharacterController::class, 'showCharacterHub'])->name('multiplayer.character');
-        Route::get('avatar', [MultiplayerController::class, 'showPending'])->name('multiplayer.avatar.edit');
-        Route::get('perks', [MultiplayerController::class, 'showPending'])->name('multiplayer.perks');
-        Route::get('quirks', [MultiplayerController::class, 'showPending'])->name('multiplayer.quirks');
-        Route::get('perknotes', [MultiplayerController::class, 'showPending'])->name('multiplayer.perknotes');
-        Route::get('classes', [MultiplayerController::class, 'showPending'])->name('multiplayer.classes');
-        Route::get('professions', [MultiplayerController::class, 'showPending'])->name('multiplayer.professions');
-        Route::get('training', [MultiplayerController::class, 'showPending'])->name('multiplayer.training');
-        Route::get('kinks', [MultiplayerController::class, 'showPending'])->name('multiplayer.kinks');
-        Route::get('dedication', [MultiplayerController::class, 'showPending'])->name('multiplayer.dedication');
-        Route::get('ai', [MultiplayerController::class, 'showPending'])->name('multiplayer.ai');
+        Route::get('avatar', [HomeController::class, 'showPending'])->name('multiplayer.avatar.edit');
+        Route::get('perks', [HomeController::class, 'showPending'])->name('multiplayer.perks');
+        Route::get('quirks', [HomeController::class, 'showPending'])->name('multiplayer.quirks');
+        Route::get('perknotes', [HomeController::class, 'showPending'])->name('multiplayer.perknotes');
+        Route::get('classes', [HomeController::class, 'showPending'])->name('multiplayer.classes');
+        Route::get('professions', [HomeController::class, 'showPending'])->name('multiplayer.professions');
+        Route::get('training', [HomeController::class, 'showPending'])->name('multiplayer.training');
+        Route::get('kinks', [HomeController::class, 'showPending'])->name('multiplayer.kinks');
+        Route::get('dedication', [HomeController::class, 'showPending'])->name('multiplayer.dedication');
+        Route::get('ai', [HomeController::class, 'showPending'])->name('multiplayer.ai');
 
-        Route::get('forms', [MultiplayerController::class, 'showPending'])->name('multiplayer.forms');
-        Route::get('inventory', [MultiplayerController::class, 'showPending'])->name('multiplayer.inventory');
+        Route::get('forms', [HomeController::class, 'showPending'])->name('multiplayer.forms');
+        Route::get('inventory', [HomeController::class, 'showPending'])->name('multiplayer.inventory');
 
     });
 

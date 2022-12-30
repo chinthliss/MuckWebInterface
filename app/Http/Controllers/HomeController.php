@@ -25,4 +25,10 @@ class HomeController extends Controller
 
         return view('auth.locked');
     }
+
+    public function showPending(): View
+    {
+        return view('pending');
+    }
+
 }
