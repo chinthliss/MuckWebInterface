@@ -25,7 +25,8 @@ class MuckDbref
      * @param int $dbref Object's dbref as an integer
      * @param string $name
      * @param string $typeFlag
-     * @param Carbon $createdTimestamp The created timestamp - in conjunction with the dbref acts as a signature since dbrefs can be reused
+     * @param Carbon $createdTimestamp Created timestamp. In conjunction with the dbref acts as a signature since dbrefs can be reused
+     * @param Carbon|null $lastUsedTimestamp Last Used timestamp. In the case of players this is the last active time
      * @param array $properties Additional properties, normally unique to the type of object
      */
     public function __construct(
@@ -33,6 +34,7 @@ class MuckDbref
         public string $name,
         public string $typeFlag,
         public Carbon $createdTimestamp,
+        public ?Carbon $lastUsedTimestamp = null,
         public array  $properties = []
     )
     {

@@ -28,16 +28,18 @@ class MuckService
     {
         Log::debug("getDbrefFromResponse: Parsing:  $response");
         $parts = str_getcsv($response, ',', '"', '\\');
-        if (count($parts) < 4)
-            throw new InvalidArgumentException("getDbrefFromResponse: Response doesn't contain enough parts (minimum of 4): $response");
-        list($dbref, $creationTimestamp, $typeFlag, $name) = $parts;
+        if (count($parts) < 5)
+            throw new InvalidArgumentException("getDbrefFromResponse: Response doesn't contain enough parts (minimum of 5): $response");
+        list($dbref, $creationTimestamp, $lastUsedTimestamp, $typeFlag, $name) = $parts;
         // Extended properties
         $properties = [];
-        for ($i = 4; $i < count($parts); $i++) {
+        for ($i = 5; $i < count($parts); $i++) {
             list($key, $value) = explode('=', $parts[$i], 2);
             $properties[$key] = $value;
         }
-        $result = new MuckDbref($dbref, $name, $typeFlag, Carbon::createFromTimestamp($creationTimestamp), $properties);
+        $result = new MuckDbref($dbref, $name, $typeFlag,
+            Carbon::createFromTimestamp($creationTimestamp), Carbon::createFromTimestamp($lastUsedTimestamp),
+            $properties);
         Log::debug("getDbrefFromResponse: Parsed as: $result");
         return $result;
     }
@@ -117,7 +119,7 @@ class MuckService
      * @param string $name
      * @return string
      */
-    public function findProblemsWithCharacterName(String $name): string
+    public function findProblemsWithCharacterName(string $name): string
     {
         return $this->connection->request('findProblemsWithCharacterName', [
             'name' => $name
@@ -131,7 +133,7 @@ class MuckService
      * @param string $password
      * @return string
      */
-    public function findProblemsWithCharacterPassword(String $password): string
+    public function findProblemsWithCharacterPassword(string $password): string
     {
         return $this->connection->request('findProblemsWithCharacterPassword', [
             'password' => $password
@@ -144,7 +146,7 @@ class MuckService
      * @param string $password
      * @return bool
      */
-    public function changeCharacterPassword(User $user, MuckDbref $character, String $password): bool
+    public function changeCharacterPassword(User $user, MuckDbref $character, string $password): bool
     {
         $response = $this->connection->request('changeCharacterPassword', [
             'aid' => $user->id(),

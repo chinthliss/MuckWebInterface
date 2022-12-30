@@ -19,17 +19,17 @@ class MuckConnectionFaker implements MuckConnection
     private function populateDatabaseIfRequired()
     {
         if (count($this->muckDatabase)) return;
-        $this->muckDatabase[] = new MuckDbref(1234, 'TestCharacter', 'p', Carbon::now(), [
+        $this->muckDatabase[] = new MuckDbref(1234, 'TestCharacter', 'p', Carbon::now(), Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '10',
             'approved' => '1'
         ]);
-        $this->muckDatabase[] = new MuckDbref(1235, 'TestAltCharacter', 'p', Carbon::now(), [
+        $this->muckDatabase[] = new MuckDbref(1235, 'TestAltCharacter', 'p', Carbon::now(), Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '2',
             'approved' => '1'
         ]);
-        $this->muckDatabase[] = new MuckDbref(1236, 'unapprovedCharacter', 'p', Carbon::now(), [
+        $this->muckDatabase[] = new MuckDbref(1236, 'unapprovedCharacter', 'p', Carbon::now(), Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '1'
         ]);
@@ -40,7 +40,7 @@ class MuckConnectionFaker implements MuckConnection
     private function dbrefToMuckResponse(MuckDbref $dbref): string
     {
         // Format - dbref,creationTimestamp,typeFlag,"name", .. otherProperties
-        $piecesArray = [$dbref->dbref, $dbref->createdTimestamp->getTimestamp(), $dbref->typeFlag, $dbref->name];
+        $piecesArray = [$dbref->dbref, $dbref->createdTimestamp->getTimestamp(), $dbref->lastUsedTimestamp?->getTimestamp(), $dbref->typeFlag, $dbref->name];
         if ($dbref->accountId()) $piecesArray[] = "\"accountId=" . $dbref->accountId() . "\"";
         if ($dbref->level()) $piecesArray[] = "\"level=" . $dbref->level() . "\"";
         if ($dbref->approved()) $piecesArray[] = "\"approved=1\"";
