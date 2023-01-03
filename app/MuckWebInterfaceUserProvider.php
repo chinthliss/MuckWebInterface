@@ -159,6 +159,66 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     #endregion Retrieval
 
+    #region Searches
+
+    /**
+     * @param string $name
+     * @return User[]
+     */
+    public function searchByCharacterName(string $name): array
+    {
+        return $this->muckService->findAccountsByCharacterName($name);
+    }
+
+    /**
+     * @param string $email
+     * @return User[]
+     */
+    public function searchByEmail(string $email): array
+    {
+        $result = [];
+
+        $rows = $this->baseRetrievalQuery()
+            ->where(function ($query) use ($email) {
+                $query->where('account_emails.email', 'like', '%' . $email . '%')
+                    ->orWhere('accounts.email', 'like', '%' . $email . '%');
+            })
+            ->get();
+
+        foreach ($rows as $row) {
+            $user = User::fromDatabaseResponse($row);
+            $result[] = $user;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Both dates are inclusive in this query
+     * @param Carbon|null $createdAfter
+     * @param Carbon|null $createdBefore
+     * @return User[]
+     */
+    public function searchByCreationDateRange(?Carbon $createdAfter = null, ?Carbon $createdBefore = null): array
+    {
+        $result = [];
+
+        $query = $this->baseRetrievalQuery();
+
+        if ($createdAfter) $query->whereDate('accounts.created_at', '>=', $createdAfter->toDateString());
+        if ($createdBefore) $query->whereDate('accounts.created_at', '<=', $createdBefore->toDateString());
+
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $user = User::fromDatabaseResponse($row);
+            $result[] = $user;
+        }
+
+        return $result;
+    }
+    #endregion
+
     /**
      * Validate a user against the given credentials.
      * Actual validation depends on the context of what's provided
