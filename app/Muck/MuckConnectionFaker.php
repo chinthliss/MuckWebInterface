@@ -33,6 +33,10 @@ class MuckConnectionFaker implements MuckConnection
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '1'
         ]);
+        $this->muckDatabase[] = new MuckDbref(1240, 'otherUsersCharacter', 'p', Carbon::now(), Carbon::now(), [
+            'accountId' => strval(DatabaseSeeder::$secondNormalUserAccountId),
+            'level' => '1'
+        ]);
 
     }
 
@@ -80,6 +84,16 @@ class MuckConnectionFaker implements MuckConnection
         return join(chr(13) . chr(10), array_map(function ($character) {
             return $this->dbrefToMuckResponse($character);
         }, $characters));
+    }
+
+    public function fake_findAccountsByCharacterName(array $data): string
+    {
+        $name = $data['name'];
+        $accountIds = [];
+        foreach ($this->muckDatabase as $dbref) {
+            if (str_contains(strtolower($dbref->name), strtolower($name))) $accountIds[] = $dbref->accountId();
+        }
+        return join(chr(13) . chr(10), array_unique($accountIds));
     }
 
     public function fake_validateCredentials(array $data): string

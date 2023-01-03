@@ -99,6 +99,23 @@ class MuckService
     }
 
     /**
+     * @param string $name
+     * @return User[]
+     */
+    public function findAccountsByCharacterName(string $name): array
+    {
+        $accounts = [];
+        $response = $this->connection->request('findAccountsByCharacterName', ['name' => $name]);
+        //Form of result is account IDs separated by \r\n
+        foreach (explode(chr(13) . chr(10), $response) as $line) {
+            if (!trim($line)) continue;
+            $accounts[] = User::find($line);
+        }
+        return $accounts;
+
+    }
+
+    /**
      * Given a character and credentials, asks the muck to verify them (via password)
      * @param MuckDbref $character
      * @param array $credentials

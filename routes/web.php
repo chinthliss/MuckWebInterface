@@ -80,7 +80,8 @@ Route::prefix('/admin/')->group(function () {
     Route::group(['middleware' => ['auth', 'role:admin']], function () {
 
         Route::get('accounts', [AdminController::class, 'showAccountBrowser'])->name('admin.accounts');
-        Route::get('accounts.api', [AdminController::class, 'lookupAccounts'])->name('admin.accounts.api');
+        Route::get('accounts.api', [AdminController::class, 'findAccounts'])->name('admin.accounts.api');
+        Route::get('account/{accountId}', [AdminController::class, 'showAccount'])->name('admin.account');
     });
 
 });

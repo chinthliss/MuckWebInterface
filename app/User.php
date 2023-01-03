@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\Auth\PasswordController;
 use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use Carbon\Carbon;
@@ -486,6 +487,27 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->getProvider()->getReferralCount($this);
     }
 
+    public function getAdminUrl(): string
+    {
+        return route('admin.account', ['accountId' => $this->id]);
+    }
+
+    /**
+     * Can return null if never connected
+     * @return Carbon|null
+     */
+    public function getLastConnect(): ?Carbon
+    {
+        //TODO: getLastConnect should also check when ACCOUNT last connected, not just character last connects
+        $lastConnect = null;
+        foreach ($this->getCharacters() as $character) {
+            if ($character->lastUsedTimestamp) {
+                $lastConnect = max($lastConnect, $character->lastUsedTimestamp);
+            }
+        }
+        return $lastConnect;
+    }
+
     public static function fromDatabaseResponse(stdClass $query): User
     {
         if (
@@ -514,5 +536,42 @@ class User implements Authenticatable, MustVerifyEmail
         if ($user->passwordType == 'NONE') $user->lockedAt = Carbon::now();
 
         return $user;
+    }
+
+    /**
+     * Supported scopes, defaults to 'user':
+     *   user - User output
+     *   admin - Also contains an adminUrl
+     *   all - Also includes emails, characters and account notes
+     * @param string $scope
+     * @return void
+     */
+    public function toArray(string $scope = 'user'): array
+    {
+        $this->loadRolesIfRequired();
+        $array = [
+            'id' => $this->id(),
+            'created' => $this->createdAt,
+            'roles' => $this->roles,
+            'locked' => $this->lockedAt
+        ];
+
+        if ($scope == 'admin' || $scope == 'all') {
+            $array['url'] = $this->getAdminUrl();
+        }
+
+        if ($scope == 'all') {
+            $characters = [];
+            foreach ($this->getCharacters() as $character) {
+                $characters[] = $character->toArray();
+            }
+            $array['lastConnected'] = $this->getLastConnect();
+            $array['primaryEmail'] = $this->getEmail();
+            $array['referrals'] = $this->getReferralCount();
+            $array['characters'] = $characters;
+            $array['emails'] = $this->getEmails();
+        }
+
+        return $array;
     }
 }
