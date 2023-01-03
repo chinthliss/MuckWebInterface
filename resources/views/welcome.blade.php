@@ -11,7 +11,7 @@
                 <h2 class="mt-2">Singleplayer</h2>
                 <p>Here is where we'll put more information about accessing singleplayer.</p>
                 <a class="btn btn-primary w-100" href="{{ route('singleplayer.home') }}">
-                    <i class="fas fa-user btn-icon-left"></i>
+                    <i class="fas fa-user"></i>
                     Enter Singleplayer
                 </a>
             </div>
@@ -19,7 +19,7 @@
                 <h2 class="mt-2">Multiplayer</h2>
                 <p>Here is where we'll put more information about accessing multiplayer.</p>
                 <a class="btn btn-primary w-100" href="{{ route('multiplayer.home') }}">
-                    <i class="fas fa-users btn-icon-left"></i>
+                    <i class="fas fa-users"></i>
                     Enter Multiplayer
                 </a>
             </div>
