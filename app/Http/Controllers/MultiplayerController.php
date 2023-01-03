@@ -14,9 +14,4 @@ class MultiplayerController extends Controller
         return view('multiplayer.home');
     }
 
-    public function showPending()
-    {
-        return view ('multiplayer.pending');
-    }
-
 }
