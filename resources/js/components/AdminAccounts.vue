@@ -24,7 +24,7 @@
 
                 <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputEmail">Email</label>
                 <div class="mt-2 col-6 col-lg-2">
-                    <input class="form-control" type="text" id="InputEmail" placeholder="Email" v-model="searchEmail">
+                    <input class="form-control" type="email" id="InputEmail" placeholder="Email" v-model="searchEmail">
                 </div>
 
                 <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputCharacter">Character</label>
@@ -58,8 +58,11 @@
 
         <hr>
 
-        <div v-if="tableLoading" class="text-center">(Loading results)</div>
-        <div v-else-if="!tableData" class="text-center">(Waiting on initial search)</div>
+        <div v-if="tableLoading" class="text-center">
+            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
+            <div>Loading..</div>
+        </div>
+        <div v-else-if="!tableData" class="text-center">Waiting on search request...</div>
         <DataTable v-else class="table table-dark table-hover table-striped table-bordered"
                    :options="tableConfiguration" :data="tableData">
         </DataTable>
@@ -83,13 +86,25 @@ const searchCreatedAfter = ref('');
 
 const tableLoading = ref(false);
 
+const listCharacters = (characters) => {
+    let names = [];
+    for (const character of characters) {
+        names.push(character.name)
+    }
+    return names.join(', ');
+};
+
 const tableConfiguration = {
     columns: [
-        {data: 'accountId', title: 'ID'},
-        {data: 'email', title: 'Primary Email'},
-        {data: 'characters', title: 'Characters'},
-        {data: 'lastConnect', title: 'Last Connect', render: carbonToString}
+        {data: 'id', title: 'ID'},
+        {data: 'primaryEmail', title: 'Primary Email'},
+        {data: 'characters', title: 'Characters', render: listCharacters},
+        {data: 'created', title: 'Created', render: carbonToString},
+        {data: 'lastConnected', title: 'Last Connected', render: carbonToString}
     ],
+    language: {
+        "emptyTable": "No accounts found matching the present criteria."
+    },
     paging: false,
     info: false,
     searching: false
@@ -114,6 +129,7 @@ const doAccountSearch = () => {
         })
         .catch(error => {
             console.log("Request failed:", error);
+            tableData.value = null;
         })
         .finally(() => tableLoading.value = false);
 }
