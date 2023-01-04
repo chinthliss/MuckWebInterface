@@ -66,6 +66,10 @@
         <DataTable v-else class="table table-dark table-hover table-striped table-bordered"
                    :options="tableConfiguration" :data="tableData">
         </DataTable>
+
+        <ModalMessage id="modal-error" title="An error occurred..">
+            The following error occurred: <br/>{{ lastError }}
+        </ModalMessage>
     </div>
 </template>
 
@@ -73,6 +77,7 @@
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
+import ModalMessage from "./ModalMessage.vue";
 
 const props = defineProps({
     apiUrl: {type: String, required: true}
@@ -111,6 +116,7 @@ const tableConfiguration = {
 };
 
 const tableData = ref();
+const lastError = ref('');
 
 const doAccountSearch = () => {
     let searchCriteria = {};
@@ -130,6 +136,11 @@ const doAccountSearch = () => {
         .catch(error => {
             console.log("Request failed:", error);
             tableData.value = null;
+
+            lastError.value = error;
+            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
+            modal.show();
+
         })
         .finally(() => tableLoading.value = false);
 }

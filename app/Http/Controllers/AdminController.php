@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MuckWebInterfaceUserProvider;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -27,8 +28,8 @@ class AdminController extends Controller
     {
         $searchCharacterName = $request->input('character');
         $searchEmail = $request->input('email');
-        $searchCreatedAfter = $request->input('createdAfter');
-        $searchCreatedBefore = $request->input('createdBefore');
+        $searchCreatedAfter = $request->has('createdAfter') ? new Carbon($request->input('createdAfter')) : null;
+        $searchCreatedBefore = $request->has('createdBefore') ? new Carbon($request->input('createdBefore')) : null;
 
         if (!$searchCharacterName && !$searchEmail && !$searchCreatedAfter && !$searchCreatedBefore)
             abort(400);
