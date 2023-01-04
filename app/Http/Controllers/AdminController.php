@@ -32,7 +32,7 @@ class AdminController extends Controller
         $searchCreatedBefore = $request->has('createdBefore') ? new Carbon($request->input('createdBefore')) : null;
 
         if (!$searchCharacterName && !$searchEmail && !$searchCreatedAfter && !$searchCreatedBefore)
-            abort(400);
+            abort(400, 'No criteria specified');
 
         $results = [];
 
