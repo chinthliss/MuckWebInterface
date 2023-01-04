@@ -5,15 +5,15 @@ namespace App;
 use App\Muck\MuckDbref;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
-use Error;
+use MuckInterop;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use MuckInterop;
+use Error;
 
 class MuckWebInterfaceUserProvider implements UserProvider
 {

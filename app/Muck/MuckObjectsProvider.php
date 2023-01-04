@@ -2,7 +2,7 @@
 
 namespace App\Muck;
 
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\ArrayShape;
@@ -17,7 +17,7 @@ class MuckObjectsProvider
      */
     #[ArrayShape([
         'dbref' => 'int',
-        'created' => 'Illuminate\Support\Carbon::class',
+        'created' => 'Carbon\Carbon::class',
         'name' => 'string',
         'deleted' => 'bool'
     ])]
