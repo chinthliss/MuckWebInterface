@@ -22,13 +22,13 @@
 
             <div class="row">
 
-                <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputEmail">Email</label>
-                <div class="mt-2 col-6 col-lg-2">
+                <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputEmail">Email</label>
+                <div class="mt-2 col-6 col-xl-2">
                     <input class="form-control" type="email" id="InputEmail" placeholder="Email" v-model="searchEmail">
                 </div>
 
-                <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputCharacter">Character</label>
-                <div class="mt-2 col-6 col-lg-2">
+                <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCharacter">Character</label>
+                <div class="mt-2 col-6 col-xl-2">
                     <input type="text" class="form-control" id="InputCharacter" placeholder="Character"
                            v-model="searchCharacter">
                 </div>
@@ -36,20 +36,20 @@
 
             <div class="row">
 
-                <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputCreatedAfter">Created After</label>
-                <div class="mt-2 col-6 col-lg-2">
+                <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCreatedAfter">Created After</label>
+                <div class="mt-2 col-6 col-xl-2">
                     <input type="date" class="form-control" id="InputCreatedAfter" placeholder="Created After"
                            v-model="searchCreatedAfter">
                 </div>
 
-                <label class="col-form-label text-end mt-2 col-6 col-lg-2" for="InputCreatedBefore">Created
+                <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCreatedBefore">Created
                     Before</label>
-                <div class="mt-2 col-6 col-lg-2">
+                <div class="mt-2 col-6 col-xl-2">
                     <input type="date" class="form-control" id="InputCreatedBefore" placeholder="Created Before"
                            v-model="searchCreatedBefore">
                 </div>
 
-                <button type="button" class="btn btn-primary mt-2 col-12 col-lg-2" @click="doAccountSearch">
+                <button type="button" class="btn btn-primary mt-2 col-12 col-xl-2" @click="doAccountSearch">
                     <i class="fas fa-search btn-icon-left"></i>Search
                 </button>
 
@@ -63,12 +63,14 @@
             <div>Loading..</div>
         </div>
         <div v-else-if="!tableData" class="text-center">Waiting on search request...</div>
-        <DataTable v-else class="table table-dark table-hover table-striped table-bordered"
-                   :options="tableConfiguration" :data="tableData">
-        </DataTable>
+        <div v-else class="table-responsive-xl">
+            <DataTable ref="table" id="AccountsTable" class="table table-dark table-hover table-striped table-bordered w-100"
+                       :options="tableConfiguration" :data="tableData">
+            </DataTable>
+        </div>
 
         <ModalMessage id="modal-error" title="An error occurred..">
-            The following error occurred: <br/>{{ lastError }}
+            Unfortunately whilst processing the request the server responded with an error:<br/>{{ lastError }}
         </ModalMessage>
     </div>
 </template>
@@ -89,7 +91,11 @@ const searchCharacter = ref('');
 const searchCreatedBefore = ref('');
 const searchCreatedAfter = ref('');
 
+const table = ref();
 const tableLoading = ref(false);
+const tableData = ref();
+
+const lastError = ref('');
 
 const listCharacters = (characters) => {
     let names = [];
@@ -97,6 +103,16 @@ const listCharacters = (characters) => {
         names.push(character.name)
     }
     return names.join(', ');
+};
+
+const tableDrawCallback = () => {
+    $('#AccountsTable tr:not(:first)').click(function () {
+        const row = table.value.dt().row(this).data();
+        if (row?.url)
+            window.open(row.url, '_blank');
+        else
+            console.log("Clicked row doesn't have an associated url with it!");
+    });
 };
 
 const tableConfiguration = {
@@ -112,11 +128,9 @@ const tableConfiguration = {
     },
     paging: false,
     info: false,
-    searching: false
+    searching: false,
+    drawCallback: tableDrawCallback
 };
-
-const tableData = ref();
-const lastError = ref('');
 
 const doAccountSearch = () => {
     let searchCriteria = {};
@@ -137,7 +151,7 @@ const doAccountSearch = () => {
             console.log("Request failed:", error);
             tableData.value = null;
 
-            lastError.value = error;
+            lastError.value = error?.response?.data?.message || error;
             const modal = new bootstrap.Modal(document.getElementById('modal-error'));
             modal.show();
 
@@ -148,5 +162,7 @@ const doAccountSearch = () => {
 </script>
 
 <style scoped>
-
+:deep(tr) {
+    cursor: pointer;
+}
 </style>
