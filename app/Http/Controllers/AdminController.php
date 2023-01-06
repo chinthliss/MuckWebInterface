@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MuckWebInterfaceUserProvider;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +17,12 @@ class AdminController extends Controller
 
     public function showAccount(int $accountId): View
     {
-        return view('admin.account');
+        $user = User::find($accountId);
+        if (!$user) abort(404);
+
+        return view('admin.account', [
+            'account' => $user->toArray('all')
+        ]);
     }
 
     public function showAccountBrowser(): View
