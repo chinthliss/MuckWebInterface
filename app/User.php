@@ -570,6 +570,7 @@ class User implements Authenticatable, MustVerifyEmail
             $array['referrals'] = $this->getReferralCount();
             $array['characters'] = $characters;
             $array['emails'] = $this->getEmails();
+            $array['notes'] = [];
         }
 
         return $array;

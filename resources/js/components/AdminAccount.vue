@@ -7,6 +7,60 @@
             </div>
         </div>
 
+        <dl class="row">
+            <dt class="col-sm-2 text-primary">Created</dt>
+            <dd class="col-sm-10">{{ carbonToString(account.created) }}</dd>
+
+
+            <dt class="col-sm-2 text-primary">Last Connected</dt>
+            <dd class="col-sm-10">{{ carbonToString(account.lastConnected) }}</dd>
+
+            <div class="row bg-danger" v-if="account.locked">
+                <dt class="col-sm-2">Locked</dt>
+                <dd class="col-sm-10">{{ outputCarbonString(account.locked) }}</dd>
+            </div>
+
+            <dt class="col-sm-2 text-primary">Referrals</dt>
+            <dd class="col-sm-10">{{ account.referrals }}</dd>
+
+            <dt class="col-sm-2 text-primary">Characters (GAMENAME)</dt> <!-- TODO: Output gamename -->
+            <dd class="col-sm-10">
+                <character-card v-for="character in account.characters" :character="character" class="me-2"></character-card>
+            </dd>
+
+
+            <dt class="col-sm-2 text-primary">Emails</dt>
+            <dd class="col-sm-10">
+                <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="account.emails">
+                    <thead>
+                    <tr>
+                        <th scope="col">Email</th>
+                        <th scope="col" class="text-center">Primary?</th>
+                        <th scope="col">Registered</th>
+                        <th scope="col">Verified</th>
+                    </tr>
+                    </thead>
+                </DataTable>
+            </dd>
+
+            <dt class="col-sm-2">Account Notes</dt>
+            <dd class="col-sm-10">
+                <div v-if="!account.notes.length">None</div>
+                <div v-for="note in account.notes">
+                    {{ `${outputCarbonString(note.whenAt)} ${note.staffMember}@${note.game}: ${note.body}` }}
+                </div>
+            </dd>
+
+            <dt class="col-sm-2">Tickets</dt>
+            <dd class="col-sm-10"> <!-- TODO: Show tickets from tickets system -->
+                PENDING
+            </dd>
+
+
+        </dl>
+
+
+
     </div>
 </template>
 
@@ -21,10 +75,28 @@
 
 import {ref} from 'vue';
 import {carbonToString} from "../formatting";
+import CharacterCard from "./CharacterCard.vue";
+import DataTable from 'datatables.net-vue3';
 
 const props = defineProps({
     account: {type: Object, required: true}
 });
+
+const displayEmailRowForIsPrimary = (data) => {
+    return data ? '<i class="fa-solid fa-check"></i>' : '';
+};
+
+const emailTableConfiguration = {
+    columns: [
+        {data: 'email'},
+        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString}
+    ],
+    paging: false,
+    info: false,
+    searching: false
+};
 
 </script>
 
