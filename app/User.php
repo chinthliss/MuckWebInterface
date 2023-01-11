@@ -422,16 +422,7 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Roles
 
-    public function setIsLocked(bool $isLocked)
-    {
-        $this->getProvider()->setIsLocked($this, $isLocked);
-        $this->lockedAt = $isLocked ? Carbon::now() : null;
-    }
-
-    public function getLockedAt(): ?Carbon
-    {
-        return $this->lockedAt;
-    }
+    #region Characters
 
     /**
      * This only sets the character on the User object at this point
@@ -462,6 +453,18 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->characters;
     }
 
+    #endregion Characters
+
+    public function setIsLocked(bool $isLocked)
+    {
+        $this->getProvider()->setIsLocked($this, $isLocked);
+        $this->lockedAt = $isLocked ? Carbon::now() : null;
+    }
+
+    public function getLockedAt(): ?Carbon
+    {
+        return $this->lockedAt;
+    }
 
     public function setPassword(string $password)
     {
@@ -490,6 +493,11 @@ class User implements Authenticatable, MustVerifyEmail
     public function getAdminUrl(): string
     {
         return route('admin.account', ['accountId' => $this->id]);
+    }
+
+    public function getAccountNotes(): array
+    {
+        return $this->getProvider()->getAccountNotes($this);
     }
 
     /**
@@ -570,7 +578,7 @@ class User implements Authenticatable, MustVerifyEmail
             $array['referrals'] = $this->getReferralCount();
             $array['characters'] = $characters;
             $array['emails'] = $this->getEmails();
-            $array['notes'] = [];
+            $array['notes'] = $this->getAccountNotes();
         }
 
         return $array;

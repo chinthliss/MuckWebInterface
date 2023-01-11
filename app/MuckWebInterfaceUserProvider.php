@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Admin\AccountNote;
 use App\Muck\MuckDbref;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
@@ -524,4 +525,25 @@ class MuckWebInterfaceUserProvider implements UserProvider
         return $users;
     }
 
+    /**
+     * @param User $user
+     * @return AccountNote[]
+     */
+    public function getAccountNotes(User $user): array
+    {
+        $rows = DB::table('account_notes')
+            ->where('aid', '=', $user->id())
+            ->get();
+        $result = [];
+        foreach ($rows as $row) {
+            $nextNote = new AccountNote();
+            $nextNote->accountId = $row->aid;
+            $nextNote->whenAt = Carbon::createFromTimestamp($row->when);
+            $nextNote->body = $row->message;
+            $nextNote->staffMember = $row->staff_member;
+            $nextNote->game = $row->game;
+            $result[] = $nextNote;
+        }
+        return $result;
+    }
 }
