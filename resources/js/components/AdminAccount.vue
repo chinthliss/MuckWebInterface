@@ -7,6 +7,10 @@
             </div>
         </div>
 
+        <div class="row bg-danger p-2" v-if="account.locked">
+            <span class="text-center">Account locked as of {{ carbonToString(account.locked) }}</span>
+        </div>
+
         <dl class="row">
             <dt class="col-sm-2 text-primary">Created</dt>
             <dd class="col-sm-10">{{ carbonToString(account.created) }}</dd>
@@ -15,23 +19,20 @@
             <dt class="col-sm-2 text-primary">Last Connected</dt>
             <dd class="col-sm-10">{{ carbonToString(account.lastConnected) }}</dd>
 
-            <div class="row bg-danger" v-if="account.locked">
-                <dt class="col-sm-2">Locked</dt>
-                <dd class="col-sm-10">{{ outputCarbonString(account.locked) }}</dd>
-            </div>
-
             <dt class="col-sm-2 text-primary">Referrals</dt>
             <dd class="col-sm-10">{{ account.referrals }}</dd>
 
             <dt class="col-sm-2 text-primary">Characters (GAMENAME)</dt> <!-- TODO: Output gamename -->
             <dd class="col-sm-10">
-                <character-card v-for="character in account.characters" :character="character" class="me-2"></character-card>
+                <character-card v-for="character in account.characters" :character="character"
+                                class="me-2"></character-card>
             </dd>
 
 
             <dt class="col-sm-2 text-primary">Emails</dt>
             <dd class="col-sm-10">
-                <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="account.emails">
+                <DataTable class="table table-dark table-hover table-striped table-bordered"
+                           :options="emailTableConfiguration" :data="account.emails">
                     <thead>
                     <tr>
                         <th scope="col">Email</th>
@@ -43,22 +44,28 @@
                 </DataTable>
             </dd>
 
-            <dt class="col-sm-2">Account Notes</dt>
+            <dt class="col-sm-2 text-primary">Account Notes</dt>
             <dd class="col-sm-10">
-                <div v-if="!account.notes.length">None</div>
-                <div v-for="note in account.notes">
-                    {{ `${outputCarbonString(note.whenAt)} ${note.staffMember}@${note.game}: ${note.body}` }}
-                </div>
+                <DataTable class="table table-dark table-hover table-striped table-bordered"
+                           :options="accountNotesTableConfiguration" :data="account.notes">
+                    <thead>
+                    <tr>
+                        <th scope="col">When</th>
+                        <th scope="col" class="text-center">Staff Member</th>
+                        <th scope="col">Game</th>
+                        <th scope="col">Note</th>
+                    </tr>
+                    </thead>
+                </DataTable>
             </dd>
 
-            <dt class="col-sm-2">Tickets</dt>
+            <dt class="col-sm-2 text-primary">Tickets</dt>
             <dd class="col-sm-10"> <!-- TODO: Show tickets from tickets system -->
                 PENDING
             </dd>
 
 
         </dl>
-
 
 
     </div>
@@ -93,6 +100,24 @@ const emailTableConfiguration = {
         {data: 'createdAt', render: carbonToString},
         {data: 'verifiedAt', render: carbonToString}
     ],
+    language: {
+        "emptyTable": "No emails associated with this account."
+    },
+    paging: false,
+    info: false,
+    searching: false
+};
+
+const accountNotesTableConfiguration = {
+    columns: [
+        {data: 'whenAt', render: carbonToString},
+        {data: 'staffMember'},
+        {data: 'game'},
+        {data: 'body'}
+    ],
+    language: {
+        "emptyTable": "No notes found on this account."
+    },
     paging: false,
     info: false,
     searching: false
