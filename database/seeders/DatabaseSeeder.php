@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public static int $normalUserAccountId = 1;
     public static int $adminUserAccountId = 2;
     public static int $secondNormalUserAccountId = 3;
+    public static int $lockedUserAccountId = 4;
 
     /**
      * Seed the application's database.
@@ -49,6 +50,14 @@ class DatabaseSeeder extends Seeder
             'propname' => 'tos-hash-viewed',
             'proptype' => 'STRING',
             'propdata' => TermsOfService::getTermsOfServiceHash()
+        ]);
+
+        DB::table('account_notes')->insert([
+            'aid' => self::$normalUserAccountId,
+            'when' => Carbon::now()->timestamp,
+            'message' => 'Test account note',
+            'staff_member' => 'Fake Admin',
+            'game' => 'Fake Game'
         ]);
 
         // *************************************
@@ -101,5 +110,30 @@ class DatabaseSeeder extends Seeder
             'proptype' => 'STRING',
             'propdata' => TermsOfService::getTermsOfServiceHash()
         ]);
+
+        // *************************************
+        // Locked User Account - lockeduser@test.com
+        DB::table('accounts')->insert([
+            'aid' => self::$lockedUserAccountId,
+            'uuid' => 'fake-uuid-4',
+            'email' => 'lockeduser@test.com',
+            'password' => MuckInterop::createSHA1SALTPassword('password'),
+            'password_type' => 'SHA1SALT',
+            'locked_at' => Carbon::now()
+        ]);
+
+        DB::table('account_emails')->insert([
+            'aid' => self::$lockedUserAccountId,
+            'email' => 'lockeduser@test.com',
+            'verified_at' => Carbon::now()
+        ]);
+
+        DB::table('account_properties')->insert([
+            'aid' => self::$lockedUserAccountId,
+            'propname' => 'tos-hash-viewed',
+            'proptype' => 'STRING',
+            'propdata' => TermsOfService::getTermsOfServiceHash()
+        ]);
+
     }
 }
