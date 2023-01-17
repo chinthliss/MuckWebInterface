@@ -9,6 +9,10 @@
 
         <div class="row bg-danger p-2" v-if="account.locked">
             <span class="text-center">Account locked as of {{ carbonToString(account.locked) }}</span>
+            <button class="btn btn-danger float-end"><i class="fas fa-unlock btn-icon-left"></i>Unlock Account</button>
+        </div>
+        <div v-else>
+            <button class="btn btn-danger float-end"><i class="fas fa-lock btn-icon-left"></i>Lock Account</button>
         </div>
 
         <dl class="row">
@@ -57,6 +61,14 @@
                     </tr>
                     </thead>
                 </DataTable>
+                <div class="d-flex g-2">
+                    <label for="NewAccountNote" class="col-form-label">New Account Note</label>
+                    <input type="text" class="form-control" id="NewAccountNote" placeholder="New Account Note"
+                           v-model="newAccountNote">
+                    <button class="btn btn-primary mt-2 form-control" @click="addAccountNote">
+                        <i class="fas fa-note-sticky btn-icon-left"></i>Add Account Note
+                    </button>
+                </div>
             </dd>
 
             <dt class="col-sm-2 text-primary">Tickets</dt>
@@ -88,6 +100,8 @@ import DataTable from 'datatables.net-vue3';
 const props = defineProps({
     account: {type: Object, required: true}
 });
+
+const newAccountNote = ref('');
 
 const displayEmailRowForIsPrimary = (data) => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
@@ -121,6 +135,10 @@ const accountNotesTableConfiguration = {
     paging: false,
     info: false,
     searching: false
+};
+
+const addAccountNote = () => {
+
 };
 
 </script>
