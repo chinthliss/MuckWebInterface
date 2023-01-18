@@ -14,6 +14,7 @@
 @section('content')
     <admin-account
         :account="{{ json_encode($account) }}"
+        api-url="{{ route('admin.account.api', ['accountId' => $account['id']]) }}"
     >
     </admin-account>
 @endsection

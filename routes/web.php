@@ -82,6 +82,7 @@ Route::prefix('/admin/')->group(function () {
         Route::get('accounts', [AdminController::class, 'showAccountBrowser'])->name('admin.accounts');
         Route::get('accounts.api', [AdminController::class, 'findAccounts'])->name('admin.accounts.api');
         Route::get('account/{accountId}', [AdminController::class, 'showAccount'])->name('admin.account');
+        Route::post('account/{accountId}', [AdminController::class, 'processAccountChange'])->name('admin.account.api');
     });
 
 });

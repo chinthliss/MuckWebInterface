@@ -30,6 +30,31 @@ class AdminController extends Controller
         return view('admin.accounts');
     }
 
+    public function processAccountChange(Request $request, int $accountId)
+    {
+        if (!$request->has('operation')) abort(400);
+        $user = User::find($accountId);
+        if (!$user) abort(404);
+
+        $operation = $request->get('operation');
+
+        switch($operation) {
+            case 'lock':
+                $user->setIsLocked(true);
+            break;
+
+            case 'unlock':
+                $user->setIsLocked(false);
+            break;
+
+
+
+            default:
+                abort(400,'Unrecognized operation requested.');
+        }
+        return 'OK';
+    }
+
     public function findAccounts(Request $request, MuckWebInterfaceUserProvider $userProvider): array
     {
         $searchCharacterName = $request->input('character');

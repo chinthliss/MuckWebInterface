@@ -7,12 +7,17 @@
             </div>
         </div>
 
-        <div class="row bg-danger p-2" v-if="account.locked">
-            <span class="text-center">Account locked as of {{ carbonToString(account.locked) }}</span>
-            <button class="btn btn-danger float-end"><i class="fas fa-unlock btn-icon-left"></i>Unlock Account</button>
+        <div v-if="account.locked">
+            <div class="text-danger p-2">Account locked as of {{ carbonToString(account.locked) }}</div>
+            <button class="btn btn-danger float-end" @click="unlockAccount">
+                <i class="fas fa-unlock btn-icon-left"></i>Unlock Account
+            </button>
+
         </div>
         <div v-else>
-            <button class="btn btn-danger float-end"><i class="fas fa-lock btn-icon-left"></i>Lock Account</button>
+            <button class="btn btn-danger float-end" @click="lockAccount">
+                <i class="fas fa-lock btn-icon-left"></i>Lock Account
+            </button>
         </div>
 
         <dl class="row">
@@ -79,6 +84,8 @@
 
         </dl>
 
+        <ModalRequestError id="modal-error" :error="lastError">
+        </ModalRequestError>
 
     </div>
 </template>
@@ -96,12 +103,16 @@ import {ref} from 'vue';
 import {carbonToString} from "../formatting";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
+import ModalRequestError from "./ModalRequestError.vue";
 
 const props = defineProps({
-    account: {type: Object, required: true}
+    account: {type: Object, required: true},
+    apiUrl: {type: String, required: true}
 });
 
+const account = ref(props.account);
 const newAccountNote = ref('');
+const lastError = ref('');
 
 const displayEmailRowForIsPrimary = (data) => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
@@ -140,6 +151,41 @@ const accountNotesTableConfiguration = {
 const addAccountNote = () => {
 
 };
+
+const lockAccount = () => {
+    axios
+        .post(props.apiUrl, {operation: 'lock'})
+        .then(response => {
+            if (response?.data === 'OK') account.value.locked = new Date().toISOString();
+            else console.log("Unrecognized response to locking account: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+            lastError.value = error;
+            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
+            modal.show();
+
+        })
+}
+
+
+
+const unlockAccount = () => {
+    axios
+        .post(props.apiUrl, {operation: 'unlock'})
+        .then(response => {
+            if (response?.data === 'OK') account.value.locked = null;
+            else console.log("Unrecognized response to unlocking account: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+            lastError.value = error;
+            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
+            modal.show();
+
+        })
+
+}
 
 </script>
 
