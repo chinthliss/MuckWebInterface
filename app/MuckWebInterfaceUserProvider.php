@@ -546,4 +546,15 @@ class MuckWebInterfaceUserProvider implements UserProvider
         }
         return $result;
     }
+
+    public function addAccountNote(User $authorUser, string $authorName, string $note): void
+    {
+        DB::table('account_notes')->insert([
+            'when' => Carbon::now()->timestamp,
+            'aid' => $authorUser->id(),
+            'staff_member' => $authorName,
+            'message' => $note,
+            'game' => config('muck.muck_name')
+        ]);
+    }
 }

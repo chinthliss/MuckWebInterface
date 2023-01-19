@@ -149,7 +149,18 @@ const accountNotesTableConfiguration = {
 };
 
 const addAccountNote = () => {
-
+    axios
+        .post(props.apiUrl, {operation: 'addAccountNote', note: 'TEST'})
+        .then(response => {
+            if (response?.data === 'OK') location.reload();
+            else console.log("Unrecognized response to adding an account note: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+            lastError.value = error;
+            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
+            modal.show();
+        })
 };
 
 const lockAccount = () => {

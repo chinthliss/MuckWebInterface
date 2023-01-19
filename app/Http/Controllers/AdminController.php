@@ -33,21 +33,28 @@ class AdminController extends Controller
     public function processAccountChange(Request $request, int $accountId)
     {
         if (!$request->has('operation')) abort(400);
-        $user = User::find($accountId);
-        if (!$user) abort(404);
+        $target = User::find($accountId);
+        if (!$target) abort(404);
+
+        /** @var User $user */
+        $user = auth()->user();
+        $reporter = $user->getCharacter()->name;
 
         $operation = $request->get('operation');
-
         switch($operation) {
             case 'lock':
-                $user->setIsLocked(true);
+                $target->setIsLocked(true);
             break;
 
             case 'unlock':
-                $user->setIsLocked(false);
+                $target->setIsLocked(false);
             break;
 
-
+            case 'addAccountNote':
+                $note = $request->get('note');
+                if (!$note) abort(400, 'Note text missing.');
+                $target->addAccountNote($reporter, $note);
+            break;
 
             default:
                 abort(400,'Unrecognized operation requested.');

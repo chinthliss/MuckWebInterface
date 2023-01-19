@@ -500,6 +500,11 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->getProvider()->getAccountNotes($this);
     }
 
+    public function addAccountNote(User $author, string $note): void
+    {
+        $this->getProvider()->addAccountNote($author, $note);
+    }
+
     /**
      * Can return null if never connected
      * @return Carbon|null
