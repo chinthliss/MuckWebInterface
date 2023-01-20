@@ -46,8 +46,10 @@
     <!-- Character select offcanvas. Here to ensure it's in the Vue app element -->
     <off-canvas-character-select
         :links="{{ json_encode([
-            "getCharacters" => route('multiplayer.characters'),
-            "setCharacter" => route('multiplayer.character.set')
+            "getState" => route('multiplayer.character.state'),
+            "setCharacter" => route('multiplayer.character.set'),
+            "createCharacter" => route('multiplayer.character.generate'),
+            "buySlot" => route('multiplayer.character.buyslot')
         ]) }}"
     ></off-canvas-character-select>
 </main>

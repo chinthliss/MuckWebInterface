@@ -25,8 +25,9 @@ class CharacterController extends Controller
 
         return [
             'characters' => $characters,
-            'freeSlots' => 0,
-            'cost' => 0
+            'freeSlots' => 1,
+            'cost' => 10,
+            'slotsRequired' => 1
         ];
     }
 
@@ -125,5 +126,8 @@ class CharacterController extends Controller
         } else throw ValidationException::withMessages(['character' => ["Something went wrong, if this continues please notify staff."]]);
     }
 
+    public function buyCharacterSlot()
+    {
 
+    }
 }

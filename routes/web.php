@@ -107,8 +107,9 @@ Route::prefix('/multiplayer/')->group(function () {
 
     // ----------------------------- Stuff that only requires a login
     Route::group(['middleware' => ['auth']], function () {
-        Route::get('characters', [CharacterController::class, 'getCharacters'])->name('multiplayer.characters');
+        Route::get('characterselect', [CharacterController::class, 'getCharacterSelectState'])->name('multiplayer.character.state');
         Route::post('character', [CharacterController::class, 'setActiveCharacter'])->name('multiplayer.character.set');
+        Route::post('buycharacterslot', [CharacterController::class, 'buyCharacterSlot'])->name('multiplayer.character.buyslot');
         Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])->name('multiplayer.character.required');
     });
 
