@@ -8,7 +8,7 @@
             <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>
             <div v-else-if="character.staffLevel === 1" class="flag staff">Staff</div>
             <div v-else-if="character.staffLevel === 2" class="flag staff">Admin</div>
-            <div v-if="!character.approved" class="flag unapproved">Unapproved</div>
+            <div v-else-if="!character.approved" class="flag unapproved">Unapproved</div>
         </div>
     </div>
 </template>

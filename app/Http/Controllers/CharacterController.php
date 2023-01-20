@@ -13,15 +13,21 @@ use Illuminate\View\View;
 
 class CharacterController extends Controller
 {
-    public function getCharacters(): array
+    public function getCharacterSelectState(): array
     {
         /** @var User $user */
         $user = auth()->guard()->user();
         if (!$user) abort(401);
 
-        return array_map(function ($character) {
+        $characters = array_map(function ($character) {
             return $character->toPlayerArray();
         }, $user->getCharacters());
+
+        return [
+            'characters' => $characters,
+            'freeSlots' => 0,
+            'cost' => 0
+        ];
     }
 
     public function setActiveCharacter(Request $request, MuckObjectService $muckObjectService): array|RedirectResponse
