@@ -31,7 +31,7 @@ class MuckObjectsProvider
         if (!$row) return null;
 
         // Because we don't presently have a means to handle dbrefs from another game
-        if ($row->game_code != config('muck.muck_code')) return null;
+        if ($row->game_code != config('muck.code')) return null;
 
         return [
             'dbref' => $row->dbref,
@@ -52,7 +52,7 @@ class MuckObjectsProvider
 
         // Try to find it first
         $row = DB::table('muck_objects')
-            ->where('game_code', '=', config('muck.muck_code'))
+            ->where('game_code', '=', config('muck.code'))
             ->where('dbref', '=', $muckDbref->dbref)
             ->where('created_at', '=', $muckDbref->createdTimestamp)
             ->first();
@@ -75,7 +75,7 @@ class MuckObjectsProvider
                 break;
         }
         $databaseArray = [
-            'game_code' => config('muck.muck_code'),
+            'game_code' => config('muck.code'),
             'dbref' => $muckDbref->dbref,
             'created_at' => $muckDbref->createdTimestamp,
             'type' => $type,

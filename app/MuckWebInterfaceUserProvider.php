@@ -555,7 +555,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'aid' => $account->id(),
             'staff_member' => $authorName,
             'message' => $note,
-            'game' => config('muck.muck_name')
+            'game' => config('muck.name')
         ]);
     }
 }

@@ -27,7 +27,7 @@ class HostLogManager
                     'host_ip' => $ip,
                     'aid' => $user->id(),
                     'plyr_ref' => $character ? $character->dbref : -1, // To match existing format
-                    'game_code' => config('muck.muck_code')
+                    'game_code' => config('muck.code')
                 ], [
                     'host_name' => $hostname,
                     'plyr_name' => $character?->name,
