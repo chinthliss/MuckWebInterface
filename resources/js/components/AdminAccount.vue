@@ -31,7 +31,7 @@
             <dt class="col-sm-2 text-primary">Referrals</dt>
             <dd class="col-sm-10">{{ account.referrals }}</dd>
 
-            <dt class="col-sm-2 text-primary">Characters (GAMENAME)</dt> <!-- TODO: Output gamename -->
+            <dt class="col-sm-2 text-primary">Characters ({{ lex('game_name') }})</dt> <!-- TODO: Output gamename -->
             <dd class="col-sm-10">
                 <character-card v-for="character in account.characters" :character="character"
                                 class="me-2"></character-card>
@@ -107,6 +107,7 @@
 
 import {ref} from 'vue';
 import {carbonToString} from "../formatting";
+import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
 import ModalRequestError from "./ModalRequestError.vue";

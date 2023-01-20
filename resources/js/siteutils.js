@@ -27,3 +27,7 @@ export const characterName = () => {
     const characterName = document.querySelector('meta[name="character-name"]')?.content;
     return characterName ? characterName : '';
 };
+
+export const lex = (word) => {
+    return mwiSiteLexicon[word] || word;
+};

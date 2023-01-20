@@ -35,7 +35,10 @@
     </div>
 @endif
 
-
+<!-- Lexicon configuration -->
+<script type="application/javascript">
+    const mwiSiteLexicon = @json(Lex::toArray());
+</script
 
 @yield('breadcrumbs')
 <main id="app" class="py-2 mb-3">
