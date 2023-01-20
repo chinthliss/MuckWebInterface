@@ -48,9 +48,6 @@ class LoginController extends Controller
             //TODO: Look better at implementing loginThrottle
             // $this->clearLoginAttempts($request);
 
-            //TODO: Remove test message in login
-            $request->session()->flash('message-success', 'You have logged in! (And this is a test message.)');
-
             return redirect()->intended(route('welcome'));
         } else {
             $user = auth()->guard()->getProvider()->retrieveByCredentials($credentials);

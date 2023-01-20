@@ -2,10 +2,6 @@
  * Load and configure dependencies for our app here.
  */
 
-// TODO: Removed lodash as pretty sure nothing is using it now
-// import _ from 'lodash';
-// window._ = _;
-
 /**
  * Bootstrap
  */
