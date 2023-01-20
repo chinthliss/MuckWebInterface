@@ -30,15 +30,16 @@ class AdminController extends Controller
         return view('admin.accounts');
     }
 
-    public function processAccountChange(Request $request, int $accountId)
+    public function processAccountChange(Request $request, int $accountId): string
     {
         if (!$request->has('operation')) abort(400);
         $target = User::find($accountId);
         if (!$target) abort(404);
 
-        /** @var User $user */
-        $user = auth()->user();
-        $reporter = $user->getCharacter()->name;
+        /** @var User $reporter */
+        $reporter = auth()->user();
+        $reporterCharacter = $reporter->getCharacter();
+        if (!$reporterCharacter || !$reporterCharacter->isAdmin()) abort(400, 'You need to be logged on as an admin character');
 
         $operation = $request->get('operation');
         switch($operation) {
@@ -52,8 +53,8 @@ class AdminController extends Controller
 
             case 'addAccountNote':
                 $note = $request->get('note');
-                if (!$note) abort(400, 'Note text missing.');
-                $target->addAccountNote($reporter, $note);
+                if (!$note) abort(400, 'No note text provided.');
+                $target->addAccountNote($reporterCharacter->name, $note);
             break;
 
             default:

@@ -547,11 +547,12 @@ class MuckWebInterfaceUserProvider implements UserProvider
         return $result;
     }
 
-    public function addAccountNote(User $authorUser, string $authorName, string $note): void
+    public function addAccountNote(User $account, string $authorName, string $note): void
     {
+        Log::debug("Adding account note to $account, by $authorName: $note");
         DB::table('account_notes')->insert([
             'when' => Carbon::now()->timestamp,
-            'aid' => $authorUser->id(),
+            'aid' => $account->id(),
             'staff_member' => $authorName,
             'message' => $note,
             'game' => config('muck.muck_name')

@@ -500,9 +500,9 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->getProvider()->getAccountNotes($this);
     }
 
-    public function addAccountNote(User $author, string $note): void
+    public function addAccountNote(string $authorName, string $note): void
     {
-        $this->getProvider()->addAccountNote($author, $note);
+        $this->getProvider()->addAccountNote($this, $authorName, $note);
     }
 
     /**

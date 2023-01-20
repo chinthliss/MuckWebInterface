@@ -66,13 +66,19 @@
                     </tr>
                     </thead>
                 </DataTable>
-                <div class="d-flex g-2">
-                    <label for="NewAccountNote" class="col-form-label">New Account Note</label>
-                    <input type="text" class="form-control" id="NewAccountNote" placeholder="New Account Note"
-                           v-model="newAccountNote">
-                    <button class="btn btn-primary mt-2 form-control" @click="addAccountNote">
-                        <i class="fas fa-note-sticky btn-icon-left"></i>Add Account Note
-                    </button>
+                <div class="row g-2 mt-2">
+                    <div class="col-12 col-xl-3">
+                        <label for="NewAccountNote" class="col align-middle">New Account Note</label>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                        <input type="text" class="form-control" id="NewAccountNote" placeholder="New Account Note"
+                               v-model="newAccountNote">
+                    </div>
+                    <div class="col-12 col-xl-3">
+                        <button class="btn btn-primary form-control align-middle" @click="addAccountNote">
+                            <i class="fas fa-note-sticky btn-icon-left"></i>Add Account Note
+                        </button>
+                    </div>
                 </div>
             </dd>
 
@@ -150,7 +156,7 @@ const accountNotesTableConfiguration = {
 
 const addAccountNote = () => {
     axios
-        .post(props.apiUrl, {operation: 'addAccountNote', note: 'TEST'})
+        .post(props.apiUrl, {operation: 'addAccountNote', note: newAccountNote.value})
         .then(response => {
             if (response?.data === 'OK') location.reload();
             else console.log("Unrecognized response to adding an account note: ", response);
@@ -178,7 +184,6 @@ const lockAccount = () => {
 
         })
 }
-
 
 
 const unlockAccount = () => {

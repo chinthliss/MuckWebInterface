@@ -13,7 +13,7 @@ Error is intended to be whatever the interface for the web request returns, so i
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div v-if="error">
-                            Unfortunately whilst processing the request the server responded with an error:
+                            Whilst processing the request, the server responded with the following error:
                             <br/>{{ error?.response?.data?.message || error }}
                         </div>
                         <div v-else>
