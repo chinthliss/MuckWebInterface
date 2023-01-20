@@ -10,6 +10,12 @@ class AdminAccountTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_is_admin_is_working()
+    {
+        $user = UserFactory::create(['roles' => 'admin']);
+        $this->assertTrue($user->isAdmin());
+    }
+
     public function test_account_browser_is_accessible_to_admin()
     {
         $response = $this->actingAs(UserFactory::create(['roles' => 'admin']))->get(route('admin.accounts'));
@@ -24,12 +30,14 @@ class AdminAccountTest extends TestCase
 
     public function test_admin_account_view_is_accessible_to_admin()
     {
+        $this->seed();
         $response = $this->actingAs(UserFactory::create(['roles' => 'admin']))->get(route('admin.account', ['accountId' => 1]));
         $response->assertSuccessful();
     }
 
     public function test_admin_account_view_is_not_accessible_to_user()
     {
+        $this->seed();
         $response = $this->actingAs(UserFactory::create())->get(route('admin.account', ['accountId' => 1]));
         $response->assertForbidden();
     }
