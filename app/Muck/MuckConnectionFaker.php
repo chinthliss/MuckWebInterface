@@ -37,6 +37,10 @@ class MuckConnectionFaker implements MuckConnection
             'accountId' => strval(DatabaseSeeder::$secondNormalUserAccountId),
             'level' => '1'
         ]);
+        $this->muckDatabase[] = new MuckDbref(1300, 'adminCharacter', 'p', Carbon::now(), Carbon::now(), [
+            'accountId' => strval(DatabaseSeeder::$adminUserAccountId),
+            'staffLevel' => '2'
+        ]);
 
     }
 
@@ -47,7 +51,9 @@ class MuckConnectionFaker implements MuckConnection
         $piecesArray = [$dbref->dbref, $dbref->createdTimestamp->getTimestamp(), $dbref->lastUsedTimestamp?->getTimestamp(), $dbref->typeFlag, $dbref->name];
         if ($dbref->accountId()) $piecesArray[] = "\"accountId=" . $dbref->accountId() . "\"";
         if ($dbref->level()) $piecesArray[] = "\"level=" . $dbref->level() . "\"";
-        if ($dbref->approved()) $piecesArray[] = "\"approved=1\"";
+        foreach ($dbref->properties as $key => $value) {
+            $piecesArray[] = "\"$key=$value\"";
+        }
         return join(',', $piecesArray);
     }
 
