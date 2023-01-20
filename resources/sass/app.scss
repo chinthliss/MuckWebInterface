@@ -51,7 +51,7 @@ main {
     box-shadow: 0 8px 12px -8px rgba(0, 0, 0, .6), 0 20px 26px -20px rgba(0, 0, 0, .2)
 }
 
-// Better icon placements on buttons
+// Additional button formatting
 .btn-icon-left {
     padding-top: 0.375em;
     padding-bottom: 0.375em;
@@ -64,6 +64,28 @@ main {
     padding-bottom: 0.375em;
     float: right;
     margin-left: 0.375em;
+}
+
+.btn-second-line {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.btn-with-img-icon {
+    position: relative;
+    padding-left: 60px !important;
+    min-height: 52px;
+}
+
+.btn-icon-accountcurrency {
+    background: url('/image/accountcurrency.png') #111 2px 50% no-repeat;
+    border-radius: $btn-border-radius;
+    min-width: 48px;
+    min-height: 48px;
+    position:absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
 }
 
 // Overrides for nav-tabs
