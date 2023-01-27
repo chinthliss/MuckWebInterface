@@ -172,4 +172,16 @@ class MuckService
         ]);
         return ($response === 'OK');
     }
+
+    public function getCharacterSlotStateFor(User $user): array
+    {
+        $response = $this->connection->request('getCharacterSlotState', [
+            'aid' => $user->id()
+        ]);
+        $state = explode(',', $response,2);
+        return [
+            'count' => $state[0],
+            'cost' => $state[1]
+        ];
+    }
 }

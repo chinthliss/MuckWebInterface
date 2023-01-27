@@ -13,7 +13,7 @@ use Illuminate\View\View;
 
 class CharacterController extends Controller
 {
-    public function getCharacterSelectState(): array
+    public function getCharacterSelectState(MuckService $muck): array
     {
         /** @var User $user */
         $user = auth()->guard()->user();
@@ -23,11 +23,12 @@ class CharacterController extends Controller
             return $character->toPlayerArray();
         }, $user->getCharacters());
 
+        $state = $muck->getCharacterSlotStateFor($user);
+
         return [
             'characters' => $characters,
-            'freeSlots' => 1,
-            'cost' => 10,
-            'slotsRequired' => 1
+            'characterSlotCount' => $state['count'],
+            'characterSlotCost' => $state['cost']
         ];
     }
 

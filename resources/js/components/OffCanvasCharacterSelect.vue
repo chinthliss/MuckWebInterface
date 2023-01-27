@@ -10,8 +10,8 @@
         <div class="offcanvas-body">
 
             <div class="row text-center">
-                <div class="col alert alert-danger" v-if="slotsRequired">
-                    You are over your character limit by {{ slotsRequired }}. This may cause characters to become
+                <div class="col alert alert-danger" v-if="characters.length - slots > 0">
+                    You are over your character limit by {{ characters.length - slots }}. This may cause characters to become
                     unavailable.
                 </div>
             </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 import {lex} from "../siteutils";
 
@@ -58,20 +58,22 @@ const props = defineProps({
 });
 
 const characters = ref([]);
-const freeSlots = ref(0);
+const slots = ref(0);
 const cost = ref(null);
-const slotsRequired = ref(0);
 const self = ref();
 let initialLoading = ref(true);
+
+const freeSlots = computed(() => {
+    return Math.max(slots.value - characters.value.length, 0);
+});
 
 const refreshCharacterList = () => {
     // console.log("(site) Booting character select from " + props.links.getState);
     axios.get(props.links.getState)
         .then(response => {
             characters.value = response.data.characters;
-            cost.value = response.data.cost;
-            freeSlots.value = response.data.freeSlots;
-            slotsRequired.value = response.data.slotsRequired;
+            slots.value = response.data.characterSlotCount;
+            cost.value = response.data.characterSlotCost;
             initialLoading.value = false;
         })
         .catch(error => {
