@@ -100,7 +100,7 @@ const clicked = () => {
         z-index: 2;
         right: 2px;
         top: 2px;
-        width: 128px;
+        left: 16px;
         height: 40px;
         color: white;
         text-align: right;
