@@ -184,4 +184,27 @@ class MuckService
             'cost' => $state[1]
         ];
     }
+
+    public function buyCharacterSlot(User $user): array
+    {
+        $response = $this->connection->request('buyCharacterSlot', [
+            'aid' => $user->id()
+        ]);
+        $result = explode(',', $response, 3);
+
+        // On error we get ['ERROR',message]
+        if ($result[0] == 'ERROR') {
+            return [
+                "result" => "ERROR",
+                "error" => $result[1]
+            ];
+        }
+
+        // On success we get ['OK',characterSlotCount,characterSlotCost]
+        return [
+            "result" => "OK",
+            "characterSlotCount" => $result[1],
+            "characterSlotCost" => $result[2]
+        ];
+    }
 }

@@ -127,8 +127,13 @@ class CharacterController extends Controller
         } else throw ValidationException::withMessages(['character' => ["Something went wrong, if this continues please notify staff."]]);
     }
 
-    public function buyCharacterSlot()
+    public function buyCharacterSlot(MuckService $muck): array
     {
+        /** @var User $user */
+        $user = auth()->user();
 
+        if (!$user) abort(401);
+
+        return $muck->buyCharacterSlot($user);
     }
 }

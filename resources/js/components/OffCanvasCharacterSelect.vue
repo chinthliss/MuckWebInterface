@@ -11,7 +11,8 @@
 
             <div class="row text-center">
                 <div class="col alert alert-danger" v-if="characters.length - slots > 0">
-                    You are over your character limit by {{ characters.length - slots }}. This may cause characters to become
+                    You are over your character limit by {{ characters.length - slots }}. This may cause characters to
+                    become
                     unavailable.
                 </div>
             </div>
@@ -32,19 +33,23 @@
 
 
             <div v-if="cost" class="row text-center mt-2">
-                    <div class="col">
-                        <a class="btn btn-primary btn-with-img-icon" href="#" @click="buyCharacterSlot">
-                            <span class="btn-icon-accountcurrency btn-icon-left"></span>
-                            Buy Character Slot
-                            <span class="btn-second-line">{{ cost }} {{ lex('accountcurrency') }}</span>
-                        </a>
-                    </div>
+                <div class="col">
+                    <a class="btn btn-primary btn-with-img-icon" href="#" @click="verifyBuyCharacterSlot">
+                        <span class="btn-icon-accountcurrency btn-icon-left"></span>
+                        Buy Character Slot
+                        <span class="btn-second-line">{{ cost }} {{ lex('accountcurrency') }}</span>
+                    </a>
+                </div>
             </div>
 
 
         </div>
     </div>
 
+    <ModalConfirmation id="confirm-buy-character-slot" @yes="buyCharacterSlot"
+                       yes-label="Buy Character" no-label="Cancel">
+        Are you sure you wish to buy a new character slot for {{ cost }} {{ lex('accountcurrency') }}?
+    </ModalConfirmation>
 
 </template>
 
@@ -52,6 +57,7 @@
 import {ref, onMounted, computed} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 import {lex} from "../siteutils";
+import ModalConfirmation from "./ModalConfirmation.vue";
 
 const props = defineProps({
     links: {type: Object, required: true}
@@ -74,10 +80,11 @@ const refreshCharacterList = () => {
             characters.value = response.data.characters;
             slots.value = response.data.characterSlotCount;
             cost.value = response.data.characterSlotCost;
-            initialLoading.value = false;
         })
         .catch(error => {
             console.log("An error occurred whilst refreshing the character list: ", error.message || error);
+        })
+        .finally(() => {
             initialLoading.value = false;
         });
 };
@@ -99,10 +106,30 @@ const selectCharacter = (character) => {
         })
         .catch(error => {
             console.log("An error occurred whilst selecting a character: ", error.message || error);
-            initialLoading.value = false;
         });
-
 };
+
+const verifyBuyCharacterSlot = () => {
+    const modal = new bootstrap.Modal(document.getElementById('confirm-buy-character-slot'));
+    modal.show();
+}
+const buyCharacterSlot = () => {
+    axios.post(props.links.buySlot, {})
+        .then(response => {
+            if (response?.data?.result === 'OK') {
+                slots.value = response.data.characterSlotCount;
+                cost.value = response.data.characterSlotCost;
+            } else {
+                console.log("The muck declined the request: ", response.data.error);
+            }
+        })
+        .catch(error => {
+            console.log("An error occurred whilst buying a character slot: ", error.message || error);
+        })
+        .finally(() => {
+
+        });
+}
 
 
 defineExpose({refreshCharacterList});

@@ -134,6 +134,11 @@ class MuckConnectionFaker implements MuckConnection
         return "3,10";
     }
 
+    public function fake_buyCharacterSlot(array $data): string
+    {
+        return "ERROR,something";
+    }
+
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));
