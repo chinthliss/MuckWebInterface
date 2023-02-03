@@ -1,20 +1,19 @@
 <!--
-Modal dialog that shows an error from a web request.
-Error is intended to be whatever the interface for the web request returns, so is usually an object
+Modal dialog that intercepts axios communication errors and shows itself if one occurs
 -->
 <template>
-    <div class="modal" tabindex="-1">
+    <div ref="self" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">An error occurred</h5>
+                    <h5 class="modal-title">Server Error</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <div v-if="error">
+                        <div v-if="lastError">
                             Whilst processing the request, the server responded with the following error:
-                            <br/>{{ error?.response?.data?.message || error }}
+                            <br/>{{ lastError }}
                         </div>
                         <div v-else>
                             An error occurred with the request to the server.
@@ -30,9 +29,26 @@ Error is intended to be whatever the interface for the web request returns, so i
 </template>
 
 <script setup>
-defineProps({
-    error: {required: false}
+
+import {ref, onMounted} from "vue";
+
+const lastError = ref("");
+const self = ref(null);
+const modal = ref(null);
+
+onMounted(() => {
+    modal.value = new bootstrap.Modal(self.value);
+    console.log("Registering Axios interceptor for response errors.");
+    axios.interceptors.response.use(function (response) {
+        return response;
+    }, function (error) {
+        console.log("Server error: ", error);
+        lastError.value = error?.response?.data?.message || error || "";
+        modal.value.show();
+        return Promise.reject(error);
+    });
 });
+
 </script>
 
 <style scoped>

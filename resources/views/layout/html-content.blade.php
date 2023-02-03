@@ -43,7 +43,9 @@
 @yield('breadcrumbs')
 <main id="app" class="py-2 mb-3">
     @yield('page-content')
-    <!-- Character select offcanvas. Here to ensure it's in the Vue app element -->
+
+    <!-- Vue Components that we need to ensure are in the Vue app element -->
+
     <off-canvas-character-select
         :links="{{ json_encode([
             "getState" => route('multiplayer.character.state'),
@@ -52,4 +54,8 @@
             "buySlot" => route('multiplayer.character.buyslot')
         ]) }}"
     ></off-canvas-character-select>
+
+    <modal-request-error id="modal-site-error" error=""
+
+    ></modal-request-error>
 </main>
