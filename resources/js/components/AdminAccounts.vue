@@ -68,10 +68,6 @@
                        :options="tableConfiguration" :data="tableData">
             </DataTable>
         </div>
-
-        <ModalMessage id="modal-error" title="An error occurred..">
-            Unfortunately whilst processing the request the server responded with an error:<br/>{{ lastError }}
-        </ModalMessage>
     </div>
 </template>
 
@@ -79,7 +75,6 @@
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
-import ModalMessage from "./ModalMessage.vue";
 
 const props = defineProps({
     apiUrl: {type: String, required: true}
@@ -94,8 +89,6 @@ const searchCreatedAfter = ref('');
 const table = ref();
 const tableLoading = ref(false);
 const tableData = ref();
-
-const lastError = ref('');
 
 const listCharacters = (characters) => {
     let names = [];
@@ -148,13 +141,7 @@ const doAccountSearch = () => {
             tableData.value = response.data;
         })
         .catch(error => {
-            console.log("Request failed:", error);
-            tableData.value = null;
-
-            lastError.value = error?.response?.data?.message || error;
-            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
-            modal.show();
-
+            console.log("Search request failed:", error.message || error);
         })
         .finally(() => tableLoading.value = false);
 }
