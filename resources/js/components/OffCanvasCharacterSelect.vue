@@ -121,15 +121,15 @@ const selectCharacter = (character) => {
 const verifyBuyCharacterSlot = () => {
     confirmationModal.show();
 }
+
 const buyCharacterSlot = () => {
-    const modal =
+    confirmationModal.hide();
     axios.post(props.links.buySlot, {})
         .then(response => {
             if (response?.data?.result === 'OK') {
                 slots.value = response.data.characterSlotCount;
                 cost.value = response.data.characterSlotCost;
             } else {
-                confirmationModal.hide();
                 lastMessage.value = "The request was declined: " + response.data.error;
                 messageModal.show();
             }
