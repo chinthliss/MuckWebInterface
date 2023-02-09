@@ -136,7 +136,8 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_buyCharacterSlot(array $data): string
     {
-        return "ERROR,something";
+        // return "ERROR,something";
+        return "OK,5,50";
     }
 
     public function request(string $request, array $data = []): string
