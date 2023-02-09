@@ -51,6 +51,9 @@
         Are you sure you wish to buy a new character slot for {{ cost }} {{ lex('accountcurrency') }}?
     </ModalConfirmation>
 
+    <ModalMessage id="message-display">{{ lastMessage }}</ModalMessage>
+
+
 </template>
 
 <script setup>
@@ -58,6 +61,7 @@ import {ref, onMounted, computed} from 'vue';
 import CharacterCard from './CharacterCard.vue';
 import {lex} from "../siteutils";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import ModalMessage from "./ModalMessage.vue";
 
 const props = defineProps({
     links: {type: Object, required: true}
@@ -67,7 +71,10 @@ const characters = ref([]);
 const slots = ref(0);
 const cost = ref(null);
 const self = ref();
+const lastMessage = ref('');
 let initialLoading = ref(true);
+let confirmationModal = null;
+let messageModal = null;
 
 const freeSlots = computed(() => {
     return Math.max(slots.value - characters.value.length, 0);
@@ -91,6 +98,8 @@ const refreshCharacterList = () => {
 
 onMounted(() => {
     self.value.addEventListener('show.bs.offcanvas', refreshCharacterList);
+    confirmationModal = new bootstrap.Modal(document.getElementById('confirm-buy-character-slot'));
+    messageModal = new bootstrap.Modal(document.getElementById('message-display'));
 });
 
 const selectCharacter = (character) => {
@@ -110,17 +119,19 @@ const selectCharacter = (character) => {
 };
 
 const verifyBuyCharacterSlot = () => {
-    const modal = new bootstrap.Modal(document.getElementById('confirm-buy-character-slot'));
-    modal.show();
+    confirmationModal.show();
 }
 const buyCharacterSlot = () => {
+    const modal =
     axios.post(props.links.buySlot, {})
         .then(response => {
             if (response?.data?.result === 'OK') {
                 slots.value = response.data.characterSlotCount;
                 cost.value = response.data.characterSlotCost;
             } else {
-                console.log("The muck declined the request: ", response.data.error);
+                confirmationModal.hide();
+                lastMessage.value = "The request was declined: " + response.data.error;
+                messageModal.show();
             }
         })
         .catch(error => {
