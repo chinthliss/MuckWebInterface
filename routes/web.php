@@ -105,6 +105,11 @@ Route::prefix('/singleplayer/')->group(function () {
 */
 Route::prefix('/multiplayer/')->group(function () {
 
+    // ----------------------------- Stuff that is always available
+
+    // Getting started page
+    Route::get('gettingstarted', [MultiplayerController::class, 'showGettingStarted'])->name('multiplayer.guide.starting');
+
     // ----------------------------- Stuff that only requires a login
     Route::group(['middleware' => ['auth']], function () {
         Route::get('characterselect', [CharacterController::class, 'getCharacterSelectState'])->name('multiplayer.character.state');
