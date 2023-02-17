@@ -11,13 +11,12 @@
 @endsection
 
 @section('content')
-    <!-- TODO: Connect missing urls up in getting started -->
     <multiplayer-getting-started
         :account="{{ $hasAccount ? 'true' : 'false' }}"
         account-url="{{ route('multiplayer.home') }}"
 
         :character="{{ $hasAnyCharacter ? 'true' : 'false' }}"
-        character-url="{{ route('multiplayer.home') }}"
+        character-url="{{ route('multiplayer.character.create') }}"
 
         :character-active="{{ $hasActiveCharacter ? 'true' : 'false' }}"
 
