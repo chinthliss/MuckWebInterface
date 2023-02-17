@@ -9,8 +9,15 @@ use Illuminate\View\View;
 
 class MultiplayerController extends Controller
 {
-    public function showHome(Request $request): View
+    public function showHome(Request $request): View | RedirectResponse
     {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $charactersToProcess = $user->getCharacters();
+        if (count($charactersToProcess) === 0) //Redirect to getting started if we have no characters
+            return redirect(route('multiplayer.guide.starting'));
+
         return view('multiplayer.home');
     }
 
