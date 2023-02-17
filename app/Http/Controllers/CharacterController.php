@@ -61,9 +61,38 @@ class CharacterController extends Controller
         return view('multiplayer.character-hub');
     }
 
-    public function showCharacterGeneration(): View
+    public function showCreateCharacter(): View
     {
-        return view('multiplayer.character-generation');
+        return view('multiplayer.character-creation');
+    }
+
+    public function createCharacter(Request $request, MuckService $muck): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $request->validate([
+            'characterName' => 'required'
+        ]);
+        $desiredName = $request->input('characterName');
+        $issue = $muck->findProblemsWithCharacterName($desiredName);
+        if ($issue) throw ValidationException::withMessages(['characterName' => $issue]);
+
+        $result = $muck->createCharacterFor($user, $desiredName);
+        if ($result['result'] == 'ERROR') {
+            throw ValidationException::withMessages(['characterName' => $result['error']]);
+        }
+        $user->setCharacter($result['character']);
+
+        //TODO: Restore notification for creating a character
+        // MuckWebInterfaceNotification::notifyUser($user, "Your new character '$desiredName' has been created with an initial password of: {$result['initialPassword']}");
+
+        return redirect()->route('multiplayer.character.initial-setup');
+    }
+
+    public function showCharacterInitialSetup()
+    {
+        return view('multiplayer.character-initial-setup');
     }
 
     public function showCharacterRequired(): View

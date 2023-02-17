@@ -50,7 +50,7 @@
         :links="{{ json_encode([
             "getState" => route('multiplayer.character.state'),
             "setCharacter" => route('multiplayer.character.set'),
-            "createCharacter" => route('multiplayer.character.generate'),
+            "createCharacter" => route('multiplayer.character.create'),
             "buySlot" => route('multiplayer.character.buyslot')
         ]) }}"
     ></off-canvas-character-select>

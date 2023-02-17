@@ -138,7 +138,7 @@ class ActiveCharacterTest extends TestCase
         $this->loginAsValidatedUser();
         $this->post(route('multiplayer.character.set'), ['dbref' => 1236]);
         $response = $this->get(route('multiplayer.character'));
-        $response->assertRedirect(route('multiplayer.character.generate'));
+        $response->assertRedirect(route('multiplayer.character.create'));
     }
 
 }

@@ -122,8 +122,11 @@ Route::prefix('/multiplayer/')->group(function () {
     Route::group(['middleware' => ['auth', 'not.locked', 'verified', 'tos.agreed']], function () {
         Route::get('', [MultiplayerController::class, 'showHome'])->name('multiplayer.home');
 
-        // Character generation
-        Route::get('charactergeneration', [CharacterController::class, 'showCharacterGeneration'])->name('multiplayer.character.generate');
+        // Character creation
+        Route::get('charactercreate', [CharacterController::class, 'showCreateCharacter'])->name('multiplayer.character.create');
+        Route::post('charactercreate', [CharacterController::class, 'createCharacter']);
+        // Though it requires a character set, this is here to avoid getting 'You need to complete character generation' messages on accessing it.
+        Route::get('character-initial-setup', [CharacterController::class, 'showCharacterInitialSetup'])->name('multiplayer.character.initial-setup');
 
         // Character password recovery
         Route::get('changecharacterpassword', [CharacterController::class, 'showChangeCharacterPassword'])->name('multiplayer.character.changepassword');
