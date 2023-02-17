@@ -140,6 +140,12 @@ class MuckConnectionFaker implements MuckConnection
         return "OK,5,50";
     }
 
+    public function fake_createCharacter(array $data): string
+    {
+        if ($data['name'] == 'fake') return 'ERROR|Character called fake not allowed.';
+        return 'OK|1236|testword';
+    }
+
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));

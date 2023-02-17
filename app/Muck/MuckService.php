@@ -207,4 +207,34 @@ class MuckService
             "characterSlotCost" => $result[2]
         ];
     }
+
+    /**
+     * Returns ['OK',character,initialPassword] on success, otherwise ['ERROR',message]
+     * @param User $user
+     * @param string $name
+     * @return array
+     */
+    public function createCharacterFor(User $user, string $name): array
+    {
+        $response = $this->connection->request('createCharacter', [
+            'aid' => $user->id(),
+            'name' => $name
+        ]);
+        $result = explode('|', $response, 3);
+
+        // On error we get ['ERROR',message]
+        if ($result[0] == 'ERROR') {
+            return [
+                "result" => "ERROR",
+                "error" => $result[1]
+            ];
+        }
+
+        //On success we get ['OK',character,initialPassword]
+        return [
+            "result" => "OK",
+            "character" => $this->getByDbref($result[1]) ,
+            "initialPassword" => $response[2]
+        ];
+    }
 }

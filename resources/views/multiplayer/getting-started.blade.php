@@ -22,7 +22,7 @@
         :character-active="{{ $hasActiveCharacter ? 'true' : 'false' }}"
 
         :character-approved="{{ $hasApprovedCharacter ? 'true' : 'false' }}"
-        character-approved-url="{{ route('multiplayer.home') }}"
+        character-approved-url="{{ route('multiplayer.character.initial-setup') }}"
 
         direct-connect-url="{{ route('multiplayer.home') }}"
         reset-character-password-url="{{ route('multiplayer.character.changepassword') }}"
