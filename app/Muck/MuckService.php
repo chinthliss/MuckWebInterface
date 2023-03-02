@@ -6,6 +6,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use App\Helpers\Ansi;
 
 class MuckService
 {
@@ -236,5 +237,19 @@ class MuckService
             "character" => $this->getByDbref($result[1]) ,
             "initialPassword" => $response[2]
         ];
+    }
+
+    public function getCharacterInitialSetupConfigurationFor(User $user): array
+    {
+        $response = $this->connection->request('getCharacterInitialSetupConfiguration', ['aid' => $user->id()]);
+        $config = json_decode($response, true);
+        foreach (['factions', 'perks', 'flaws'] as $section) {
+            foreach ($config[$section] as &$item) {
+                if (array_key_exists('description', $item))
+                    $item['description'] = Ansi::unparsedToHtml($item['description']);
+            }
+        }
+        return $config;
+
     }
 }

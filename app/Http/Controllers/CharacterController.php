@@ -90,9 +90,28 @@ class CharacterController extends Controller
         return redirect()->route('multiplayer.character.initial-setup');
     }
 
-    public function showCharacterInitialSetup()
+    public function showCharacterInitialSetup(MuckService $muck)
     {
-        return view('multiplayer.character-initial-setup');
+        /** @var User $user */
+        $user = auth()->user();
+        $character = $user->getCharacter();
+
+        //Because this page is available without an approved character, we need to manually redirect them away.
+        if (!$character) {
+            session()->flash('message-success', 'You need to create a character before you can set them up.');
+            return redirect(route('multiplayer.character.create'));
+        }
+
+        if ($character->approved()) {
+            session()->flash('message-success', 'Your character has already completed initial setup!');
+            return redirect(route('multiplayer.home'));
+        }
+
+        $config  = $muck->getCharacterInitialSetupConfigurationFor($user);
+
+        return view('multiplayer.character-initial-setup')->with([
+            'config' => $config
+        ]);
     }
 
     public function showCharacterRequired(): View
