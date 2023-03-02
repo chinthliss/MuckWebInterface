@@ -213,6 +213,7 @@ return [
         'Breadcrumbs' => App\Helpers\Breadcrumbs::class,
         'MuckInterop' => App\Helpers\MuckInterop::class,
         'Lex' => App\Helpers\Lexicon::class,
+        'Ansi' => App\Helpers\Ansi::class,
     ])->toArray(),
 
 ];
