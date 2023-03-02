@@ -37,7 +37,7 @@ class HasApprovedCharacterSet
             if (!$request->expectsJson()) {
                 session()->flash('message-success', 'You need to complete character generation to continue.');
                 redirect()->setIntendedUrl($request->getRequestUri());
-                return redirect(route('multiplayer.character.create'));
+                return redirect(route('multiplayer.character.initial-setup'));
             }
             abort(400, "Active character hasn't been set or specified correctly.");
         }
