@@ -127,6 +127,7 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::post('charactercreate', [CharacterController::class, 'createCharacter']);
         // Though it requires a character set, this is here to avoid getting 'You need to complete character generation' messages on accessing it.
         Route::get('character-initial-setup', [CharacterController::class, 'showCharacterInitialSetup'])->name('multiplayer.character.initial-setup');
+        Route::post('character-initial-setup', [CharacterController::class, 'finalizeCharacter']);
 
         // Character password recovery
         Route::get('changecharacterpassword', [CharacterController::class, 'showChangeCharacterPassword'])->name('multiplayer.character.changepassword');

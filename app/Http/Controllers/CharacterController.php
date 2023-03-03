@@ -96,7 +96,7 @@ class CharacterController extends Controller
         $user = auth()->user();
         $character = $user->getCharacter();
 
-        //Because this page is available without an approved character, we need to manually redirect them away.
+        //Because this page is available without an approved character, we need to manually handle redirects
         if (!$character) {
             session()->flash('message-success', 'You need to create a character before you can set them up.');
             return redirect(route('multiplayer.character.create'));
@@ -112,6 +112,35 @@ class CharacterController extends Controller
         return view('multiplayer.character-initial-setup')->with([
             'config' => $config
         ]);
+    }
+
+    public function finalizeCharacter(Request $request, MuckService $muck)
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $character = $user->getCharacter();
+
+        //Because this page is available without an approved character, we need to manually handle redirects
+        if (!$character) {
+            session()->flash('message-success', 'You need to create a character before you can set them up.');
+            return redirect(route('multiplayer.character.create'));
+        }
+
+        if ($character->approved()) {
+            session()->flash('message-success', 'Your character has already completed initial setup!');
+            return redirect(route('multiplayer.home'));
+        }
+
+        $request->validate([
+            'gender' => 'required',
+            'birthday' => 'required',
+            'faction' => 'required'
+        ], [
+            'gender.required' => 'You need to select a starting gender.',
+            'birthday.required' => 'You need to select a birthday.',
+            'faction.required' => 'You need to select a faction.'
+        ]);
+
     }
 
     public function showCharacterRequired(): View
