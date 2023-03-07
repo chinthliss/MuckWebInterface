@@ -243,7 +243,7 @@ class MuckService
     {
         $response = $this->connection->request('getCharacterInitialSetupConfiguration', ['aid' => $user->id()]);
         $config = json_decode($response, true);
-        foreach (['factions', 'perks', 'flaws'] as $section) {
+        foreach (['factions', 'perks', 'flaws', 'perkCategories'] as $section) {
             foreach ($config[$section] as &$item) {
                 if (array_key_exists('description', $item))
                     $item['description'] = Ansi::unparsedToHtml($item['description']);

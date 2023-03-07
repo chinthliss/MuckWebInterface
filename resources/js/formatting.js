@@ -12,3 +12,7 @@ export const capital = (text) => {
     if (!text) return '';
     return text && text.substring(0, 1).toUpperCase() + text.slice(1);
 };
+
+export const arrayToList = (arrayToParse) => {
+    return arrayToParse.join(', ');
+};
