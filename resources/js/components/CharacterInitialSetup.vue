@@ -10,16 +10,18 @@
             <h2>Gender</h2>
             <div class="row">
                 <div class="col-12 col-md-6">
-                <p>This is your starting biological gender and may change rapidly.</p>
-                <p>See some of the perks below if you wish to prevent or reduce the chance of this.</p>
+                    <p>This is your starting biological gender and may change rapidly.</p>
+                    <p>See some of the perks below if you wish to prevent or reduce the chance of this.</p>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" value="male" id="gender-male" v-model="chosenGender">
+                        <input class="form-check-input" type="radio" name="gender" value="male" id="gender-male"
+                               v-model="chosenGender">
                         <label class="form-check-label" for="gender-male">Male</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" value="female" id="gender-female" v-model="chosenGender">
+                        <input class="form-check-input" type="radio" name="gender" value="female" id="gender-female"
+                               v-model="chosenGender">
                         <label class="form-check-label" for="gender-female">Female</label>
                     </div>
                     <div class="text-danger" role="alert">
@@ -33,12 +35,14 @@
             <div class="row">
                 <div class="col-12 col-md-6">
                     <p>Your birthday can be between 1940 and present day.</p>
-                    <p>Regardless of what date you were born, due to nanites accelerating development the minimum age of a character is 18.</p>
+                    <p>Regardless of what date you were born, due to nanites accelerating development the minimum age of
+                        a character is 18.</p>
                 </div>
                 <div class="col-12 col-md-auto">
                     <div>
                         <label class="form-label visually-hidden" for="birthday">Birthday</label>
-                        <input class="form-control" type="date" name="birthday" id="birthday" v-model="chosenBirthday" placeholder="dd/mm/yyyy">
+                        <input class="form-control" type="date" name="birthday" id="birthday" v-model="chosenBirthday"
+                               placeholder="dd/mm/yyyy">
                     </div>
                     <div class="text-danger" role="alert">
                         <p v-for="error in errors.birthday">{{ error }}</p>
@@ -54,7 +58,8 @@
             <table>
                 <tr v-for="(item, name) in factions" class="align-top">
                     <td class="pr-2 pb-2">
-                        <input type="radio" class="btn-check" name="faction" v-model="chosenFaction" :value="name" :id="'faction-' + name">
+                        <input type="radio" class="btn-check" name="faction" v-model="chosenFaction" :value="name"
+                               :id="'faction-' + name">
                         <label class="btn btn-outline-primary w-100" :for="'faction-' + name">{{ name }}</label>
                     </td>
                     <td class="ps-2 pb-2">
@@ -72,7 +77,28 @@
                 hidden.</p>
             <p>Perks can be purchased at any time, so be sure to visit the perk page later to spend the rest of your
                 points or to get more information.</p>
-
+            <div v-for="category in perkCategories">
+                <h3>• {{ category.label }}</h3>
+                <p>{{ category.description }}</p>
+                <table>
+                    <tr v-for="(item, name) in perks"
+                        v-if="category.category === item.category" class="align-top">
+                        <td class="pr-2 pb-2">
+                            <input type="checkbox" class="btn-check" name="perks[]" v-model="chosenPerks"
+                                   :disabled="item.disabled" :value="name" :id="'perk-' + name" autocomplete="off"
+                                   @change="updateExclusions('perks')">
+                            <label class="btn btn-outline-primary w-100" :for="'perk-' + name">{{ name }}</label>
+                        </td>
+                        <td class="ps-2 pb-2">
+                            <div v-html="item.description"></div>
+                            <div class="small" v-if="item.excludes.length">Excludes: {{
+                                    arrayToList(item.excludes)
+                                }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
             <!-- Flaws -->
             <h2>Flaws</h2>
@@ -80,11 +106,18 @@
             <table>
                 <tr v-for="(item, name) in flaws" class="align-top">
                     <td class="pr-2 pb-2">
-                        <input type="checkbox" class="btn-check" name="flaws" v-model="chosenFlaws" :value="name" :id="'flaw-' + name">
+                        <input type="checkbox" class="btn-check" name="flaws[]" v-model="chosenFlaws"
+                               :disabled="item.disabled" :value="name" :id="'flaw-' + name" autocomplete="off"
+                               @change="updateExclusions('flaws')">
                         <label class="btn btn-outline-primary w-100" :for="'flaw-' + name">{{ name }}</label>
                     </td>
                     <td class="ps-2 pb-2">
                         <div v-html="item.description"></div>
+                        <div class="small" v-if="item.excludes.length">Excludes: {{
+                                arrayToList(item.excludes)
+                            }}
+                        </div>
+
                     </td>
                 </tr>
             </table>
@@ -111,6 +144,7 @@
 <script setup>
 import {ref} from 'vue';
 import {csrf} from "../siteutils";
+import {arrayToList} from "../formatting";
 
 const props = defineProps({
     errors: {required: false},
@@ -121,6 +155,7 @@ const props = defineProps({
 const factions = ref(props.config?.factions || []);
 const perks = ref(props.config?.perks || []);
 const flaws = ref(props.config?.flaws || []);
+const perkCategories = ref(props.config?.perkCategories || []);
 
 const chosenGender = ref();
 const chosenBirthday = ref();

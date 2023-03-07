@@ -150,63 +150,98 @@ class MuckConnectionFaker implements MuckConnection
     {
         $config = [
             "factions" => [
-                "FakeFaction1" => [
+                [
+                    "name" => "FakeFaction1",
                     "description" => "The first fake faction for testing."
                 ],
-                "FakeFaction2" => [
+                [
+                    "name" => "FakeFaction2",
                     "description" => "The second fake faction for testing. This line break shouldn't be parsed:<br/>"
                 ],
-                "Longer named faction 3" => [
+                [
+                    "name" => "Longer named faction 3",
                     "description" => "The third faction with some differences so it's actually possible to check scaling. Along with some extra text to effectively act as a second line."
                 ]
             ],
             "flaws" => [
-                "FakeFlaw1" => [
+                [
+                    "name" => "FakeFlaw1",
                     "description" => "The first fake flaw for testing.",
                     "excludes" => []
                 ],
-                "FakeFlaw2" => [
+                [
+                    "name" => "FakeFlaw2",
                     "description" => "The second fake flaw for testing.",
                     "excludes" => ["FakeFlaw3"]
                 ],
-                "FakeFlaw2bOrNot2b" => [
+                [
+                    "name" => "FakeFlaw2bOrNot2b",
                     "description" => "Somewhere between the second and third flaw, complete with a terrible pun in the name.",
                     "excludes" => ["FakeFlaw3"]
                 ],
-                "FakeFlaw3" => [
+                [
+                     "name" => "FakeFlaw3",
                     "description" => "The third fake flaw for testing.",
                     "excludes" => ["FakeFlaw2"]
                 ],
-                "Unselectable Flaw" => [
+                [
+                    "name" => "Unselectable Flaw",
                     "description" => "Picking this should cause validation to fail.",
                     "excludes" => []
                 ]
             ],
             "perks" => [
-                "FakePerk1" => [
+                [
+                    "name" => "FakePerk1",
                     "description" => "The first fake perk for testing.",
                     "category" => 'appearance',
                     "excludes" => []
                 ],
-                "FakePerk2" => [
+                [
+                    "name" => "FakePerk2",
                     "description" => "The second fake perk for testing.",
                     "category" => 'appearance',
                     "excludes" => ["FakePerk3"]
                 ],
-                "FakePerk3" => [
+                [
+                    "name" => "FakePerk3",
                     "description" => "The third fake perk for testing.",
                     "category" => 'appearance',
                     "excludes" => ["FakePerk2"]
                 ],
-                "Fake Perk with Lorem Ipsum" => [
+                [
+                    "name" => "Fake Perk with Lorem Ipsum",
                     "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus porta dui, vel porta leo consectetur vel. Sed a nisl ligula. Donec sed nisi et magna commodo euismod id et dolor. Aliquam sed sapien quis est semper tempus. Curabitur nec lacus sit amet massa sodales accumsan ut eget urna. Vivamus justo felis, convallis et sapien id, dapibus aliquam mauris. Cras sit amet nulla eu odio ultrices congue sed non ipsum. Phasellus ut lacinia arcu, quis volutpat justo. Proin aliquet, dui et euismod cursus, ligula metus fringilla orci, nec mattis sem nunc a dui. Phasellus a velit quis nisi auctor pharetra. Integer lacus libero, consequat congue egestas vel, finibus id leo. Duis velit nulla, scelerisque id justo in, dignissim mollis dui. ",
                     "category" => 'appearance',
                     "excludes" => ["FakePerk2"]
                 ],
-                "Fake Perk in a different category" => [
+                [
+                    "name" => "Fake Perk in a different category",
                     "description" => "As noted",
                     "category" => 'history',
                     "excludes" => ["FakePerk2"]
+                ]
+            ],
+            "perkCategories" => [
+                [
+                    "category" => "infection",
+                    "label" => "Infection Resistance",
+                    "description" => "These perks control the overall rate of how quickly or how slowly transformation will effect you."
+                ],
+                [
+                    "category" => "gender",
+                    "label" => "Gender Perks",
+                    "description" => "There are many more preference related perks but these are the critical ones controlling your gender preferences."
+                ],
+                [
+                    "category" => "appearance",
+                    "label" => "Appearance",
+                    "description" => "Following on from gender perks, these perks control how you appear to others."
+                ],
+                [
+                    "category" => "history",
+                    "label" => "Historic",
+                    "description" => "Finally, these perks effect how you start in this world."
                 ]
             ]
         ];
