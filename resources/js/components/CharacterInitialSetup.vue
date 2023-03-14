@@ -56,14 +56,17 @@
                 others see you, by assuming you follow that faction's ideals and broad outlook. It will also directly
                 control where you start in the game.</p>
             <table>
-                <tr v-for="(item, name) in factions" class="align-top">
+                <tr v-for="faction in factions" class="align-top">
                     <td class="pr-2 pb-2">
-                        <input type="radio" class="btn-check" name="faction" v-model="chosenFaction" :value="name"
-                               :id="'faction-' + name">
-                        <label class="btn btn-outline-primary w-100" :for="'faction-' + name">{{ name }}</label>
+                        <input type="radio" class="btn-check" name="faction" v-model="chosenFaction"
+                               :value="faction.name"
+                               :id="'faction-' + faction.name">
+                        <label class="btn btn-outline-primary w-100" :for="'faction-' + faction.name">{{
+                                faction.name
+                            }}</label>
                     </td>
                     <td class="ps-2 pb-2">
-                        <div v-html="item.description"></div>
+                        <div v-html="faction.description"></div>
                     </td>
                 </tr>
             </table>
@@ -81,22 +84,26 @@
                 <h3>• {{ category.label }}</h3>
                 <p>{{ category.description }}</p>
                 <table>
-                    <tr v-for="(item, name) in perks"
-                        v-if="category.category === item.category" class="align-top">
-                        <td class="pr-2 pb-2">
-                            <input type="checkbox" class="btn-check" name="perks[]" v-model="chosenPerks"
-                                   :disabled="item.disabled" :value="name" :id="'perk-' + name" autocomplete="off"
-                                   @change="updateExclusions('perks')">
-                            <label class="btn btn-outline-primary w-100" :for="'perk-' + name">{{ name }}</label>
-                        </td>
-                        <td class="ps-2 pb-2">
-                            <div v-html="item.description"></div>
-                            <div class="small" v-if="item.excludes.length">Excludes: {{
-                                    arrayToList(item.excludes)
-                                }}
-                            </div>
-                        </td>
-                    </tr>
+                    <template v-for="perk in perks">
+                        <tr v-if="perk && perk.category === category.category" class="align-top">
+                            <td class="pr-2 pb-2">
+                                <input type="checkbox" class="btn-check" name="perks[]" v-model="chosenPerks"
+                                       :disabled="perk?.disabled" :value="perk.name" :id="'perk-' + perk.name"
+                                       autocomplete="off"
+                                       @change="updateExclusions('perks')">
+                                <label class="btn btn-outline-primary w-100" :for="'perk-' + perk.name">{{
+                                        perk.name
+                                    }}</label>
+                            </td>
+                            <td class="ps-2 pb-2">
+                                <div v-html="perk.description"></div>
+                                <div class="small" v-if="perk.excludes.length">Excludes: {{
+                                        arrayToList(perk.excludes)
+                                    }}
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
                 </table>
             </div>
 
@@ -104,17 +111,18 @@
             <h2>Flaws</h2>
             <p>You may take as many, or as few, flaws as you want.</p>
             <table>
-                <tr v-for="(item, name) in flaws" class="align-top">
+                <tr v-for="flaw in flaws" class="align-top">
                     <td class="pr-2 pb-2">
                         <input type="checkbox" class="btn-check" name="flaws[]" v-model="chosenFlaws"
-                               :disabled="item.disabled" :value="name" :id="'flaw-' + name" autocomplete="off"
+                               :disabled="flaw?.disabled" :value="flaw.name" :id="'flaw-' + flaw.name"
+                               autocomplete="off"
                                @change="updateExclusions('flaws')">
-                        <label class="btn btn-outline-primary w-100" :for="'flaw-' + name">{{ name }}</label>
+                        <label class="btn btn-outline-primary w-100" :for="'flaw-' + flaw.name">{{ flaw.name }}</label>
                     </td>
                     <td class="ps-2 pb-2">
-                        <div v-html="item.description"></div>
-                        <div class="small" v-if="item.excludes.length">Excludes: {{
-                                arrayToList(item.excludes)
+                        <div v-html="flaw.description"></div>
+                        <div class="small" v-if="flaw.excludes.length">Excludes: {{
+                                arrayToList(flaw.excludes)
                             }}
                         </div>
 
