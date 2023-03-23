@@ -76,7 +76,7 @@
 
             <!-- Starting Perks -->
             <h2>Starting Perks</h2>
-            <p>These are only a fraction of the perks available and to streamline character generation their costs are
+            <p>These are only a fraction of the perks available and, to streamline character generation, their costs are
                 hidden.</p>
             <p>Perks can be purchased at any time, so be sure to visit the perk page later to spend the rest of your
                 points or to get more information.</p>
@@ -88,7 +88,7 @@
                         <tr v-if="perk && perk.category === category.category" class="align-top">
                             <td class="pr-2 pb-2">
                                 <input type="checkbox" class="btn-check" name="perks[]" v-model="chosenPerks"
-                                       :disabled="perk?.disabled" :value="perk.name" :id="'perk-' + perk.name"
+                                       :disabled="perk?.excluded" :value="perk.name" :id="'perk-' + perk.name"
                                        autocomplete="off"
                                        @change="updateExclusions('perks')">
                                 <label class="btn btn-outline-primary w-100" :for="'perk-' + perk.name">{{
@@ -114,7 +114,7 @@
                 <tr v-for="flaw in flaws" class="align-top">
                     <td class="pr-2 pb-2">
                         <input type="checkbox" class="btn-check" name="flaws[]" v-model="chosenFlaws"
-                               :disabled="flaw?.disabled" :value="flaw.name" :id="'flaw-' + flaw.name"
+                               :disabled="flaw?.excluded" :value="flaw.name" :id="'flaw-' + flaw.name"
                                autocomplete="off"
                                @change="updateExclusions('flaws')">
                         <label class="btn btn-outline-primary w-100" :for="'flaw-' + flaw.name">{{ flaw.name }}</label>
@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import {csrf} from "../siteutils";
 import {arrayToList} from "../formatting";
 
@@ -175,6 +175,46 @@ const submitting = ref(false);
 
 const hideDuringSubmit = () => {
     submitting.value = true;
+};
+
+onMounted(() => {
+    // Restore any old values
+    if (props.old.gender) chosenGender.value = props.old.gender;
+    if (props.old.birthday) chosenBirthday.value = props.old.birthday;
+    if (props.old.faction) chosenFaction.value = props.old.faction;
+    if (props.old.perks) {
+        Object.values(props.old.perks).forEach(item => {
+            chosenPerks.value.push(item);
+        })
+    }
+    if (props.old.flaws) {
+        Object.values(props.old.flaws).forEach(item => {
+            chosenFlaws.value.push(item);
+        });
+    }
+});
+
+const updateExclusions = (type) => {
+    let catalog;
+    let selected;
+    if (type === 'perks') {
+        catalog = props.config.perks;
+        selected = chosenPerks.value;
+    } else {
+        catalog = props.config.flaws;
+        selected = chosenFlaws.value;
+    }
+    // Pass 1 - get active exclusions
+    let excluded = [];
+    catalog.forEach(item => {
+        if (selected.includes(item.name)) excluded = excluded.concat(item.excludes);
+    });
+
+    // Pass 2 - apply exclusions
+    catalog.forEach(item => {
+        item.excluded = excluded.includes(item.name);
+    });
+
 };
 
 </script>
