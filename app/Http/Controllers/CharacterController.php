@@ -107,7 +107,7 @@ class CharacterController extends Controller
             return redirect(route('multiplayer.home'));
         }
 
-        $config  = $muck->getCharacterInitialSetupConfigurationFor($user);
+        $config = $muck->getCharacterInitialSetupConfigurationFor($user);
 
         return view('multiplayer.character-initial-setup')->with([
             'config' => $config
@@ -140,6 +140,25 @@ class CharacterController extends Controller
             'birthday.required' => 'You need to select a birthday.',
             'faction.required' => 'You need to select a faction.'
         ]);
+
+        // We're not doing any real validation here - we'd just be duplicating what the muck does
+
+        $characterRequest = [
+            'dbref' => $character->dbref,
+            'gender' => $request->input('gender'),
+            'birthday' => $request->input('birthday'),
+            'faction' => $request->input('faction'),
+            'perks' => $request->input('perks') ?? [],
+            'flaws' => $request->input('flaws') ?? []
+        ];
+        $response = $muck->finalizeCharacter($characterRequest);
+
+        if ($response['result'] == 'ERROR') {
+            throw ValidationException::withMessages(['other' => $response['messages']]);
+        }
+
+        return redirect()->route('multiplayer.guide.starting');
+
 
     }
 

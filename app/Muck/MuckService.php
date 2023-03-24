@@ -179,7 +179,7 @@ class MuckService
         $response = $this->connection->request('getCharacterSlotState', [
             'aid' => $user->id()
         ]);
-        $state = explode(',', $response,2);
+        $state = explode(',', $response, 2);
         return [
             'count' => $state[0],
             'cost' => $state[1]
@@ -210,7 +210,7 @@ class MuckService
     }
 
     /**
-     * Returns ['OK',character,initialPassword] on success, otherwise ['ERROR',message]
+     * Returns [result:'OK', character, initialPassword] or [result:'ERROR', error]
      * @param User $user
      * @param string $name
      * @return array
@@ -234,7 +234,7 @@ class MuckService
         //On success we get ['OK',character,initialPassword]
         return [
             "result" => "OK",
-            "character" => $this->getByDbref($result[1]) ,
+            "character" => $this->getByDbref($result[1]),
             "initialPassword" => $response[2]
         ];
     }
@@ -251,5 +251,25 @@ class MuckService
         }
         return $config;
 
+    }
+
+    /**
+     * Character Request should contain [dbref, gender, birthday, faction, perks and flaws]
+     * Returns [result:'OK'] or [result:'ERROR', messages:[]]
+     * @param array $characterRequest
+     * @return array
+     */
+    public function finalizeCharacter(array $characterRequest): array
+    {
+        $response = $this->connection->request('finalizeCharacter', $characterRequest);
+
+        // On success we get the string 'OK'
+        if ($response === 'OK') return ["result" => "OK"];
+
+        // On error we get errors separated by newlines
+        return [
+            "result" => "ERROR",
+            "messages" => $response ? explode(chr(13) . chr(10), $response) : ['A server issue occurred']
+        ];
     }
 }

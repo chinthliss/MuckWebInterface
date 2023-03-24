@@ -180,7 +180,7 @@ class MuckConnectionFaker implements MuckConnection
                     "excludes" => ["FakeFlaw3"]
                 ],
                 [
-                     "name" => "FakeFlaw3",
+                    "name" => "FakeFlaw3",
                     "description" => "The third fake flaw for testing.",
                     "excludes" => ["FakeFlaw2"]
                 ],
@@ -230,7 +230,7 @@ class MuckConnectionFaker implements MuckConnection
                 ],
                 [
                     "category" => "gender",
-                    "label" => "Gender Perks",
+                    "label" => "Gender",
                     "description" => "There are many more preference related perks but these are the critical ones controlling your gender preferences."
                 ],
                 [
@@ -246,6 +246,13 @@ class MuckConnectionFaker implements MuckConnection
             ]
         ];
         return json_encode($config);
+    }
+
+    public function fake_finalizeCharacter(array $data): string
+    {
+        if (array_key_exists('flaws', $data) && in_array('Unselectable Flaw', $data['flaws']))
+            return 'The unselectable flaw was selected.';
+        return 'OK';
     }
 
     public function request(string $request, array $data = []): string

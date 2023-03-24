@@ -7,7 +7,7 @@
             <input type="hidden" name="_token" :value="csrf()">
 
             <!-- Gender -->
-            <h2>Gender</h2>
+            <h2 class="mt-2">Gender</h2>
             <div class="row">
                 <div class="col-12 col-md-6">
                     <p>This is your starting biological gender and may change rapidly.</p>
@@ -31,7 +31,7 @@
             </div>
 
             <!-- Birthday -->
-            <h2>Birthday</h2>
+            <h2 class="mt-2">Birthday</h2>
             <div class="row">
                 <div class="col-12 col-md-6">
                     <p>Your birthday can be between 1940 and present day.</p>
@@ -51,7 +51,7 @@
             </div>
 
             <!-- Faction -->
-            <h2>Faction</h2>
+            <h2 class="mt-2">Faction</h2>
             <p>This is the faction that helped you get settled in this world. Whichever one you select will define how
                 others see you, by assuming you follow that faction's ideals and broad outlook. It will also directly
                 control where you start in the game.</p>
@@ -75,7 +75,7 @@
             </div>
 
             <!-- Starting Perks -->
-            <h2>Starting Perks</h2>
+            <h2 class="mt-2">Starting Perks</h2>
             <p>These are only a fraction of the perks available and, to streamline character generation, their costs are
                 hidden.</p>
             <p>Perks can be purchased at any time, so be sure to visit the perk page later to spend the rest of your
@@ -97,7 +97,7 @@
                             </td>
                             <td class="ps-2 pb-2">
                                 <div v-html="perk.description"></div>
-                                <div class="small" v-if="perk.excludes.length">Excludes: {{
+                                <div class="small text-muted" v-if="perk.excludes.length">Excludes: {{
                                         arrayToList(perk.excludes)
                                     }}
                                 </div>
@@ -108,7 +108,7 @@
             </div>
 
             <!-- Flaws -->
-            <h2>Flaws</h2>
+            <h2 class="mt-2">Flaws</h2>
             <p>You may take as many, or as few, flaws as you want.</p>
             <table>
                 <tr v-for="flaw in flaws" class="align-top">
@@ -121,7 +121,7 @@
                     </td>
                     <td class="ps-2 pb-2">
                         <div v-html="flaw.description"></div>
-                        <div class="small" v-if="flaw.excludes.length">Excludes: {{
+                        <div class="small text-muted" v-if="flaw.excludes.length">Excludes: {{
                                 arrayToList(flaw.excludes)
                             }}
                         </div>
@@ -198,23 +198,25 @@ const updateExclusions = (type) => {
     let catalog;
     let selected;
     if (type === 'perks') {
-        catalog = perks.value;
-        selected = chosenPerks.value;
+        catalog = perks;
+        selected = chosenPerks;
     } else {
-        catalog = flaws.value;
-        selected = chosenFlaws.value;
+        catalog = flaws;
+        selected = chosenFlaws;
     }
     // Pass 1 - get active exclusions
     let excluded = [];
-    catalog.forEach(item => {
-        if (selected.includes(item.name)) excluded = excluded.concat(item.excludes);
+    catalog.value.forEach(item => {
+        if (selected.value.includes(item.name)) excluded = excluded.concat(item.excludes);
     });
 
-    // Pass 2 - apply exclusions
-    catalog.forEach(item => {
+    // Pass 2 - Tag excluded
+    catalog.value.forEach(item => {
         item.excluded = excluded.includes(item.name);
     });
 
+    // Unset anything excluded
+    selected.value = selected.value.filter(value => !excluded.includes(value));
 };
 
 </script>
