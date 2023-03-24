@@ -288,4 +288,19 @@ class MuckService
             "messages" => $response ? explode(chr(13) . chr(10), $response) : ['A server issue occurred']
         ];
     }
+
+    /**
+     * Lets the muck react to a notification sent from the web-side of things.
+     * @param User $user
+     * @param MuckDbref|null $character
+     * @param string $message
+     * @return int Number of notifications sent muck side
+     */
+    public function externalNotificationSent(User $user, ?MuckDbref $character, string $message): int
+    {
+        $count = $this->connection->request('externalNotificationSent',
+        ['aid' => $user->id(), 'character' => $character?->dbref, 'message' => $message]);
+        return (int)$count;
+    }
+
 }
