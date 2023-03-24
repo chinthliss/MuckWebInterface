@@ -16,7 +16,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Login as one of the fixed seeded characters used for muck testing (seeding needs to have been done first)
+     * Login as one of the fixed seeded users used for muck testing (seeding needs to have been done first)
      * @return void
      */
     public function loginAsValidatedUser() {
@@ -24,7 +24,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Login as one of the fixed seeded characters used for muck testing (seeding needs to have been done first)
+     * Login as one of the fixed seeded users used for muck testing (seeding needs to have been done first)
      * @return void
      */
     public function loginAsOtherValidatedUser() {
