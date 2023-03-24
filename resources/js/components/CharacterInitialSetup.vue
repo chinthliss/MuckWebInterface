@@ -198,10 +198,10 @@ const updateExclusions = (type) => {
     let catalog;
     let selected;
     if (type === 'perks') {
-        catalog = props.config.perks;
+        catalog = perks.value;
         selected = chosenPerks.value;
     } else {
-        catalog = props.config.flaws;
+        catalog = flaws.value;
         selected = chosenFlaws.value;
     }
     // Pass 1 - get active exclusions
