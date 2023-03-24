@@ -40,9 +40,9 @@ class LoginTest extends TestCase
     public function test_page_that_requires_login_opens_with_login()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->get(route('multiplayer.home'));
+        $response = $this->actingAs($user)->get(route('multiplayer.guide.starting'));
         $response->assertStatus(200);
-        $response->assertViewIs('multiplayer.home');
+        $response->assertViewIs('multiplayer.getting-started');
     }
 
     public function test_login_redirects_if_logged_in()

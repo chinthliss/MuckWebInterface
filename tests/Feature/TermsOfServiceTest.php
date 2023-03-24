@@ -28,9 +28,9 @@ class TermsOfServiceTest extends TestCase
     public function test_user_who_has_accepted_terms_of_service_is_not_redirected()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->get(route('multiplayer.home'));
+        $response = $this->actingAs($user)->get(route('multiplayer.guide.starting'));
         $response->assertStatus(200);
-        $response->assertViewIs('multiplayer.home');
+        $response->assertViewIs('multiplayer.getting-started');
     }
 
     public function test_user_who_has_not_accepted_terms_of_service_is_redirected()
