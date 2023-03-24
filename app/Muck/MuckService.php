@@ -174,6 +174,11 @@ class MuckService
         return ($response === 'OK');
     }
 
+    /**
+     * Returns an array of [characterSlotCount, characterSlotCost]
+     * @param User $user
+     * @return array
+     */
     public function getCharacterSlotStateFor(User $user): array
     {
         $response = $this->connection->request('getCharacterSlotState', [
@@ -186,6 +191,12 @@ class MuckService
         ];
     }
 
+    /**
+     * Returns an array of [result:'OK', characterSlotCount:int, characterSlotCost:int] on success.
+     * Returns an array of [result:'ERROR', error:string] on failure.
+     * @param User $user
+     * @return array
+     */
     public function buyCharacterSlot(User $user): array
     {
         $response = $this->connection->request('buyCharacterSlot', [
@@ -239,6 +250,11 @@ class MuckService
         ];
     }
 
+    /**
+     * Returns an array with factions, perks, flaws and perkCategories
+     * @param User $user
+     * @return array
+     */
     public function getCharacterInitialSetupConfigurationFor(User $user): array
     {
         $response = $this->connection->request('getCharacterInitialSetupConfiguration', ['aid' => $user->id()]);
