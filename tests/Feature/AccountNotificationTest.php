@@ -4,6 +4,7 @@
 use App\AccountNotificationManager;
 use App\Notifications\MuckWebInterfaceNotification;
 use App\User;
+use Illuminate\Notifications\Events\NotificationSent;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Factories\UserFactory;
@@ -58,7 +59,7 @@ class AccountNotificationTest extends TestCase
         $notifications = $transactionManager->getNotificationsFor($user);
         $this->assertCount(1, $notifications);
         $count = $transactionManager->getNotificationCountFor($user);
-        $this->assertCount(1, $count);
+        $this->assertEquals(1, $count);
     }
 
         /**
@@ -124,7 +125,7 @@ class AccountNotificationTest extends TestCase
         $otherUser = UserFactory::create();
         MuckWebInterfaceNotification::NotifyAccount($otherUser, 'Test');
         $transactionManager = resolve(AccountNotificationManager::class);
-        $notifications = $transactionManager->getNotificationsFor($user);
+        $notifications = $transactionManager->getNotificationsFor($otherUser);
         $notification = $notifications[0];
 
         $response = $this->actingAs($user)->delete(route('account.notifications.api') . '/' . $notification['id']);
@@ -132,6 +133,18 @@ class AccountNotificationTest extends TestCase
 
         $notifications = $transactionManager->getNotificationsFor($otherUser);
         $this->assertCount(1, $notifications);
+    }
+
+    /**
+     * @depends test_user_gets_notification
+     */
+    public function test_muck_notification_event_sends_after_notification()
+    {
+        Event::fake();
+        $user = UserFactory::create();
+        MuckWebInterfaceNotification::NotifyAccount($user, 'Test');
+        Event::assertDispatched(NotificationSent::class, 1);
+
     }
 
 }
