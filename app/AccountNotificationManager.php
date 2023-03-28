@@ -52,7 +52,7 @@ class AccountNotificationManager
         return $result;
     }
 
-    public function getNotification(int $id) : object
+    public function getNotification(int $id): object
     {
         return $this->storageTable()->where('id', '=', $id)->first();
     }
@@ -62,10 +62,17 @@ class AccountNotificationManager
         $this->storageTable()->delete($id);
     }
 
-    public function deleteAllNotificationsFor($accountId): void
+    /**
+     * Takes a parameter for 'highest seen ID' to prevent deleting notifications that may have arrived since the user last looked
+     * @param User $user
+     * @param int $highestId
+     * @return void
+     */
+    public function deleteAllNotificationsFor(User $user, int $highestId): void
     {
         $this->storageTable()
-            ->where('aid', '=', $accountId)
+            ->where('aid', '=', $user->id())
+            ->where('id', '<=', $highestId)
             ->where(function ($query) {
                 $query->whereNull('game_code')
                     ->orWhere('game_code', '=', config('muck.muck_code'));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\AccountNotificationManager;
 use App\Http\Controllers\Controller;
 use App\User as User;
 use Illuminate\Auth\Events\Registered;
@@ -82,6 +83,58 @@ class AccountController extends Controller
     {
         return view('account.card-management');
     }
+
+    #region Account Notifications
+    // Presented as just 'notifications' to the user.
+    // Named AccountNotifications internally to avoid collision with other potential classes
+
+    public function showNotifications(): View
+    {
+        return view('notifications');
+    }
+
+    public function getNotifications(AccountNotificationManager $notificationManager): array
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if (!$user) abort(401);
+
+        return array_map(function ($notification) {
+            if ($notification['character']) $notification['character'] = $notification['character']->name();
+            return $notification;
+        }, $notificationManager->getNotificationsFor($user));
+    }
+
+    public function deleteNotification(AccountNotificationManager $notificationManager, int $id): void
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        if (!$user) abort(401);
+
+        $notification = $notificationManager->getNotification($id);
+
+        if (!$notification) abort(404); // Maybe already deleted
+
+        if ($notification->aid != $user->id()) abort(401);
+
+        $notificationManager->deleteNotification($id);
+
+    }
+
+    public function deleteAllNotifications(AccountNotificationManager $notificationManager, Request $request): void
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        if (!$user) abort(401);
+
+        if (!$request->has('highestId')) abort(400);
+        $highestId = $request->get('highestId');
+
+        $notificationManager->deleteAllNotificationsFor($user, $highestId);
+    }
+
+    #endregion Account Notifications
 
 
 }

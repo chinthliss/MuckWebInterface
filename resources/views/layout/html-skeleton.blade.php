@@ -39,16 +39,17 @@
 <body>
 
 <!-- Header bar -->
-<header id="site-navigation-top" class="navbar navbar-dark site-navigation">
+<header id="site-navigation-top" class="navbar navbar-dark site-navigation py-0">
     <div class="container-fluid flex-column flex-md-row">
-        <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center" href="{{ url('/') }}">
+        <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center p-2" href="{{ url('/') }}">
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
             <div>{{ config('app.name', 'MuckWebInterface') }}</div>
         </a>
         @guest
             <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
         @else
-            <a class="navbar-nav nav-link px-2 h-100" href="#">Notifications</a>
+            <a class="navbar-nav nav-link px-2" href="{{ route('notifications') }}">Notifications</a>
+
             <a class="navbar-nav nav-link px-2" href="{{ route('account') }}">Account</a>
 
             <a class="navbar-nav nav-link px-2" href="#"

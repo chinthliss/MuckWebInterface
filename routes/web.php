@@ -61,6 +61,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
     Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
 
+    // Account Notifications
+    Route::get('notifications', [AccountController::class, 'showNotifications'])->name('notifications');
+    Route::get('notifications.api', [AccountController::class, 'getNotifications'])->name('notifications.api');
+    Route::delete('notifications.api/{id}', [AccountController::class, 'deleteNotification']);
+    Route::delete('notifications.api', [AccountController::class, 'deleteAllNotifications']);
+
 });
 
 /*
