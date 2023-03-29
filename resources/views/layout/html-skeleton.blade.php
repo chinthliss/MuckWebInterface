@@ -44,7 +44,7 @@
 
 <!-- Header bar -->
 <header id="site-navigation-top" class="navbar navbar-dark site-navigation py-0">
-    <div class="container-fluid flex-column flex-md-row">
+    <div class="container-fluid flex-column flex-md-row align-items-md-stretch">
         <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center p-2" href="{{ url('/') }}">
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
             <div>{{ config('app.name', 'MuckWebInterface') }}</div>
@@ -52,16 +52,16 @@
         @guest
             <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
         @else
-            <a class="navbar-nav nav-link px-2 position-relative" href="{{ route('notifications') }}">Notifications
-                <?php
-                /** @var App\User $user */
-                $user = auth()->user();
-                if ($user) {
+            <div>
+                <a class="navbar-nav nav-link d-inline-block" href="{{ route('notifications') }}">Notifications
+                    <?php
+                    /** @var App\User $user */
+                    $user = auth()->user();
                     $count = resolve('App\AccountNotificationManager')->getUnreadNotificationsCountFor($user);
-                    echo('<span class="badge bg-secondary" id="account-notifications-unread-count">' . ($count ?: '') . '</span>');
-                }
-                ?>
-            </a>
+                    echo('<span class="badge bg-secondary d-inline" id="account-notifications-unread-count">' . ($count ?: '') . '</span>');
+                    ?>
+                </a>
+            </div>
 
             <a class="navbar-nav nav-link px-2 align-middle" href="{{ route('account') }}">Account</a>
 
