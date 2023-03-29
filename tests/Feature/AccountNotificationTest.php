@@ -62,7 +62,7 @@ class AccountNotificationTest extends TestCase
         $this->assertEquals(1, $count);
     }
 
-        /**
+    /**
      * @depends test_user_gets_notification
      */
     public function testUserDoesNotGetAnotherUsersNotifications()
@@ -110,12 +110,16 @@ class AccountNotificationTest extends TestCase
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test');
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test 2');
         $notificationManager = resolve(AccountNotificationManager::class);
-        $this->actingAs($user)->delete(route('notifications.api', ['highestId' => PHP_INT_MAX]));
+        $response = $this->actingAs($user)->delete(route('notifications.api', ['highestId' => PHP_INT_MAX]));
+        $response->assertSuccessful();
 
         $notifications = $notificationManager->getNotificationsFor($user);
         $this->assertCount(0, $notifications, 'All notifications were not deleted');
     }
 
+    /**
+     * @depends test_user_can_delete_all_notifications
+     */
     public function test_deleting_all_user_notifications_does_not_delete_unseen_notifications()
     {
         $user = UserFactory::create();
@@ -133,7 +137,7 @@ class AccountNotificationTest extends TestCase
     }
 
     /**
-     * @depends test_user_gets_notification
+     * @depends test_user_can_delete_notification
      */
     public function test_user_can_not_delete_other_users_notification()
     {
@@ -152,7 +156,7 @@ class AccountNotificationTest extends TestCase
     }
 
     /**
-     * @depends test_user_gets_notification
+     * @depends test_user_can_delete_all_notifications
      */
     public function test_user_can_not_delete_all_other_users_notifications()
     {
@@ -177,7 +181,6 @@ class AccountNotificationTest extends TestCase
         $user = UserFactory::create();
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test');
         Event::assertDispatched(NotificationSent::class, 1);
-
     }
 
 }
