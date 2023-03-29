@@ -1,0 +1,10 @@
+Collection of saved tinker tests / commands.
+
+=== Account Notification
+App\Notifications\MuckWebInterfaceNotification::NotifyUser(User::find(1), 'Test');
+App\Notifications\MuckWebInterfaceNotification::NotifyCharacter(User::find(1), App::make(App\Muck\MuckObjectService::class)->getbyDbref(1234), 'Test with character');
+
+=== Muck Object Service
+App::make(App\Muck\MuckObjectService::class)->getbyDbref(1173)->toArray()
+App::make(App\Muck\MuckObjectService::class)->getbyPlayerName('Test')->toArray()
+App::make(App\Muck\MuckObjectService::class)->getMuckObjectIdFor(App::make(App\Muck\MuckObjectService::class)->getbyDbref(1173))
