@@ -97,7 +97,7 @@ class AccountNotificationTest extends TestCase
         $notificationManager = resolve(AccountNotificationManager::class);
         $notifications = $notificationManager->getNotificationsFor($user);
         $notification = $notifications[0];
-        $response = $this->delete(route('notifications.api') . '/' . $notification['id']);
+        $response = $this->actingAs($user)->delete(route('notifications.api') . '/' . $notification['id']);
         $response->assertSuccessful();
 
         $notifications = $notificationManager->getNotificationsFor($user);
@@ -110,7 +110,7 @@ class AccountNotificationTest extends TestCase
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test');
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test 2');
         $notificationManager = resolve(AccountNotificationManager::class);
-        $this->delete(route('notifications.api', ['highestId' => PHP_INT_MAX]));
+        $this->actingAs($user)->delete(route('notifications.api', ['highestId' => PHP_INT_MAX]));
 
         $notifications = $notificationManager->getNotificationsFor($user);
         $this->assertCount(0, $notifications, 'All notifications were not deleted');
@@ -159,7 +159,7 @@ class AccountNotificationTest extends TestCase
         $user = UserFactory::create();
         $otherUser = UserFactory::create();
         MuckWebInterfaceNotification::NotifyAccount($otherUser, 'Test');
-        $$notificationManager = resolve(AccountNotificationManager::class);
+        $notificationManager = resolve(AccountNotificationManager::class);
 
         $response = $this->actingAs($user)->delete(route('notifications.api', ['highestId' => PHP_INT_MAX]));
         $response->assertSuccessful(); // Should be successful since it only deletes the user's notifications
