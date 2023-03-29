@@ -58,7 +58,7 @@ class AccountNotificationTest extends TestCase
         $notificationManager = resolve(AccountNotificationManager::class);
         $notifications = $notificationManager->getNotificationsFor($user);
         $this->assertCount(1, $notifications);
-        $count = $notificationManager->getNotificationCountFor($user);
+        $count = $notificationManager->getUnreadNotificationsCountFor($user);
         $this->assertEquals(1, $count);
     }
 

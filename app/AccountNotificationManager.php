@@ -80,10 +80,16 @@ class AccountNotificationManager
             ->delete();
     }
 
-    public function getNotificationCountFor(User $user): int
+    /**
+     * Returns the count of unread notifications, for the navbar and the likes.
+     * @param User $user
+     * @return int
+     */
+    public function getUnreadNotificationsCountFor(User $user): int
     {
         $count = $this->storageTable()
             ->where('aid', '=', $user->id())
+            ->whereNull('read_at')
             ->where(function ($query) {
                 $query->whereNull('game_code')
                     ->orWhere('game_code', '=', config('muck.muck_code'));

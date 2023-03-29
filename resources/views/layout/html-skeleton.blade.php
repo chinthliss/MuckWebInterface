@@ -16,11 +16,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Account if logged in -->
-    @auth<meta name="account-id" content="{{ Auth::user()->id() }}">@endauth
+    @auth
+        <meta name="account-id" content="{{ Auth::user()->id() }}">
+    @endauth
 
     <!-- Character if set -->
-    @Character<meta name="character-dbref" content="{{ Auth::user()->getCharacter()->dbref }}">
-    <meta name="character-name" content="{{ Auth::user()->getCharacter()->name }}">@endCharacter
+    @Character
+    <meta name="character-dbref" content="{{ Auth::user()->getCharacter()->dbref }}">
+    <meta name="character-name" content="{{ Auth::user()->getCharacter()->name }}">
+    @endCharacter
 
     <!-- Title -->
     @hasSection('title')
@@ -48,9 +52,18 @@
         @guest
             <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
         @else
-            <a class="navbar-nav nav-link px-2" href="{{ route('notifications') }}">Notifications</a>
+            <a class="navbar-nav nav-link px-2 position-relative" href="{{ route('notifications') }}">Notifications
+                <?php
+                /** @var App\User $user */
+                $user = auth()->user();
+                if ($user) {
+                    $count = resolve('App\AccountNotificationManager')->getUnreadNotificationsCountFor($user);
+                    echo('<span class="badge bg-secondary" id="account-notifications-unread-count">' . ($count ?: '') . '</span>');
+                }
+                ?>
+            </a>
 
-            <a class="navbar-nav nav-link px-2" href="{{ route('account') }}">Account</a>
+            <a class="navbar-nav nav-link px-2 align-middle" href="{{ route('account') }}">Account</a>
 
             <a class="navbar-nav nav-link px-2" href="#"
                onclick="event.preventDefault(); document.getElementById('site-logout-form').submit();">
