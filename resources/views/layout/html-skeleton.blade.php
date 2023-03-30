@@ -44,15 +44,21 @@
 <!-- Header bar -->
 <header id="site-navigation-top" class="navbar navbar-dark site-navigation py-0">
     <div class="container-fluid flex-column flex-md-row align-items-md-stretch">
+
         <a class="navbar-brand flex-grow-1 d-inline-flex align-items-center p-2" href="{{ url('/') }}">
             <img src="{{ url('/sitelogo.png') }}" alt="Site Logo">
             <div>{{ config('app.name', 'MuckWebInterface') }}</div>
         </a>
+
         @guest
-            <a class="navbar-nav nav-link px-2" href="{{ route('auth.login') }}">Login</a>
+            <div class="d-flex align-items-center nav-link">
+                <a class="navbar-nav d-inline-block text-decoration-none" href="{{ route('auth.login') }}">Login</a>
+            </div>
+
         @else
-            <div>
-                <a class="navbar-nav nav-link d-inline-block" href="{{ route('notifications') }}">Notifications
+
+            <div class="d-flex align-items-center nav-link">
+                <a class="navbar-nav d-inline-block text-decoration-none" href="{{ route('notifications') }}">Notifications
                     <?php
                     /** @var App\User $user */
                     $user = auth()->user();
@@ -62,24 +68,30 @@
                 </a>
             </div>
 
-            <a class="navbar-nav nav-link px-2 align-middle" href="{{ route('account') }}">Account</a>
+            <div class="d-flex align-items-center nav-link">
+                <a class="navbar-nav d-inline-block text-decoration-none" href="{{ route('account') }}">Account</a>
+            </div>
 
-            <a class="navbar-nav nav-link px-2" href="#"
-               onclick="event.preventDefault(); document.getElementById('site-logout-form').submit();">
-                Logout
-            </a>
-            <form id="site-logout-form" action="{{ route('auth.logout') }}" method="POST"
-                  style="display: none;">
-                @csrf
-            </form>
+            <div class="d-flex align-items-center nav-link">
+                <a class="navbar-nav d-inline-block text-decoration-none" href="#"
+                   onclick="event.preventDefault(); document.getElementById('site-logout-form').submit();">
+                    Logout
+                </a>
+                <form id="site-logout-form" action="{{ route('auth.logout') }}" method="POST"
+                      style="display: none;">
+                    @csrf
+                </form>
+            </div>
 
-            <a class="navbar-nav nav-link px-2" href="#site-character-select" role="button"
-               data-bs-toggle="offcanvas" aria-controls="site-character-select"
-            >
-                @Character
-                {{ Auth::user()->getCharacter()->name }}
-                @else -Select Character- @endCharacter
-            </a>
+            <div class="d-flex align-items-center nav-link">
+                <a class="navbar-nav d-inline-block text-decoration-none" href="#site-character-select" role="button"
+                   data-bs-toggle="offcanvas" aria-controls="site-character-select"
+                >
+                    @Character
+                    {{ Auth::user()->getCharacter()->name }}
+                    @else -Select Character- @endCharacter
+                </a>
+            </div>
         @endguest
     </div>
 </header>
