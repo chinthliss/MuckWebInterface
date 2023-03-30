@@ -41,7 +41,6 @@
 
 </head>
 <body>
-
 <!-- Header bar -->
 <header id="site-navigation-top" class="navbar navbar-dark site-navigation py-0">
     <div class="container-fluid flex-column flex-md-row align-items-md-stretch">
@@ -84,7 +83,7 @@
         @endguest
     </div>
 </header>
-
+<!-- Content -->
 <div id="site-below-header" class="container-fluid">
 
     @hasSection('page-navigation')
