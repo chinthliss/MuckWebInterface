@@ -34,8 +34,8 @@ class EmailVerificationTest extends TestCase
     public function test_cannot_open_page_that_requires_verification_if_not_verified()
     {
         $user = UserFactory::create(['unverified' => true]);
-        $response = $this->actingAs($user)->get(route('multiplayer.home'));
-        $response->assertRedirect(route('auth.email.verify'));
+        $response = $this->followingRedirects()->actingAs($user)->get(route('multiplayer.character.create'));
+        $response->assertViewIs('auth.email-verify');
     }
 
     public function test_cannot_access_verification_page_without_account()
@@ -108,7 +108,7 @@ class EmailVerificationTest extends TestCase
         Notification::fake();
         $user = UserFactory::create(['unverified' => true]);
         $this->actingAs($user)->get(route('auth.email.resendVerification'));
-        Notification::assertSentTo($user,VerifyEmail::class, function(VerifyEmail $notification, $channels) use ($user) {
+        Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification, $channels) use ($user) {
             $mail = $notification->toMail($user)->toArray();
             $this->assertStringContainsStringIgnoringCase('signature=', $mail['actionUrl']);
             return true;
@@ -123,7 +123,7 @@ class EmailVerificationTest extends TestCase
             'email' => $user->getEmail()
         ]);
         $this->actingAs($user)->get(route('auth.email.resendVerification'));
-        Notification::assertSentTo($user,VerifyEmail::class, function(VerifyEmail $notification, $channels) use ($user) {
+        Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification, $channels) use ($user) {
             $mail = $notification->toMail($user)->toArray();
             $response = $this->get($mail['actionUrl']);
             $response->assertRedirect();
