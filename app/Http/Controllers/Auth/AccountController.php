@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\AccountNotificationManager;
 use App\Http\Controllers\Controller;
+use App\Muck\MuckObjectService;
 use App\User as User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -101,7 +102,7 @@ class AccountController extends Controller
         if (!$user) abort(401);
 
         return array_map(function ($notification) {
-            if ($notification['character']) $notification['character'] = $notification['character']->name();
+            if ($notification['character']) $notification['character'] = $notification['character']->name;
             return $notification;
         }, $notificationManager->getNotificationsFor($user));
     }

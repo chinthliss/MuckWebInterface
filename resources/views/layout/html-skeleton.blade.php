@@ -63,7 +63,7 @@
                     /** @var App\User $user */
                     $user = auth()->user();
                     $count = resolve('App\AccountNotificationManager')->getUnreadNotificationsCountFor($user);
-                    echo('<span class="badge bg-secondary d-inline" id="account-notifications-unread-count">' . ($count ?: '') . '</span>');
+                    echo('<span class="badge text-black bg-info" id="account-notifications-unread-count">' . ($count ?: '') . '</span>');
                     ?>
                 </a>
             </div>

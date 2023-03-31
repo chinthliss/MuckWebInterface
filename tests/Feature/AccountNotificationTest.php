@@ -56,7 +56,7 @@ class AccountNotificationTest extends TestCase
         $user = UserFactory::create();
         MuckWebInterfaceNotification::NotifyAccount($user, 'Test');
         $notificationManager = resolve(AccountNotificationManager::class);
-        $notifications = $notificationManager->getNotificationsFor($user);
+        $notifications = $notificationManager->getNotificationsFor($user, false);
         $this->assertCount(1, $notifications);
         $count = $notificationManager->getUnreadNotificationsCountFor($user);
         $this->assertEquals(1, $count);
