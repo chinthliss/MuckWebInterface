@@ -178,7 +178,7 @@ class MuckObjectService
     /**
      * Get all the characters of a given user.
      * @param User $user
-     * @return array<int,MuckDbref>
+     * @return MuckDbref[]
      */
     public function getCharactersOf(User $user): array
     {

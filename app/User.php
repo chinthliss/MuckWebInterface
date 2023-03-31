@@ -358,7 +358,7 @@ class User implements Authenticatable, MustVerifyEmail
     /**
      * @return void
      */
-    private function loadRolesIfRequired()
+    private function loadRolesIfRequired(): void
     {
         if ($this->roles == null) $this->roles = $this->getProvider()->getRolesFor($this);
     }
@@ -445,12 +445,24 @@ class User implements Authenticatable, MustVerifyEmail
     }
 
     /**
-     * @return array<int,MuckDbref>
+     * @return MuckDbref[]
      */
     public function getCharacters(): array
     {
         if (!$this->characters) $this->characters = $this->getProvider()->getCharacters($this);
         return $this->characters;
+    }
+
+    /**
+     * @return array<int,MuckDbref>
+     */
+    public function getCharactersIndexedByDbref(): array
+    {
+        $characters = [];
+        foreach($this->getCharacters() as $character) {
+            $characters[$character->dbref] = $character;
+        }
+        return $characters;
     }
 
     #endregion Characters

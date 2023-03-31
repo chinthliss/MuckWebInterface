@@ -492,7 +492,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
     /**
      * Get characters for user
      * @param User $user
-     * @return array<int,MuckDbref>
+     * @return MuckDbref[]
      */
     public function getCharacters(User $user): array
     {
