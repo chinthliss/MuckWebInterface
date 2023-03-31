@@ -51,8 +51,8 @@ class AccountNotificationManager
             $result[] = [
                 'id' => $row->id,
                 'character' => $character,
-                'created_at' => $row->created_at,
-                'read_at' => $row->read_at,
+                'created_at' => new Carbon($row->created_at),
+                'read_at' => $row->read_at ? new Carbon($row->read_at) : null,
                 'message' => $row->message
             ];
         }
