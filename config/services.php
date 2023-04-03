@@ -31,4 +31,24 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'authorizenet' => [
+        'loginId' => env('AUTHORIZENET_PAYMENT_API_LOGIN_ID'),
+        'transactionKey' => env('AUTHORIZENET_PAYMENT_TRANSACTION_KEY'),
+        'sealId' => env('AUTHORIZENET_PAYMENT_SEAL_ID')
+    ],
+
+    'paypal' => [
+        'account' => env('PAYPAL_ACCOUNT'),
+        'clientId' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_SECRET'),
+        'subscriptionId' => env('PAYPAL_SUBSCRIPTION_PRODUCT_ID')
+    ],
+
+    'patreon' => [
+        'clientId' => env('PATREON_CLIENT_ID'),
+        'clientSecret' => env('PATREON_CLIENT_SECRET'),
+        'creatorAccessToken' => env('PATREON_CREATOR_ACCESS_TOKEN'),
+        'creatorRefreshToken' => env('PATREON_CREATOR_REFRESH_TOKEN'),
+        'campaigns' => env('PATREON_CAMPAIGNS')
+    ],
 ];

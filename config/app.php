@@ -194,6 +194,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\PatreonServiceProvider::class,
         App\Providers\MuckServiceProvider::class,
         App\Providers\HostLogServiceProvider::class,
     ],
@@ -215,5 +216,12 @@ return [
         'Lex' => App\Helpers\Lexicon::class,
         'Ansi' => App\Helpers\Ansi::class,
     ])->toArray(),
+
+    // Whether to process subscriptions, can be set to false to allow for a staging site
+    // Will not stop external vendors, such as PayPal.
+    'process_automated_payments' => env('PROCESS_AUTOMATED_PAYMENTS', false),
+
+    //Payment drivers. Not using a default to avoid accidentally using a fake one
+    'card_payment_driver' => env('CARD_PAYMENT_DRIVER'),
 
 ];
