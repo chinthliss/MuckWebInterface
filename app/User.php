@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Http\Controllers\Auth\PasswordController;
 use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use Carbon\Carbon;
@@ -213,7 +212,7 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->email->email;
     }
 
-    private function loadEmails()
+    private function loadEmails(): void
     {
         $this->emails = $this->getProvider()->getEmails($this);
     }
@@ -263,7 +262,7 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->email->email;
     }
 
-    public function sendEmailVerificationNotification()
+    public function sendEmailVerificationNotification(): void
     {
         Log::debug("AUTH Sending Email Verification email to $this");
         //TODO: Maybe queue this later
@@ -292,9 +291,19 @@ class User implements Authenticatable, MustVerifyEmail
         return self::getProvider()->getAccountProperty($this, $property);
     }
 
-    public function setAccountProperty(string $property, $value)
+    public function setAccountProperty(string $property, $value): void
     {
         self::getProvider()->setAccountProperty($this, $property, $value);
+    }
+
+    /**
+     * Returns all the properties under an account property directory
+     * @param string $directory
+     * @return array<string, mixed>
+     */
+    public function getAccountPropertyDirectory(string $directory): array
+    {
+        return self::getProvider()->getAccountPropertyDirectory($this, $directory);
     }
 
     #endregion Account Properties
@@ -467,7 +476,7 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Characters
 
-    public function setIsLocked(bool $isLocked)
+    public function setIsLocked(bool $isLocked): void
     {
         $this->getProvider()->setIsLocked($this, $isLocked);
         $this->lockedAt = $isLocked ? Carbon::now() : null;
@@ -478,7 +487,7 @@ class User implements Authenticatable, MustVerifyEmail
         return $this->lockedAt;
     }
 
-    public function setPassword(string $password)
+    public function setPassword(string $password): void
     {
         $password = MuckInterop::createSHA1SALTPassword($password);
         $this->password = $password;
@@ -523,6 +532,8 @@ class User implements Authenticatable, MustVerifyEmail
      */
     public function getLastConnect(): ?Carbon
     {
+        if ($this->lastConnect) return $this->lastConnect;
+
         //TODO: getLastConnect should also check when ACCOUNT last connected, not just character last connects
         $lastConnect = null;
         foreach ($this->getCharacters() as $character) {
@@ -530,7 +541,31 @@ class User implements Authenticatable, MustVerifyEmail
                 $lastConnect = max($lastConnect, $character->lastUsedTimestamp);
             }
         }
+
+        $this->lastConnect = $lastConnect;
         return $lastConnect;
+    }
+
+    /**
+     * Utility function to get present account currency
+     * This is NOT cached.
+     * @return int accountCurrency
+     */
+    public function getAccountCurrency(): int
+    {
+        $value = $this->getAccountProperty('mako');
+        return $value ?? 0;
+    }
+
+    public function getAccountFlags(): array
+    {
+        return array_keys($this->getAccountPropertyDirectory('Flags'));
+    }
+
+    public function getSupporterPoints(): int
+    {
+        $value = $this->getAccountProperty('supporter');
+        return $value ?? 0;
     }
 
     public static function fromDatabaseResponse(stdClass $query): User
@@ -565,13 +600,14 @@ class User implements Authenticatable, MustVerifyEmail
 
     /**
      * Supported scopes, defaults to 'user':
-     *   user - User output
-     *   admin - Also contains an adminUrl
+     *   basic - Only the values required for the site to operate
+     *   basic_admin - Basic but with admin links
+     *   user - Everything a user is permitted to see
      *   all - Also includes emails, characters and account notes
      * @param string $scope
-     * @return void
+     * @return array
      */
-    public function toArray(string $scope = 'user'): array
+    public function toArray(string $scope = 'basic'): array
     {
         $this->loadRolesIfRequired();
         $array = [
@@ -581,20 +617,29 @@ class User implements Authenticatable, MustVerifyEmail
             'locked' => $this->lockedAt
         ];
 
-        if ($scope == 'admin' || $scope == 'all') {
+        if ($scope != 'basic' && $scope != 'user') {
             $array['url'] = $this->getAdminUrl();
         }
 
-        if ($scope == 'all') {
+        if ($scope == 'user' || $scope == 'all') {
+            $array['veterancy'] = $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
+
             $characters = [];
             foreach ($this->getCharacters() as $character) {
                 $characters[] = $character->toArray();
             }
+
+            $array['characters'] = $characters;
             $array['lastConnected'] = $this->getLastConnect();
             $array['primaryEmail'] = $this->getEmail();
             $array['referrals'] = $this->getReferralCount();
-            $array['characters'] = $characters;
             $array['emails'] = $this->getEmails();
+            $array['currency'] = $this->getAccountCurrency();
+            $array['supporter_points'] = $this->getSupporterPoints();
+            $array['flags'] = $this->getAccountFlags();
+        }
+
+        if ($scope == 'all') {
             $array['notes'] = $this->getAccountNotes();
         }
 

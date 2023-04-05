@@ -246,14 +246,14 @@ class MuckWebInterfaceUserProvider implements UserProvider
     /**
      * @inheritDoc
      */
-    public function updateRememberToken(Authenticatable $user, $token)
+    public function updateRememberToken(Authenticatable $user, $token): void
     {
         DB::table('accounts')
             ->where('aid', $user->getAuthIdentifier())
             ->update([$user->getRememberTokenName() => $token]);
     }
 
-    public function updatePassword(User $user, string $password, $password_type)
+    public function updatePassword(User $user, string $password, $password_type): void
     {
         DB::table('accounts')->where([
             'aid' => $user->id()
@@ -293,7 +293,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     #region Email Related
 
-    public function setEmailAsVerified(User $user, string $email)
+    public function setEmailAsVerified(User $user, string $email): void
     {
         // Verify email - this may not exist if it was created from outside
         DB::table('account_emails')->updateOrInsert(
@@ -420,7 +420,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     #region Properties
 
-    public function getAccountProperty(User $user, string $property)
+    public function getAccountProperty(User $user, string $property): mixed
     {
         $row = DB::table('account_properties')
             ->where(['aid' => $user->id(), 'propname' => $property])
@@ -439,7 +439,8 @@ class MuckWebInterfaceUserProvider implements UserProvider
         }
     }
 
-    public function setAccountProperty(User $user, string $propertyName, $propertyValue)
+
+    public function setAccountProperty(User $user, string $propertyName, mixed $propertyValue): void
     {
         switch (gettype($propertyValue)) {
             case 'integer':
@@ -468,6 +469,35 @@ class MuckWebInterfaceUserProvider implements UserProvider
             ['aid' => $user->id(), 'propname' => $propertyName],
             ['propdata' => $propertyValue, 'proptype' => $propertyType]
         );
+    }
+
+    public function getAccountPropertyDirectory(User $user, string $directory): array
+    {
+        //Make sure there's not a trailing slashes
+        $directory = rtrim($directory, '/');
+        $rows = DB::table('account_properties')
+            ->where('aid', '=', $user->id())
+            ->where('propname', 'like', $directory . '/%')
+            ->get();
+        $result = [];
+        foreach ($rows as $row) {
+            $propname = ltrim(substr($row->propname, strlen($directory)), '/');
+            switch ($row->proptype) {
+                case 'INTEGER':
+                    $result[$propname] = (int)$row->propdata;
+                    break;
+                case 'FLOAT':
+                    $result[$propname] = (float)$row->propdata;
+                    break;
+                case 'OBJECT':
+                    $result[$propname] = $this->muckObjectService->getByDbref($row->propdata);
+                    break;
+                // Other values are 'STRING'
+                default:
+                    $result[$propname] = $row->propdata;
+            }
+        }
+        return $result;
     }
 
     #endregion Properties

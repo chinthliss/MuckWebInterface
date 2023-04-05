@@ -18,6 +18,8 @@ class UserFactory
      * alternativeEmails - If true, gives the user 1 alternativeEmail. If a number, adds that many.
      * notAgreedToTOS - If true, terms of service agreement isn't set.
      * legacyEmail - If true, the account_emails record is removed to represent an account created before such was used.
+     * accountCurrency - if present, sets the given amount of accountCurrency
+     * accountFlags - if present, sets account flags to the given array
      * @param array $options
      * @return User
      */
@@ -62,6 +64,27 @@ class UserFactory
                 'roles' => $options['roles']
             ]);
         }
+
+        if (array_key_exists('accountCurrency', $options)) {
+            DB::table('account_properties')->insert([
+                'aid' => $user->id(),
+                'propname' => 'mako',
+                'proptype' => 'INTEGER',
+                'propdata' => $options['accountCurrency']
+            ]);
+        };
+
+        if (array_key_exists('accountFlags', $options)) {
+            foreach ($options['accountFlags'] as $flag) {
+                DB::table('account_properties')->insert([
+                    'aid' => $user->id(),
+                    'propname' => 'flags/' . $flag,
+                    'proptype' => 'INTEGER',
+                    'propdata' => 1
+                ]);
+            }
+        };
+
 
         return $user;
     }
