@@ -601,9 +601,9 @@ class User implements Authenticatable, MustVerifyEmail
     /**
      * Supported scopes, defaults to 'user':
      *   basic - Only the values required for the site to operate
-     *   basic_admin - Basic but with admin links
+     *   admin - Admin only, basic but with additional info for admin searches / links
      *   user - Everything a user is permitted to see
-     *   all - Also includes emails, characters and account notes
+     *   all - Admin only, includes everything it can
      * @param string $scope
      * @return array
      */
@@ -617,26 +617,28 @@ class User implements Authenticatable, MustVerifyEmail
             'locked' => $this->lockedAt
         ];
 
+        if ($scope != 'basic') {
+            $characters = [];
+            foreach ($this->getCharacters() as $character) {
+                $characters[] = $character->toArray();
+            }
+            $array['characters'] = $characters;
+            $array['lastConnected'] = $this->getLastConnect();
+            $array['primaryEmail'] = $this->getEmail();
+            $array['referrals'] = $this->getReferralCount();
+            $array['emails'] = $this->getEmails();
+        }
+
         if ($scope != 'basic' && $scope != 'user') {
             $array['url'] = $this->getAdminUrl();
         }
 
         if ($scope == 'user' || $scope == 'all') {
             $array['veterancy'] = $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
-
-            $characters = [];
-            foreach ($this->getCharacters() as $character) {
-                $characters[] = $character->toArray();
-            }
-
-            $array['characters'] = $characters;
-            $array['lastConnected'] = $this->getLastConnect();
-            $array['primaryEmail'] = $this->getEmail();
-            $array['referrals'] = $this->getReferralCount();
-            $array['emails'] = $this->getEmails();
             $array['currency'] = $this->getAccountCurrency();
-            $array['supporter_points'] = $this->getSupporterPoints();
+            $array['supporterPoints'] = $this->getSupporterPoints();
             $array['flags'] = $this->getAccountFlags();
+            $array['subscriptionStatus'] = 'TODO: Subscription status';
         }
 
         if ($scope == 'all') {

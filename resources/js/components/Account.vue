@@ -72,6 +72,7 @@
 </template>
 
 <script setup>
+// TODO: Fix Account
 /**
  * @typedef {object} Email
  * @property {string} email

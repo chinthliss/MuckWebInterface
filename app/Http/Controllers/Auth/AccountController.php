@@ -20,10 +20,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = auth()->user();
         return view('account', [
-            'accountCreated' => $user->getCreatedAt(),
-            //TODO Wire up subscription status
-            'subscriptionStatus' => 'TBC',
-            'emails' => $user->getEmails()
+            'account' => $user->toArray('user')
         ]);
 
     }

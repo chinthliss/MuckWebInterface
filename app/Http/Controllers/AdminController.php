@@ -97,7 +97,7 @@ class AdminController extends Controller
         }
 
         return array_map(function($account) {
-            return $account->toArray('all');
+            return $account->toArray('admin');
         }, $results);
     }
 }
