@@ -10,16 +10,29 @@
         <dl class="row">
 
             <dt class="col-sm-2 text-primary">Created</dt>
-            <dd class="col-sm-10">{{ accountCreated }}</dd>
+            <dd class="col-sm-10">{{ carbonToString(account.createdAt) }}</dd>
+
+            <dt class="col-sm-2 text-primary">Veterancy</dt>
+            <dd class="col-sm-10">{{ account.veterancy }} Month(s)</dd>
 
             <dt class="col-sm-2 text-primary">Subscription</dt>
-            <dd class="col-sm-10">{{ subscriptionStatus }}</dd>
+            <!-- TODO: Restore subscription status on account screen -->
+            <dd class="col-sm-10">{{ account.subscriptionStatus }}</dd>
+
+            <dt class="col-sm-2 text-primary">{{ lex('accountCurrency') }}</dt>
+            <dd class="col-sm-10">{{ account.currency }}</dd>
+
+            <dt class="col-sm-2 text-primary">Supporter Points</dt>
+            <dd class="col-sm-10">{{ account.supporterPoints }}</dd>
+
+            <dt class="col-sm-2 text-primary">Flags</dt>
+            <dd class="col-sm-10">{{ arrayToList(account.flags, 'None') }}</dd>
 
         </dl>
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="emails">
+        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="account.emails">
             <thead>
             <tr>
                 <th scope="col">Email</th>
@@ -56,6 +69,8 @@
         </div>
 
         <h2 class="mt-2">Preferences</h2>
+        <div>Pending</div>
+        <!-- TODO: Restore preferences on account screen -->
 
         <!-- Change primary email modal -->
         <modal-confirmation id="confirm-primary-email" @yes="makeEmailPrimary"
@@ -72,7 +87,6 @@
 </template>
 
 <script setup>
-// TODO: Fix Account
 /**
  * @typedef {object} Email
  * @property {string} email
@@ -81,24 +95,38 @@
  * @property {boolean} isPrimary
  */
 
+/**
+ * @typedef {object} Account
+ * @property {int} id
+ * @property {string} createdAt
+ * @property {string} verifiedAt
+ * @property {string} lockedAt
+ * @property {string} lastConnected
+ * @property {string} primaryEmail
+ * @property {int} referrals
+ * @property {int} supporterPoints
+ * @property {int} veterancy
+ * @property {int} currency
+ * @property {string[]} flags
+ * @property {string[]} roles
+ * @property {Email[]} emails
+ */
+
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
-import {carbonToString} from "../formatting";
-import {csrf} from "../siteutils";
+import {carbonToString, arrayToList} from "../formatting";
+import {csrf, lex} from "../siteutils";
 
 const props = defineProps({
-    accountCreated: {type: String, required: true},
-    subscriptionStatus: {type: String, required: true},
+    accountIn: {type: Object, required: true},
     links: {type: Object, required: true},
-    /** @type {Email[]} */
-    emailsIn: {type: Array}
 });
 
 /**
- * @type {Ref<Email[]>}
+ * @type {Ref<Account>}
  */
-const emails = ref(props.emailsIn);
+const account = ref(props.accountIn);
 const emailToMakePrimary = ref();
 
 const confirmMakeEmailPrimary = (e) => {

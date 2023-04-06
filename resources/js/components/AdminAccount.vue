@@ -1,37 +1,55 @@
 <template>
     <div class="container">
 
-        <div class="row">
-            <div class="col">
+        <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
                 <h1>Account {{ account.id }}</h1>
             </div>
-        </div>
-
-        <div v-if="account.locked">
-            <div class="text-danger p-2">Account locked as of {{ carbonToString(account.locked) }}</div>
-            <button class="btn btn-danger float-end" @click="unlockAccount">
-                <i class="fas fa-unlock btn-icon-left"></i>Unlock Account
-            </button>
-
-        </div>
-        <div v-else>
-            <button class="btn btn-danger float-end" @click="lockAccount">
-                <i class="fas fa-lock btn-icon-left"></i>Lock Account
-            </button>
+            <div>
+                <div v-if="account.locked">
+                    <div class="text-danger p-2">Account locked as of {{ carbonToString(account.locked) }}</div>
+                    <button class="btn btn-danger float-end" @click="unlockAccount">
+                        <i class="fas fa-unlock btn-icon-left"></i>Unlock Account
+                    </button>
+                </div>
+                <div v-else>
+                    <button class="btn btn-danger float-end" @click="lockAccount">
+                        <i class="fas fa-lock btn-icon-left"></i>Lock Account
+                    </button>
+                </div>
+            </div>
         </div>
 
         <dl class="row">
             <dt class="col-sm-2 text-primary">Created</dt>
-            <dd class="col-sm-10">{{ carbonToString(account.created) }}</dd>
+            <dd class="col-sm-10">{{ carbonToString(account.createdAt) }}</dd>
 
+            <dt class="col-sm-2 text-primary">Veterancy</dt>
+            <dd class="col-sm-10">{{ account.veterancy }} Month(s)</dd>
 
             <dt class="col-sm-2 text-primary">Last Connected</dt>
             <dd class="col-sm-10">{{ carbonToString(account.lastConnected) }}</dd>
 
+            <dt class="col-sm-2 text-primary">{{ lex('accountCurrency') }}</dt>
+            <dd class="col-sm-10">{{ account.currency }}</dd>
+
+            <dt class="col-sm-2 text-primary">Subscription</dt>
+            <!-- TODO: Restore subscription status on admin account screen -->
+            <dd class="col-sm-10">{{ account.subscriptionStatus }}</dd>
+
             <dt class="col-sm-2 text-primary">Referrals</dt>
             <dd class="col-sm-10">{{ account.referrals }}</dd>
 
-            <dt class="col-sm-2 text-primary">Characters ({{ lex('game_name') }})</dt> <!-- TODO: Output gamename -->
+            <dt class="col-sm-2 text-primary">Supporter Points</dt>
+            <dd class="col-sm-10">{{ account.supporterPoints }}</dd>
+
+            <dt class="col-sm-2 text-primary">Flags</dt>
+            <dd class="col-sm-10">{{ arrayToList(account.flags, 'None') }}</dd>
+
+            <dt class="col-sm-2 text-primary">Website Roles</dt>
+            <dd class="col-sm-10">{{ arrayToList(account.roles, 'None') }}</dd>
+
+            <dt class="col-sm-2 text-primary">Characters ({{ lex('game_name') }})</dt>
             <dd class="col-sm-10">
                 <character-card v-for="character in account.characters" :character="character"
                                 class="me-2"></character-card>
@@ -89,10 +107,6 @@
 
 
         </dl>
-
-        <ModalRequestError id="modal-error" :error="lastError">
-        </ModalRequestError>
-
     </div>
 </template>
 
@@ -105,8 +119,45 @@
  * @property {boolean} isPrimary
  */
 
+/**
+ * @typedef {object} Character
+ * @property {int} dbref
+ * @property {string} type
+ * @property {string} name
+ * @property {string} created
+ */
+
+/**
+* @typedef {object} AccountNote
+* @property {int} accountId
+* @property {string} whenAt
+* @property {string} body
+* @property {string} staffMember
+* @property {string} game
+*/
+
+/**
+ * @typedef {object} Account
+ * @property {int} id
+ * @property {string} createdAt
+ * @property {string} verifiedAt
+ * @property {string} lockedAt
+ * @property {string} lastConnected
+ * @property {string} primaryEmail
+ * @property {string} url
+ * @property {int} referrals
+ * @property {int} supporterPoints
+ * @property {int} veterancy
+ * @property {int} currency
+ * @property {string[]} flags
+ * @property {string[]} roles
+ * @property {Email[]} emails
+ * @property {Character[]} characters
+ * @property {AccountNote[]} notes
+ */
+
 import {ref} from 'vue';
-import {carbonToString} from "../formatting";
+import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
@@ -117,6 +168,9 @@ const props = defineProps({
     apiUrl: {type: String, required: true}
 });
 
+/**
+ * @type {Ref<Account>}
+ */
 const account = ref(props.account);
 const newAccountNote = ref('');
 const lastError = ref('');
@@ -164,9 +218,6 @@ const addAccountNote = () => {
         })
         .catch(error => {
             console.log("Request failed:", error);
-            lastError.value = error;
-            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
-            modal.show();
         })
 };
 
@@ -179,10 +230,6 @@ const lockAccount = () => {
         })
         .catch(error => {
             console.log("Request failed:", error);
-            lastError.value = error;
-            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
-            modal.show();
-
         })
 }
 
@@ -196,10 +243,6 @@ const unlockAccount = () => {
         })
         .catch(error => {
             console.log("Request failed:", error);
-            lastError.value = error;
-            const modal = new bootstrap.Modal(document.getElementById('modal-error'));
-            modal.show();
-
         })
 
 }

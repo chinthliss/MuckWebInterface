@@ -612,9 +612,10 @@ class User implements Authenticatable, MustVerifyEmail
         $this->loadRolesIfRequired();
         $array = [
             'id' => $this->id(),
-            'created' => $this->createdAt,
-            'roles' => $this->roles,
-            'locked' => $this->lockedAt
+            'createdAt' => $this->createdAt,
+            'verifiedAt' => $this->getEmailVerifiedAt(),
+            'lockedAt' => $this->getLockedAt(),
+            'roles' => $this->roles
         ];
 
         if ($scope != 'basic') {
@@ -625,7 +626,6 @@ class User implements Authenticatable, MustVerifyEmail
             $array['characters'] = $characters;
             $array['lastConnected'] = $this->getLastConnect();
             $array['primaryEmail'] = $this->getEmail();
-            $array['referrals'] = $this->getReferralCount();
             $array['emails'] = $this->getEmails();
         }
 
@@ -636,9 +636,10 @@ class User implements Authenticatable, MustVerifyEmail
         if ($scope == 'user' || $scope == 'all') {
             $array['veterancy'] = $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
             $array['currency'] = $this->getAccountCurrency();
-            $array['supporterPoints'] = $this->getSupporterPoints();
             $array['flags'] = $this->getAccountFlags();
             $array['subscriptionStatus'] = 'TODO: Subscription status';
+            $array['referrals'] = $this->getReferralCount();
+            $array['supporterPoints'] = $this->getSupporterPoints();
         }
 
         if ($scope == 'all') {
