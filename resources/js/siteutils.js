@@ -29,5 +29,5 @@ export const characterName = () => {
 };
 
 export const lex = (word) => {
-    return mwiSiteLexicon[word] || word;
+    return mwiSiteLexicon[word.toLowerCase()] || word;
 };
