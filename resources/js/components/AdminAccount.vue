@@ -161,7 +161,6 @@ import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
-import ModalRequestError from "./ModalRequestError.vue";
 
 const props = defineProps({
     account: {type: Object, required: true},
@@ -173,7 +172,6 @@ const props = defineProps({
  */
 const account = ref(props.account);
 const newAccountNote = ref('');
-const lastError = ref('');
 
 const displayEmailRowForIsPrimary = (data) => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
