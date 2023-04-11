@@ -4,6 +4,7 @@ namespace App;
 
 use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
+use App\Payment\PatreonManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -644,6 +645,13 @@ class User implements Authenticatable, MustVerifyEmail
 
         if ($scope == 'all') {
             $array['notes'] = $this->getAccountNotes();
+
+            /** @var PatreonManager $patreonManager */
+            $patreonManager = App::make(PatreonManager::class);
+            $patron = $patreonManager->getPatronForUser($this);
+            if ($patron) {
+                $array['patreon'] = $patron->toAdminArray();
+            }
         }
 
         return $array;

@@ -72,9 +72,23 @@ class PatreonManager
 
     }
 
-    public function userForPatron(PatreonUser $patreonUser): ?User
+    public function getUserForPatron(PatreonUser $patreonUser): ?User
     {
         return $patreonUser->email ? User::findByEmail($patreonUser->email, true) : null;
+    }
+
+    public function getPatronForUser(User $user): ?PatreonUser
+    {
+        $emails = array_map(function ($emailDetails) {
+            return strtolower($emailDetails->email);
+        }, $user->getEmails());
+
+        $this->loadFromDatabaseIfRequired();
+        foreach ($this->getPatrons() as $patron) {
+            if ($patron->email && in_array(strtolower($patron->email), $emails)) return $patron;
+        }
+
+        return null;
     }
 
     private function updateOrCreatePatronFromArray(string $campaignId, string $patronId, array $data): void

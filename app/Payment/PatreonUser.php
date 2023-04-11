@@ -88,7 +88,7 @@ class PatreonUser
         $patron->hidePledges = $row->hide_pledges;
         $patron->url = $row->url;
         $patron->thumbUrl = $row->thumb_url;
-        $patron->updatedAt = $row->updated_at;
+        if ($patron->updatedAt) $patron->updatedAt = new Carbon($row->updated_at);
         return $patron;
     }
 

@@ -49,6 +49,12 @@
             <dt class="col-sm-2 text-primary">Website Roles</dt>
             <dd class="col-sm-10">{{ arrayToList(account.roles, 'None') }}</dd>
 
+            <dt class="col-sm-2 text-primary">Patreon User</dt>
+            <dd class="col-sm-10">
+                <div v-if="account.patreon">{{ account.patreon.patreonId }}</div>
+                <div v-else>No</div>
+            </dd>
+
             <dt class="col-sm-2 text-primary">Characters ({{ lex('game_name') }})</dt>
             <dd class="col-sm-10">
                 <character-card v-for="character in account.characters" :character="character"
@@ -154,6 +160,7 @@
  * @property {Email[]} emails
  * @property {Character[]} characters
  * @property {AccountNote[]} notes
+ * @property {object} [patreon]
  */
 
 import {ref} from 'vue';

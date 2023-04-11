@@ -93,7 +93,8 @@ class PatreonMember
         $member->patronStatus = $row->patron_status;
         if ($row->pledge_relationship_start)
             $member->pledgeRelationshipStart = new Carbon($row->pledge_relationship_start);
-        $member->updatedAt = $row->updated_at;
+        if ($row->updated_at)
+            $member->updatedAt = new Carbon($row->updated_at);
         return $member;
     }
 }
