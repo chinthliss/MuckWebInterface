@@ -32,10 +32,10 @@ class MuckWebInterfaceNotification extends Notification
 
     /**
      * Get the notification's delivery channels.
-     * @param object $notifiable
+     * @param mixed $notifiable
      * @return string
      */
-    public function via(object $notifiable): string
+    public function via(mixed $notifiable): string
     {
         return MuckWebInterfaceChannel::class;
     }
@@ -45,7 +45,7 @@ class MuckWebInterfaceNotification extends Notification
      * @param mixed $notifiable
      * @return array
      */
-    public function toDatabase($notifiable): array
+    public function toDatabase(mixed $notifiable): array
     {
         return [
             'aid' => $notifiable->id(),
@@ -77,7 +77,7 @@ class MuckWebInterfaceNotification extends Notification
      * @param User $user
      * @param string $message
      */
-    public static function notifyAccount(User $user, string $message)
+    public static function notifyAccount(User $user, string $message): void
     {
         $user->notify(new MuckWebInterfaceNotification($message));
     }
@@ -88,7 +88,7 @@ class MuckWebInterfaceNotification extends Notification
      * @param string $message
      * @param int|null $gameCode Optional, defaults to this game.
      */
-    public static function notifyUser(User $user, string $message, ?int $gameCode = null)
+    public static function notifyUser(User $user, string $message, ?int $gameCode = null): void
     {
         if (!$gameCode) $gameCode = config('muck.muck_code');
         $user->notify(new MuckWebInterfaceNotification($message, $gameCode));
@@ -100,7 +100,7 @@ class MuckWebInterfaceNotification extends Notification
      * @param MuckDbref $character
      * @param string $message
      */
-    public static function notifyCharacter(User $user, MuckDbref $character, string $message)
+    public static function notifyCharacter(User $user, MuckDbref $character, string $message): void
     {
         $user->notify(new MuckWebInterfaceNotification($message, config('muck.muck_code'), $character));
     }
@@ -112,7 +112,7 @@ class MuckWebInterfaceNotification extends Notification
      * @param string $message
      * @return void
      */
-    public static function notifyUserOrCharacter(User $user, ?MuckDbref $character, string $message)
+    public static function notifyUserOrCharacter(User $user, ?MuckDbref $character, string $message): void
     {
         if ($character)
             self::notifyCharacter($user, $character, $message);
