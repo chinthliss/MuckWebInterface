@@ -6,6 +6,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Nette\NotImplementedException;
 
 class MuckService
 {
@@ -311,7 +312,7 @@ class MuckService
      */
     public function usdToAccountCurrency(float $usdAmount): ?int
     {
-
+        throw new NotImplementedException("TODO - Reimplement usdToAccountCurrency");
     }
 
     /**
@@ -324,6 +325,7 @@ class MuckService
      */
     public function fulfillAccountCurrencyPurchase(int $accountId, float $usdAmount, int $accountCurrency, ?string $subscriptionId): int
     {
+        throw new NotImplementedException("TODO - Reimplement fulfillAccountCurrencyPurchase");
     }
 
     /**
@@ -333,6 +335,7 @@ class MuckService
      */
     public function fulfillPatreonSupport(int $accountId, int $accountCurrency): int
     {
+        throw new NotImplementedException("TODO - Reimplement fulfillPatreonSupport");
     }
 
     /**
@@ -344,6 +347,7 @@ class MuckService
      */
     public function rewardItem(int $accountId, float $usdAmount, int $accountCurrency, string $itemCode): int
     {
+        throw new NotImplementedException("TODO - Reimplement rewardItem");
     }
 
     #endregion Payment related

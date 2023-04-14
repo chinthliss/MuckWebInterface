@@ -3,6 +3,7 @@
 
 namespace App\Payment;
 
+use App\Helpers\Lexicon;
 use App\Muck\MuckService;
 use App\Notifications\PaymentTransactionPaid;
 use App\User;
@@ -69,7 +70,7 @@ class PaymentTransactionManager
         $transaction->accountCurrencyQuoted = $accountCurrency;
         $transaction->accountCurrencyPriceUsd = $usdForAccountCurrency;
         if ($accountCurrency)
-            $purchases[] = $transaction->accountCurrencyQuoted . ' ' . Lex::get('accountcurrency');
+            $purchases[] = $transaction->accountCurrencyQuoted . ' ' . Lexicon::get('accountcurrency');
 
         if ($items) {
             $itemCatalogue = resolve(PaymentTransactionItemCatalogue::class)->itemsCatalogue();

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Muck\MuckConnection;
+use App\Muck\MuckService;
 use App\Payment\PaymentTransactionItemCatalogue;
 use App\Payment\PaymentTransactionManager;
 use Illuminate\Contracts\Support\DeferrableProvider;
@@ -20,7 +20,7 @@ class PaymentTransactionServiceProvider extends ServiceProvider implements Defer
     public function register()
     {
         $this->app->singleton(PaymentTransactionManager::class, function ($app) {
-            $muck = $app->make(MuckConnection::class);
+            $muck = $app->make(MuckService::class);
             return new PaymentTransactionManager($muck);
         });
         $this->app->singleton(PaymentTransactionItemCatalogue::class, function ($app) {

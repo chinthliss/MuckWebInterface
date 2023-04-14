@@ -3,7 +3,7 @@
 
 namespace App\Payment;
 
-use App\Muck\MuckConnection;
+use App\Muck\MuckService;
 use App\User;
 use Error;
 use Exception;
@@ -18,7 +18,7 @@ class PaymentSubscriptionManager
 {
 
     public function __construct(
-        protected MuckConnection $muck,
+        protected MuckService $muck,
         protected bool $processSubscriptionPayments)
     {
     }

@@ -65,6 +65,11 @@ class PatreonUser
         $this->patronId = $patronId;
     }
 
+    public function __toString(): string
+    {
+        return "PatreonUser#$this->patronId";
+    }
+
     public function toDatabase(): array
     {
         return [

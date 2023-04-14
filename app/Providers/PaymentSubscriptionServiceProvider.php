@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Muck\MuckConnection;
+use App\Muck\MuckService;
 use App\Payment\PaymentSubscriptionManager;
 use Error;
 use Illuminate\Contracts\Support\DeferrableProvider;
@@ -23,7 +23,7 @@ class PaymentSubscriptionServiceProvider extends ServiceProvider implements Defe
             throw new Error('Process Automated Payments setting not set in configuration.');
 
         $this->app->singleton(PaymentSubscriptionManager::class, function ($app) {
-            $muck = $app->make(MuckConnection::class);
+            $muck = $app->make(MuckService::class);
             $processSubscriptionPayments = config('app.process_automated_payments');
             return new PaymentSubscriptionManager($muck, $processSubscriptionPayments);
         });

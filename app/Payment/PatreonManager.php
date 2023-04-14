@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Patreon\API;
+use Exception;
 
 class PatreonManager
 {
@@ -42,6 +43,7 @@ class PatreonManager
     {
         if ($this->patrons) return;
 
+        Log::debug(self::class . " loading patrons from DB.");
         $this->patrons = [];
         $rows = DB::table('patreon_users')->get();
         foreach ($rows as $row) {
@@ -157,7 +159,7 @@ class PatreonManager
     {
         $this->loadFromDatabaseIfRequired();
 
-        Log::info('Updating Patreon details from Patreon.');
+        Log::info(self::class . ' updating Patreon details from Patreon.');
         $apiClient = new API($this->creatorAccessToken);
 
         foreach ($this->campaigns as $campaignId) {
@@ -203,16 +205,50 @@ class PatreonManager
         // Look for updated entries
         foreach ($this->patrons as $patron) {
             if ($patron->updated) {
-                Log::debug("Patreon updating/creating " . $patron->patronId);
+                Log::debug(self::class . " updating/creating " . $patron->patronId);
                 $this->savePatron($patron);
             }
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function processRewards(): void
     {
-        abort(500, "Patreon reward processing hasn't been moved across yet.");
-        // TODO: Re-add Patreon Process Rewards
+        $this->loadFromDatabaseIfRequired();
+        $transactionManager = resolve(PaymentTransactionManager::class);
+        $phrase = $this->processRewards ? 'is being' : 'would have been';
+        Log::debug(self::class . " started reward processing.");
+        if (!$this->processRewards) Log::info(self::class . " reward processing is disabled, so only checking for eligibility.");
+
+        foreach ($this->patrons as $patron) {
+            $user = $this->getUserForPatron($patron);
+            if (!$user) continue;
+
+            foreach ($patron->memberships as $membership) {
+                $rewardCents = $membership->lifetimeSupportCents - $membership->rewardedCents;
+                if ($rewardCents > 0) {
+                    Log::info(self::class . " Reward of $rewardCents cents for Patron#$patron->patronId, campaign#$membership->campaignId $phrase given to user#{$user->id()}.");
+                    if ($this->processRewards) {
+                        $transaction = $transactionManager->createTransactionForOtherReason(
+                            $user,
+                            'patreon',
+                            $patron->patronId,
+                            round($rewardCents / 100.0, 2),
+                            round($rewardCents / 100.0, 2) * 2, [],
+                            $membership->campaignId
+                        );
+                        $transactionManager->setPaid($transaction, true);
+                        $transaction->accountCurrencyRewarded = $transaction->accountCurrencyQuoted;
+                        $transactionManager->fulfillTransaction($transaction);
+                        $transactionManager->closeTransaction($transaction, 'fulfilled');
+                        $membership->rewardedCents += $rewardCents;
+                    }
+                }
+            }
+        }
+        Log::debug(self::class . " processRewards finished");
     }
 
     /**
@@ -232,6 +268,7 @@ class PatreonManager
      */
     public function getPatron($patronId): ?PatreonUser
     {
+        Log::debug(self::class . " looking up patron: $patronId");
         $this->loadFromDatabaseIfRequired();
         if (array_key_exists($patronId, $this->patrons)) return $this->patrons[$patronId];
         return null;
@@ -239,6 +276,7 @@ class PatreonManager
 
     public function savePatron(PatreonUser $patron): void
     {
+        Log::debug(self::class . " saving patron to DB: $patron");
         $patron->updatedAt = Carbon::now();
         DB::table('patreon_users')->updateOrInsert(
             ['patron_id' => $patron->patronId],
@@ -263,6 +301,7 @@ class PatreonManager
      */
     public function clearCache(): void
     {
+        Log::debug(self::class . " cleared patron cache to force reload.");
         $this->patrons = null;
     }
 

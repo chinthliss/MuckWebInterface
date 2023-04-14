@@ -47,7 +47,9 @@ class PatreonTest extends TestCase
 
         $patreonManager->clearCache();
         $patron = $patreonManager->getPatron(1);
-        $this->assertEquals($patron->memberships[1]->lifetimeSupportCents, $patron->memberships[1]->rewardedCents);
+        $this->assertEquals($patron->memberships[1]->lifetimeSupportCents,
+            $patron->memberships[1]->rewardedCents,
+            "Total cents rewarded should match total cents support.");
     }
 
     /**
@@ -93,7 +95,7 @@ class PatreonTest extends TestCase
 
         $patreonManager->clearCache();
         $patron = $patreonManager->getPatron(1);
-        $this->assertEquals(250, $patron->memberships[1]->rewardedCents);
+        $this->assertEquals(250, $patron->memberships[1]->rewardedCents, "Rewarded cents should now match support");
     }
 
     #endregion Legacy Claims

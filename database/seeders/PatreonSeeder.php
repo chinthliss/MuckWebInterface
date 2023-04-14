@@ -18,7 +18,7 @@ class PatreonSeeder extends Seeder
 
         DB::table('patreon_users')->insert([
             'patron_id' => 1,
-            'email' => 'test@test.com',
+            'email' => 'user@test.com',
             'full_name' => 'TestFullName',
             'vanity' => 'TestVanity',
             'hide_pledges' => false,

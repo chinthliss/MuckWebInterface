@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Payment\PatreonManager;
+use App\Payment\PaymentTransactionManager;
 use App\User;
 use Illuminate\Console\Command;
 
@@ -35,11 +36,8 @@ class PatreonConvertLegacyClaims extends Command
     /**
      * Execute the console command.
      */
-    public function handle(PatreonManager $patreonManager)
+    public function handle(PatreonManager $patreonManager, PaymentTransactionManager $transactionManager)
     {
-        abort("Legacy handling not re-implemented yet.");
-        //TODO: Re-add legacy patreon handling
-
         // This logic should be in the service but this is a one-off transition function
         $this->info('Processing...');
         $patrons = $patreonManager->getPatrons();
@@ -76,5 +74,6 @@ class PatreonConvertLegacyClaims extends Command
                 }
             }
         }
+        $this->info('Completed.');
     }
 }
