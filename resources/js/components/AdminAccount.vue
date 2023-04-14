@@ -34,8 +34,7 @@
             <dd class="col-sm-10">{{ account.currency }}</dd>
 
             <dt class="col-sm-2 text-primary">Subscription</dt>
-            <!-- TODO: Restore subscription status on admin account screen -->
-            <dd class="col-sm-10">{{ account.subscriptionStatus }}</dd>
+            <dd class="col-sm-10">{{ overallSubscriptionStatus() }}</dd>
 
             <dt class="col-sm-2 text-primary">Referrals</dt>
             <dd class="col-sm-10">{{ account.referrals }}</dd>
@@ -134,13 +133,13 @@
  */
 
 /**
-* @typedef {object} AccountNote
-* @property {int} accountId
-* @property {string} whenAt
-* @property {string} body
-* @property {string} staffMember
-* @property {string} game
-*/
+ * @typedef {object} AccountNote
+ * @property {int} accountId
+ * @property {string} whenAt
+ * @property {string} body
+ * @property {string} staffMember
+ * @property {string} game
+ */
 
 /**
  * @typedef {object} Account
@@ -161,6 +160,10 @@
  * @property {Character[]} characters
  * @property {AccountNote[]} notes
  * @property {object} [patreon]
+ * @property {boolean} subscriptionActive
+ * @property {boolean} subscriptionRenewing
+ * @property {string} subscriptionExpires
+ * @property {array} subscriptions
  */
 
 import {ref} from 'vue';
@@ -252,6 +255,11 @@ const unlockAccount = () => {
 
 }
 
+const overallSubscriptionStatus = () => {
+    if (!account.value.subscriptionActive) return 'No Subscription';
+    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
+    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
+}
 </script>
 
 <style scoped>

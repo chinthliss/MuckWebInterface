@@ -5,6 +5,7 @@ namespace App;
 use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use App\Payment\PatreonManager;
+use App\Payment\PaymentSubscriptionManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -641,6 +642,27 @@ class User implements Authenticatable, MustVerifyEmail
             $array['subscriptionStatus'] = 'TODO: Subscription status';
             $array['referrals'] = $this->getReferralCount();
             $array['supporterPoints'] = $this->getSupporterPoints();
+
+            /** @var PaymentSubscriptionManager $subscriptionManager */
+            $subscriptionManager = App::make(PaymentSubscriptionManager::class);
+            $subscriptions = [];
+            $subscriptionActive = false; // A subscription covers 'now'
+            $subscriptionRenewing = false; // A subscription is renewing
+            $subscriptionExpires = null; // latest date a subscription expires
+            foreach ($subscriptionManager->getSubscriptionsFor($this->id()) as $subscription) {
+                if ($subscription->status === 'user_declined' || $subscription->status === 'approval_pending') continue;
+                if ($subscription->renewing()) $subscriptionRenewing = true;
+                if ($subscription->active()) {
+                    $subscriptionActive = true;
+                    if (!$subscriptionExpires || $subscription->expires() > $subscriptionExpires)
+                        $subscriptionExpires = $subscription->expires();
+                }
+                $subscriptions[] = $subscription->toArray();
+            }
+            $array['subscriptions'] = $subscriptions;
+            $array['subscriptionActive'] = $subscriptionActive;
+            $array['subscriptionRenewing'] = $subscriptionRenewing;
+            $array['subscriptionExpires'] = $subscriptionExpires;
         }
 
         if ($scope == 'all') {
@@ -652,6 +674,7 @@ class User implements Authenticatable, MustVerifyEmail
             if ($patron) {
                 $array['patreon'] = $patron->toAdminArray();
             }
+
         }
 
         return $array;

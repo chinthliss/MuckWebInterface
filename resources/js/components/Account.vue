@@ -16,8 +16,7 @@
             <dd class="col-sm-10">{{ account.veterancy }} Month(s)</dd>
 
             <dt class="col-sm-2 text-primary">Subscription</dt>
-            <!-- TODO: Restore subscription status on account screen -->
-            <dd class="col-sm-10">{{ account.subscriptionStatus }}</dd>
+            <dd class="col-sm-10">{{ overallSubscriptionStatus() }}</dd>
 
             <dt class="col-sm-2 text-primary">{{ lex('accountCurrency') }}</dt>
             <dd class="col-sm-10">{{ account.currency }}</dd>
@@ -29,6 +28,41 @@
             <dd class="col-sm-10">{{ arrayToList(account.flags, 'None') }}</dd>
 
         </dl>
+
+        <!-- Subscriptions -->
+        <div v-if="account.subscriptions.length > 0">
+            <h2 class="mt-2">Subscriptions</h2>
+            <!-- TODO Subscription table is in old format -->
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Amount (USD)</th>
+                    <th scope="col">Interval (days)</th>
+                    <th scope="col">Next (approx)</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tr v-for="subscription in account.subscriptions">
+                    <td class="align-middle">{{ subscription.type }}</td>
+                    <td class="align-middle">${{ subscription.amount_usd }}</td>
+                    <td class="align-middle">{{ subscription.recurring_interval }}</td>
+                    <td class="align-middle">{{ carbonToString(subscription.next_charge_at) }}</td>
+                    <td class="align-middle">{{ friendlySubscriptionStatus(subscription.status) }}</td>
+                    <td class="align-middle"><a :href="subscription.url">
+                        <i class="fas fa-search"></i>
+                    </a></td>
+                    <td class="align-middle">
+                        <button class="btn btn-secondary" v-if="subscription.status === 'active'"
+                                @click="cancelSubscription(subscription.id)">Cancel
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <p>Payments made via subscriptions also show on the Account Transactions page.</p>
+        </div>
 
         <h2 class="mt-2">Emails</h2>
 
@@ -110,6 +144,10 @@
  * @property {string[]} flags
  * @property {string[]} roles
  * @property {Email[]} emails
+ * @property {boolean} subscriptionActive
+ * @property {boolean} subscriptionRenewing
+ * @property {string} subscriptionExpires
+ * @property {array} subscriptions
  */
 
 import {ref} from 'vue';
@@ -166,6 +204,35 @@ const emailTableConfiguration = {
     searching: false,
     drawCallback: emailTableDrawCallback
 };
+
+const overallSubscriptionStatus = () => {
+    if (!account.value.subscriptionActive) return 'No Subscription';
+    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
+    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
+}
+
+const cancelSubscription = (id) => {
+    // TODO - restore subscription cancelling
+}
+
+const friendlySubscriptionStatus = (status) => {
+    switch (status) {
+        case 'user_declined':
+            return 'Never Accepted';
+        case 'approval_pending':
+            return 'Never Accepted';
+        case 'suspended':
+            return 'Suspended';
+        case 'cancelled':
+            return 'Cancelled';
+        case 'expired':
+            return 'Expired';
+        case 'active':
+            return 'Active';
+    }
+    return 'Unknown'
+}
+
 </script>
 
 <style scoped>
