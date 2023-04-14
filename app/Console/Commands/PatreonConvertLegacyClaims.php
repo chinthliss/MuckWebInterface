@@ -37,7 +37,7 @@ class PatreonConvertLegacyClaims extends Command
      */
     public function handle(PatreonManager $patreonManager)
     {
-        abort(500, "Legacy handling not re-implemented yet.");
+        abort("Legacy handling not re-implemented yet.");
         //TODO: Re-add legacy patreon handling
 
         // This logic should be in the service but this is a one-off transition function
