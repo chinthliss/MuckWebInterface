@@ -43,7 +43,7 @@ class PatreonTest extends TestCase
         $this->assertEquals(150, $patron->memberships[1]->rewardedCents);
 
         $this->artisan('patreon:processrewards')
-            ->assertExitCode(0);
+            ->assertSuccessful();
 
         $patreonManager->clearCache();
         $patron = $patreonManager->getPatron(1);
@@ -58,7 +58,7 @@ class PatreonTest extends TestCase
         Config::set('app.process_automated_payments', false);
 
         $this->artisan('patreon:processrewards')
-            ->assertExitCode(0);
+            ->assertSuccessful();
 
         $patreonManager = resolve(PatreonManager::class);
         $patron = $patreonManager->getPatron(1);
@@ -78,7 +78,7 @@ class PatreonTest extends TestCase
     {
         Notification::fake();
         $this->artisan('patreon:convertlegacy')
-            ->assertExitCode(0);
+            ->assertSuccessful();
         Notification::assertNothingSent();
     }
 
@@ -89,7 +89,7 @@ class PatreonTest extends TestCase
         $this->assertEquals(150, $patron->memberships[1]->rewardedCents);
 
         $this->artisan('patreon:convertlegacy')
-            ->assertExitCode(0);
+            ->assertSuccessful();
 
         $patreonManager->clearCache();
         $patron = $patreonManager->getPatron(1);

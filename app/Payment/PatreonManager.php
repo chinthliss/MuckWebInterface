@@ -211,7 +211,7 @@ class PatreonManager
 
     public function processRewards(): void
     {
-        abort("Patreon reward processing hasn't been moved across yet.");
+        abort(500, "Patreon reward processing hasn't been moved across yet.");
         // TODO: Re-add Patreon Process Rewards
     }
 
