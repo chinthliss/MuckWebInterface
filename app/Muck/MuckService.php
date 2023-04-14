@@ -6,7 +6,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
-use App\Helpers\Ansi;
 
 class MuckService
 {
@@ -302,5 +301,51 @@ class MuckService
         ['aid' => $user->id(), 'character' => $character?->dbref, 'message' => $message]);
         return (int)$count;
     }
+
+    #region Payment related
+
+    /**
+     * Requests a conversion quote from the muck. Returns null if amount isn't acceptable
+     * @param float $usdAmount
+     * @return int|null
+     */
+    public function usdToAccountCurrency(float $usdAmount): ?int
+    {
+
+    }
+
+    /**
+     * Asks the muck to handle account currency purchases. Allows for bonuses / monthly contributions / etc.
+     * @param int $accountId
+     * @param float $usdAmount
+     * @param int $accountCurrency
+     * @param ?string $subscriptionId
+     * @return int accountCurrencyRewarded
+     */
+    public function fulfillAccountCurrencyPurchase(int $accountId, float $usdAmount, int $accountCurrency, ?string $subscriptionId): int
+    {
+    }
+
+    /**
+     * @param int $accountId
+     * @param int $accountCurrency
+     * @return int AmountRewarded
+     */
+    public function fulfillPatreonSupport(int $accountId, int $accountCurrency): int
+    {
+    }
+
+    /**
+     * @param int $accountId
+     * @param float $usdAmount
+     * @param int $accountCurrency
+     * @param string $itemCode
+     * @return int accountCurrencyRewarded
+     */
+    public function rewardItem(int $accountId, float $usdAmount, int $accountCurrency, string $itemCode): int
+    {
+    }
+
+    #endregion Payment related
 
 }

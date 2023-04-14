@@ -197,6 +197,8 @@ return [
         App\Providers\PatreonServiceProvider::class,
         App\Providers\MuckServiceProvider::class,
         App\Providers\HostLogServiceProvider::class,
+        App\Providers\PaymentTransactionServiceProvider::class,
+        App\Providers\PaymentSubscriptionServiceProvider::class,
     ],
 
     /*
