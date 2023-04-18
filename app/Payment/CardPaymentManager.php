@@ -24,20 +24,29 @@ interface CardPaymentManager
 
     /**
      * @param User $user
-     * @param Card $card
+     * @param Card $defaultCard
+     * @return void
      */
-    public function setDefaultCardFor(User $user, Card $card): void;
+    public function setDefaultCardFor(User $user, Card $defaultCard): void;
 
     /**
      * @param User $user
      * @param Card $card
      * @param PaymentTransaction $transaction
-     * @return string Reference
      */
-    public function chargeCardFor(User $user, Card $card, PaymentTransaction $transaction): string;
+    public function chargeCardFor(User $user, Card $card, PaymentTransaction $transaction): void;
 
+    /**
+     * @param User $user
+     * @return Card|null
+     */
     public function getDefaultCardFor(User $user): ?Card;
 
+    /**
+     * @param User $user
+     * @param int $cardId
+     * @return Card|null
+     */
     public function getCardFor(User $user, int $cardId): ?Card;
 
     /**
@@ -46,6 +55,10 @@ interface CardPaymentManager
      */
     public function getCardsFor(User $user): array;
 
-    public function getCustomerIdFor(User $user);
+    /**
+     * @param User $user
+     * @return int|null
+     */
+    public function getCustomerIdFor(User $user): ?int;
 
 }
