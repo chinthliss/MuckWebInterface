@@ -24,6 +24,7 @@ class AccountNotificationTest extends TestCase
 
     public function test_notifying_with_game_but_without_character_works()
     {
+        Config::set('muck.muck_code', 123);
         $user = UserFactory::create();
         MuckWebInterfaceNotification::NotifyUser($user, 'Test');
         $this->assertDatabaseHas('account_notifications', [
@@ -34,6 +35,7 @@ class AccountNotificationTest extends TestCase
 
     public function test_notifying_with_game_and_character_works()
     {
+        Config::set('muck.muck_code', 123);
         //Need to use the seeded entries for this test
         $this->seed();
         $this->loginAsValidatedUser();
