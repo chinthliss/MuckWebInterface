@@ -90,7 +90,7 @@ class MuckWebInterfaceNotification extends Notification
      */
     public static function notifyUser(User $user, string $message, ?int $gameCode = null): void
     {
-        if (!$gameCode) $gameCode = config('muck.muck_code');
+        if (!$gameCode) $gameCode = config('muck.code');
         $user->notify(new MuckWebInterfaceNotification($message, $gameCode));
     }
 
@@ -102,7 +102,7 @@ class MuckWebInterfaceNotification extends Notification
      */
     public static function notifyCharacter(User $user, MuckDbref $character, string $message): void
     {
-        $user->notify(new MuckWebInterfaceNotification($message, config('muck.muck_code'), $character));
+        $user->notify(new MuckWebInterfaceNotification($message, config('muck.code'), $character));
     }
 
     /**

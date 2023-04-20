@@ -38,7 +38,7 @@ class AccountNotificationManager
             ->where('aid', '=', $user->id())
             ->where(function ($query) {
                 $query->whereNull('game_code')
-                    ->orWhere('game_code', '=', config('muck.muck_code'));
+                    ->orWhere('game_code', '=', config('muck.code'));
             })
             ->orderByDesc('created_at');
         $rows = $query->get()->toArray();
@@ -95,7 +95,7 @@ class AccountNotificationManager
             ->where('id', '<=', $highestId)
             ->where(function ($query) {
                 $query->whereNull('game_code')
-                    ->orWhere('game_code', '=', config('muck.muck_code'));
+                    ->orWhere('game_code', '=', config('muck.code'));
             })
             ->delete();
     }
@@ -113,7 +113,7 @@ class AccountNotificationManager
             ->whereNull('read_at')
             ->where(function ($query) {
                 $query->whereNull('game_code')
-                    ->orWhere('game_code', '=', config('muck.muck_code'));
+                    ->orWhere('game_code', '=', config('muck.code'));
             })
             ->count();
         Log::debug(self::class . " found $count unread for $user");
