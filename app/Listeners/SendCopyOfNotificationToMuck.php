@@ -28,7 +28,7 @@ class SendCopyOfNotificationToMuck
     public function handle(NotificationSent $event): void
     {
         if (!is_a($event, MuckWebInterfaceNotification::class)) return;
-        if ($event->notification->gameCode() && $event->notification->gameCode() != config('muck.muck_code')) return;
+        if ($event->notification->gameCode() && $event->notification->gameCode() != config('muck.code')) return;
         $this->muck->externalNotificationSent($event->notifiable,
             $event->notification->character(), $event->notification->message());
     }

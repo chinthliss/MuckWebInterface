@@ -4,6 +4,7 @@ namespace App\Muck;
 
 use Carbon\Carbon;
 use Error;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Database\Seeders\DatabaseSeeder;
 
@@ -16,7 +17,7 @@ class MuckConnectionFaker implements MuckConnection
      */
     private array $muckDatabase = [];
 
-    private function populateDatabaseIfRequired()
+    private function populateDatabaseIfRequired(): void
     {
         if (count($this->muckDatabase)) return;
         $this->muckDatabase[] = new MuckDbref(1234, 'TestCharacter', 'p', Carbon::now(), Carbon::now(), [
@@ -63,6 +64,20 @@ class MuckConnectionFaker implements MuckConnection
         foreach ($this->muckDatabase as $dbref) {
             if ($dbref->dbref == $dbrefWanted) return $this->dbrefToMuckResponse($dbref);
         }
+
+        // To allow muckobject testing we'll return things that were registered within the DB
+        $row = DB::table('muck_objects')
+            ->where('dbref', '=', $dbrefWanted)
+            ->first();
+        if ($row) {
+            return $this->dbrefToMuckResponse(new MuckDbref(
+                $row->dbref,
+                $row->name,
+                'p',
+                new Carbon($row->created_at)
+            ));
+        }
+
         return '';
     }
 
@@ -72,6 +87,20 @@ class MuckConnectionFaker implements MuckConnection
         foreach ($this->muckDatabase as $dbref) {
             if (strtolower($dbref->name) == strtolower($nameWanted)) return $this->dbrefToMuckResponse($dbref);
         }
+
+        // To allow muckobject testing we'll return things that were registered within the DB
+        $row = DB::table('muck_objects')
+            ->where('name', '=', $nameWanted)
+            ->first();
+        if ($row) {
+            return $this->dbrefToMuckResponse(new MuckDbref(
+                $row->dbref,
+                $row->name,
+                'p',
+                new Carbon($row->created_at)
+            ));
+        }
+
         return '';
     }
 

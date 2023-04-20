@@ -70,7 +70,7 @@ class MuckObjectService
         $object = $this->service->getByDbref($dbref);
         $this->cacheAsRequired($object);
 
-        Log::debug("MuckObjectService.getByDbref looked up - $dbref: $object");
+        Log::debug("MuckObjectService.getByDbref looked up $dbref: " . ($object ?: 'null'));
         return $object;
     }
 
@@ -148,7 +148,7 @@ class MuckObjectService
             }
         }
 
-        Log::debug("MuckObjectService.getByMuckObjectId fetched object - $id: $object");
+        Log::debug("MuckObjectService.getByMuckObjectId fetched object - $id: " . ($object ?: 'null'));
         $this->byMuckObjectId[$id] = $object;
         return $object;
     }
