@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\TermsOfServiceController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
+use App\Http\Controllers\Payment\CardManagementController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,6 +68,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('notifications.api/{id}', [AccountController::class, 'deleteNotification']);
     Route::delete('notifications.api', [AccountController::class, 'deleteAllNotifications']);
 
+    //Card Management
+    Route::get('account/cardmanagement', [CardManagementController::class, 'show'])
+        ->name('payment.cardmanagement');
+    Route::post('account/cardmanagement.api', [CardManagementController::class, 'addCard'])
+        ->name('payment.cardmanagement.add');
+    Route::delete('account/cardmanagement.api', [CardManagementController::class, 'deleteCard'])
+        ->name('payment.cardmanagement.delete');
+    Route::patch('account/cardmanagement.api', [CardManagementController::class, 'setDefaultCard'])
+        ->name('payment.cardmanagement.setDefault');
 });
 
 /*

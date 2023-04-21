@@ -36,7 +36,7 @@ class FakeCardPaymentManager implements CardPaymentManager
             'aid' => $accountId
         ])->first();
 
-        if ($row->profileid) {
+        if ($row?->profileid) {
             $profile = new CardPaymentCustomerProfile($row->profileid);
             //Try to load cards
             $cardRows = DB::table('billing_paymentprofiles')->where([

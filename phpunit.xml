@@ -26,5 +26,8 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="MUCK_DRIVER" value="fake"/>
+        <env name="CARD_PAYMENT_DRIVER" value="fake"/>
+        <env name="PROCESS_AUTOMATED_PAYMENTS" value="false"/>
     </php>
 </phpunit>
