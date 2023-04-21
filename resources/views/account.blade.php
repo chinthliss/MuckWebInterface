@@ -16,7 +16,7 @@
             "changepassword" => route('auth.password.change'),
             "changeemail" => route('auth.email.change'),
             "newemail" => route('auth.email.new'),
-            "cardmanagement" => route('account.cardmanagement'),
+            "cardmanagement" => route('payment.cardmanagement'),
             "transactions" => route('account.transactions'),
         ]) }}"
     ></account>

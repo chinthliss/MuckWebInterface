@@ -257,6 +257,7 @@ class AuthorizeNetCardPaymentManager implements CardPaymentManager
                 throw new Exception("Couldn't create a payment profile. Response : "
                     . $errorMessages[0]->getCode() . "  " . $errorMessages[0]->getText() . "\n");
         }
+
         $card = new Card();
         $card->id = $response->getCustomerPaymentProfileId();
         //Silly that this has to be extracted from a huge comma separated string..
@@ -266,6 +267,7 @@ class AuthorizeNetCardPaymentManager implements CardPaymentManager
         $parts = explode('/', $expiryDate);
         $card->expiryDate = Carbon::createFromDate($parts[1], $parts[0], 1)->startOfDay();
         $card->cardType = $responseParts[51];
+        $card->isDefault = true;
 
         //This is just for historic purposes and to allow the muck easy access
         $newPaymentProfileId = $this->insertPaymentProfileIntoStorage($card,

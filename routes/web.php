@@ -60,7 +60,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('newemail', [EmailController::class, 'newEmail']);
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
-    Route::get('account/cardmanagement', [AccountController::class, 'showCardManagement'])->name('account.cardmanagement');
 
     // Account Notifications
     Route::get('notifications', [AccountController::class, 'showNotifications'])->name('notifications');
@@ -76,7 +75,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('account/cardmanagement.api', [CardManagementController::class, 'deleteCard'])
         ->name('payment.cardmanagement.delete');
     Route::patch('account/cardmanagement.api', [CardManagementController::class, 'setDefaultCard'])
-        ->name('payment.cardmanagement.setDefault');
+        ->name('payment.cardmanagement.setdefault');
 });
 
 /*

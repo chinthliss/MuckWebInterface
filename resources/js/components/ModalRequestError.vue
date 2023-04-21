@@ -42,10 +42,15 @@ onMounted(() => {
     axios.interceptors.response.use(function (response) {
         return response;
     }, function (error) {
-        console.log("Server error: ", error);
-        lastError.value = error?.response?.data?.message || error || "";
-        modal.value.show();
-        return Promise.reject(error);
+        if (error.response.status === 422) {
+            // We don't intercept validation errors
+            throw error;
+        } else {
+            console.log("Server error: ", error);
+            lastError.value = error?.response?.data?.message || error || "";
+            modal.value.show();
+            return Promise.reject(error);
+        }
     });
 });
 

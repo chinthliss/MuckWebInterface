@@ -26,7 +26,7 @@ class CardManagementController extends Controller
             $cards[] = $card->toArray();
         }
 
-        return view('auth.card-management', [
+        return view('account.card-management', [
             'profileId' => $cardPaymentManager->getCustomerIdFor($user),
             'cards' => $cards,
             'sealId' => config('services.authorizenet.sealId')
