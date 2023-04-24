@@ -3,7 +3,8 @@
 
         <h1>Card Management</h1>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="cardTableConfiguration" :data="cards">
+        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="cardTableConfiguration"
+                   :data="cards">
             <thead>
             <tr>
                 <th scope="col">Type</th>
@@ -100,6 +101,7 @@ const errors = ref({});
 const cardNumber = ref('');
 const expiryDate = ref('');
 const securityCode = ref('');
+const pendingRequest = ref(false);
 
 const renderControlsColumn = (data, type, row) => {
     let controls = ''
@@ -133,6 +135,9 @@ const cardTableConfiguration = {
 };
 
 const addCard = (e) => {
+    e.preventDefault();
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
     axios.post(props.links.addCard, {
         'cardNumber': cardNumber.value,
         'expiryDate': expiryDate.value,
@@ -150,18 +155,45 @@ const addCard = (e) => {
         if (error.response?.data?.errors)
             errors.value = error.response.data.errors;
         else console.log("Error in addCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
     });
-    e.preventDefault();
 };
 
 const deleteCard = function () {
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
     const id = $(this).data('id');
-    // TBC
+    axios.delete(props.links.deleteCard, {
+        data: {'id': id}
+    }).then(response => {
+        cards.value = cards.value.filter(card => card.id !== id);
+    }).catch(error => {
+        if (error.response?.data?.errors)
+            errors.value = error.response.data.errors;
+        else console.log("Error in deleteCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
+    });
 }
 
 const setCardAsDefault = function () {
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
     const id = $(this).data('id');
-    // TBC
+    axios.patch(props.links.setDefaultCard, {
+        'id': id
+    }).then(response => {
+        cards.value.forEach((card) => {
+            card.isDefault = card.id === id;
+        });
+    }).catch(error => {
+        if (error.response?.data?.errors)
+            errors.value = error.response.data.errors;
+        else console.log("Error in setDefaultCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
+    });
 }
 
 </script>
