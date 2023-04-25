@@ -92,9 +92,9 @@ class PaymentTransaction
     public ?Carbon $completedAt = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public string $result = 'unknown';
+    public ?string $result = null;
 
     public function totalPriceUsd(): float
     {
