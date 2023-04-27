@@ -24,129 +24,138 @@ class AccountCurrencyTransactionTest extends TestCase
         $this->assertnotnull($transaction);
     }
 
-    public function testInvalidTransactionRetrievesNull()
+    public function test_user_can_view_own_transactions()
+    {
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user);
+
+        $response = $this->actingAs($user)->get(route('account.transaction', [
+            'id' => $transactionId
+        ]));
+        $response->assertSuccessful();
+    }
+
+    public function test_user_can_not_view_other_users_transaction()
+    {
+        $firstUser = UserFactory::create();
+        $secondUser = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($secondUser);
+
+        $response = $this->actingAs($firstUser)->get(route('account.transaction', [
+            'id' => $transactionId
+        ]));
+        $response->assertForbidden();
+    }
+
+    public function test_user_gets_own_transactions_in_list()
+    {
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user);
+        $transactionManager = $this->app->make(PaymentTransactionManager::class);
+        $transactions = $transactionManager->getTransactionsFor($user->id());
+        $this->assertArrayHasKey($transactionId, $transactions);
+    }
+
+    public function test_user_does_not_see_another_users_transaction_in_list()
+    {
+        $firstUser = UserFactory::create();
+        $secondUser = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($secondUser);
+        $transactionManager = $this->app->make(PaymentTransactionManager::class);
+        $transactions = $transactionManager->getTransactionsFor($firstUser->id());
+        $this->assertArrayNotHasKey($transactionId, $transactions);
+    }
+
+    public function test_invalid_transaction_retrieves_null()
     {
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
         $transaction = $transactionManager->getTransaction('00000000-0000-0000-0000-00000000000A');
         $this->assertNull($transaction);
     }
 
-    public function testCannotAcceptAnotherUsersTransaction()
+    public function test_cannot_accept_another_users_transaction()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->json('GET', 'accountcurrency/acceptTransaction', [
-            'token' => $this->validUnownedTransaction
-        ]);
+        $firstUser = UserFactory::create();
+        $secondUser = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($secondUser);
+
+        $response = $this->actingAs($firstUser)->get(route('account.transaction', [
+            'id' => $transactionId
+        ]));
         $response->assertForbidden();
     }
 
-    public function testClosedTransactionCannotBeUsed()
+    public function test_paid_transaction_can_not_be_accepted()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->json('GET', 'accountcurrency/acceptTransaction', [
-            'token' => $this->validOwnedCompletedTransaction
-        ]);
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'paid');
+        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+            'id' => $transactionId
+        ]));
         $response->assertForbidden();
     }
 
-    public function testOpenTransactionCanBeDeclined()
+    public function test_open_transaction_can_be_accepted()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/declineTransaction', [
-            'token' => $this->validOwnedOpenTransaction
-        ]);
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'open');
+        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+            'id' => $transactionId
+        ]));
         $response->assertSuccessful();
     }
 
-    public function testOpenTransactionCanBeAccepted()
+    public function test_open_transaction_can_be_declined()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('GET', 'accountcurrency/acceptTransaction', [
-            'token' => $this->validOwnedOpenTransaction
-        ]);
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'open');
+        $response = $this->actingAs($user)->post(route('account.transaction.decline', [
+            'id' => $transactionId
+        ]));
         $response->assertSuccessful();
     }
 
-
-    public function testClosedTransactionCannotBeDeclined()
+    public function test_paid_transaction_can_not_be_declined()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/declineTransaction', [
-            'token' => $this->validOwnedCompletedTransaction
-        ]);
-        $response->assertForbidden();
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'paid');
+        $response = $this->actingAs($user)->post(route('account.transaction.decline', [
+            'id' => $transactionId
+        ]));
+        $response->assertSuccessful();
     }
 
-    /**
-     * @depends testOpenTransactionCanBeAccepted
-     */
-    public function testCompletedTransactionHasRewardedAmountRecorded()
+    public function test_completed_transaction_rewards_amount_recorded()
     {
-        $this->loginAsValidatedUser();
-        $token = $this->validOwnedOpenTransaction;
-        $response = $this->followingRedirects()->json('GET', 'accountcurrency/acceptTransaction', [
-            'token' => $token
-        ]);
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10);
+
+        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+            'id' => $transactionId
+        ]));
         $response->assertSuccessful();
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transaction = $transactionManager->getTransaction($token);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $this->assertEquals('fulfilled', $transaction->result, "Transaction status should have been fulfilled");
         $this->assertNotNull($transaction->accountCurrencyRewarded);
     }
 
-    /**
-     * @depends testOpenTransactionCanBeAccepted
-     */
-    public function testCompletedTransactionWithItemsHasItemsRewardedAmountRecorded()
+    public function test_completed_transaction_with_items_has_items_rewarded()
     {
-        $this->loginAsValidatedUser();
-        $token = $this->validOwnedOpenTransactionWithItem;
-        $this->followingRedirects()->json('GET', 'accountcurrency/acceptTransaction', [
-            'token' => $token
-        ]);
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, items: ['testItem']);
+
+        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+            'id' => $transactionId
+        ]));
+        $response->assertSuccessful();
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transaction = $transactionManager->getTransaction($token);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $this->assertEquals('fulfilled', $transaction->result, "Transaction status should have been fulfilled");
         $this->assertNotNull($transaction->accountCurrencyRewardedForItems,
             "Rewarded amount for items not set.");
         $this->assertNotEquals(0, $transaction->accountCurrencyRewardedForItems,
             "Rewarded amount for items shouldn't be 0.");
-    }
-
-
-    public function testUserGetsOwnTransactionsInList()
-    {
-        $user = $this->loginAsValidatedUser();
-        $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transactions = $transactionManager->getTransactionsFor($user->getAid());
-        $this->assertArrayHasKey($this->validOwnedOpenTransaction, $transactions);
-        $this->assertArrayHasKey($this->validOwnedCompletedTransaction, $transactions);
-    }
-
-    public function testUserDoesNotGetUnowedTransactionsInList()
-    {
-        $user = $this->loginAsValidatedUser();
-        $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transactions = $transactionManager->getTransactionsFor($user->getAid());
-        $this->assertArrayNotHasKey($this->validUnownedTransaction, $transactions);
-    }
-
-    public function testUserCanViewOwnedTransaction()
-    {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('GET', route('accountcurrency.transaction', [
-            'id' => $this->validOwnedCompletedTransaction
-        ]));
-        $response->assertSuccessful();
-    }
-
-    public function testUserCannotViewUnownedTransaction()
-    {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('GET', route('accountcurrency.transaction', [
-            'id' => $this->validUnownedTransaction
-        ]));
-        $response->assertForbidden();
     }
 
     public function internalTestBaseAmountSavesCorrectly($transactionId)

@@ -170,7 +170,7 @@ class PaymentTransaction
             "completed_at" => $this->completedAt,
             "result" => $this->result,
             "subscription_id" => $this->subscriptionId,
-            "url" => route('accountcurrency.transaction', ['id' => $this->id])
+            "url" => route('account.transaction', ['id' => $this->id])
         ];
         if ($this->subscriptionId && $this->vendor != 'patreon')
             $array['subscription_url'] = route('accountcurrency.subscription', ["id" => $this->subscriptionId]);

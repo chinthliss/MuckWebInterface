@@ -51,7 +51,8 @@ class BillingFactory
 
     public static function createPaymentTransactionFor(User    $user,
                                                        ?int    $usd = 0,
-                                                       ?string $closureReason = null): string
+                                                       ?string $status = null,
+                                                       ?array $items = []): string
     {
         $faker = Factory::create();
         $manager = resolve(FakeCardPaymentManager::class);
@@ -70,13 +71,12 @@ class BillingFactory
             'purchase_description' => 'Test Purchase',
             'created_at' => Carbon::now()
         ];
-        if ($closureReason === 'paid') {
-            $array['result'] = 'paid';
+        if ($status === 'paid') {
             $array['paid_at'] = Carbon::now();
         }
-        if ($closureReason === 'fulfilled') {
-            $array['result'] = 'fulfilled';
+        if ($status === 'fulfilled') {
             $array['paid_at'] = Carbon::now();
+            $array['result'] = 'fulfilled';
             $array['accountcurrency_rewarded'] = $array['accountcurrency_quoted'];
             $array['completed_at'] = Carbon::now();
         }

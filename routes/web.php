@@ -10,6 +10,7 @@ use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\Payment\CardManagementController;
+use App\Http\Controllers\Payment\AccountCurrencyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,7 +60,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('newemail', [EmailController::class, 'showNewEmail'])->name('auth.email.new');
     Route::post('newemail', [EmailController::class, 'newEmail']);
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
-    Route::get('account/transactions', [AccountController::class, 'showTransactions'])->name('account.transactions');
+    Route::get('account/transactions', [AccountCurrencyController::class, 'showTransactions'])->name('account.transactions');
+    Route::get('account/transaction/{id}', [AccountCurrencyController::class, 'showTransaction'])->name('account.transaction');
 
     // Account Notifications
     Route::get('notifications', [AccountController::class, 'showNotifications'])->name('notifications');

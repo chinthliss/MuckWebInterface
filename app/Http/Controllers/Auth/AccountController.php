@@ -33,6 +33,9 @@ class AccountController extends Controller
         return $issues;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function createAccount(Request $request): RedirectResponse
     {
         $request->validate([
@@ -69,11 +72,6 @@ class AccountController extends Controller
         }
 
         return redirect()->intended(route('welcome'));
-    }
-
-    public function showTransactions(): View
-    {
-        return view('account.transactions');
     }
 
     #region Account Notifications
