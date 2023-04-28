@@ -19,6 +19,9 @@
     @Admin
     <a class="nav-link rounded" href="{{ route('admin.accounts') }}">Account Browser</a>
     @endAdmin
+    @SiteAdmin
+    <a class="nav-link rounded" href="{{ route('admin.transactions') }}">Account Transactions</a>
+    @endSiteAdmin
     @endStaff
 
 @endsection

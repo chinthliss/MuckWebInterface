@@ -61,7 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('newemail', [EmailController::class, 'newEmail']);
     Route::post('changeemail', [EmailController::class, 'changeEmail'])->name('auth.email.change');
     Route::get('account/transactions', [AccountCurrencyController::class, 'showTransactions'])->name('account.transactions');
-    Route::get('account/transaction/{id}', [AccountCurrencyController::class, 'showTransaction'])->name('account.transaction');
+    Route::get('account/transactions/{id}', [AccountCurrencyController::class, 'showTransaction'])->name('account.transaction');
 
     // Account Notifications
     Route::get('notifications', [AccountController::class, 'showNotifications'])->name('notifications');
@@ -100,6 +100,14 @@ Route::prefix('/admin/')->group(function () {
         Route::get('accounts.api', [AdminController::class, 'findAccounts'])->name('admin.accounts.api');
         Route::get('account/{accountId}', [AdminController::class, 'showAccount'])->name('admin.account');
         Route::post('account/{accountId}', [AdminController::class, 'processAccountChange'])->name('admin.account.api');
+    });
+
+    // ----------------------------- Site Admin level
+    Route::group(['middleware' => ['auth', 'role:siteadmin']], function () {
+        Route::get('transactions', [AccountCurrencyController::class, 'showAdminTransactions'])
+            ->name('admin.transactions');
+        Route::get('transactions/api', [AccountCurrencyController::class, 'adminGetTransactions'])
+            ->name('admin.transactions.api');
     });
 
 });

@@ -1,10 +1,8 @@
 <?php
 
 
-
 use App\Payment\PaymentTransactionItem;
 use App\Payment\PaymentTransactionManager;
-use App\Payment\CardPaymentManager;
 use Database\Factories\UserFactory;
 use Database\Factories\BillingFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +22,7 @@ class AccountCurrencyTransactionTest extends TestCase
         $this->assertnotnull($transaction);
     }
 
-    public function test_user_can_view_own_transactions()
+    public function test_user_can_view_own_transaction()
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user);
@@ -89,6 +87,7 @@ class AccountCurrencyTransactionTest extends TestCase
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'paid');
+
         $response = $this->actingAs($user)->post(route('account.transaction.accept', [
             'id' => $transactionId
         ]));
@@ -99,6 +98,7 @@ class AccountCurrencyTransactionTest extends TestCase
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'open');
+
         $response = $this->actingAs($user)->post(route('account.transaction.accept', [
             'id' => $transactionId
         ]));
@@ -109,6 +109,7 @@ class AccountCurrencyTransactionTest extends TestCase
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'open');
+
         $response = $this->actingAs($user)->post(route('account.transaction.decline', [
             'id' => $transactionId
         ]));
@@ -119,6 +120,7 @@ class AccountCurrencyTransactionTest extends TestCase
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'paid');
+
         $response = $this->actingAs($user)->post(route('account.transaction.decline', [
             'id' => $transactionId
         ]));
@@ -158,7 +160,7 @@ class AccountCurrencyTransactionTest extends TestCase
             "Rewarded amount for items shouldn't be 0.");
     }
 
-    public function internalTestBaseAmountSavesCorrectly($transactionId)
+    public function verifyBaseAmountSavesCorrectly($transactionId): void
     {
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
         $transaction = $transactionManager->getTransaction($transactionId);
@@ -167,30 +169,7 @@ class AccountCurrencyTransactionTest extends TestCase
         $this->assertCount(0, $transaction->items, "Items should have been empty");
     }
 
-    public function testBaseAmountOnPayPalSavesCorrectly()
-    {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/newPayPalTransaction', [
-            'amountUsd' => 10.0
-        ]);
-        $response->assertSuccessful();
-        $transactionId = (string)$response->original['token'];
-        $this->internalTestBaseAmountSavesCorrectly($transactionId);
-    }
-
-    public function testBaseAmountOnCardSavesCorrectly()
-    {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/newCardTransaction', [
-            'cardId' => 1,
-            'amountUsd' => 10.0
-        ]);
-        $response->assertSuccessful();
-        $transactionId = (string)$response->original['token'];
-        $this->internalTestBaseAmountSavesCorrectly($transactionId);
-    }
-
-    private function internalTestItemSavesCorrectly($transactionId)
+    private function verifyItemSavesCorrectly($transactionId): void
     {
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
         $transaction = $transactionManager->getTransaction($transactionId);
@@ -204,81 +183,108 @@ class AccountCurrencyTransactionTest extends TestCase
         $this->assertNotEquals(0, $item->accountCurrencyValue, "Item should have a quoted value.");
     }
 
-    public function testItemsOnCardSavesCorrectly()
+    public function test_base_amount_on_card_saves_correctly()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/newCardTransaction', [
-            'cardId' => 1,
+        $user = UserFactory::create();
+        $profileId = BillingFactory::createBillingProfileFor($user);
+        $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        $response = $this->actingAs($user)->post('accountcurrency/newCardTransaction', [
+            'cardId' => $cardId,
+            'amountUsd' => 10.0
+        ]);
+        $response->assertSuccessful();
+        $transactionId = (string)$response->original['id'];
+        $this->verifyBaseAmountSavesCorrectly($transactionId);
+    }
+
+    public function test_base_amount_on_paypal_saves_correctly()
+    {
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
+            'amountUsd' => 10.0
+        ]);
+        $response->assertSuccessful();
+        $transactionId = (string)$response->original['id'];
+        $this->verifyBaseAmountSavesCorrectly($transactionId);
+    }
+
+    public function test_items_on_card_save_correctly()
+    {
+        $user = UserFactory::create();
+        $profileId = BillingFactory::createBillingProfileFor($user);
+        $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        $response = $this->actingAs($user)->post('accountcurrency/newCardTransaction', [
+            'cardId' => $cardId,
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
         ]);
         $response->assertSuccessful();
-        $transactionId = (string)$response->original['token'];
-        $this->internalTestItemSavesCorrectly($transactionId);
+        $transactionId = (string)$response->original['id'];
+        $this->verifyItemSavesCorrectly($transactionId);
     }
 
-    public function testItemsOnPayPalSavesCorrectly()
+    public function test_items_on_paypal_save_correctly()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('POST', 'accountcurrency/newPayPalTransaction', [
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
         ]);
         $response->assertSuccessful();
-        $transactionId = (string)$response->original['token'];
-        $this->internalTestItemSavesCorrectly($transactionId);
+        $transactionId = (string)$response->original['id'];
+        $this->verifyItemSavesCorrectly($transactionId);
     }
 
 
-    public function testUpdatedVendorTransactionIdUpdatesAndPersists()
+    public function test_updating_vendor_transaction_id_works_and_persists()
     {
-        $this->loginAsValidatedUser();
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user);
+
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transaction = $transactionManager->getTransaction($this->validOwnedOpenTransaction);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $transactionManager->updateVendorTransactionId($transaction, 'NEWTEST');
         $this->assertTrue($transaction->vendorTransactionId == 'NEWTEST', 'VendorTransactionId not updated.');
         //Refetch
-        $transaction = $transactionManager->getTransaction($this->validOwnedOpenTransaction);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $this->assertTrue($transaction->vendorTransactionId == 'NEWTEST', 'VendorTransactionId not persisted');
     }
 
-    public function testUpdatedVendorProfileIdUpdatesAndPersists()
+    public function test_updating_vendor_profile_id_works_and_persists()
     {
-        $this->loginAsValidatedUser();
+        $user = UserFactory::create();
+        $transactionId = BillingFactory::createPaymentTransactionFor($user);
+
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
-        $transaction = $transactionManager->getTransaction($this->validOwnedOpenTransaction);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $transactionManager->updateVendorProfileId($transaction, 'NEWTEST');
         $this->assertTrue($transaction->vendorProfileId == 'NEWTEST', 'VendorProfileId not updated.');
         //Refetch
-        $transaction = $transactionManager->getTransaction($this->validOwnedOpenTransaction);
+        $transaction = $transactionManager->getTransaction($transactionId);
         $this->assertTrue($transaction->vendorProfileId == 'NEWTEST', 'VendorProfileId not persisted');
     }
 
-    public function testCanViewOwnTransactionHistory()
+    public function test_user_can_view_their_transaction_history()
     {
-        $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('GET', route('accountcurrency.transactions'));
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->get(route('account.transactions'));
         $response->assertSuccessful();
 
     }
 
-    public function testCannotViewAnothersTransactionHistory()
+    public function test_regular_user_can_not_access_admin_transactions()
     {
-        $user = $this->loginAsValidatedUser();
-        $response = $this->followingRedirects()->json('GET', route('accountcurrency.transactions', [
-            'accountId' => $user->getAid() + 1
-        ]));
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->get(route('admin.transactions'));
         $response->assertForbidden();
-
     }
 
-    public function testAdminCanViewAnothersTransactionHistory()
+    public function test_admin_user_can_access_admin_transactions()
     {
-        $user = $this->loginAsSiteAdminUser();
-        $response = $this->followingRedirects()->json('GET', route('accountcurrency.transactions', [
-            'accountId' => $user->getAid() + 1
-        ]));
+        $user = UserFactory::create(['roles' => 'siteadmin']);
+        $response = $this->actingAs($user)->get(route('admin.transactions'));
         $response->assertSuccessful();
-
     }
+
+
 }

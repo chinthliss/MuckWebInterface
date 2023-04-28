@@ -16,9 +16,18 @@ use Throwable;
 class AccountCurrencyController extends Controller
 {
 
-    public function showTransactions(): View
+    public function showTransactions(PaymentTransactionManager $transactionManager): View
     {
-        return view('account.transactions');
+        /** @var User $user */
+        $user = auth()->user();
+
+        $transactions = [];
+        foreach ($transactionManager->getTransactionsFor($user->id()) as $transaction) {
+            $transactions[] = $transaction->toArray();
+        }
+        return view('account.transactions')->with([
+            'transactions' => $transactions
+        ]);
     }
 
     public function showTransaction(PaymentTransactionManager $transactionManager, string $id): View
@@ -35,5 +44,18 @@ class AccountCurrencyController extends Controller
         ]);
 
     }
+
+    public function showAdminTransactions(): View
+    {
+        return view('admin.transactions');
+    }
+
+    public function adminGetTransactions(PaymentTransactionManager $transactionManager): array
+    {
+        return array_map(function ($transaction) {
+            return $transaction->toArray();
+        }, $transactionManager->getAllTransactions());
+    }
+
 
 }
