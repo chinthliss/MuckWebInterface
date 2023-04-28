@@ -15,7 +15,7 @@ class AdminController extends Controller
         return view('admin.home');
     }
 
-    public function showAccount(int $accountId): View
+    public function showAccount(string $accountId): View
     {
         $user = User::find($accountId);
         if (!$user) abort(404);
@@ -30,7 +30,7 @@ class AdminController extends Controller
         return view('admin.accounts');
     }
 
-    public function processAccountChange(Request $request, int $accountId): string
+    public function processAccountChange(Request $request, string $accountId): string
     {
         if (!$request->has('operation')) abort(400);
         $target = User::find($accountId);
