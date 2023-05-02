@@ -10,6 +10,10 @@ export const csrf = () => {
     return document.querySelector('meta[name="csrf-token"]').content
 };
 
+export const accountId = () => {
+    return document.querySelector('meta[name="account-id"]').content
+};
+
 /**
  * Returns dbref of the active character as an integer or 0 if not set
  * @returns number

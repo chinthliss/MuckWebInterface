@@ -12,5 +12,7 @@
 @endsection
 
 @section('content')
-    TODO Implement Account Transaction Page
+    <account-transaction
+        :transaction-in= @json($transaction)
+    ></account-transaction>
 @endsection

@@ -62,14 +62,14 @@ class PaymentTransaction
     public int $accountCurrencyQuoted = 0;
 
     /**
-     * @var int Account currency rewarded from direct purchase - can vary due to bonuses
+     * @var null|int Account currency rewarded from direct purchase - can vary due to bonuses
      */
-    public int $accountCurrencyRewarded = 0;
+    public ?int $accountCurrencyRewarded = null;
 
     /**
-     * @var int Any account currency that was rewarded for item purchases.
+     * @var null|int Any account currency that was rewarded for item purchases.
      */
-    public int $accountCurrencyRewardedForItems = 0;
+    public ?int $accountCurrencyRewardedForItems = null;
 
     /**
      * @var PaymentTransactionItem[]
