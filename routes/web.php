@@ -104,10 +104,11 @@ Route::prefix('/admin/')->group(function () {
 
     // ----------------------------- Site Admin level
     Route::group(['middleware' => ['auth', 'role:siteadmin']], function () {
-        Route::get('transactions', [AccountCurrencyController::class, 'showAdminTransactions'])
+        Route::get('transactions', [AccountCurrencyController::class, 'adminShowTransactions'])
             ->name('admin.transactions');
         Route::get('transactions/api', [AccountCurrencyController::class, 'adminGetTransactions'])
             ->name('admin.transactions.api');
+        Route::get('transactions/{id}', [AccountCurrencyController::class, 'adminShowTransaction'])->name('account.transaction');
     });
 
 });

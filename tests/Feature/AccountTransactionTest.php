@@ -8,7 +8,7 @@ use Database\Factories\BillingFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class AccountCurrencyTransactionTest extends TestCase
+class AccountTransactionTest extends TestCase
 {
     use RefreshDatabase;
 

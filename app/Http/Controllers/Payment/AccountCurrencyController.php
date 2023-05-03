@@ -5,13 +5,7 @@ namespace App\Http\Controllers\Payment;
 use App\Http\Controllers\Controller;
 use App\Payment\PaymentTransactionManager;
 use App\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use InvalidArgumentException;
-use Throwable;
 
 class AccountCurrencyController extends Controller
 {
@@ -37,15 +31,14 @@ class AccountCurrencyController extends Controller
         $transaction = $transactionManager->getTransaction($id);
 
         if (!$transaction) abort(404);
-        if ($transaction->accountId != $user->id() && !$user->isSiteAdmin()) abort(403);
+        if ($transaction->accountId != $user->id()) abort(403);
 
         return view('account.transaction')->with([
             'transaction' => $transaction->toArray()
         ]);
-
     }
 
-    public function showAdminTransactions(): View
+    public function adminShowTransactions(): View
     {
         return view('admin.transactions');
     }
@@ -55,6 +48,17 @@ class AccountCurrencyController extends Controller
         return array_map(function ($transaction) {
             return $transaction->toArray();
         }, $transactionManager->getAllTransactions());
+    }
+
+    public function adminShowTransaction(PaymentTransactionManager $transactionManager, string $id): View
+    {
+        $transaction = $transactionManager->getTransaction($id);
+
+        if (!$transaction) abort(404);
+
+        return view('admin.transaction')->with([
+            'transaction' => $transaction->toArray()
+        ]);
     }
 
 
