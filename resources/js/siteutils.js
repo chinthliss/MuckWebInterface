@@ -10,28 +10,38 @@ export const csrf = () => {
     return document.querySelector('meta[name="csrf-token"]').content
 };
 
+/**
+ * Returns the present account ID, if logged in, otherwise null.
+ * @returns {number|null}
+ */
 export const accountId = () => {
-    return document.querySelector('meta[name="account-id"]').content
+    let id = document.querySelector('meta[name="account-id"]').content;
+    return id ? parseInt(id) : null;
 };
 
 /**
- * Returns dbref of the active character as an integer or 0 if not set
- * @returns number
+ * Returns dbref of the active character as an integer or null if not set
+ * @returns {number|null}
  */
 export const characterDbref = () => {
     const characterDbref = document.querySelector('meta[name="character-dbref"]')?.content;
-    return characterDbref ? parseInt(characterDbref) : 0;
+    return characterDbref ? parseInt(characterDbref) : null;
 };
 
 /**
- * Returns the name of the active character or a blank string if not set
- * @returns string
+ * Returns the name of the active character or null if not set
+ * @returns {string|null}
  */
 export const characterName = () => {
     const characterName = document.querySelector('meta[name="character-name"]')?.content;
-    return characterName ? characterName : '';
+    return characterName ? characterName : null;
 };
 
+/**
+ * Returns the game-specific lookup for certain words.
+ * @param word
+ * @returns {string}
+ */
 export const lex = (word) => {
     return mwiSiteLexicon[word.toLowerCase()] || word;
 };
