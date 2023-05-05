@@ -6,10 +6,12 @@
     {{ Breadcrumbs::render([
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
         [ 'route' => 'admin.home', 'label' => 'Admin' ],
-        [ 'label' => 'Account Transactions' ]
+        [ 'label' => 'Account Transactions (Admin)' ]
     ]) }}
 @endsection
 
 @section('content')
-    TODO Implement Admin Account Transactions Page
+    <admin-account-transactions
+        api="{{ route('admin.transactions.api') }}"
+    ></admin-account-transactions>
 @endsection

@@ -180,7 +180,7 @@ class PaymentTransactionManager
         $result = [];
         foreach ($rows as $row) {
             $transaction = $this->buildTransactionFromRow($row);
-            $result[$transaction->id] = $transaction;
+            $result[] = $transaction;
         }
         return $result;
     }
@@ -199,7 +199,7 @@ class PaymentTransactionManager
         $result = [];
         foreach ($rows as $row) {
             $transaction = $this->buildTransactionFromRow($row);
-            $result[$transaction->id] = $transaction;
+            $result[] = $transaction;
         }
         return $result;
     }
@@ -258,7 +258,7 @@ class PaymentTransactionManager
         foreach ($rows as $row) {
             $transaction = $this->buildTransactionFromRow($row);
             if ($after && $transaction->createdAt < $after) continue;
-            $result[$transaction->id] = $transaction;
+            $result[] = $transaction;
         }
         return $result;
     }

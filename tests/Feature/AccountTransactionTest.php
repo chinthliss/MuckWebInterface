@@ -26,7 +26,6 @@ class AccountTransactionTest extends TestCase
     {
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user);
-
         $response = $this->actingAs($user)->get(route('account.transaction', [
             'id' => $transactionId
         ]));
@@ -51,7 +50,8 @@ class AccountTransactionTest extends TestCase
         $transactionId = BillingFactory::createPaymentTransactionFor($user);
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
         $transactions = $transactionManager->getTransactionsFor($user->id());
-        $this->assertArrayHasKey($transactionId, $transactions);
+        $this->assertNotEmpty($transactions);
+        $this->assertEquals($transactionId, $transactions[0]->id);
     }
 
     public function test_user_does_not_see_another_users_transaction_in_list()
@@ -183,7 +183,7 @@ class AccountTransactionTest extends TestCase
         $this->assertNotEquals(0, $item->accountCurrencyValue, "Item should have a quoted value.");
     }
 
-    public function test_base_amount_on_card_saves_correctly()
+    public function test_base_amount_on_new_card_transaction_saves_correctly()
     {
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
@@ -197,7 +197,7 @@ class AccountTransactionTest extends TestCase
         $this->verifyBaseAmountSavesCorrectly($transactionId);
     }
 
-    public function test_base_amount_on_paypal_saves_correctly()
+    public function test_base_amount_on_new_paypal_transaction_saves_correctly()
     {
         $user = UserFactory::create();
         $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
@@ -208,7 +208,7 @@ class AccountTransactionTest extends TestCase
         $this->verifyBaseAmountSavesCorrectly($transactionId);
     }
 
-    public function test_items_on_card_save_correctly()
+    public function test_items_on_new_card_transaction_save_correctly()
     {
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
@@ -223,7 +223,7 @@ class AccountTransactionTest extends TestCase
         $this->verifyItemSavesCorrectly($transactionId);
     }
 
-    public function test_items_on_paypal_save_correctly()
+    public function test_items_on_new_paypal_transaction_save_correctly()
     {
         $user = UserFactory::create();
         $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
