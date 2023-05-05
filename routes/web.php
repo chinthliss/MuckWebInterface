@@ -108,7 +108,7 @@ Route::prefix('/admin/')->group(function () {
             ->name('admin.transactions');
         Route::get('transactions/api', [AccountCurrencyController::class, 'adminGetTransactions'])
             ->name('admin.transactions.api');
-        Route::get('transactions/{id}', [AccountCurrencyController::class, 'adminShowTransaction'])->name('account.transaction');
+        Route::get('transactions/{id}', [AccountCurrencyController::class, 'adminShowTransaction'])->name('admin.transaction');
     });
 
 });
