@@ -31,6 +31,7 @@
                    :options="transactionsTableConfiguration" :data="transactions">
             <thead>
             <tr>
+                <th scope="col">Account</th>
                 <th scope="col">Id</th>
                 <th scope="col">Type</th>
                 <th scope="col">Created</th>
@@ -76,6 +77,7 @@ const refreshFilter = () => {
 
 const transactionsTableConfiguration = {
     columns: [
+        {data: 'account_id'},
         {data: 'id', render: renderIdWithLink, className: "text-truncate small limit-column-width"},
         {data: 'type'},
         {data: 'created_at', render: carbonToString},
@@ -90,7 +92,7 @@ const transactionsTableConfiguration = {
     language: {
         "emptyTable": "No transactions found."
     },
-    order: [[2, 'asc']],
+    order: [[3, 'asc']],
     paging: false,
     info: false
 };
@@ -111,7 +113,7 @@ const loadTransactions = () => {
 
 onMounted(() => {
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        let type = data[1];
+        let type = data[2];
         return (!filter.value || type === filter.value);
     });
     loadTransactions();
