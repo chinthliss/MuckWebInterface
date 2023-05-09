@@ -11,7 +11,10 @@
 @endsection
 
 @section('content')
-    <admin-accounts api-url="{{ route('admin.accounts.api') }}"></admin-accounts>
+    <admin-accounts
+        api-url="{{ route('admin.accounts.api') }}"
+        account-root="{{ route('admin.account', ['accountId' => 'DUMMY']) }}"
+    ></admin-accounts>
 @endsection
 
 

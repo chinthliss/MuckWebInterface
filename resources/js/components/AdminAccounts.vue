@@ -12,7 +12,7 @@
             <label class="me-2" for="InputAccountId">Know the ID already?</label>
             <input class="w-auto form-control me-2" type="text" id="InputAccountId" placeholder="Account ID"
                    v-model="quickOpen">
-            <button class="btn btn-primary">View</button>
+            <button class="btn btn-primary" @click="jumpToAccount">View</button>
         </div>
 
         <hr>
@@ -62,7 +62,7 @@
             <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
             <div>Loading..</div>
         </div>
-        <div v-else-if="!tableData" class="text-center">Waiting on search request...</div>
+        <div v-else-if="!tableData" class="text-center">No data loaded yet...</div>
         <div v-else class="table-responsive-xl">
             <DataTable ref="table" id="AccountsTable" class="table table-dark table-hover table-striped table-bordered w-100"
                        :options="tableConfiguration" :data="tableData">
@@ -77,7 +77,8 @@ import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
 
 const props = defineProps({
-    apiUrl: {type: String, required: true}
+    apiUrl: {type: String, required: true},
+    accountRoot: {type: String, required: true}
 });
 
 const quickOpen = ref('');
@@ -99,8 +100,9 @@ const listCharacters = (characters) => {
 };
 
 const tableDrawCallback = () => {
-    $('#AccountsTable tr:not(:first)').click(function () {
-        const row = table.value.dt().row(this).data();
+    $('#AccountsTable tbody tr').click(function () {
+        console.log(table.value);
+        const row = table.value.dt.row(this).data();
         if (row?.url)
             window.open(row.url, '_blank');
         else
@@ -145,6 +147,10 @@ const doAccountSearch = () => {
         })
         .finally(() => tableLoading.value = false);
 }
+
+const jumpToAccount = () => {
+    window.location = props.accountRoot.replace('DUMMY', quickOpen.value);
+};
 
 </script>
 
