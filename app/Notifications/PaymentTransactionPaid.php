@@ -65,7 +65,7 @@ class PaymentTransactionPaid extends Notification
 
     public function transactionUrl(): string
     {
-        return route('accountcurrency.transaction', ['id' => $this->transactionId]);
+        return route('account.transaction', ['id' => $this->transactionId]);
     }
 
     /**

@@ -56,8 +56,8 @@ class PaymentTransactionManager
         $this->storageTable()->insert($row);
     }
 
-    private function createTransaction(User $user, string $vendor, string $vendorProfileId,
-                                       float $usdForAccountCurrency, int $accountCurrency, array $items,
+    private function createTransaction(User   $user, string $vendor, string $vendorProfileId,
+                                       float  $usdForAccountCurrency, int $accountCurrency, array $items,
                                        string $subscriptionId = null): PaymentTransaction
     {
         $purchases = [];
@@ -113,7 +113,7 @@ class PaymentTransactionManager
      * @param string|null $subscriptionId
      * @return PaymentTransaction
      */
-    public function createTransactionForDirectSupport(User $user, string $vendor, string $vendorProfileId,
+    public function createTransactionForDirectSupport(User  $user, string $vendor, string $vendorProfileId,
                                                       float $usdForAccountCurrency, array $items, string $subscriptionId = null): PaymentTransaction
     {
         $accountCurrency = $this->muck->usdToAccountCurrency($usdForAccountCurrency);
@@ -132,7 +132,7 @@ class PaymentTransactionManager
      * @param string|null $subscriptionId
      * @return PaymentTransaction
      */
-    public function createTransactionForOtherReason(User $user, string $vendor, string $vendorProfileId,
+    public function createTransactionForOtherReason(User  $user, string $vendor, string $vendorProfileId,
                                                     float $usdForAccountCurrency, int $accountCurrency,
                                                     array $items, string $subscriptionId = null): PaymentTransaction
     {
@@ -356,6 +356,9 @@ class PaymentTransactionManager
     {
         Log::debug("Charging transaction $transaction->id");
         switch ($transaction->vendor) {
+            case 'fake':
+                $this->setPaid($transaction);
+                break;
             case 'authorizenet':
                 $user = User::find($transaction->accountId);
                 $cardPaymentManager = resolve(CardPaymentManager::class);

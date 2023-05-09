@@ -99,10 +99,11 @@ class AccountTransactionTest extends TestCase
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, 'open');
 
-        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+        $response = $this->followingRedirects()->actingAs($user)->post(route('account.transaction.accept', [
             'id' => $transactionId
         ]));
         $response->assertSuccessful();
+        $response->assertViewIs('account.transaction');
     }
 
     public function test_open_transaction_can_be_declined()
@@ -132,10 +133,11 @@ class AccountTransactionTest extends TestCase
         $user = UserFactory::create();
         $transactionId = BillingFactory::createPaymentTransactionFor($user, 10);
 
-        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+        $response = $this->followingRedirects()->actingAs($user)->post(route('account.transaction.accept', [
             'id' => $transactionId
         ]));
         $response->assertSuccessful();
+        $response->assertViewIs('account.transaction');
         $transactionManager = $this->app->make(PaymentTransactionManager::class);
         $transaction = $transactionManager->getTransaction($transactionId);
         $this->assertEquals('fulfilled', $transaction->result, "Transaction status should have been fulfilled");
@@ -188,10 +190,10 @@ class AccountTransactionTest extends TestCase
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
         $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
-        $response = $this->actingAs($user)->post('accountcurrency/newCardTransaction', [
+        $response = $this->actingAs($user)->post(route('account.transaction.new.card', [
             'cardId' => $cardId,
             'amountUsd' => 10.0
-        ]);
+        ]));
         $response->assertSuccessful();
         $transactionId = (string)$response->original['id'];
         $this->verifyBaseAmountSavesCorrectly($transactionId);
@@ -200,9 +202,9 @@ class AccountTransactionTest extends TestCase
     public function test_base_amount_on_new_paypal_transaction_saves_correctly()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
+        $response = $this->actingAs($user)->post(route('account.transaction.new.paypal', [
             'amountUsd' => 10.0
-        ]);
+        ]));
         $response->assertSuccessful();
         $transactionId = (string)$response->original['id'];
         $this->verifyBaseAmountSavesCorrectly($transactionId);
@@ -213,11 +215,11 @@ class AccountTransactionTest extends TestCase
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
         $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
-        $response = $this->actingAs($user)->post('accountcurrency/newCardTransaction', [
+        $response = $this->actingAs($user)->post(route('account.transaction.new.card', [
             'cardId' => $cardId,
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
-        ]);
+        ]));
         $response->assertSuccessful();
         $transactionId = (string)$response->original['id'];
         $this->verifyItemSavesCorrectly($transactionId);
@@ -226,10 +228,10 @@ class AccountTransactionTest extends TestCase
     public function test_items_on_new_paypal_transaction_save_correctly()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->post('accountcurrency/newPayPalTransaction', [
+        $response = $this->actingAs($user)->post(route('account.transaction.new.paypal', [
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
-        ]);
+        ]));
         $response->assertSuccessful();
         $transactionId = (string)$response->original['id'];
         $this->verifyItemSavesCorrectly($transactionId);

@@ -47,7 +47,7 @@ class FakeCardPaymentManager implements CardPaymentManager
                 $card->id = $row->id;
                 $card->cardType = $row->cardtype;
                 $card->cardNumber = $row->maskedcardnum;
-                $card->expiryDate = $row->expdate;
+                $card->expiryDate = new Carbon($row->expdate);
                 $profile->addCard($card);
             }
         } else $profile = new CardPaymentCustomerProfile(count($this->customerProfiles));
