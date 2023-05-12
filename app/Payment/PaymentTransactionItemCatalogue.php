@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentTransactionItemCatalogue
 {
-    private ?array $itemsCatalogue;
+    private ?array $itemsCatalogue = null;
 
     public function itemsCatalogue(): array
     {
-        if (!$this->itemsCatalogue) {
+        if (is_null($this->itemsCatalogue)) {
             $this->itemsCatalogue = [];
             $entries = DB::table('billing_itemcatalogue')->get();
             foreach ($entries as $row) {

@@ -19,7 +19,7 @@ class PaymentSubscriptionManager
 
     public function __construct(
         protected MuckService $muck,
-        protected bool $processSubscriptionPayments)
+        protected bool        $processSubscriptionPayments)
     {
     }
 
@@ -79,9 +79,9 @@ class PaymentSubscriptionManager
         return $subscription;
     }
 
-    public function createSubscription(User $user, string $vendor,
+    public function createSubscription(User   $user, string $vendor,
                                        string $vendorProfileId, $vendorSubscriptionPlanId,
-                                       int $amountUsd, int $recurringInterval): PaymentSubscription
+                                       int    $amountUsd, int $recurringInterval): PaymentSubscription
     {
         $subscription = new PaymentSubscription();
         $subscription->accountId = $user->id();
@@ -274,11 +274,10 @@ class PaymentSubscriptionManager
             . " tried to fulfill the paid transaction: " . $transaction->id);
 
         $transactionManager = resolve(PaymentTransactionManager::class);
-        $transactionManager->fulfillTransaction($transaction);
-        $transactionManager->closeTransaction($transaction, 'fulfilled');
+        $transactionManager->fulfillAndCloseTransaction($transaction);
     }
 
-    public function createTransactionForSubscription(PaymentSubscription  $subscription)
+    public function createTransactionForSubscription(PaymentSubscription $subscription)
     {
         $transactionManager = resolve(PaymentTransactionManager::class);
         $user = User::find($subscription->accountId);

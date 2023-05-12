@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Payment\FakeCardPaymentManager;
+use App\Payment\PaymentTransactionItem;
 use App\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -49,10 +50,17 @@ class BillingFactory
         return $ourId;
     }
 
+    /**
+     * @param User $user
+     * @param int|null $usd
+     * @param string|null $status
+     * @param PaymentTransactionItem[]|null $items
+     * @return string
+     */
     public static function createPaymentTransactionFor(User    $user,
                                                        ?int    $usd = 0,
                                                        ?string $status = null,
-                                                       ?array $items = []): string
+                                                       ?array  $items = []): string
     {
         $faker = Factory::create();
         $manager = resolve(FakeCardPaymentManager::class);
@@ -80,9 +88,29 @@ class BillingFactory
             $array['accountcurrency_rewarded'] = $array['accountcurrency_quoted'];
             $array['completed_at'] = Carbon::now();
         }
+
+        if ($items) {
+            $array['items_json'] = json_encode(array_map(function ($item) {
+                return $item->toArray();
+            }, $items));
+        }
+
         DB::table('billing_transactions')->insert($array);
 
         return $id;
     }
 
+    public static function createPaymentTransactionItem(string $code, string $name, int $quantity, float $priceUsd): PaymentTransactionItem
+    {
+        $faker = Factory::create();
+        DB::table('billing_itemcatalogue')->insert([
+            'code' => $code,
+            'name' => $name,
+            'description' => $faker->text(),
+            'amount_usd' => $priceUsd,
+            'supporter' => 0
+        ]);
+        $item = new PaymentTransactionItem($code, $name, $quantity, $priceUsd * $quantity, $priceUsd * $quantity * 3);
+        return $item;
+    }
 }

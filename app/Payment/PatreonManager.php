@@ -241,8 +241,7 @@ class PatreonManager
                         );
                         $transactionManager->setPaid($transaction, true);
                         $transaction->accountCurrencyRewarded = $transaction->accountCurrencyQuoted;
-                        $transactionManager->fulfillTransaction($transaction);
-                        $transactionManager->closeTransaction($transaction, 'fulfilled');
+                        $transactionManager->fulfillAndCloseTransaction($transaction);
                         $membership->rewardedCents += $rewardCents;
                     }
                 }

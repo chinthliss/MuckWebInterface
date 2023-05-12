@@ -384,7 +384,7 @@ class PaymentTransactionManager
     /**
      * @param PaymentTransaction $transaction
      */
-    public function fulfillTransaction(PaymentTransaction $transaction): void
+    public function fulfillAndCloseTransaction(PaymentTransaction $transaction): void
     {
         Log::debug("PaymentTransaction#" . $transaction->id . " - Being fulfilled.");
 
@@ -418,5 +418,8 @@ class PaymentTransactionManager
                 );
             }
         }
+
+        $this->closeTransaction($transaction, 'fulfilled');
+
     }
 }

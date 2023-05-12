@@ -2,6 +2,7 @@
 
 
 use App\Payment\PaymentTransactionItem;
+use App\Payment\PaymentTransactionItemCatalogue;
 use App\Payment\PaymentTransactionManager;
 use Database\Factories\UserFactory;
 use Database\Factories\BillingFactory;
@@ -147,9 +148,9 @@ class AccountTransactionTest extends TestCase
     public function test_completed_transaction_with_items_has_items_rewarded()
     {
         $user = UserFactory::create();
-        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, items: ['testItem']);
-
-        $response = $this->actingAs($user)->post(route('account.transaction.accept', [
+        $item = BillingFactory::createPaymentTransactionItem('TESTITEM', 'Test Item', 1, 10);
+        $transactionId = BillingFactory::createPaymentTransactionFor($user, 10, items: [$item]);
+        $response = $this->followingRedirects()->actingAs($user)->post(route('account.transaction.accept', [
             'id' => $transactionId
         ]));
         $response->assertSuccessful();
@@ -215,7 +216,9 @@ class AccountTransactionTest extends TestCase
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
         $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
-        $response = $this->actingAs($user)->post(route('account.transaction.new.card', [
+        BillingFactory::createPaymentTransactionItem('TESTITEM', 'Test Item', 1, 10);
+
+        $response = $this->followingRedirects()->actingAs($user)->post(route('account.transaction.new.card', [
             'cardId' => $cardId,
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
@@ -228,7 +231,9 @@ class AccountTransactionTest extends TestCase
     public function test_items_on_new_paypal_transaction_save_correctly()
     {
         $user = UserFactory::create();
-        $response = $this->actingAs($user)->post(route('account.transaction.new.paypal', [
+        BillingFactory::createPaymentTransactionItem('TESTITEM', 'Test Item', 1, 10);
+
+        $response = $this->followingRedirects()->actingAs($user)->post(route('account.transaction.new.paypal', [
             'amountUsd' => 0.0,
             'items' => ['TESTITEM']
         ]));

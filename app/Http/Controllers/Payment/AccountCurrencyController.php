@@ -139,7 +139,9 @@ class AccountCurrencyController extends Controller
 
         $transaction = $transactionManager->getTransaction($transactionId);
 
-        if ($transaction->accountId != $user->id() || !$transaction->open()) abort(403);
+        if ($transaction->accountId != $user->id()
+            || $transaction->paid()
+            || !$transaction->open()) abort(403);
 
         // If this is a PayPal transaction, we create an order with them and redirect user to their approval
         if ($transaction->vendor == 'paypal') {
@@ -168,8 +170,7 @@ class AccountCurrencyController extends Controller
         }
 
         if ($transaction->paid()) {
-            $transactionManager->fulfillTransaction($transaction);
-            $transactionManager->closeTransaction($transaction, 'fulfilled');
+            $transactionManager->fulfillAndCloseTransaction($transaction);
         } else
             $transactionManager->closeTransaction($transaction, 'vendor_refused');
         return redirect()->route('account.transaction', [

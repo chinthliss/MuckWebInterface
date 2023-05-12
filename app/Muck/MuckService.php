@@ -6,7 +6,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
-use Nette\NotImplementedException;
 
 class MuckService
 {
@@ -299,7 +298,7 @@ class MuckService
     public function externalNotificationSent(User $user, ?MuckDbref $character, string $message): int
     {
         $count = $this->connection->request('externalNotificationSent',
-        ['aid' => $user->id(), 'character' => $character?->dbref, 'message' => $message]);
+            ['aid' => $user->id(), 'character' => $character?->dbref, 'message' => $message]);
         return (int)$count;
     }
 
@@ -328,7 +327,13 @@ class MuckService
      */
     public function fulfillAccountCurrencyPurchaseFor(int $accountId, float $usdAmount, int $accountCurrency, ?string $subscriptionId): int
     {
-        throw new NotImplementedException("TODO - Reimplement fulfillAccountCurrencyPurchase");
+        $amount = $this->connection->request('fulfillAccountCurrencyPurchaseFor', [
+            'aid' => $accountId,
+            'usd' => $usdAmount,
+            'accountCurrency' => $accountCurrency,
+            'subscriptionId' => $subscriptionId
+        ]);
+        return (int)$amount;
     }
 
     /**
@@ -338,7 +343,11 @@ class MuckService
      */
     public function fulfillPatreonSupportFor(int $accountId, int $accountCurrency): int
     {
-        throw new NotImplementedException("TODO - Reimplement fulfillPatreonSupport");
+        $amount = $this->connection->request('fulfillPatreonSupportFor', [
+            'aid' => $accountId,
+            'accountCurrency' => $accountCurrency
+        ]);
+        return (int)$amount;
     }
 
     /**
@@ -350,7 +359,13 @@ class MuckService
      */
     public function fulfillRewardedItemFor(int $accountId, float $usdAmount, int $accountCurrency, string $itemCode): int
     {
-        throw new NotImplementedException("TODO - Reimplement fulfillRewardedItem");
+        $amount = $this->connection->request('fulfillRewardedItemFor', [
+            'account' => $accountId,
+            'usdAmount' => $usdAmount,
+            'accountCurrency' => $accountCurrency,
+            'itemCode' => $itemCode
+        ]);
+        return (int)$amount;
     }
 
     #endregion Payment related
