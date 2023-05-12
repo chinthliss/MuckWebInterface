@@ -289,6 +289,12 @@ class MuckConnectionFaker implements MuckConnection
         return '1';
     }
 
+    public function fake_usdToAccountCurrency(array $data): string
+    {
+        $amount = $data['usd'];
+        return ($amount && $amount > 0) ? $amount * 3 : 0;
+    }
+
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));

@@ -145,7 +145,7 @@ class PaymentTransaction
     public function toTransactionOfferArray(): array
     {
         return [
-            "token" => $this->id,
+            "id" => $this->id,
             "purchase" => $this->purchaseDescription,
             "price" => "$" . round($this->totalPriceUsd(), 2)
         ];

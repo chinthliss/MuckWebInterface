@@ -84,7 +84,7 @@ class PaymentTransactionManager
                         $itemCatalogue[$itemCode]['name'],
                         1,
                         $itemCatalogue[$itemCode]['amountUsd'],
-                        $this->muck->usdToAccountCurrency($itemCatalogue[$itemCode]['amountUsd'])
+                        $this->muck->usdToAccountCurrencyFor($user->id(), $itemCatalogue[$itemCode]['amountUsd'])
                     );
                     $transaction->itemPriceUsd += $item->priceUsd;
                     $itemsRecord[] = $item;
@@ -116,7 +116,7 @@ class PaymentTransactionManager
     public function createTransactionForDirectSupport(User  $user, string $vendor, string $vendorProfileId,
                                                       float $usdForAccountCurrency, array $items, string $subscriptionId = null): PaymentTransaction
     {
-        $accountCurrency = $this->muck->usdToAccountCurrency($usdForAccountCurrency);
+        $accountCurrency = $this->muck->usdToAccountCurrencyFor($user->id(), $usdForAccountCurrency);
         return $this->createTransaction($user, $vendor, $vendorProfileId,
             $usdForAccountCurrency, $accountCurrency, $items, $subscriptionId);
     }
@@ -392,7 +392,7 @@ class PaymentTransactionManager
         if ($transaction->accountCurrencyQuoted) {
             if ($transaction->vendor != 'patreon') {
                 //Normal route
-                $transaction->accountCurrencyRewarded = $this->muck->fulfillAccountCurrencyPurchase(
+                $transaction->accountCurrencyRewarded = $this->muck->fulfillAccountCurrencyPurchaseFor(
                     $transaction->accountId,
                     $transaction->accountCurrencyPriceUsd,
                     $transaction->accountCurrencyQuoted,
@@ -400,7 +400,7 @@ class PaymentTransactionManager
                 );
             } else {
                 //Patreon route - we use reward instead since the support wasn't direct to the MUCK
-                if ($this->muck->fulfillPatreonSupport(
+                if ($this->muck->fulfillPatreonSupportFor(
                     $transaction->accountId,
                     $transaction->accountCurrencyQuoted))
                     $transaction->accountCurrencyRewarded = $transaction->accountCurrencyQuoted;
@@ -410,7 +410,7 @@ class PaymentTransactionManager
         if ($transaction->items) {
             $transaction->accountCurrencyRewardedForItems = 0;
             foreach ($transaction->items as $item) {
-                $transaction->accountCurrencyRewardedForItems += $this->muck->rewardItem(
+                $transaction->accountCurrencyRewardedForItems += $this->muck->fulfillRewardedItemFor(
                     $transaction->accountId,
                     $item->priceUsd,
                     $item->accountCurrencyValue,

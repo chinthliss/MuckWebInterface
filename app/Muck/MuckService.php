@@ -306,13 +306,16 @@ class MuckService
     #region Payment related
 
     /**
-     * Requests a conversion quote from the muck. Returns null if amount isn't acceptable
+     * Requests a conversion quote from the muck. Returns null if amount isn't acceptable.
+     * @param int $accountId
      * @param float $usdAmount
      * @return int|null
      */
-    public function usdToAccountCurrency(float $usdAmount): ?int
+    public function usdToAccountCurrencyFor(int $accountId, float $usdAmount): ?int
     {
-        throw new NotImplementedException("TODO - Reimplement usdToAccountCurrency");
+        $amount = $this->connection->request('usdToAccountCurrency',
+            ['aid' => $accountId, 'usd' => $usdAmount]);
+        return $amount;
     }
 
     /**
@@ -323,7 +326,7 @@ class MuckService
      * @param ?string $subscriptionId
      * @return int accountCurrencyRewarded
      */
-    public function fulfillAccountCurrencyPurchase(int $accountId, float $usdAmount, int $accountCurrency, ?string $subscriptionId): int
+    public function fulfillAccountCurrencyPurchaseFor(int $accountId, float $usdAmount, int $accountCurrency, ?string $subscriptionId): int
     {
         throw new NotImplementedException("TODO - Reimplement fulfillAccountCurrencyPurchase");
     }
@@ -333,7 +336,7 @@ class MuckService
      * @param int $accountCurrency
      * @return int AmountRewarded
      */
-    public function fulfillPatreonSupport(int $accountId, int $accountCurrency): int
+    public function fulfillPatreonSupportFor(int $accountId, int $accountCurrency): int
     {
         throw new NotImplementedException("TODO - Reimplement fulfillPatreonSupport");
     }
@@ -345,9 +348,9 @@ class MuckService
      * @param string $itemCode
      * @return int accountCurrencyRewarded
      */
-    public function rewardItem(int $accountId, float $usdAmount, int $accountCurrency, string $itemCode): int
+    public function fulfillRewardedItemFor(int $accountId, float $usdAmount, int $accountCurrency, string $itemCode): int
     {
-        throw new NotImplementedException("TODO - Reimplement rewardItem");
+        throw new NotImplementedException("TODO - Reimplement fulfillRewardedItem");
     }
 
     #endregion Payment related
