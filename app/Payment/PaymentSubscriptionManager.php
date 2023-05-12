@@ -43,18 +43,7 @@ class PaymentSubscriptionManager
 
     public function insertSubscriptionIntoStorage(PaymentSubscription $subscription): void
     {
-        $row = [
-            'id' => $subscription->id,
-            'account_id' => $subscription->accountId,
-            'vendor' => $subscription->vendor,
-            'vendor_profile_id' => $subscription->vendorProfileId,
-            'vendor_subscription_plan_id' => $subscription->vendorSubscriptionPlanId,
-            'amount_usd' => $subscription->amountUsd,
-            'recurring_interval' => $subscription->recurringInterval,
-            'created_at' => Carbon::now(),
-            'status' => $subscription->status
-        ];
-        $this->storageTable()->insert($row);
+        $this->storageTable()->insert($subscription->toDatabaseArray());
     }
 
     private function buildSubscriptionFromRow($row): ?PaymentSubscription

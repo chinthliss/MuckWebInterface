@@ -150,4 +150,22 @@ class PaymentSubscription
         ];
     }
 
+    public function toDatabaseArray(): array
+    {
+        $array = [
+            'id' => $this->id,
+            'account_id' => $this->accountId,
+            'amount_usd' => $this->amountUsd,
+            'recurring_interval' => $this->recurringInterval,
+            'created_at' => $this->createdAt ?: Carbon::now(),
+            'status' => $this->status
+        ];
+        if ($this->vendor) $array['vendor'] = $this->vendor;
+        if ($this->vendorProfileId) $array['vendor_profile_id'] = $this->vendorProfileId;
+        if ($this->vendorSubscriptionId) $array['vendor_subscription_id'] = $this->vendorSubscriptionId;
+        if ($this->vendorSubscriptionPlanId) $array['vendor_subscription_plan_id'] = $this->vendorSubscriptionPlanId;
+        if ($this->closedAt) $array['closed_at'] = $this->closedAt;
+        return $array;
+    }
+
 }

@@ -2,6 +2,8 @@
 
 
 use App\Payment\PaymentSubscriptionManager;
+use Database\Factories\BillingFactory;
+use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -53,5 +55,21 @@ class PaymentSubscriptionTest extends TestCase
         $this->assertTrue($subscription->lastChargeAt->diffInMinutes($lastChargeAt) < 5, 'Last charge is incorrect.');
 
         $this->assertTrue($subscription->nextChargeAt->diffInMinutes($nextChargeAt) < 5, 'Next charge is incorrect.');
+    }
+
+    public function test_valid_subscription_is_retrieved_okay()
+    {
+        $user = UserFactory::create();
+        $subscription = BillingFactory::createSubscription($user, 1);
+        $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+        $subscription = $subscriptionManager->getSubscription($subscription->id);
+        $this->assertnotnull($subscription);
+    }
+
+    public function test_invalid_subscription_retrieves_null()
+    {
+        $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+        $subscription = $subscriptionManager->getSubscription('00000000-0000-0000-0000-00000000000A');
+        $this->assertNull($subscription);
     }
 }

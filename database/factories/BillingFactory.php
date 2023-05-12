@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Payment\FakeCardPaymentManager;
+use App\Payment\PaymentSubscription;
 use App\Payment\PaymentTransactionItem;
 use App\User;
 use Illuminate\Support\Carbon;
@@ -112,5 +113,30 @@ class BillingFactory
         ]);
         $item = new PaymentTransactionItem($code, $name, $quantity, $priceUsd * $quantity, $priceUsd * $quantity * 3);
         return $item;
+    }
+
+    public static function createSubscription(User $user, int $usd,
+                                              int $recurringInterval = 30,
+                                              string $status = 'active',
+                                              Carbon $createdAt = null): PaymentSubscription
+    {
+        $faker = Factory::create();
+
+        $subscription = new PaymentSubscription();
+        $subscription->id = $faker->uuid();
+        $subscription->accountId = $user->id();
+        $subscription->vendor = 'fake';
+        $subscription->vendorProfileId = $faker->unique()->numberBetween(1, 10000);
+        $subscription->recurringInterval = $recurringInterval;
+        $subscription->status = $status;
+        $subscription->createdAt = $createdAt ?: Carbon::now();
+        $subscription->amountUsd = $usd;
+
+        if ($status === 'cancelled' or $status === 'expired') {
+            $subscription->closedAt = Carbon::now();
+        }
+        DB::table('billing_subscriptions_combined')->insert($subscription->toDatabaseArray());
+
+        return $subscription;
     }
 }
