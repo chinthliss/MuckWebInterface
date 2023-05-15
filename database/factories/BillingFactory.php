@@ -61,7 +61,8 @@ class BillingFactory
     public static function createPaymentTransactionFor(User    $user,
                                                        ?int    $usd = 0,
                                                        ?string $status = null,
-                                                       ?array  $items = []): string
+                                                       ?array  $items = [],
+                                                       ?string $subscriptionId = null): string
     {
         $faker = Factory::create();
         $manager = resolve(FakeCardPaymentManager::class);
@@ -89,11 +90,19 @@ class BillingFactory
             $array['accountcurrency_rewarded'] = $array['accountcurrency_quoted'];
             $array['completed_at'] = Carbon::now();
         }
+        if ($status === 'refused') {
+            $array['result'] = 'vendor_refused';
+            $array['completed_at'] = Carbon::now();
+        }
 
         if ($items) {
             $array['items_json'] = json_encode(array_map(function ($item) {
                 return $item->toArray();
             }, $items));
+        }
+
+        if ($subscriptionId) {
+            $array['subscription_id'] = $subscriptionId;
         }
 
         DB::table('billing_transactions')->insert($array);

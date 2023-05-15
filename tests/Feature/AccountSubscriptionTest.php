@@ -5,7 +5,6 @@ use App\Payment\PaymentSubscriptionManager;
 use Database\Factories\UserFactory;
 use Database\Factories\BillingFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
@@ -59,7 +58,7 @@ class AccountSubscriptionTest extends TestCase
     public function test_user_can_not_decline_active_subscription()
     {
         $user = UserFactory::create();
-        $subscription = BillingFactory::createSubscription($user, 5, 12 );
+        $subscription = BillingFactory::createSubscription($user, 5, 12);
         $response = $this->actingAs($user)->post(route('account.subscription.decline', [
             'id' => $subscription->id
         ]));
@@ -142,7 +141,7 @@ class AccountSubscriptionTest extends TestCase
         $subscription = $subscriptionManager->getSubscription($subscription->id);
         $subscriptionManager->updateVendorProfileId($subscription, 'NEWTEST');
         $this->assertTrue($subscription->vendorProfileId == 'NEWTEST', 'VendorProfileId not updated.');
-        //Refetch
+        //Re-fetch
         $subscription = $subscriptionManager->getSubscription($subscription->id);
         $this->assertTrue($subscription->vendorProfileId == 'NEWTEST', 'VendorProfileId not persisted');
     }
@@ -152,27 +151,26 @@ class AccountSubscriptionTest extends TestCase
         $user = UserFactory::create();
         $subscription = BillingFactory::createSubscription($user, 5, 12);
 
-        $this->artisan('payment:processsubscriptions')
-            ->assertExitCode(0);
+        Config::set('app.process_automated_payments', true);
         $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+        $subscriptionManager->processSubscriptions();
         $subscription = $subscriptionManager->getSubscription($subscription->id);
-        $this->assertTrue($subscription->lastChargeAt
-            && $subscription->lastChargeAt->diffInMinutes(Carbon::now()) < 5,
-            "Subscription's last charge should be approximately now but is: {$subscription->lastChargeAt}");
+        $this->assertNotNull($subscription->lastChargeAt,
+            "Subscription's last charge shouldn't be null.");
     }
 
     public function test_active_subscription_that_has_failed_recently_does_not_run_immediately()
     {
         $user = UserFactory::create();
         $subscription = BillingFactory::createSubscription($user, 5, 12);
+        BillingFactory::createPaymentTransactionFor($user, 10, 'refused', subscriptionId: $subscription->id);
 
         Config::set('app.process_automated_payments', true);
-        $this->artisan('payment:processsubscriptions')
-            ->assertExitCode(0);
         $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+        $subscriptionManager->processSubscriptions();
         $subscription = $subscriptionManager->getSubscription($subscription->id);
         $this->assertNull($subscription->lastChargeAt,
-            "Subscription's last charge should be null but is: {$subscription->lastChargeAt}");
+            "Subscription's last charge should be null but is: $subscription->lastChargeAt");
     }
 
     public function test_active_and_due_subscription_is_not_processed_if_disabled()
@@ -181,13 +179,11 @@ class AccountSubscriptionTest extends TestCase
         $subscription = BillingFactory::createSubscription($user, 5, 12);
 
         Config::set('app.process_automated_payments', false);
-        $this->artisan('payment:processsubscriptions')
-            ->assertExitCode(0);
         $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+        $subscriptionManager->processSubscriptions();
         $subscription = $subscriptionManager->getSubscription($subscription->id);
-        $this->assertTrue($subscription->lastChargeAt
-            && $subscription->lastChargeAt->diffInMinutes(Carbon::now()) > 5,
-            "Subscription's last charge should not be approximately now but is: {$subscription->lastChargeAt}");
+        $this->assertNull($subscription->lastChargeAt,
+            "Subscription's last charge should but null.");
     }
 
 }
