@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Payment\CardPaymentManager;
+use App\Payment\PaymentSubscriptionManager;
 use App\Payment\PaymentTransactionManager;
 use App\User;
 use Exception;
@@ -201,6 +202,111 @@ class AccountCurrencyController extends Controller
 
 
     #endregion Transactions
+
+    #region Subscriptions
+
+    /**
+     * @throws Exception
+     */
+    public function acceptSubscription(Request $request, PaymentSubscriptionManager $subscriptionManager): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $subscriptionId = $request->input('id');
+
+        if (!$subscriptionId || !$user) abort(403);
+
+        $subscription = $subscriptionManager->getSubscription($subscriptionId);
+
+        if ($subscription->accountId != $user->id() || !$subscription->open()) abort(403);
+
+        // If this is a PayPal transaction, we move over to their process
+        if ($subscription->vendor == 'paypal') {
+            throw new Exception("TODO: Reimplement PayPal subscription accepting");
+            /*
+            $payPalManager = resolve(PayPalManager::class);
+            try {
+                $approvalUrl = $payPalManager->startPayPalSubscriptionFor($user, $subscription);
+                return redirect($approvalUrl);
+            } catch (Exception $e) {
+                Log::info("Error during starting paypal subscription: " . $e);
+                abort(500);
+            }
+            */
+        }
+
+        //Otherwise we mark it as active and attempt to process
+        $subscriptionManager->setSubscriptionAsActive($subscription);
+        $subscriptionManager->processSubscription($subscription);
+        return redirect()->route('account.subscription', [
+            'id' => $subscription->id
+        ]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function declineSubscription(Request $request, PaymentSubscriptionManager $subscriptionManager): string
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $subscriptionId = $request->input('id');
+
+        if (!$subscriptionId || !$user) abort(403);
+
+        $subscription = $subscriptionManager->getSubscription($subscriptionId);
+
+        if ($subscription->accountId != $user->id() || !($subscription->status == 'approval_pending')) abort(403);
+
+        $subscriptionManager->closeSubscription($subscription, 'user_declined');
+        return "Subscription Declined";
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function cancelSubscription(Request $request, PaymentSubscriptionManager $subscriptionManager): string
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $subscriptionId = $request->input('id');
+
+        if (!$subscriptionId || !$user) abort(403);
+
+        $subscription = $subscriptionManager->getSubscription($subscriptionId);
+
+        if ($subscription->accountId != $user->id()) abort(403);
+
+        $subscriptionManager->closeSubscription($subscription, 'cancelled');
+        return "Subscription Cancelled.";
+
+    }
+
+    public function showSubscription(PaymentSubscriptionManager $subscriptionManager,
+                                     PaymentTransactionManager $transactionManager, string $id)
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $subscription = $subscriptionManager->getSubscription($id);
+
+        if (!$subscription) abort(404);
+        if ($subscription->accountId != $user->id() && !$user->isSiteAdmin()) abort(403);
+
+        $transactions = [];
+        foreach ($transactionManager->getTransactionsForSubscription($subscription) as $transaction) {
+            $transactions[] = $transaction->toArray();
+        }
+
+        return view('account.subscription')->with([
+            'subscription' => $subscription->toArray(),
+            'transactions' => $transactions
+        ]);
+    }
+
+    #endregion Subscriptions
 
     #region Admin Functionality
 

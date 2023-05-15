@@ -146,7 +146,7 @@ class PaymentSubscription
             "next_charge_at" => $this->nextChargeAt,
             "last_charge_at" => $this->lastChargeAt,
             "closed_at" => $this->closedAt,
-            "url" => route('accountcurrency.subscription', ['id' => $this->id])
+            "url" => route('account.subscription', ['id' => $this->id])
         ];
     }
 

@@ -173,7 +173,7 @@ class PaymentTransaction
             "url" => route('account.transaction', ['id' => $this->id])
         ];
         if ($this->subscriptionId && $this->vendor != 'patreon')
-            $array['subscription_url'] = route('accountcurrency.subscription', ["id" => $this->subscriptionId]);
+            $array['subscription_url'] = route('account.subscription', ["id" => $this->subscriptionId]);
         return $array;
     }
 

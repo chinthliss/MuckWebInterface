@@ -85,16 +85,27 @@ Route::group(['middleware' => ['auth']], function () {
     // Account Transactions
     Route::get('account/transactions', [AccountCurrencyController::class, 'showTransactions'])
         ->name('account.transactions');
+    Route::get('account/transactions/{id}', [AccountCurrencyController::class, 'showTransaction'])
+        ->name('account.transaction');
     Route::post('account/transactions.accept', [AccountCurrencyController::class, 'acceptTransaction'])
         ->name('account.transaction.accept');
     Route::post('account/transactions.decline', [AccountCurrencyController::class, 'declineTransaction'])
         ->name('account.transaction.decline');
-    Route::get('account/transactions/{id}', [AccountCurrencyController::class, 'showTransaction'])
-        ->name('account.transaction');
     Route::post('account/transaction/card', [AccountCurrencyController::class, 'newCardTransaction'])
         ->name('account.transaction.new.card');
     Route::post('account/transaction/paypal', [AccountCurrencyController::class, 'newPayPalTransaction'])
         ->name('account.transaction.new.paypal');
+
+    // Account Subscriptions
+    // The actual list of subscriptions is shown via the account screen
+    Route::get('account/subscriptions/{id}', [AccountCurrencyController::class, 'showSubscription'])
+        ->name('account.subscription');
+    Route::post('account/subscription.accept', [AccountCurrencyController::class, 'acceptSubscription'])
+        ->name('account.subscription.accept');
+    Route::post('account/subscription.decline', [AccountCurrencyController::class, 'declineSubscription'])
+        ->name('account.subscription.decline');
+    Route::post('account/subscription.cancel', [AccountCurrencyController::class, 'cancelSubscription'])
+        ->name('account.subscription.cancel');
 
 
     //Card Management
