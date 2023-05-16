@@ -122,7 +122,7 @@ import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
-import {unused} from '../defs';
+// import {unused} from '../defs';
 
 const props = defineProps({
     account: {type: Object, required: true},
