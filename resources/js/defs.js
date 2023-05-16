@@ -4,6 +4,31 @@
  */
 
 /**
+ * @typedef {object} Account
+ * @property {int} id
+ * @property {string} createdAt
+ * @property {string} verifiedAt
+ * @property {string} lockedAt
+ * @property {string} lastConnected
+ * @property {string} primaryEmail
+ * @property {string} url
+ * @property {int} referrals
+ * @property {int} supporterPoints
+ * @property {int} veterancy
+ * @property {int} currency
+ * @property {string[]} flags
+ * @property {string[]} roles
+ * @property {AccountEmail[]} emails
+ * @property {AccountNote[]} notes
+ * @property {Character[]} characters
+ * @property {object} [patreon]
+ * @property {boolean} subscriptionActive
+ * @property {boolean} subscriptionRenewing
+ * @property {string} subscriptionExpires
+ * @property {array} subscriptions
+ */
+
+/**
  * @typedef {object} AccountTransaction
  * @property {string} id
  * @property {int} account_id
@@ -22,6 +47,49 @@
  * @property {int} items
  * @property {string} result
  * @property {string} url
+ */
+
+/**
+ * @typedef {object} AccountNote
+ * @property {int} accountId
+ * @property {string} whenAt
+ * @property {string} body
+ * @property {string} staffMember
+ * @property {string} game
+ */
+
+/**
+ * @typedef {object} AccountEmail
+ * @property {string} email
+ * @property {string} createdAt
+ * @property {string} verifiedAt
+ * @property {boolean} isPrimary
+ */
+
+/**
+ * @typedef {object} AccountCard
+ * @property {string} id
+ * @property {string} cardType
+ * @property {string} maskedCardNumber
+ * @property {string} expiryDate
+ * @property {boolean} isDefault
+ */
+
+/**
+ * @typedef {object} AccountNotification
+ * @property {int} id
+ * @property {string} created_at
+ * @property {string} read_at
+ * @property {string} character
+ * @property {string} message
+ */
+
+/**
+ * @typedef {object} Character
+ * @property {int} dbref
+ * @property {string} type
+ * @property {string} name
+ * @property {string} created
  */
 
 exports.unused = {};

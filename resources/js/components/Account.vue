@@ -121,40 +121,13 @@
 </template>
 
 <script setup>
-/**
- * @typedef {object} Email
- * @property {string} email
- * @property {string} createdAt
- * @property {string} verifiedAt
- * @property {boolean} isPrimary
- */
-
-/**
- * @typedef {object} Account
- * @property {int} id
- * @property {string} createdAt
- * @property {string} verifiedAt
- * @property {string} lockedAt
- * @property {string} lastConnected
- * @property {string} primaryEmail
- * @property {int} referrals
- * @property {int} supporterPoints
- * @property {int} veterancy
- * @property {int} currency
- * @property {string[]} flags
- * @property {string[]} roles
- * @property {Email[]} emails
- * @property {boolean} subscriptionActive
- * @property {boolean} subscriptionRenewing
- * @property {string} subscriptionExpires
- * @property {array} subscriptions
- */
 
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString, arrayToList} from "../formatting";
 import {csrf, lex} from "../siteutils";
+// import {unused} from '../defs';
 
 const props = defineProps({
     accountIn: {type: Object, required: true},

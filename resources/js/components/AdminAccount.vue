@@ -116,61 +116,13 @@
 </template>
 
 <script setup>
-/**
- * @typedef {object} Email
- * @property {string} email
- * @property {string} createdAt
- * @property {string} verifiedAt
- * @property {boolean} isPrimary
- */
-
-/**
- * @typedef {object} Character
- * @property {int} dbref
- * @property {string} type
- * @property {string} name
- * @property {string} created
- */
-
-/**
- * @typedef {object} AccountNote
- * @property {int} accountId
- * @property {string} whenAt
- * @property {string} body
- * @property {string} staffMember
- * @property {string} game
- */
-
-/**
- * @typedef {object} Account
- * @property {int} id
- * @property {string} createdAt
- * @property {string} verifiedAt
- * @property {string} lockedAt
- * @property {string} lastConnected
- * @property {string} primaryEmail
- * @property {string} url
- * @property {int} referrals
- * @property {int} supporterPoints
- * @property {int} veterancy
- * @property {int} currency
- * @property {string[]} flags
- * @property {string[]} roles
- * @property {Email[]} emails
- * @property {Character[]} characters
- * @property {AccountNote[]} notes
- * @property {object} [patreon]
- * @property {boolean} subscriptionActive
- * @property {boolean} subscriptionRenewing
- * @property {string} subscriptionExpires
- * @property {array} subscriptions
- */
 
 import {ref} from 'vue';
 import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
+import {unused} from '../defs';
 
 const props = defineProps({
     account: {type: Object, required: true},

@@ -47,15 +47,6 @@
 
 <script setup>
 
-/**
- * @typedef {object} Notification
- * @property {int} id
- * @property {string} created_at
- * @property {string} read_at
- * @property {string} character
- * @property {string} message
- */
-
 import {ref, onMounted} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
@@ -69,7 +60,7 @@ const props = defineProps({
 const loadingNotifications = ref(true);
 const initialLoading = ref(true);
 
-/** @type {Ref<Notification[]>} */
+/** @type {Ref<AccountNotification[]>} */
 const notifications = ref([]);
 
 let confirmationModal = null;

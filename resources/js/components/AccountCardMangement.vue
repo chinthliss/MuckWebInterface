@@ -75,14 +75,6 @@
 </template>
 
 <script setup>
-/**
- * @typedef {object} Card
- * @property {string} id
- * @property {string} cardType
- * @property {string} maskedCardNumber
- * @property {string} expiryDate
- * @property {boolean} isDefault
- */
 
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
@@ -93,7 +85,7 @@ const props = defineProps({
     links: {type: Object, required: true}
 });
 
-/** @type {Ref<Card[]>} */
+/** @type {Ref<AccountCard[]>} */
 const cards = ref(props.cardsIn);
 
 const errors = ref({});
