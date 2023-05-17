@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AccountCurrencyController extends Controller
@@ -71,6 +72,9 @@ class AccountCurrencyController extends Controller
         ];
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function newCardTransaction(Request                   $request, CardPaymentManager $cardPaymentManager,
                                        PaymentTransactionManager $transactionManager): array
     {
@@ -80,16 +84,15 @@ class AccountCurrencyController extends Controller
         $cardId = $request->input('cardId');
         $card = $cardId ? $cardPaymentManager->getCardFor($user, $cardId)
             : $cardPaymentManager->getDefaultCardFor($user);
-        if (!$card) abort(400, "Default card couldn't be found or isn't valid.");
+        if (!$card) throw ValidationException::withMessages(['transaction' => "Default card couldn't be found or isn't valid."]);
 
-        $baseDetails = null;
         try {
             $baseDetails = $this->parseBaseRequest($request);
         } catch (Exception $e) {
-            abort(400, $e->getMessage());
+            throw ValidationException::withMessages(['transaction' => $e->getMessage()]);
         }
 
-        if ($baseDetails['recurringInterval']) abort(400, "A transaction can't have an interval.");
+        if ($baseDetails['recurringInterval']) throw ValidationException::withMessages(['transaction' => "A transaction can't have an interval."]);
 
         return $transactionManager->createTransactionForDirectSupport(
             $user, 'authorizenet', $card->id,
@@ -102,20 +105,20 @@ class AccountCurrencyController extends Controller
      * @param Request $request
      * @param PaymentTransactionManager $transactionManager
      * @return array
+     * @throws ValidationException
      */
     public function newPayPalTransaction(Request $request, PaymentTransactionManager $transactionManager): array
     {
         /** @var User $user */
         $user = auth()->user();
 
-        $baseDetails = null;
         try {
             $baseDetails = $this->parseBaseRequest($request);
         } catch (Exception $e) {
-            abort(400, $e->getMessage());
+            throw ValidationException::withMessages(['transaction' => $e->getMessage()]);
         }
 
-        if ($baseDetails['recurringInterval']) abort(400, "A transaction can't have an interval.");
+        if ($baseDetails['recurringInterval']) throw ValidationException::withMessages(['transaction' => "A transaction can't have an interval."]);
 
         return $transactionManager->createTransactionForDirectSupport(
             $user, "paypal", "paypal_unattributed",
@@ -206,6 +209,41 @@ class AccountCurrencyController extends Controller
     #region Subscriptions
 
     /**
+     * @throws ValidationException
+     */
+    public function newCardSubscription(Request                    $request, CardPaymentManager $cardPaymentManager,
+                                        PaymentSubscriptionManager $subscriptionManager): array
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $cardId = $request->input('cardId');
+        $card = $cardId ? $cardPaymentManager->getCardFor($user, $cardId)
+            : $cardPaymentManager->getDefaultCardFor($user);
+        if (!$card) throw ValidationException::withMessages(['subscription' => "Default card couldn't be found or isn't valid."]);
+
+        try {
+            $baseDetails = $this->parseBaseRequest($request);
+        } catch (Exception $e) {
+            throw ValidationException::withMessages(['subscription' => $e->getMessage()]);
+        }
+
+        if ($baseDetails['items']) throw ValidationException::withMessages(['subscription' => "Subscription can't have items on it."]);
+
+        return $subscriptionManager->createSubscription(
+            $user, 'authorizenet', $card->id, null,
+            $baseDetails['accountCurrencyUsd'],
+            $baseDetails['recurringInterval']
+        )->toSubscriptionOfferArray();
+    }
+
+    public function newPayPalSubscription()
+    {
+        throw new Exception("TODO: Reimplement creating a new paypal subscription request");
+    }
+
+
+    /**
      * @throws Exception
      */
     public function acceptSubscription(Request $request, PaymentSubscriptionManager $subscriptionManager): RedirectResponse
@@ -286,7 +324,7 @@ class AccountCurrencyController extends Controller
     }
 
     public function showSubscription(PaymentSubscriptionManager $subscriptionManager,
-                                     PaymentTransactionManager $transactionManager, string $id)
+                                     PaymentTransactionManager  $transactionManager, string $id): View
     {
         /** @var User $user */
         $user = auth()->user();

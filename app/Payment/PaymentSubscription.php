@@ -125,7 +125,7 @@ class PaymentSubscription
     public function toSubscriptionOfferArray(): array
     {
         return [
-            "token" => $this->id,
+            "id" => $this->id,
             "purchase" => $this->recurringInterval . " day subscription.",
             "price" => "$" . round($this->amountUsd, 2),
             "note" => "$" . round($this->amountUsd, 2)

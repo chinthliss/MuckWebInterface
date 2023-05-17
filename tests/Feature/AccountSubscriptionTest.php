@@ -12,6 +12,20 @@ class AccountSubscriptionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_user_can_start_card_subscription_process()
+    {
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->followingRedirects()
+            ->json('POST', route('account.subscription.new.card'));
+        $response->assertSuccessful();
+        $response->assertJson([
+            'id' => true,
+            'purchase' => true,
+            'price' => true,
+            'note' => true
+        ]);
+    }
+
     public function test_closed_subscription_can_not_be_accepted()
     {
         $user = UserFactory::create();

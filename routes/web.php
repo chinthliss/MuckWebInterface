@@ -98,6 +98,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Account Subscriptions
     // The actual list of subscriptions is shown via the account screen
+    Route::post('account/subscription/newCardSubscription', [AccountCurrencyController::class, 'newCardSubscription'])
+        ->name('account.subscription.new.card');
+    Route::post('account/subscription/newPayPalSubscription', [AccountCurrencyController::class, 'newPayPalSubscription'])
+        ->name('account.subscription.new.paypal');
     Route::get('account/subscriptions/{id}', [AccountCurrencyController::class, 'showSubscription'])
         ->name('account.subscription');
     Route::post('account/subscription.accept', [AccountCurrencyController::class, 'acceptSubscription'])
