@@ -9,7 +9,6 @@ use Error;
 use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -120,12 +119,17 @@ class PaymentSubscriptionManager
         return $this->buildSubscriptionFromRow($row);
     }
 
-    public function getSubscriptions(): Collection
+    /**
+     * @return PaymentSubscription[]
+     */
+    public function getSubscriptions(): array
     {
-        $allSubscriptions = $this->storageTableWithTransactionJoin()->get();
-        return $allSubscriptions->map(function ($row) {
-            return $this->buildSubscriptionFromRow($row);
-        });
+        $rows = $this->storageTableWithTransactionJoin()->get();
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = $this->buildSubscriptionFromRow($row);
+        }
+        return $result;
     }
 
     /**

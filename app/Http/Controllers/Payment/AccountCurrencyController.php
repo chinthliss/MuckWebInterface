@@ -60,7 +60,7 @@ class AccountCurrencyController extends Controller
 
         $items = $request->has('items') ? $request['items'] : [];
         if (!$items && !$amountUsd)
-            throw new Exception("Transaction has no value.<br/>" .
+            throw new Exception("Nothing with a value has been selected.<br/>" .
                 "You need to specify either an amount or select item(s).");
 
         $recurringInterval = $request->has('recurringInterval') ? (int)$request['recurringInterval'] : null;
