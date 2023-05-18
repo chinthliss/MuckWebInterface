@@ -12,6 +12,6 @@
 
 @section('content')
     <account-transactions
-        :transactions-in= @json($transactions)
+        :transactions-in="{{json_encode($transactions)}}"
     ></account-transactions>
 @endsection

@@ -1,6 +1,6 @@
 @extends('layout.page-with-navigation')
 
-@section('title', 'Account Transactions')
+@section('title', 'Account Subscription')
 
 @section('breadcrumbs')
     {{ Breadcrumbs::render([
@@ -12,7 +12,7 @@
 
 @section('content')
     <account-subscription
-        :subscription-in= "@json($subscription)"
-        :transactions-in= "@json($transactions)"
+        :subscription-in= "{{ json_encode($subscription) }}"
+        :transactions-in= "{{ json_encode($transactions) }}"
     ></account-subscription>
 @endsection
