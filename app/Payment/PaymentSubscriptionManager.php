@@ -68,7 +68,7 @@ class PaymentSubscriptionManager
     }
 
     public function createSubscription(User   $user, string $vendor,
-                                       string $vendorProfileId, $vendorSubscriptionPlanId,
+                                       string $vendorProfileId, ?string $vendorSubscriptionPlanId,
                                        int    $amountUsd, int $recurringInterval): PaymentSubscription
     {
         $subscription = new PaymentSubscription();

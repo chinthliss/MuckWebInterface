@@ -639,7 +639,6 @@ class User implements Authenticatable, MustVerifyEmail
             $array['veterancy'] = $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
             $array['currency'] = $this->getAccountCurrency();
             $array['flags'] = $this->getAccountFlags();
-            $array['subscriptionStatus'] = 'TODO: Subscription status';
             $array['referrals'] = $this->getReferralCount();
             $array['supporterPoints'] = $this->getSupporterPoints();
 

@@ -1,5 +1,10 @@
 Collection of saved tinker tests / commands.
 
+=== Account Subscriptions (For seeding test)
+App::make(App\Payment\PaymentSubscriptionManager::class)->getSubscriptions(1);
+$newSubscription = App::make(App\Payment\PaymentSubscriptionManager::class)->createSubscription(User::find(1), 'fake', 'fakesubscription001', null, 5, 30);
+App::make(App\Payment\PaymentSubscriptionManager::class)->setSubscriptionAsActive($newSubscription);
+
 === Account Notification
 App\Notifications\MuckWebInterfaceNotification::NotifyUser(User::find(1), 'Test');
 App\Notifications\MuckWebInterfaceNotification::NotifyCharacter(User::find(1), App::make(App\Muck\MuckObjectService::class)->getbyDbref(1234), 'Test with character');

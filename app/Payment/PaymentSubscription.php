@@ -113,6 +113,9 @@ class PaymentSubscription
         return $this->expires() >= Carbon::now();
     }
 
+    /**
+     * @return bool Whether a subscription is going to renew automatically after the present period elapses
+     */
     public function renewing(): bool
     {
         return $this->status == 'active';
