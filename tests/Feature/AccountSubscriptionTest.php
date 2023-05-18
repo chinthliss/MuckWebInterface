@@ -12,11 +12,20 @@ class AccountSubscriptionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_start_card_subscription_process()
+    public function test_user_can_start_card_subscription_process_with_default_card()
     {
         $user = UserFactory::create();
+        $profileId = BillingFactory::createBillingProfileFor($user);
+        // During faking, first card is the default
+        $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        BillingFactory::createBillingPaymentProfileFor($profileId);
+        $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+
         $response = $this->actingAs($user)->followingRedirects()
-            ->json('POST', route('account.subscription.new.card'));
+            ->json('POST', route('account.subscription.new.card', [
+                'recurringInterval' => 5,
+                'amountUsd' => 10
+            ]));
         $response->assertSuccessful();
         $response->assertJson([
             'id' => true,
@@ -24,6 +33,38 @@ class AccountSubscriptionTest extends TestCase
             'price' => true,
             'note' => true
         ]);
+        $subscriptions = $subscriptionManager->getSubscriptions();
+        $this->assertNotEmpty($subscriptions);
+        $usedCardId = $subscriptions[0]->vendorProfileId;
+        $this->assertEquals($cardId, $usedCardId);
+    }
+
+    public function test_user_can_start_card_subscription_process_with_other_card()
+    {
+        $user = UserFactory::create();
+        $profileId = BillingFactory::createBillingProfileFor($user);
+        // During faking, first card is the default
+        BillingFactory::createBillingPaymentProfileFor($profileId);
+        $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
+
+        $response = $this->actingAs($user)->followingRedirects()
+            ->json('POST', route('account.subscription.new.card', [
+                'cardId' => $cardId,
+                'recurringInterval' => 5,
+                'amountUsd' => 10
+            ]));
+        $response->assertSuccessful();
+        $response->assertJson([
+            'id' => true,
+            'purchase' => true,
+            'price' => true,
+            'note' => true
+        ]);
+        $subscriptions = $subscriptionManager->getSubscriptions();
+        $this->assertNotEmpty($subscriptions);
+        $usedCardId = $subscriptions[0]->vendorProfileId;
+        $this->assertEquals($cardId, $usedCardId);
     }
 
     public function test_closed_subscription_can_not_be_accepted()

@@ -38,6 +38,7 @@ class FakeCardPaymentManager implements CardPaymentManager
 
         if ($row?->profileid) {
             $profile = new CardPaymentCustomerProfile($row->profileid);
+            $defaultAssigned = false;
             //Try to load cards
             $cardRows = DB::table('billing_paymentprofiles')->where([
                 'profileid' => $profile->getCustomerProfileId()
@@ -48,8 +49,11 @@ class FakeCardPaymentManager implements CardPaymentManager
                 $card->cardType = $row->cardtype;
                 $card->cardNumber = $row->maskedcardnum;
                 $card->expiryDate = new Carbon($row->expdate);
+                $card->isDefault = !$defaultAssigned;
                 $profile->addCard($card);
+                $defaultAssigned = true;
             }
+            // In the faker, first card is the default
         } else $profile = new CardPaymentCustomerProfile(count($this->customerProfiles));
 
         $this->customerProfiles[$accountId] = $profile;
