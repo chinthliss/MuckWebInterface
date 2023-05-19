@@ -208,7 +208,7 @@ const unlockAccount = () => {
 }
 
 const overallSubscriptionStatus = () => {
-    if (!account.value.subscriptionActive) return 'No Subscription';
+    if (!account.value.subscriptionActive) return 'No Active Subscription';
     if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
     return 'Active, expires sometime before ' + account.value.subscriptionExpires;
 }

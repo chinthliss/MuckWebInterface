@@ -1,11 +1,7 @@
 <template>
     <div class="container">
 
-        <div class="row">
-            <div class="col">
-                <h1>Account</h1>
-            </div>
-        </div>
+        <h1>Account</h1>
 
         <dl class="row">
 
@@ -179,7 +175,7 @@ const emailTableConfiguration = {
 };
 
 const overallSubscriptionStatus = () => {
-    if (!account.value.subscriptionActive) return 'No Subscription';
+    if (!account.value.subscriptionActive) return 'No Active Subscription';
     if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
     return 'Active, expires sometime before ' + account.value.subscriptionExpires;
 }

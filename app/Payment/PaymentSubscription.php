@@ -82,6 +82,7 @@ class PaymentSubscription
      */
     public function type(): string
     {
+        if ($this->vendor === 'fake') return 'Testing Faker';
         if ($this->vendor === 'paypal') return 'Paypal';
         if ($this->vendor === 'authorizenet') return 'Card';
         return 'Unknown';
