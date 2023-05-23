@@ -131,6 +131,7 @@ class PaymentTransaction
      */
     public function type(): string
     {
+        if ($this->vendor === 'fake') return 'Testing Faker';
         if ($this->vendor === 'paypal') return 'Paypal';
         if ($this->vendor === 'authorizenet') return 'Card';
         if ($this->vendor === 'patreon') return 'Patreon';

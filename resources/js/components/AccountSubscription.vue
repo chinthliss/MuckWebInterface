@@ -65,25 +65,45 @@
         </dl>
 
         <h2>Transactions</h2>
-        TODO: Transactions on a subscription
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="transactionsTableConfiguration"
+                   :data="transactions">
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Created</th>
+                <th scope="col">Completed</th>
+                <th scope="col">USD</th>
+                <th scope="col">{{ lex('accountcurrency') }}</th>
+                <th scope="col">Items</th>
+                <th scope="col">Result</th>
+            </tr>
+            </thead>
+        </DataTable>
     </div>
 </template>
 
 <script setup>
 
-import {arrayToList, carbonToString} from "../formatting";
+import {carbonToString} from "../formatting";
 import {lex, accountId} from "../siteutils";
 import {ref} from "vue";
+import DataTable from "datatables.net-vue3";
 
 const props = defineProps({
     subscriptionIn: {type: Object, required: true},
-    transactions: {type: Object, required: true},
+    transactionsIn: {type: Object, required: true},
 });
 
 /**
  * @type {Ref<AccountSubscription>}
  */
 const subscription = ref(props.subscriptionIn);
+
+/**
+ * @type {Ref<AccountTransaction[]>}
+ */
+const transactions = ref(props.transactionsIn);
 
 const friendlyStatus = () => {
     switch (subscription.value.status) {
@@ -103,6 +123,38 @@ const friendlyStatus = () => {
             return 'Unknown';
     }
 }
+
+const renderResult = (result) => {
+    if (!result) return 'Open'
+    if (result === 'fulfilled') return 'Fulfilled';
+    if (result === 'user_declined') return 'User Declined';
+    if (result === 'vendor_refused') return 'Vendor Declined';
+    if (result === 'expired') return 'Expired';
+    return result;
+}
+
+const renderIdWithLink = (data, type, row) => {
+    return `<a href="${row.url}">${data}</a>`;
+}
+
+const transactionsTableConfiguration = {
+    columns: [
+        {data: 'id', render: renderIdWithLink},
+        {data: 'created_at', render: carbonToString},
+        {data: 'completed_at', render: carbonToString},
+        {data: 'total_usd'},
+        {data: 'account_currency_quoted'},
+        {data: 'items'},
+        {data: 'result', render: renderResult}
+    ],
+    language: {
+        "emptyTable": "No transactions associated with this subscription."
+    },
+    paging: false,
+    info: false,
+    searching: false
+};
+
 </script>
 
 <style scoped>
