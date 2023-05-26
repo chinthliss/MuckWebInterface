@@ -16,9 +16,10 @@ class AccountSubscriptionTest extends TestCase
     {
         $user = UserFactory::create();
         $profileId = BillingFactory::createBillingProfileFor($user);
-        // During faking, first card is the default
-        $cardId = BillingFactory::createBillingPaymentProfileFor($profileId);
-        BillingFactory::createBillingPaymentProfileFor($profileId);
+        // During faking, lowest ID is the default but the IDs are random
+        $firstId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        $secondId = BillingFactory::createBillingPaymentProfileFor($profileId);
+        $cardId = min($firstId, $secondId);
         $subscriptionManager = $this->app->make(PaymentSubscriptionManager::class);
 
         $response = $this->actingAs($user)->followingRedirects()
