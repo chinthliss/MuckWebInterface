@@ -85,7 +85,7 @@
 
 <script setup>
 
-import {carbonToString} from "../formatting";
+import {carbonToString, usdToString} from "../formatting";
 import {lex, accountId} from "../siteutils";
 import {ref} from "vue";
 import DataTable from "datatables.net-vue3";
@@ -142,7 +142,7 @@ const transactionsTableConfiguration = {
         {data: 'id', render: renderIdWithLink},
         {data: 'created_at', render: carbonToString},
         {data: 'completed_at', render: carbonToString},
-        {data: 'total_usd'},
+        {data: 'total_usd', render: usdToString},
         {data: 'account_currency_quoted'},
         {data: 'items'},
         {data: 'result', render: renderResult}

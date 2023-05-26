@@ -7,6 +7,12 @@ export const carbonToString = (carbonString) => {
     return new Date(carbonString).toLocaleString();
 };
 
+export const usdToString = (usd) => {
+    if (!usd) return '--';
+    if (typeof usd === 'number') usd = Math.round(usd, 2);
+    return "$" + usd;
+};
+
 export const capital = (text) => {
     if (typeof (text) !== 'string') text = text.toString();
     if (!text) return '';

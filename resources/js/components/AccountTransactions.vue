@@ -29,7 +29,7 @@
 
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
-import {carbonToString} from "../formatting";
+import {carbonToString, usdToString} from "../formatting";
 
 const props = defineProps({
 
@@ -58,7 +58,7 @@ const transactionsTableConfiguration = {
         {data: 'created_at', render: carbonToString},
         {data: 'completed_at', render: carbonToString},
         {data: 'type'},
-        {data: 'total_usd'},
+        {data: 'total_usd', render: usdToString},
         {data: 'account_currency_quoted'},
         {data: 'items'},
         {data: 'subscription_id'},

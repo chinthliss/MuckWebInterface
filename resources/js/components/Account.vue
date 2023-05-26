@@ -27,9 +27,11 @@
 
         <!-- Subscriptions -->
         <div v-if="account.subscriptions.length > 0">
+
             <h2 class="mt-2">Subscriptions</h2>
-            <!-- TODO Subscription table is in old format -->
-            <table class="table table-hover">
+
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="subscriptionsTableConfiguration" :data="account.subscriptions">
                 <thead>
                 <tr>
                     <th scope="col">Type</th>
@@ -38,31 +40,17 @@
                     <th scope="col">Next (approx)</th>
                     <th scope="col">Status</th>
                     <th scope="col"></th>
-                    <th scope="col"></th>
                 </tr>
                 </thead>
-                <tr v-for="subscription in account.subscriptions">
-                    <td class="align-middle">{{ subscription.type }}</td>
-                    <td class="align-middle">${{ subscription.amount_usd }}</td>
-                    <td class="align-middle">{{ subscription.recurring_interval }}</td>
-                    <td class="align-middle">{{ carbonToString(subscription.next_charge_at) }}</td>
-                    <td class="align-middle">{{ friendlySubscriptionStatus(subscription.status) }}</td>
-                    <td class="align-middle"><a :href="subscription.url">
-                        <i class="fas fa-search"></i>
-                    </a></td>
-                    <td class="align-middle">
-                        <button class="btn btn-secondary" v-if="subscription.status === 'active'"
-                                @click="cancelSubscription(subscription.id)">Cancel
-                        </button>
-                    </td>
-                </tr>
-            </table>
+            </DataTable>
+
             <p>Payments made via subscriptions also show on the Account Transactions page.</p>
         </div>
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration" :data="account.emails">
+        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration"
+                   :data="account.emails">
             <thead>
             <tr>
                 <th scope="col">Email</th>
@@ -121,7 +109,7 @@
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
-import {carbonToString, arrayToList} from "../formatting";
+import {usdToString, carbonToString, arrayToList} from "../formatting";
 import {csrf, lex} from "../siteutils";
 // import {unused} from '../defs';
 
@@ -174,15 +162,12 @@ const emailTableConfiguration = {
     drawCallback: emailTableDrawCallback
 };
 
-const overallSubscriptionStatus = () => {
-    if (!account.value.subscriptionActive) return 'No Active Subscription';
-    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
-    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
-}
-
-const cancelSubscription = (id) => {
-    // TODO - restore subscription cancelling
-}
+const displaySubscriptionRowForControls = (data, type, row) => {
+    return `
+    <a href="${row.url}"><i class="fas fa-search"></i></a>
+    <button class="btn btn-secondary ms-2" v-if="${row.status} === 'active'" @click="cancelSubscription(${row.id})">Cancel</button>
+    `;
+};
 
 const friendlySubscriptionStatus = (status) => {
     switch (status) {
@@ -199,7 +184,31 @@ const friendlySubscriptionStatus = (status) => {
         case 'active':
             return 'Active';
     }
-    return 'Unknown'
+    return 'Unknown';
+}
+const subscriptionsTableConfiguration = {
+    columns: [
+        {data: 'type'},
+        {data: 'amount_usd', render: usdToString},
+        {data: 'recurring_interval'},
+        {data: 'next_charge_at', render: carbonToString},
+        {data: 'status', render: friendlySubscriptionStatus},
+        {render: displaySubscriptionRowForControls, sortable: false}
+    ],
+    paging: false,
+    info: false,
+    searching: false
+};
+
+
+const overallSubscriptionStatus = () => {
+    if (!account.value.subscriptionActive) return 'No Active Subscription';
+    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
+    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
+}
+
+const cancelSubscription = (id) => {
+    // TODO - restore subscription cancelling
 }
 
 </script>
