@@ -6,8 +6,8 @@
                 <h1>Account {{ account.id }}</h1>
             </div>
             <div>
-                <div v-if="account.locked">
-                    <div class="text-danger p-2">Account locked as of {{ carbonToString(account.locked) }}</div>
+                <div v-if="account.lockedAt">
+                    <div class="text-danger p-2">Account locked as of {{ carbonToString(account.lockedAt) }}</div>
                     <button class="btn btn-danger float-end" @click="unlockAccount">
                         <i class="fas fa-unlock btn-icon-left"></i>Unlock Account
                     </button>
@@ -185,7 +185,7 @@ const lockAccount = () => {
     axios
         .post(props.apiUrl, {operation: 'lock'})
         .then(response => {
-            if (response?.data === 'OK') account.value.locked = new Date().toISOString();
+            if (response?.data === 'OK') account.value.lockedAt = new Date().toISOString();
             else console.log("Unrecognized response to locking account: ", response);
         })
         .catch(error => {
@@ -198,7 +198,7 @@ const unlockAccount = () => {
     axios
         .post(props.apiUrl, {operation: 'unlock'})
         .then(response => {
-            if (response?.data === 'OK') account.value.locked = null;
+            if (response?.data === 'OK') account.value.lockedAt = null;
             else console.log("Unrecognized response to unlocking account: ", response);
         })
         .catch(error => {

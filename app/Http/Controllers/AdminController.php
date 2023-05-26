@@ -39,7 +39,6 @@ class AdminController extends Controller
         /** @var User $reporter */
         $reporter = auth()->user();
         $reporterCharacter = $reporter->getCharacter();
-        if (!$reporterCharacter || !$reporterCharacter->isAdmin()) abort(400, 'You need to be logged on as an admin character');
 
         $operation = $request->get('operation');
         switch($operation) {
@@ -54,6 +53,7 @@ class AdminController extends Controller
             case 'addAccountNote':
                 $note = $request->get('note');
                 if (!$note) abort(400, 'No note text provided.');
+                if (!$reporterCharacter || !$reporterCharacter->isAdmin()) abort(400, 'You need to be logged on as an admin character, so that the note can be attributed to them.');
                 $target->addAccountNote($reporterCharacter->name, $note);
             break;
 
