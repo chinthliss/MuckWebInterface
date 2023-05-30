@@ -22,8 +22,8 @@ return new class extends Migration
                 $table->enum('proptype', ['STRING', 'INTEGER', 'FLOAT', 'OBJECT']);
 
                 $table->primary(['aid', 'propname']);
-                $table->index(['aid']);
-                $table->index(['propname', 'aid']);
+                // $table->index(['aid']); -- This would be covered by the primary index of 'aid', 'propname'
+                $table->index(['propname']);
             });
         }
     }

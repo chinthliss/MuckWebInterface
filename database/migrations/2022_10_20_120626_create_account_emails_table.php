@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('account_emails');
+        throw new Error("Can not reverse this migration. Use 'artisan migrate:fresh --seed' for testing.");
     }
 };
