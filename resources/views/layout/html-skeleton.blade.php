@@ -100,7 +100,7 @@
 
     @hasSection('page-navigation')
         <!-- Button to open Navigation if on mobile -->
-        <button id="site_navigation_button" type="button" class="d-md-none btn btn-primary my-2">
+        <button id="site_navigation_button" type="button" class="d-md-none btn btn-primary my-2 w-100">
             <i class="fas fa-bars btn-icon-left"></i>
             Navigation
         </button>

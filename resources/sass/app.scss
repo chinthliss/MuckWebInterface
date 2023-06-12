@@ -38,6 +38,20 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+#site_navigation_left.site_navigation_force_show {
+    display: block;
+}
+
+#site_navigation_left {
+    display: none;
+}
+
+@include media-breakpoint-up(md) {
+    #site_navigation_left {
+        display: block;
+    }
+}
+
 #site-below-header {
     //Shadow from the top bar region
     position: relative;
