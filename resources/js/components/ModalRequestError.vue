@@ -37,7 +37,7 @@ const self = ref(null);
 const modal = ref(null);
 
 onMounted(() => {
-    modal.value = new bootstrap.Modal(self.value);
+    modal.value = bootstrap.Modal.getOrCreateInstance(self.value);
     console.log("Registering Axios interceptor for response errors.");
     axios.interceptors.response.use(function (response) {
         return response;

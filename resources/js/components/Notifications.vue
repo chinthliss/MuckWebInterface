@@ -146,7 +146,7 @@ const deleteAllNotifications = () => {
 
 
 onMounted(() => {
-    confirmationModal = new bootstrap.Modal(document.getElementById('confirm-delete-all-notifications'));
+    confirmationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-delete-all-notifications'));
     refreshNotifications();
 });
 

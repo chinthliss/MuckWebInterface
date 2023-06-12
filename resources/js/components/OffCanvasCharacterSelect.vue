@@ -98,8 +98,8 @@ const refreshCharacterList = () => {
 
 onMounted(() => {
     self.value.addEventListener('show.bs.offcanvas', refreshCharacterList);
-    confirmationModal = new bootstrap.Modal(document.getElementById('confirm-buy-character-slot'));
-    messageModal = new bootstrap.Modal(document.getElementById('message-display'));
+    confirmationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-buy-character-slot'));
+    messageModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('message-display'));
 });
 
 const selectCharacter = (character) => {

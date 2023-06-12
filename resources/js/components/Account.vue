@@ -126,7 +126,7 @@ const emailToMakePrimary = ref();
 
 const confirmMakeEmailPrimary = (e) => {
     emailToMakePrimary.value = $(e.currentTarget).data('email');
-    const modal = new bootstrap.Modal(document.getElementById('confirm-primary-email'));
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-primary-email'));
     modal.show();
 }
 
