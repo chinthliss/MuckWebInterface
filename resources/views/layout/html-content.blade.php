@@ -49,7 +49,7 @@
     <!-- Lexicon configuration -->
     const mwiSiteLexicon = @json(Lex::toArray());
 
-</script
+</script>
 
 @yield('breadcrumbs')
 <main id="app" class="py-2 mb-3">
