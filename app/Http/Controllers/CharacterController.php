@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
+use App\Notifications\MuckWebInterfaceNotification;
 use App\User as User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -66,6 +67,9 @@ class CharacterController extends Controller
         return view('multiplayer.character-creation');
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function createCharacter(Request $request, MuckService $muck): RedirectResponse
     {
         /** @var User $user */
@@ -84,13 +88,12 @@ class CharacterController extends Controller
         }
         $user->setCharacter($result['character']);
 
-        //TODO: Restore notification for creating a character
-        // MuckWebInterfaceNotification::notifyUser($user, "Your new character '$desiredName' has been created with an initial password of: {$result['initialPassword']}");
+        MuckWebInterfaceNotification::notifyUser($user, "Your new character '$desiredName' has been created with an initial password of: {$result['initialPassword']}");
 
         return redirect()->route('multiplayer.character.initial-setup');
     }
 
-    public function showCharacterInitialSetup(MuckService $muck)
+    public function showCharacterInitialSetup(MuckService $muck): View | RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -114,7 +117,10 @@ class CharacterController extends Controller
         ]);
     }
 
-    public function finalizeCharacter(Request $request, MuckService $muck)
+    /**
+     * @throws ValidationException
+     */
+    public function finalizeCharacter(Request $request, MuckService $muck): RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -218,7 +224,7 @@ class CharacterController extends Controller
         Log::debug("Character Password Change: $character being changed by $user");
         $result = $muck->changeCharacterPassword($user, $character, $request['character_password']);
         if ($result) {
-            $request->session()->flash('message-success', "The password for {$character->name} was changed as requested. You can now use this password to logon via a telnet client.");
+            $request->session()->flash('message-success', "The password for $character->name was changed as requested. You can now use this password to logon via a telnet client.");
             return redirect(route('multiplayer.home'));
         } else throw ValidationException::withMessages(['character' => ["Something went wrong, if this continues please notify staff."]]);
     }
