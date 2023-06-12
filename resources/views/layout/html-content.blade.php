@@ -39,9 +39,12 @@
 <script type="application/javascript">
 
     //Code for the navigation toggle when mobile
-    document.getElementById("site_navigation_button").addEventListener('click', () => {
-        document.getElementById("site_navigation_left").classList.toggle("site_navigation_force_show");
-    });
+    const siteNavigationButton = document.getElementById("site_navigation_button");
+    if (siteNavigationButton) {
+        siteNavigationButton.addEventListener('click', () => {
+            document.getElementById("site_navigation_left").classList.toggle("site_navigation_force_show");
+        });
+    }
 
     <!-- Lexicon configuration -->
     const mwiSiteLexicon = @json(Lex::toArray());
