@@ -478,6 +478,33 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Characters
 
+    #region Avatar viewing preference
+
+    const AVATAR_PREFERENCE_HIDDEN   = 'hidden';   // Not used
+    const AVATAR_PREFERENCE_CLEAN    = 'clean';    // No naughty bits
+    const AVATAR_PREFERENCE_DEFAULT  = 'default';  // Female naughty bits
+    const AVATAR_PREFERENCE_EXPLICIT = 'explicit'; // All the naughty bits
+
+    protected ?string $avatarPreference = null; // Loaded on demand
+
+    public function getAvatarPreference(): string
+    {
+        if ($this->avatarPreference === null) {
+            $preference = $this->getAccountProperty('webAvatarPreference');
+            $this->avatarPreference = $preference ?: self::AVATAR_PREFERENCE_DEFAULT;
+        }
+
+        return $this->avatarPreference;
+    }
+
+    public function setAvatarPreference(string $value): void
+    {
+        $this->avatarPreference = $value;
+        $this->setAccountProperty( 'webAvatarPreference', $value);
+    }
+
+    #endregion Avatar viewing preference
+
     public function setIsLocked(bool $isLocked): void
     {
         $this->getProvider()->setIsLocked($this, $isLocked);

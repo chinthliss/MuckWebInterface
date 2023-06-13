@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Avatar;
+
+use App\User;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+
+class AvatarProviderViaDatabase implements AvatarProvider
+{
+
+    #region Gradients
+
+    /**
+     * @throws Exception
+     */
+    private function databaseRowToAvatarGradient($row): AvatarGradient
+    {
+        return new AvatarGradient(
+            $row->name,
+            $row->description,
+            json_decode($row->steps_json),
+            $row->free ?: false,
+            $row->created_at ? new Carbon($row->created_at) : null,
+            $row->owner_aid ? User::find($row->owner_aid) : null
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getGradients(): array
+    {
+        $gradients = [];
+        $rows = DB::table('avatar_gradients')
+            ->get();
+        foreach ($rows as $row) {
+            $gradients[] = $this->databaseRowToAvatarGradient($row);
+        }
+        return $gradients;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getGradient(string $name): ?AvatarGradient
+    {
+        $gradient = null;
+        $row = DB::table('avatar_gradients')
+            ->where('name', '=', $name)
+            ->first();
+        if ($row) {
+            $gradient = $this->databaseRowToAvatarGradient($row);
+        }
+        return $gradient;
+    }
+
+    #endregion Gradients
+
+    #region Items
+
+    private function databaseRowToAvatarItem($row): AvatarItem
+    {
+        return new AvatarItem(
+            $row->id,
+            $row->name,
+            $row->filename,
+            $row->type,
+            $row->requirement,
+            $row->created_at ? new Carbon($row->created_at) : null,
+            $row->owner_aid ? User::find($row->owner_aid) : null,
+            $row->cost,
+            $row->x ?: 0, $row->y ?: 0, 1,
+            $row->rotate ?: 0,
+            $row->scale ?: 1.0
+        );
+    }
+
+    public function getItems(): array
+    {
+        $items = [];
+        $rows = DB::table('avatar_items')
+            ->get();
+        foreach ($rows as $row) {
+            $items[] = $this->databaseRowToAvatarItem($row);
+        }
+        return $items;
+    }
+
+    public function getItem(string $itemId): ?AvatarItem
+    {
+        $item = null;
+        $row = DB::table('avatar_items')
+            ->where('id', '=', $itemId)
+            ->first();
+        if ($row) {
+            $item = $this->databaseRowToAvatarItem($row);
+        }
+        return $item;
+    }
+
+    #endregion Items
+}

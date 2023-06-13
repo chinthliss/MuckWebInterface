@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\Payment\CardManagementController;
 use App\Http\Controllers\Payment\AccountCurrencyController;
+use App\Http\Controllers\AvatarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,18 @@ Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfServi
     ->name('auth.terms-of-service');
 Route::get('accountlocked', [HomeController::class, 'showLocked'])
     ->name('auth.locked');
+
+//Character Avatar related images (Has exceptions in LoadActiveCharacter for optimization)
+Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
+    ->name('multiplayer.avatar.render');
+Route::get('avatar/gradient/{name}', [AvatarController::class, 'getGradient'])
+    ->name('avatar.gradient.image');
+Route::get('avatar/gradient/preview/{code?}', [AvatarController::class, 'getGradientPreview'])
+    ->name('avatar.gradient.previewimage');
+Route::get('avatar/item/{id}', [AvatarController::class, 'getAvatarItem'])
+    ->name('multiplayer.avatar.item');
+Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
+    ->name('multiplayer.avatar.itempreview');
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +86,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('newemail', [EmailController::class, 'newEmail']);
     Route::post('changeemail', [EmailController::class, 'changeEmail'])
         ->name('auth.email.change');
+
+    //Preference change
+    Route::post('account/updateAvatarPreference', [AccountController::class, 'updateAvatarPreference'])
+        ->name('account.avatar.preference');
 
     // Notifications
     Route::get('notifications', [AccountController::class, 'showNotifications'])
@@ -136,6 +153,27 @@ Route::prefix('/admin/')->group(function () {
             ->name('admin.home');
         Route::get('tickets', [HomeController::class, 'showPending'])
             ->name('admin.tickets');
+
+        //Avatar Doll testing
+        Route::prefix('admin/avatar/')->group(function () {
+            Route::get('dolllist', [AvatarController::class, 'showAdminDollList'])
+                ->name('admin.avatar.dolllist');
+            Route::get('dolltest/{code?}', [AvatarController::class, 'showAdminDollTest'])
+                ->name('admin.avatar.dolltest');
+            Route::get('dolltest/{dollName}/thumbnail', [AvatarController::class, 'getThumbnailForDoll'])
+                ->name('admin.avatar.dollthumbnail');
+            Route::get('render/{code?}', [AvatarController::class, 'getAvatarFromAdminCode'])
+                ->name('admin.avatar.render');
+            Route::get('testall', [AvatarController::class, 'getAllAvatarsAsAGif']);
+        });
+
+        //Avatar Gradients
+        Route::get('admin/avatargradients', [AvatarController::class, 'showAdminAvatarGradients'])
+            ->name('admin.avatar.gradients');
+
+        //Avatar Items
+        Route::get('admin/avataritems', [AvatarController::class, 'showAdminAvatarItems'])
+            ->name('admin.avatar.items');
     });
 
     // ----------------------------- Admin level
@@ -251,6 +289,23 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.forms');
         Route::get('inventory', [HomeController::class, 'showPending'])
             ->name('multiplayer.inventory');
+
+        // Avatar functionality
+        Route::get('multiplayer/avatargradients', [AvatarController::class, 'showUserAvatarGradients'])
+            ->name('multiplayer.avatar.gradients');
+        Route::get('multiplayer/avatar', [AvatarController::class, 'showAvatarEditor'])
+            ->name('multiplayer.avatar');
+        Route::get('multiplayer/avatar/state', [AvatarController::class, 'getAvatarState'])
+            ->name('multiplayer.avatar.state');
+        Route::post('multiplayer/avatar/state', [AvatarController::class, 'setAvatarState']);
+        Route::post('multiplayer/avatar/buygradient', [AvatarController::class, 'buyGradient'])
+            ->name('multiplayer.avatar.buygradient');
+        Route::post('multiplayer/avatar/buyitem', [AvatarController::class, 'buyItem'])
+            ->name('multiplayer.avatar.buyitem');
+        Route::get('multiplayer/connect', [MultiplayerController::class, 'showConnect'])
+            ->name('multiplayer.connect');
+        Route::get('avatar/edit/{code?}', [AvatarController::class, 'getAvatarFromUserCode'])
+            ->name('multiplayer.avatar.edit.render');
 
     });
 
