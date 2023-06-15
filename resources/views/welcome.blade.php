@@ -2,9 +2,11 @@
 
 @section('content')
     <div class="d-flex flex-column">
-        <div class="p-2">
+        <div class="d-flex justify-content-evenly">
+            <div class="p-2">
             <h1>Welcome</h1>
             <p>This is a work-in-progress new site. At some point this whole welcome will be replaced.</p>
+            </div>
         </div>
         <div class="d-flex justify-content-evenly">
             <div class="p-2">
