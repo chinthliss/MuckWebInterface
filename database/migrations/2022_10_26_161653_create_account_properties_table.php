@@ -17,7 +17,7 @@ return new class extends Migration
         if (!Schema::hasTable('account_properties')) {
             Schema::create('account_properties', function (Blueprint $table) {
                 $table->bigInteger('aid')->unsigned();
-                $table->char('propname', 100)->index();
+                $table->char('propname', 100);
                 $table->longText('propdata');
                 $table->enum('proptype', ['STRING', 'INTEGER', 'FLOAT', 'OBJECT']);
 
