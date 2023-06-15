@@ -41,21 +41,30 @@
                 </template>
             </table>
         </div>
-        <h2>Unused files:</h2>
-        <template v-for="file in fileUsage">
-            <div v-if="!file.inUse">{{ file.filename }}</div>
-        </template>
+
+        <h2>Unused files</h2>
+        <p>Any files found in the items folder that aren't used by an avatar item will be listed here.</p>
+        <div v-if="unusedFiles.length === 0">No unused files found in the items folder.</div>
+        <div v-else v-for="file in unusedFiles">{{ file.filename }}</div>
     </div>
 </template>
 
 <script setup>
-// import {ref} from 'vue';
+import {computed} from 'vue';
 import {carbonToString} from "../formatting";
 
 const props = defineProps({
     /** @type {AvatarItem[]} */
     items: {type: Array, required: true},
     fileUsage: {type: Array, required: false}
+});
+
+const unusedFiles = computed(() => {
+    let result = [];
+    props.fileUsage.forEach((file) => {
+        if (!file.inUse) result.push(file);
+    });
+    return result;
 });
 
 </script>

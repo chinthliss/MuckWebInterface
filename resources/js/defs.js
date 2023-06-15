@@ -129,11 +129,17 @@
  * @typedef {Object} AvatarItem
  * @property {string} id
  * @property {string} name
+ * @property {string} type
  * @property {string} desc
+ * @property {string} requirement
  * @property {date} [created_at]
+ * @property {int} cost
  * @property {boolean} free
- * @property {number} [owner_aid]
- * @property {string} [owner_url]
+ * @property {Account} [owner]
  * @property {string} url
+ * @property {int} x
+ * @property {int} y
+ * @property {int} rotate
+ * @property {float} scale
  */
 exports.unused = {};
