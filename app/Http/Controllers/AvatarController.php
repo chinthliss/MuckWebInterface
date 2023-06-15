@@ -471,7 +471,7 @@ class AvatarController extends Controller
 
         $usage = $service->getAvatarItemFileUsage();
 
-        return view('admin.avatar-item', [
+        return view('admin.avatar-items', [
             'items' => $items,
             'fileUsage' => $usage
         ]);

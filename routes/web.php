@@ -155,7 +155,7 @@ Route::prefix('/admin/')->group(function () {
             ->name('admin.tickets');
 
         //Avatar Doll testing
-        Route::prefix('admin/avatar/')->group(function () {
+        Route::prefix('avatar/')->group(function () {
             Route::get('dolllist', [AvatarController::class, 'showAdminDollList'])
                 ->name('admin.avatar.dolllist');
             Route::get('dolltest/{code?}', [AvatarController::class, 'showAdminDollTest'])
@@ -168,11 +168,11 @@ Route::prefix('/admin/')->group(function () {
         });
 
         //Avatar Gradients
-        Route::get('admin/avatargradients', [AvatarController::class, 'showAdminAvatarGradients'])
+        Route::get('avatar/gradients', [AvatarController::class, 'showAdminAvatarGradients'])
             ->name('admin.avatar.gradients');
 
         //Avatar Items
-        Route::get('admin/avataritems', [AvatarController::class, 'showAdminAvatarItems'])
+        Route::get('avatar/items', [AvatarController::class, 'showAdminAvatarItems'])
             ->name('admin.avatar.items');
     });
 

@@ -125,4 +125,15 @@
  * @property {string} created
  */
 
+/**
+ * @typedef {Object} AvatarItem
+ * @property {string} id
+ * @property {string} name
+ * @property {string} desc
+ * @property {date} [created_at]
+ * @property {boolean} free
+ * @property {number} [owner_aid]
+ * @property {string} [owner_url]
+ * @property {string} url
+ */
 exports.unused = {};
