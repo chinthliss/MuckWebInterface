@@ -342,7 +342,7 @@ class AvatarController extends Controller
                 'name' => $gradient->name,
                 'desc' => $gradient->desc,
                 'free' => $gradient->free,
-                'url' => route('avatar.gradient.image', ['name' => $gradient->name])
+                'url' => route('avatar.gradient.render', ['name' => $gradient->name])
             ];
         }
         return view('multiplayer.avatar-gradient', [
@@ -361,7 +361,7 @@ class AvatarController extends Controller
                 'created_at' => $gradient->created_at,
                 'owner_aid' => $gradient->owner?->id(),
                 'owner_url' => $gradient->owner?->getAdminUrl(),
-                'url' => route('avatar.gradient.image', ['name' => $gradient->name])
+                'url' => route('avatar.gradient.render', ['name' => $gradient->name])
             ];
         }
         return view('admin.avatar-gradient', [
@@ -465,7 +465,7 @@ class AvatarController extends Controller
                 'y' => $item->y,
                 'rotate' => $item->rotate,
                 'scale' => $item->scale,
-                'url' => route('multiplayer.avatar.itempreview', ['id' => $item->id])
+                'url' => route('avatar.item.preview', ['id' => $item->id])
             ];
         }, $service->getAvatarItems());
 

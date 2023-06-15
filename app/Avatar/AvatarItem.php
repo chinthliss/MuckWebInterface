@@ -44,8 +44,8 @@ class AvatarItem
     {
         $array = $this->toArray();
         $array['name'] = $this->name;
-        $array['url'] = route('multiplayer.avatar.item', ['id' => $this->id]);
-        $array['preview_url'] = route('multiplayer.avatar.itempreview', ['id' => $this->id]);
+        $array['url'] = route('avatar.item.render', ['id' => $this->id]);
+        $array['preview_url'] = route('avatar.item.preview', ['id' => $this->id]);
         $array['cost'] = $this->cost ?? 0;
         return $array;
     }

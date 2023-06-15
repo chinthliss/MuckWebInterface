@@ -15,7 +15,7 @@ class AvatarServiceProvider extends ServiceProvider  implements DeferrableProvid
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $provider = new AvatarProviderViaDatabase();
         $this->app->singleton(AvatarService::class, function($app) use ($provider) {
@@ -28,7 +28,7 @@ class AvatarServiceProvider extends ServiceProvider  implements DeferrableProvid
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -38,7 +38,7 @@ class AvatarServiceProvider extends ServiceProvider  implements DeferrableProvid
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [AvatarService::class, AvatarProvider::class];
     }

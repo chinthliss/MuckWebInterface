@@ -28,15 +28,15 @@ Route::get('accountlocked', [HomeController::class, 'showLocked'])
 
 //Character Avatar related images (Has exceptions in LoadActiveCharacter for optimization)
 Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
-    ->name('multiplayer.avatar.render');
+    ->name('avatar.render');
 Route::get('avatar/gradient/{name}', [AvatarController::class, 'getGradient'])
-    ->name('avatar.gradient.image');
+    ->name('avatar.gradient.render');
 Route::get('avatar/gradient/preview/{code?}', [AvatarController::class, 'getGradientPreview'])
-    ->name('avatar.gradient.previewimage');
+    ->name('avatar.gradient.preview');
 Route::get('avatar/item/{id}', [AvatarController::class, 'getAvatarItem'])
-    ->name('multiplayer.avatar.item');
+    ->name('avatar.item.render');
 Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
-    ->name('multiplayer.avatar.itempreview');
+    ->name('avatar.item.preview');
 
 /*
 |--------------------------------------------------------------------------
