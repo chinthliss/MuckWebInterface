@@ -95,11 +95,13 @@ class MuckDbref
 
     /**
      * If this is a player, have they finished character generation?
+     * Staff are exempt from this check.
      * @return bool
      */
     public function approved(): bool
     {
-        return array_key_exists('approved', $this->properties) && $this->properties['approved'] == '1';
+        return $this->isStaff() ||
+            (array_key_exists('approved', $this->properties) && $this->properties['approved'] == '1');
     }
 
     /**
