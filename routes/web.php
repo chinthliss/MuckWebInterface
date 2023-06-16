@@ -291,21 +291,24 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.inventory');
 
         // Avatar functionality
-        Route::get('multiplayer/avatargradients', [AvatarController::class, 'showUserAvatarGradients'])
+        Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])
             ->name('multiplayer.avatar.gradients');
-        Route::get('multiplayer/avatar', [AvatarController::class, 'showAvatarEditor'])
+        Route::get('avatar', [AvatarController::class, 'showAvatarEditor'])
             ->name('multiplayer.avatar');
-        Route::get('multiplayer/avatar/state', [AvatarController::class, 'getAvatarState'])
+        Route::get('avatar/state', [AvatarController::class, 'getAvatarState'])
             ->name('multiplayer.avatar.state');
-        Route::post('multiplayer/avatar/state', [AvatarController::class, 'setAvatarState']);
-        Route::post('multiplayer/avatar/buygradient', [AvatarController::class, 'buyGradient'])
-            ->name('multiplayer.avatar.buygradient');
-        Route::post('multiplayer/avatar/buyitem', [AvatarController::class, 'buyItem'])
+        Route::post('avatar/state', [AvatarController::class, 'setAvatarState']);
+        Route::post('avatar/gradients/buy', [AvatarController::class, 'buyGradient'])
+            ->name('multiplayer.avatar.gradients.buy');
+        Route::post('avatar/buyitem', [AvatarController::class, 'buyItem'])
             ->name('multiplayer.avatar.buyitem');
-        Route::get('multiplayer/connect', [MultiplayerController::class, 'showConnect'])
-            ->name('multiplayer.connect');
         Route::get('avatar/edit/{code?}', [AvatarController::class, 'getAvatarFromUserCode'])
             ->name('multiplayer.avatar.edit.render');
+
+        //Direct Connect
+        // TODO: Actual direct connect
+        Route::get('multiplayer/connect', [MultiplayerController::class, 'showConnect'])
+            ->name('multiplayer.connect');
 
     });
 

@@ -345,7 +345,7 @@ class AvatarController extends Controller
                 'url' => route('avatar.gradient.render', ['name' => $gradient->name])
             ];
         }
-        return view('multiplayer.avatar-gradient', [
+        return view('multiplayer.avatar-gradients', [
             'gradients' => $gradients
         ]);
     }
@@ -364,7 +364,7 @@ class AvatarController extends Controller
                 'url' => route('avatar.gradient.render', ['name' => $gradient->name])
             ];
         }
-        return view('admin.avatar-gradient', [
+        return view('admin.avatar-gradients', [
             'gradients' => $gradients
         ]);
     }

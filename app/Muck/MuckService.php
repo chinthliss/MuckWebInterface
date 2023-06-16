@@ -2,6 +2,7 @@
 
 namespace App\Muck;
 
+use App\Helpers\Ansi;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;

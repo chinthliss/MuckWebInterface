@@ -142,4 +142,15 @@
  * @property {int} rotate
  * @property {float} scale
  */
+
+/**
+ * @typedef {object} AvatarGradient
+ * @property {string} name
+ * @property {string} desc
+ * @property {date} [created_at]
+ * @property {boolean} free
+ * @property {number} [owner_aid]
+ * @property {string} [owner_url]
+ * @property {string} url
+ */
 exports.unused = {};
