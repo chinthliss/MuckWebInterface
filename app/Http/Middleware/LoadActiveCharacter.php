@@ -19,19 +19,6 @@ class LoadActiveCharacter
 {
     protected MuckObjectService $muckObjectService;
 
-    /**
-     * Requests in this list won't attempt to load a character.
-     * This is intended to avoid the work if the request is just for a resource, such as an image
-     * @var array
-     */
-    private array $routesExempt = [
-        'avatar.render',
-        'avatar.gradient.render',
-        'avatar.gradient.preview',
-        'avatar.item.render',
-        'avatar.item.preview'
-    ];
-
     public function __construct(MuckObjectService $muckObjectService)
     {
         $this->muckObjectService = $muckObjectService;
@@ -48,9 +35,6 @@ class LoadActiveCharacter
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        //Allow bypass for pages that don't need a character
-        if (in_array($request->route()?->getName(), $this->routesExempt)) return $next($request);
-
         /** @var User $user */
         $user = $request->user();
         if ($user) {

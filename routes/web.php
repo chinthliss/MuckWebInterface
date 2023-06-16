@@ -26,18 +26,19 @@ Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfServi
 Route::get('accountlocked', [HomeController::class, 'showLocked'])
     ->name('auth.locked');
 
-//Character Avatar related images (Has exceptions in LoadActiveCharacter for optimization)
-Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
-    ->name('avatar.render');
-Route::get('avatar/gradient/{name}', [AvatarController::class, 'getGradient'])
-    ->name('avatar.gradient.render');
-Route::get('avatar/gradient/preview/{code?}', [AvatarController::class, 'getGradientPreview'])
-    ->name('avatar.gradient.preview');
-Route::get('avatar/item/{id}', [AvatarController::class, 'getAvatarItem'])
-    ->name('avatar.item.render');
-Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
-    ->name('avatar.item.preview');
-
+//Character Avatar related images (Image resources that skip middleware)
+Route::withoutMiddleware('web')->group(function () {
+    Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
+        ->name('avatar.render');
+    Route::get('avatar/gradient/{name}', [AvatarController::class, 'getGradient'])
+        ->name('avatar.gradient.render');
+    Route::get('avatar/gradient/preview/{code?}', [AvatarController::class, 'getGradientPreview'])
+        ->name('avatar.gradient.preview');
+    Route::get('avatar/item/{id}', [AvatarController::class, 'getAvatarItem'])
+        ->name('avatar.item.render');
+    Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
+        ->name('avatar.item.preview');
+});
 /*
 |--------------------------------------------------------------------------
 | Core resources that are available only when NOT logged in

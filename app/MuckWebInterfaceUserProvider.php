@@ -58,11 +58,11 @@ class MuckWebInterfaceUserProvider implements UserProvider
     public function retrieveById($identifier): User|null
     {
         if (array_key_exists($identifier, $this->cachedUserById)) {
-            Log::debug("UserProvider retrieveById using cached entry for $identifier");
+            Log::debug("UserProvider RetrieveById using cached entry for $identifier");
             return $this->cachedUserById[$identifier];
         }
 
-        Log::debug("UserProvider retrieveById looking up User with id of $identifier");
+        Log::debug("UserProvider RetrieveById looking up User with id of $identifier");
         $user = null;
         $accountQuery = $this->baseRetrievalQuery()
             ->where('accounts.aid', $identifier)
