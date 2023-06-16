@@ -3,7 +3,7 @@
 namespace App\Avatar;
 
 use App\Muck\MuckDbref;
-use App\Muck\MuckConnection;
+use App\Muck\MuckService;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Imagick;
@@ -79,7 +79,8 @@ class AvatarService
     private array $avatarDrawingPlanCache = [];
 
     public function __construct(
-        private AvatarProvider $provider
+        private AvatarProvider $provider,
+        private MuckService $muckService
     )
     {
     }
@@ -478,8 +479,9 @@ class AvatarService
     /**
      * @throws Exception
      */
-    public function muckAvatarStringToAvatarInstance(string $string): AvatarInstance
+    public function getAvatarInstanceFor(MuckDbref $character): AvatarInstance
     {
+        $string = $this->muckService->getAvatarStringFor($character);
         Log::debug("Converting MuckAvatarString to AvatarInstance: " . $string);
         //String is a ';' separated set of key=value entries
         $array = [];
@@ -755,12 +757,11 @@ class AvatarService
 
     /**
      * Returns an array of [gradients, items, backgrounds] available to the given character
-     * @param MuckConnection $muck
      * @param MuckDbref $character
      * @return array
      * @throws Exception
      */
-    public function getAvatarOptions(MuckConnection $muck, MuckDbref $character): array
+    public function getAvatarOptions(MuckDbref $character): array
     {
         // Need to pick up ownership and whether someone meets the requirements for things from the muck
         $itemCatalog = $this->getAvatarItems();
@@ -768,7 +769,7 @@ class AvatarService
         foreach ($itemCatalog as $item) {
             if ($item->requirement) $requirements[$item->id] = $item->requirement;
         }
-        $muckResponse = $muck->getAvatarOptionsFor($character, $requirements);
+        $muckResponse = $this->muckService->getAvatarOptionsFor($character, $requirements);
 
         if (!array_key_exists('gradients', $muckResponse) || !array_key_exists('items', $muckResponse))
             throw new Exception("Muck response was missing an expected part!");

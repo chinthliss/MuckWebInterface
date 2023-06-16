@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Avatar\AvatarProvider;
 use App\Avatar\AvatarProviderViaDatabase;
 use App\Avatar\AvatarService;
+use App\Muck\MuckService;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,9 +18,10 @@ class AvatarServiceProvider extends ServiceProvider  implements DeferrableProvid
      */
     public function register(): void
     {
-        $provider = new AvatarProviderViaDatabase();
-        $this->app->singleton(AvatarService::class, function($app) use ($provider) {
-            return new AvatarService($provider);
+        $this->app->singleton(AvatarService::class, function($app) {
+            $provider = new AvatarProviderViaDatabase();
+            $muckService = $this->app->make(MuckService::class);
+            return new AvatarService($provider, $muckService);
         });
     }
 

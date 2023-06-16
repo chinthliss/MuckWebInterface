@@ -310,6 +310,15 @@ class MuckConnectionFaker implements MuckConnection
         return $data['accountCurrency'];
     }
 
+    public function fake_avatarDollUsage(array $data): string
+    {
+        return json_encode([
+            'FS_Badger' => ['BadgerInfection1', 'BadgerInfection2'],
+            'FS_Bear' => ['NotABear'],
+            'NonExistent' => ['Broken']
+        ]);
+    }
+
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));

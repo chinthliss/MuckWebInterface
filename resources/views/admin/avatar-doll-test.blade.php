@@ -1,0 +1,26 @@
+@extends('layout.page-with-navigation')
+
+@section('title', 'Avatar Doll Test (Admin)' )
+
+@section('breadcrumbs')
+    {{ Breadcrumbs::render([
+        [ 'route' => 'welcome', 'label' => 'Welcome' ],
+        [ 'route' => 'admin.home', 'label' => 'Admin' ],
+        [ 'label' => 'Avatar Doll Test (Admin)' ]
+    ]) }}
+@endsection
+
+@section('content')
+    <admin-avatar-doll-test
+        :drawing-steps = "{{ json_encode($drawingSteps) }}"
+        :dolls = "{{ json_encode($dolls) }}"
+        :gradients = "{{ json_encode($gradients) }}"
+        initial-code = "{{ $code }}"
+        base-url = "{{ route('admin.avatar.dolltest') }}"
+        render-url = "{{ route('admin.avatar.render') }}"
+        :avatar-width = "{{ $avatarWidth }}"
+        :avatar-height = "{{ $avatarHeight }}"    >
+    </admin-avatar-doll-test>
+@endsection
+
+

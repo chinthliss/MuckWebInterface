@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Avatar\AvatarGradient;
 use App\Avatar\AvatarInstance;
 use App\Avatar\AvatarService;
-use App\Muck\MuckConnection;
+use App\Muck\MuckService;
 use App\Muck\MuckObjectService;
 use App\User;
 use Exception;
@@ -22,13 +22,13 @@ class AvatarController extends Controller
     /**
      * @throws Exception
      */
-    public function showAvatarEditor(AvatarService $service, MuckConnection $muck): View
+    public function showAvatarEditor(AvatarService $service): View
     {
         /** @var User $user */
         $user = auth()->user();
         $character = $user->getCharacter();
 
-        $options = $service->getAvatarOptions($muck,$character);
+        $options = $service->getAvatarOptions($character);
 
         return view('multiplayer.avatar')->with([
             'gradients' => $options['gradients'],
@@ -40,19 +40,21 @@ class AvatarController extends Controller
     }
 
     /**
+     * @param AvatarService $avatarService
      * @return array
+     * @throws Exception
      */
     #[ArrayShape([
         'background' => "array|null",
         'items' => "array",
         'colors' => "string[]"
     ])]
-    public function getAvatarState(): array
+    public function getAvatarState(AvatarService $avatarService): array
     {
         /** @var User $user */
         $user = auth()->user();
         $character = $user->getCharacter();
-        $avatar = $character->avatarInstance();
+        $avatar = $avatarService->getAvatarInstanceFor($character);
 
         return [
             'background' => $avatar->background?->toCatalogArray(),
@@ -66,12 +68,12 @@ class AvatarController extends Controller
     /**
      * Attempts to set the present avatar state
      * @param AvatarService $service
-     * @param MuckConnection $muck
+     * @param MuckService $muck
      * @param Request $request
      * @return void
      * @throws Exception
      */
-    public function setAvatarState(AvatarService $service, MuckConnection $muck, Request $request): void
+    public function setAvatarState(AvatarService $service, Request $request, MuckService $muck): void
     {
         Log::Debug('Avatar - setAvatarState called with: ' . json_encode($request->all()));
 
@@ -83,7 +85,7 @@ class AvatarController extends Controller
         $character = $user->getCharacter();
 
         //We need to validate things first to make sure they're available and owned/earned.
-        $options = $service->getAvatarOptions($muck, $character);
+        $options = $service->getAvatarOptions($character);
 
         //Colors
         foreach($request->get('colors') as $slot => $gradientId) {
@@ -148,7 +150,7 @@ class AvatarController extends Controller
         );
     }
 
-    public function showAdminDollList(AvatarService $service, MuckConnection $muckConnection): View
+    public function showAdminDollList(AvatarService $service, MuckService $muckConnection): View
     {
         $dollUsage = $muckConnection->avatarDollUsage();
         // Going to unset entries in dollUsage as they're used, so we can track any remaining.
@@ -270,13 +272,14 @@ class AvatarController extends Controller
      * @param string|null $code
      * @return Response
      * @throws ImagickException
+     * @throws Exception
      */
     public function getAvatarFromUserCode(AvatarService $service, string $code = null): Response
     {
         /** @var User $user */
         $user = auth()->user();
         $character = $user->getCharacter();
-        $avatarInstance = $character->avatarInstance();
+        $avatarInstance = $service->getAvatarInstanceFor($character);
         $this->applyPreferencesToAvatarInstance($avatarInstance, $user);
 
         //Overwrite colors with any specified by the editor
@@ -294,6 +297,7 @@ class AvatarController extends Controller
 
     /**
      * @throws ImagickException
+     * @throws Exception
      */
     public function getAvatarFromCharacterName(AvatarService $service, MuckObjectService $muckObjectService,
                                                Request       $request, string $name): Response
@@ -306,10 +310,10 @@ class AvatarController extends Controller
         if (str_ends_with(strtolower($name), '.png')) $name = substr($name, 0, -4);
         $character = $muckObjectService->getByPlayerName($name);
         if (!$character) abort(404);
-        $avatarInstance = $character->avatarInstance();
+        $avatarInstance = $service->getAvatarInstanceFor($character);
         // Apply any preferences for the present user if there is one
         if ($user) $this->applyPreferencesToAvatarInstance($avatarInstance, $user);
-        $image = $service->renderAvatarInstance($character->avatarInstance());
+        $image = $service->renderAvatarInstance($avatarInstance);
         $this->applyOptionsToAvatarImage($image, $request);
         return response($image, 200)
             ->header('Content-Type', $image->getImageFormat());
@@ -400,7 +404,7 @@ class AvatarController extends Controller
             ->header('Content-Type', $image->getImageFormat());
     }
 
-    public function buyGradient(Request $request, AvatarService $avatarService, MuckConnection $muckConnection) {
+    public function buyGradient(Request $request, AvatarService $avatarService, MuckService $muck) {
         if (!$request->has('gradient')) abort(400, "Gradient not specified.");
         $gradient = $avatarService->getGradient($request->get('gradient'));
         if (!$gradient) abort(400, "No gradient found with the id of:" . $request->get('gradient'));
@@ -417,7 +421,7 @@ class AvatarController extends Controller
 
         Log::info("Avatar - Gradient Purchase - $user, $character buying $gradient->name for slot $slot.");
 
-        return $muckConnection->buyAvatarGradient($character, $gradient, $slot);
+        return $muck->buyAvatarGradient($character, $gradient, $slot);
     }
     #endregion Gradients
 
@@ -478,7 +482,7 @@ class AvatarController extends Controller
 
     }
 
-    public function buyItem(Request $request, AvatarService $avatarService, MuckConnection $muckConnection) {
+    public function buyItem(Request $request, AvatarService $avatarService, MuckService $muck) {
         if (!$request->has('item')) abort(400, "Item not specified.");
         $item = $avatarService->getAvatarItem($request->get('item'));
         if (!$item) abort(400, "No item found with the id of:" . $request->get('item'));
@@ -491,7 +495,7 @@ class AvatarController extends Controller
         if (!$character) abort(400, "A character isn't set.");
 
         Log::info("Avatar - Item Purchase - $user, $character buying $item->id.");
-        return $muckConnection->buyAvatarItem($character, $item);
+        return $muck->buyAvatarItem($character, $item);
 
     }
 

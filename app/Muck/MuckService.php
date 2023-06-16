@@ -371,4 +371,11 @@ class MuckService
 
     #endregion Payment related
 
+    #region Avatar related
+    public function avatarDollUsage(): array
+    {
+        return json_decode($this->connection->request('avatarDollUsage'), true);
+    }
+    #endregion Avatar related
+
 }
