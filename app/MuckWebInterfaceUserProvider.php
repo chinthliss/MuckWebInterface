@@ -61,15 +61,18 @@ class MuckWebInterfaceUserProvider implements UserProvider
             Log::debug("UserProvider retrieveById using cached entry for $identifier");
             return $this->cachedUserById[$identifier];
         }
+
         Log::debug("UserProvider retrieveById looking up User with id of $identifier");
-        //Retrieve account details from database first
+        $user = null;
         $accountQuery = $this->baseRetrievalQuery()
             ->where('accounts.aid', $identifier)
             ->first();
-        if (!$accountQuery) return null;
-        $user = User::fromDatabaseResponse($accountQuery);
+        if ($accountQuery) {
+            $user = User::fromDatabaseResponse($accountQuery);
+        }
+
         $this->cachedUserById[$identifier] = $user;
-        Log::debug("UserProvider RetrieveById result for $identifier: $user");
+        Log::debug("UserProvider RetrieveById result for $identifier: [$user]");
         return $user;
     }
 
@@ -502,7 +505,7 @@ class MuckWebInterfaceUserProvider implements UserProvider
 
     #endregion Properties
 
-    public function setIsLocked(User $user, bool $isLocked)
+    public function setIsLocked(User $user, bool $isLocked): void
     {
         DB::table('accounts')->where([
             'aid' => $user->id()
