@@ -31,13 +31,18 @@ class AdminAccountTest extends TestCase
 
     public function test_admin_account_view_is_accessible_to_admin()
     {
-        $response = $this->actingAs(UserFactory::create(['roles' => 'admin']))->get(route('admin.account', ['accountId' => 1]));
+        $accountToView = UserFactory::create();
+        $admin = UserFactory::create(['roles' => 'admin']);
+        $response = $this->actingAs($admin)
+            ->get(route('admin.account', ['accountId' => $accountToView->id()]));
         $response->assertSuccessful();
     }
 
     public function test_admin_account_view_is_not_accessible_to_user()
     {
-        $response = $this->actingAs(UserFactory::create())->get(route('admin.account', ['accountId' => 1]));
+        $accountToView = UserFactory::create();
+        $user = UserFactory::create();
+        $response = $this->actingAs($user)->get(route('admin.account', ['accountId' => $accountToView->id()]));
         $response->assertForbidden();
     }
 
