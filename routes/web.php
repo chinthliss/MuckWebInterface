@@ -265,8 +265,6 @@ Route::prefix('/multiplayer/')->group(function () {
         // Character Editing
         Route::get('character', [CharacterController::class, 'showCharacterHub'])
             ->name('multiplayer.character');
-        Route::get('avatar', [HomeController::class, 'showPending'])
-            ->name('multiplayer.avatar.edit');
         Route::get('perks', [HomeController::class, 'showPending'])
             ->name('multiplayer.perks');
         Route::get('quirks', [HomeController::class, 'showPending'])
@@ -295,7 +293,7 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])
             ->name('multiplayer.avatar.gradients');
         Route::get('avatar', [AvatarController::class, 'showAvatarEditor'])
-            ->name('multiplayer.avatar');
+            ->name('multiplayer.avatar.edit');
         Route::get('avatar/state', [AvatarController::class, 'getAvatarState'])
             ->name('multiplayer.avatar.state');
         Route::post('avatar/state', [AvatarController::class, 'setAvatarState']);
