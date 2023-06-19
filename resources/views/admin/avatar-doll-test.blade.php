@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <admin-avatar-doll-test
+    <admin-avatar-doll-tester
         :drawing-steps = "{{ json_encode($drawingSteps) }}"
         :dolls = "{{ json_encode($dolls) }}"
         :gradients = "{{ json_encode($gradients) }}"
@@ -20,7 +20,7 @@
         render-url = "{{ route('admin.avatar.render') }}"
         :avatar-width = "{{ $avatarWidth }}"
         :avatar-height = "{{ $avatarHeight }}"    >
-    </admin-avatar-doll-test>
+    </admin-avatar-doll-tester>
 @endsection
 
 

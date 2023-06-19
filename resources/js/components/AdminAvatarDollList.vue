@@ -1,3 +1,12 @@
+<script setup>
+const props = defineProps({
+    dolls: {type: Array, required: true},
+    invalid: {type: Object, required: false},
+    avatarWidth: {type: Number, required: false, default: 384},
+    avatarHeight: {type: Number, required: false, default: 640}
+});
+</script>
+
 <template>
     <div class="container">
         <h2>Avatar Paper Doll List</h2>
@@ -51,15 +60,6 @@
         </table>
     </div>
 </template>
-
-<script setup>
-const props = defineProps({
-    dolls: {type: Array, required: true},
-    invalid: {type: Object, required: false},
-    avatarWidth: {type: Number, required: false, default: 384},
-    avatarHeight: {type: Number, required: false, default: 640}
-});
-</script>
 
 <style scoped>
 .doll-card {
