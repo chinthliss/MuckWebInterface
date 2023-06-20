@@ -57,7 +57,7 @@
                 control where you start in the game.</p>
             <table>
                 <tr v-for="faction in factions" class="align-top">
-                    <td class="pr-2 pb-2">
+                    <td class="pe-2 pb-2">
                         <input type="radio" class="btn-check" name="faction" v-model="chosenFaction"
                                :value="faction.name"
                                :id="'faction-' + faction.name">
@@ -86,7 +86,7 @@
                 <table>
                     <template v-for="perk in perks">
                         <tr v-if="perk && perk.category === category.category" class="align-top">
-                            <td class="pr-2 pb-2">
+                            <td class="pe-2 pb-2">
                                 <input type="checkbox" class="btn-check" name="perks[]" v-model="chosenPerks"
                                        :disabled="perk?.excluded" :value="perk.name" :id="'perk-' + perk.name"
                                        autocomplete="off"
@@ -112,7 +112,7 @@
             <p>You may take as many, or as few, flaws as you want.</p>
             <table>
                 <tr v-for="flaw in flaws" class="align-top">
-                    <td class="pr-2 pb-2">
+                    <td class="pe-2 pb-2">
                         <input type="checkbox" class="btn-check" name="flaws[]" v-model="chosenFlaws"
                                :disabled="flaw?.excluded" :value="flaw.name" :id="'flaw-' + flaw.name"
                                autocomplete="off"

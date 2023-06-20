@@ -22,7 +22,7 @@
                 <character-card v-for="character in characters" :character="character"
                                 @click="selectCharacter(character)" class="mt-2"></character-card>
                 <div v-for="i in freeSlots" v-bind:key="i"
-                     class="card empty-character-card border-primary mr-2 mt-2">
+                     class="card empty-character-card border-primary mt-2">
                     <div class="card-body h-100">
                         <a class="btn btn-primary w-100" :href="links.createCharacter"><span class="d-flow"><i
                             class="fas fa-plus btn-icon-left"></i>New character</span></a>
