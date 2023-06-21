@@ -310,6 +310,8 @@ class MuckConnectionFaker implements MuckConnection
         return $data['accountCurrency'];
     }
 
+    #region Avatar related
+
     public function fake_avatarDollUsage(array $data): string
     {
         return json_encode([
@@ -319,6 +321,41 @@ class MuckConnectionFaker implements MuckConnection
         ]);
     }
 
+    public function fake_getAvatarOptionsFor(array $data): string
+    {
+        return json_encode([
+            'gradients' => [
+                'Blonde' => ['hair'],
+                'Chocolate' => ['fur']
+            ],
+            'items' => [
+                'antennae02' => 1,
+                'ascot' => 2,
+                'assault_rifle' => 3
+            ]
+        ]);
+    }
+
+    public function fake_saveAvatarCustomizations(array $data): string
+    {
+        return 'OK';
+    }
+
+    public function fake_buyAvatarGradient(array $data): string
+    {
+        if ($data['gradient'] == 'Blonde') return "Refused for testing purposes";
+        return "OK";
+    }
+
+    public function fake_buyAvatarItem(array $data): string
+    {
+        if ($data['itemId'] == 'Blonde') return "Refused for testing purposes";
+        return "OK";
+    }
+
+
+
+    #endregion Avatar related
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));

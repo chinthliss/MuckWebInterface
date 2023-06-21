@@ -2,6 +2,8 @@
 
 namespace App\Muck;
 
+use App\Avatar\AvatarGradient;
+use App\Avatar\AvatarItem;
 use App\Helpers\Ansi;
 use App\User;
 use Carbon\Carbon;
@@ -372,9 +374,80 @@ class MuckService
     #endregion Payment related
 
     #region Avatar related
+
+    /**
+     * Fetches an array of each avatar doll and what infections use it
+     * @return array<string, array<string>>
+     */
     public function avatarDollUsage(): array
     {
         return json_decode($this->connection->request('avatarDollUsage'), true);
+    }
+
+    /**
+     * Fetches owned/available gradients/items for a character
+     * This requires an array of [itemId:itemRequirementString] to pass to the muck
+     * It returns an array of [items: [itemId: status], gradients: [ownedGradient..]]
+     *   With status being either 1 for met requirements, 2 for owned and 3 for both
+     * @param MuckDbref $character
+     * @param array<string, string> $itemRequirements
+     * @return array
+     */
+    public function getAvatarOptionsFor(MuckDbref $character, array $itemRequirements): array
+    {
+        return json_decode($this->connection->request('getAvatarOptionsFor', [
+            'character' => $character->dbref, 'items' => json_encode($itemRequirements)
+        ]), true);
+    }
+
+    /**
+     * Passes the present avatar customizations to the muck to save to the character
+     * @param MuckDbref $character
+     * @param array $colors
+     * @param array $items
+     * @return void
+     */
+    public function saveAvatarCustomizations(MuckDbref $character, array $colors, array $items): void
+    {
+        $this->connection->request('saveAvatarCustomizations', [
+            'character' => $character->dbref,
+            'colors' => json_encode($colors),
+            'items' => json_encode($items)
+        ]);
+    }
+
+    /**
+     * Pass a request to buy a gradient to the muck so that it can handle it
+     * @param MuckDbref $character
+     * @param AvatarGradient $gradient
+     * @param string $slot
+     * @return string
+     */
+    public function buyAvatarGradient(MuckDbref $character, AvatarGradient $gradient, string $slot): string
+    {
+        return $this->connection->request('buyAvatarGradient', [
+            'character' => $character->dbref,
+            'gradient' => $gradient->name,
+            'slot' => $slot,
+            'owner' => $gradient->owner?->id()
+        ]);
+    }
+
+    /**
+     * Pass a request to buy an item to the muck so that it can handle it
+     * @param MuckDbref $character
+     * @param AvatarItem $item
+     * @return string
+     */
+    public function buyAvatarItem(MuckDbref $character, AvatarItem $item): string
+    {
+        return $this->connection->request('buyAvatarItem', [
+            'character' => $character->dbref,
+            'itemId' => $item->id,
+            'itemName' => $item->name,
+            'itemCost' => $item->cost,
+            'owner' => $item->owner?->id()
+        ]);
     }
     #endregion Avatar related
 
