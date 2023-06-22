@@ -28,7 +28,3 @@
     @endStaff
 
 @endsection
-
-@section('page-content')
-    @yield('content')
-@endsection

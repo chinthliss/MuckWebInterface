@@ -52,8 +52,17 @@
 </script>
 
 @yield('breadcrumbs')
+
 <main id="app" class="py-2 mb-3">
-    @yield('page-content')
+
+    @yield('content')
+
+    @hasSection('links')
+        <div class="container">
+            <h2>Links</h2>
+            @yield('links')
+        </div>
+    @endif
 
     <!-- Vue Components that we need to ensure are in the Vue app element -->
 
