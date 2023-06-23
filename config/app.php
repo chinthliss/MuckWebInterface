@@ -216,6 +216,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Breadcrumbs' => App\Helpers\Breadcrumbs::class,
+        'PageLinks' => App\Helpers\PageLinks::class,
         'MuckInterop' => App\Helpers\MuckInterop::class,
         'Lex' => App\Helpers\Lexicon::class,
         'Ansi' => App\Helpers\Ansi::class,

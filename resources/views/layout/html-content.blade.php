@@ -59,7 +59,7 @@
 
     @hasSection('links')
         <div class="container">
-            <h2>Links</h2>
+            <h2 class="mt-2">Further Pages</h2>
             @yield('links')
         </div>
     @endif
