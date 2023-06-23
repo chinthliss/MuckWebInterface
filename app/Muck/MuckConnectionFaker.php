@@ -321,6 +321,11 @@ class MuckConnectionFaker implements MuckConnection
         ]);
     }
 
+    public function fake_getAvatarInstanceStringFor(array $data): string
+    {
+        return 'ass=FS_Fox2;female=2;torso=FS_Fennec;eyes=Brown;female=8;hair=Silver;skin2=Silver;skin1=Greyscale;item=foxplush/0/0/-2/0.8/90;item=foxplush/150/270/15/0.4/0;item=foxplush/150/270/16/0.4/30;item=foxplush/150/270/16/0.4/60;item=foxplush/150/270/16/0.4/90;item=ruinedcity/0/0/-3/1.0/0';
+    }
+
     public function fake_getAvatarOptionsFor(array $data): string
     {
         return json_encode([

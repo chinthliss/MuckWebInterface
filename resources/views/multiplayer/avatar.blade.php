@@ -16,7 +16,18 @@
 ])
 
 @section('content')
-    Pending
+    <avatar-edit
+        :avatar-width="{{ $avatarWidth }}"
+        :avatar-height="{{ $avatarHeight }}"
+        :items-in="{{ json_encode($items) }}"
+        :backgrounds-in="{{ json_encode($backgrounds) }}"
+        :gradients-in="{{ json_encode($gradients) }}"
+        render-url="{{ route('multiplayer.avatar.edit.render') }}"
+        state-url="{{ route('multiplayer.avatar.state') }}"
+        gradient-url="{{ route('multiplayer.avatar.gradient.buy') }}"
+        item-url="{{ route('multiplayer.avatar.item.buy') }}"
+    >
+    </avatar-edit>
 @endsection
 
 @section('links')

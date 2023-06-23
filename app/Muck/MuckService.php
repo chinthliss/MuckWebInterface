@@ -385,6 +385,18 @@ class MuckService
     }
 
     /**
+     * Fetch the avatar string the muck uses to represent a character
+     * @param MuckDbref $character
+     * @return string
+     */
+    public function getAvatarInstanceStringFor(MuckDbref $character): string
+    {
+        return $this->connection->request('getAvatarInstanceStringFor', [
+            'character' => $character->dbref
+        ]);
+    }
+
+    /**
      * Fetches owned/available gradients/items for a character
      * This requires an array of [itemId:itemRequirementString] to pass to the muck
      * It returns an array of [items: [itemId: status], gradients: [ownedGradient..]]

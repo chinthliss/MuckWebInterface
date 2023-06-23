@@ -481,8 +481,8 @@ class AvatarService
      */
     public function getAvatarInstanceFor(MuckDbref $character): AvatarInstance
     {
-        $string = $this->muckService->getAvatarStringFor($character);
-        Log::debug("Converting MuckAvatarString to AvatarInstance: " . $string);
+        $string = $this->muckService->getAvatarInstanceStringFor($character);
+        Log::debug("Converting MuckAvatarInstanceString to AvatarInstance: " . $string);
         //String is a ';' separated set of key=value entries
         $array = [];
         $colors = [];

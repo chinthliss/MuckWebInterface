@@ -298,9 +298,9 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.avatar.state');
         Route::post('avatar/state', [AvatarController::class, 'setAvatarState']);
         Route::post('avatar/gradients/buy', [AvatarController::class, 'buyGradient'])
-            ->name('multiplayer.avatar.gradients.buy');
+            ->name('multiplayer.avatar.gradient.buy');
         Route::post('avatar/buyitem', [AvatarController::class, 'buyItem'])
-            ->name('multiplayer.avatar.buyitem');
+            ->name('multiplayer.avatar.item.buy');
         Route::get('avatar/edit/{code?}', [AvatarController::class, 'getAvatarFromUserCode'])
             ->name('multiplayer.avatar.edit.render');
 
