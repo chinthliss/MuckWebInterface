@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "muckwebinterface/core",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Core framework for the MuckWebInterface",
+    "keywords": ["muck", "laravel", "mwi"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",

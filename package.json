@@ -1,5 +1,8 @@
 {
-    "private": true,
+    "name": "muckwebinterface",
+    "version": "0.5.0",
+    "description": "Web interface for the muck",
+    "author": "Chinthliss",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
