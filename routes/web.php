@@ -236,6 +236,9 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.character.buyslot');
         Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])
             ->name('multiplayer.character.required');
+
+        // Web socket authentication
+        Route::get('getWebsocketToken', [LoginController::class, 'getWebsocketToken']);
     });
 
     // ----------------------------- Stuff that doesn't require a character

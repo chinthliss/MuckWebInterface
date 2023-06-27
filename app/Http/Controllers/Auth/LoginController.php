@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\Failed;
-use Illuminate\Auth\Events\Logout;
+use App\Muck\MuckService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\User;
 
 class LoginController extends Controller
 {
@@ -18,6 +19,9 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function loginAccount(Request $request): RedirectResponse
     {
         $request->validate([
@@ -67,6 +71,29 @@ class LoginController extends Controller
         // Dispatched by Laravel
         // event(new Logout(auth()->guard()::class, $user));
         return redirect()->route('auth.login');
+    }
+
+    /**
+     * Gets a token for the present login to use to verify itself to a websocket connection
+     * @param MuckService $muck
+     * @return Response
+     */
+    public function getWebsocketToken(MuckService $muck): Response
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $character = $user?->getCharacter();
+
+        $token = $muck->getWebsocketAuthTokenFor($user, $character);
+
+        $response = response($token)
+            ->header('Content-Type', 'text/plain');
+
+        if (config('env') === 'local')
+            $response->header('Access-Control-Allow-Origin', '*');
+
+        return $response;
+
     }
 
 }

@@ -305,6 +305,19 @@ class MuckService
         return (int)$count;
     }
 
+    /**
+     * Gets a single-use auth token from the muck, to allow someone to use it connecting to the websocket
+     * @param User $user
+     * @param MuckDbref|null $character
+     * @return string
+     */
+    public function getWebsocketAuthTokenFor(User $user, ?MuckDbref $character): string
+    {
+        $data = ['aid' => $user->id()];
+        if ($character) $data['character'] = $character->dbref;
+        return $this->connection->request('getWebsocketAuthTokenFor', $data);
+    }
+
     #region Payment related
 
     /**
@@ -317,7 +330,7 @@ class MuckService
     {
         $amount = $this->connection->request('usdToAccountCurrency',
             ['aid' => $accountId, 'usd' => $usdAmount]);
-        return $amount;
+        return (int)$amount;
     }
 
     /**

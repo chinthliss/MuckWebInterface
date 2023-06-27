@@ -310,6 +310,12 @@ class MuckConnectionFaker implements MuckConnection
         return $data['accountCurrency'];
     }
 
+    public function fake_getWebsocketAuthTokenFor(array $data): string
+    {
+        //We don't have a faking mechanism for the websocket unfortunately, so this is extremely limited
+        return "FAKEWEBSOCKETAUTHTOKEN";
+    }
+
     #region Avatar related
 
     public function fake_avatarDollUsage(array $data): string
@@ -358,9 +364,8 @@ class MuckConnectionFaker implements MuckConnection
         return "OK";
     }
 
-
-
     #endregion Avatar related
+
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));
