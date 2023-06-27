@@ -19,6 +19,13 @@ import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+// If the page has been served for a specific character, we'll tell Axios to automatically include that too.
+let characterDbref = document.head.querySelector('meta[name="character-dbref"]');
+
+if (characterDbref) {
+    window.axios.defaults.headers.common['X-CHARACTER-DBREF'] = characterDbref.content;
+}
+
 /**
  * jQuery
  */
