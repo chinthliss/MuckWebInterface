@@ -20,10 +20,10 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // If the page has been served for a specific character, we'll tell Axios to automatically include that too.
-let characterDbref = document.head.querySelector('meta[name="character-dbref"]');
-
-if (characterDbref) {
-    window.axios.defaults.headers.common['X-CHARACTER-DBREF'] = characterDbref.content;
+import { characterDbref } from "./siteutils";
+let dbref = characterDbref();
+if (dbref) {
+    window.axios.defaults.headers.common['X-CHARACTER-DBREF'] = dbref;
 }
 
 /**
@@ -41,6 +41,15 @@ window.$ = jQuery;
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net-bs5';
 DataTable.use(DataTablesLib);
+
+/**
+ * Websocket
+ */
+import MwiWebsocket from "muckwebinterface-websocket";
+window.MwiWebsocket = MwiWebsocket;
+MwiWebsocket.init({
+    'authenticationUrl': 'auth/websocketToken'
+});
 
 /**
  * Vue

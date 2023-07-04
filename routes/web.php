@@ -39,6 +39,7 @@ Route::withoutMiddleware('web')->group(function () {
     Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
         ->name('avatar.item.preview');
 });
+
 /*
 |--------------------------------------------------------------------------
 | Core resources that are available only when NOT logged in
@@ -88,7 +89,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('changeemail', [EmailController::class, 'changeEmail'])
         ->name('auth.email.change');
 
-    //Preference change
+    // Preference change
     Route::post('account/updateAvatarPreference', [AccountController::class, 'updateAvatarPreference'])
         ->name('account.avatar.preference');
 
@@ -129,8 +130,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('account/subscription.cancel', [AccountCurrencyController::class, 'cancelSubscription'])
         ->name('account.subscription.cancel');
 
-
-    //Card Management
+    // Card Management
     Route::get('account/cardmanagement', [CardManagementController::class, 'show'])
         ->name('payment.cardmanagement');
     Route::post('account/cardmanagement.api', [CardManagementController::class, 'addCard'])
@@ -139,6 +139,10 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('payment.cardmanagement.delete');
     Route::patch('account/cardmanagement.api', [CardManagementController::class, 'setDefaultCard'])
         ->name('payment.cardmanagement.setdefault');
+
+    // Websocket authentication
+    Route::get('auth/websocketToken', [LoginController::class, 'getWebsocketToken']);
+
 });
 
 /*
@@ -236,9 +240,6 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.character.buyslot');
         Route::get('characterrequired', [CharacterController::class, 'showCharacterRequired'])
             ->name('multiplayer.character.required');
-
-        // Web socket authentication
-        Route::get('getWebsocketToken', [LoginController::class, 'getWebsocketToken']);
     });
 
     // ----------------------------- Stuff that doesn't require a character
