@@ -66,4 +66,15 @@ return [
     |
     */
     'useHttps' => ENV('MUCK_USE_HTTPS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Client Websocket
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the client websocket that'll be passed to out to JS.
+    |
+    */
+    'websocketAuthUri' => ENV('MUCK_CLIENT_WEBSOCKET_AUTH_URI', '/auth/websocketToken'),
+    'websocketUri' => ENV('MUCK_CLIENT_WEBSOCKET_URI', 'mwi/mws'),
 ];

@@ -46,8 +46,12 @@
         });
     }
 
-    <!-- Lexicon configuration -->
+    // Lexicon configuration
     const mwiSiteLexicon = @json(Lex::toArray());
+
+    // Endpoints for the websocket
+    const mwiWebsocketAuthUrl = '{{ config('muck.websocketAuthUri') }}';
+    const mwiWebsocketUrl = '{{ config('muck.websocketUri') }}';
 
 </script>
 
