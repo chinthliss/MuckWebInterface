@@ -38,7 +38,7 @@ class WebsocketFaker extends Command
     {
         $this->comment('Launching the server in node.');
 
-        $process = new Process(['node', 'core.mjs'], app_path() . '/Console/Websocket-Faker/');
+        $process = new Process(['node', 'index.mjs'], app_path() . '/Console/Websocket-Faker/');
         $process->setTimeout(null);
         $process->run(function ($type, $buffer): void {
             if (Process::ERR === $type) {
