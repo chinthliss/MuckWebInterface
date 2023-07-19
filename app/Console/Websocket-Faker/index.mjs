@@ -1,11 +1,17 @@
 /**
  * This is an ugly muck websocket emulator to allow local development.
  */
-import { WebSocketServer } from 'ws';
+import {WebSocketServer} from 'ws';
 import Channel from "./channel.mjs";
+import ChannelCharacter from "./channel-character.mjs";
+
+// Any channels configured in here will use a specialized faker
+const channelOverrides = {
+    'character': ChannelCharacter
+}
 
 console.log("Creating the server.");
-const server = new WebSocketServer({ port: 8001 });
+const server = new WebSocketServer({port: 8001});
 
 /**
  * @type {Map<WebSocket, Array>}
@@ -30,13 +36,18 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
     switch (message) {
         case 'joinChannels':
             let channelsToJoin = JSON.parse(data);
-            if (typeof(channelsToJoin) === 'string') channelsToJoin = [channelsToJoin];
+            if (typeof (channelsToJoin) === 'string') channelsToJoin = [channelsToJoin];
             for (const channel of channelsToJoin) {
                 if (!channels.has(channel)) {
                     console.log("Creating channel: " + channel);
-                    channels[channel] = new Channel(channel);
+                    if (typeof channelOverrides[channel] !== 'undefined')
+                        channels[channel] = new channelOverrides[channel]();
+                    else
+                        channels[channel] = new Channel(channel);
                 }
-                channels[channel].connect(connection);
+                const connectionData = connections[connection];
+                console.log(connections[connection]);
+                channels[channel].connect(connection, connectionData.accountId, connectionData.characterDbref);
                 console.log(`Connection joined channel '${channel}'`);
             }
             break;
@@ -59,7 +70,11 @@ server.on('connection', (connection, request) => {
         const message = data.toString();
 
         if (message.startsWith('auth FAKEWEBSOCKETAUTHTOKEN')) {
-            connection.send('accepted 1,1234,Test');
+            let [, accountId, characterDbref = -1, characterName = ''] = message.split(' ')[1].split(':');
+            connection.send(`accepted ${accountId},${characterDbref},${characterName}\r\n`);
+            data.accountId = accountId;
+            data.characterDbref = characterDbref;
+            data.characterName = characterName;
         }
 
         if (message.startsWith('MSG')) processIncomingMessage(connection, message.slice(3));

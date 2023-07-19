@@ -39,11 +39,26 @@ export default class Channel {
         })
     }
 
-    connect = (connection) => {
+    connect = (connection, accountId = null, dbref = null) => {
         this.#connections.push(connection);
         this.sendMessageToConnection(connection, 'connected', 1)
         this.sendMessageToConnection(connection, 'playerConnected', 1)
         this.sendMessageToConnection(connection, 'accountConnected', 1)
+        this.connectionEnteredChannel(connection);
+        this.playerEnteredChannel(connection, dbref);
+        this.accountEnteredChannel(connection, accountId);
+    }
+
+    connectionEnteredChannel = (connection) => {
+
+    }
+
+    playerEnteredChannel = (connection, dbref) => {
+
+    }
+
+    accountEnteredChannel = (connection, account) => {
+
     }
 
     messageReceived = (connection, message, data) => {

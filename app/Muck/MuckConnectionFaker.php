@@ -312,8 +312,14 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getWebsocketAuthTokenFor(array $data): string
     {
-        //We don't have a faking mechanism for the websocket unfortunately, so this is extremely limited
-        return "FAKEWEBSOCKETAUTHTOKEN";
+        $accountId = $data['aid'];
+        $result = "FAKEWEBSOCKETAUTHTOKEN:" . $accountId;
+
+        /** @var MuckDbref $character */
+        $character = array_key_exists('character', $data) ? $data['character'] : null;
+        if ($character) $result = $result . ':' . $character . ':name';
+
+        return $result;
     }
 
     #region Avatar related
