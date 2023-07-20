@@ -45,8 +45,7 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
                     else
                         channels[channel] = new Channel(channel);
                 }
-                const connectionData = connections[connection];
-                console.log(connections[connection]);
+                const connectionData = connections.get(connection);
                 channels[channel].connect(connection, connectionData.accountId, connectionData.characterDbref);
                 console.log(`Connection joined channel '${channel}'`);
             }
@@ -65,9 +64,9 @@ server.on('connection', (connection, request) => {
     connections.set(connection, data);
     connection.send('welcome\r\n');
 
-    connection.on('message', (data) => {
+    connection.on('message', (buffer) => {
         //console.debug(" << %s", data);
-        const message = data.toString();
+        const message = buffer.toString();
 
         if (message.startsWith('auth FAKEWEBSOCKETAUTHTOKEN')) {
             let [, accountId, characterDbref = -1, characterName = ''] = message.split(' ')[1].split(':');
