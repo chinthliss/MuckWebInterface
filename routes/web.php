@@ -40,6 +40,10 @@ Route::withoutMiddleware('web')->group(function () {
         ->name('avatar.item.preview');
 });
 
+//Character Profiles - technically multiplayer but separate for easy linking purposes
+Route::get('c/{name}', [CharacterController::class, 'showCharacterProfile'])
+    ->name('multiplayer.character.view');
+
 /*
 |--------------------------------------------------------------------------
 | Core resources that are available only when NOT logged in
