@@ -252,7 +252,7 @@ class CharacterController extends Controller
         if ($user && $user->getAvatarPreference() === $user::AVATAR_PREFERENCE_HIDDEN) $avatarUrl = '';
 
         return view('multiplayer.character-profile')->with([
-            'character' => $character->toPlayerArray(),
+            'character' => $character,
             'avatarUrl' => $avatarUrl,
             'controls' => $character->accountId() === $user?->id() ? 'true' : 'false',
             'avatarWidth' => AvatarService::DOLL_WIDTH,

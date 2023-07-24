@@ -12,7 +12,7 @@
 
 @section('content')
     <character-profile
-        :character="{{ json_encode($character->toArray()) }}"
+        :character-in="{{ json_encode($character->ToPlayerArray()) }}"
         :controls="{{ $controls }}"
         avatar-url="{{ $avatarUrl }}"
         :avatar-width="{{ $avatarWidth / 2 }}"

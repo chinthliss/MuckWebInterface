@@ -118,11 +118,20 @@
  */
 
 /**
- * @typedef {object} Character
+ * @typedef {object} MuckDbref
  * @property {int} dbref
  * @property {string} type
  * @property {string} name
  * @property {string} created
+ */
+
+/**
+ * @typedef {object} Character
+ * @property {int} dbref
+ * @property {string} name
+ * @property {boolean} approved
+ * @property {int} staffLevel
+ * @property {int} level
  */
 
 /**
