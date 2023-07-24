@@ -46,10 +46,10 @@ DataTable.use(DataTablesLib);
  * Websocket
  */
 import MwiWebsocket from "muckwebinterface-websocket";
+window.MwiWebsocket = MwiWebsocket;
 if (!mwiWebsocketAuthUrl || !mwiWebsocketUrl)
     console.log("Websocket configuration wasn't set.");
 else {
-    window.MwiWebsocket = MwiWebsocket;
     MwiWebsocket.init({
         'authenticationUrl': mwiWebsocketAuthUrl,
         'websocketUrl': mwiWebsocketUrl
