@@ -26,7 +26,7 @@ const channels = new Map();
 const processIncomingMessage = (connection, unprocessedMessage) => {
     const [channelName, message, data] = unprocessedMessage.split(',', 3);
     console.log(" << " + channelName + "." + message + ": " + data);
-    const channel = this.channels[channelName];
+    const channel = channels[channelName];
     channel.messageReceived(connection, message, data);
 }
 
@@ -41,7 +41,7 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
                 if (!channels.has(channel)) {
                     console.log("Creating channel: " + channel);
                     if (typeof channelOverrides[channel] !== 'undefined')
-                        channels[channel] = new channelOverrides[channel]();
+                        channels[channel] = new channelOverrides[channel](channel);
                     else
                         channels[channel] = new Channel(channel);
                 }
