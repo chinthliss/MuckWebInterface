@@ -5,6 +5,9 @@ import {WebSocketServer} from 'ws';
 import Channel from "./channel.mjs";
 import ChannelCharacter from "./channel-character.mjs";
 
+// A fake database to use for queries
+const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABASE) : null;
+
 // Any channels configured in here will use a specialized faker
 const channelOverrides = {
     'character': ChannelCharacter
@@ -41,9 +44,9 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
                 if (!channels.has(channel)) {
                     console.log("Creating channel: " + channel);
                     if (typeof channelOverrides[channel] !== 'undefined')
-                        channels[channel] = new channelOverrides[channel](channel);
+                        channels[channel] = new channelOverrides[channel](channel, database);
                     else
-                        channels[channel] = new Channel(channel);
+                        channels[channel] = new Channel(channel, database);
                 }
                 const connectionData = connections.get(connection);
                 channels[channel].connect(connection, connectionData.accountId, connectionData.characterDbref);

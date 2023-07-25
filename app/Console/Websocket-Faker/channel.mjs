@@ -11,10 +11,17 @@ export default class Channel {
      */
     #connections
 
-    constructor(channelName) {
+    /**
+     * Reference to the faker database, if required
+     * @type Object[]
+     */
+    #database
+
+    constructor(channelName, database) {
         if (typeof channelName !== 'string' || channelName === '') throw "Attempt to create channel with no channelName specified.";
         this.#name = channelName;
         this.#connections = [];
+        this.#database = database;
     }
 
     #transmitMessageToConnection = (connection, message, data) => {
