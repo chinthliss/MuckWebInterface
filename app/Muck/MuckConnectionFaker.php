@@ -22,13 +22,20 @@ class MuckConnectionFaker implements MuckConnection
         return join(',', $piecesArray);
     }
 
-    public function fake_getByDbref(array $data): string
+    private function getDbrefFromFakerDatabase(int $dbrefWanted): ?MuckDbref
     {
         $database = MuckDatabaseFaker::getDatabase();
-        $dbrefWanted = $data['dbref'];
         foreach ($database as $dbref) {
-            if ($dbref->dbref == $dbrefWanted) return $this->dbrefToMuckResponse($dbref);
+            if ($dbref->dbref == $dbrefWanted) return $dbref;
         }
+        return null;
+    }
+
+    public function fake_getByDbref(array $data): string
+    {
+        $dbrefWanted = $data['dbref'];
+        $dbref = $this->getDbrefFromFakerDatabase($dbrefWanted);
+        if ($dbref) return $this->dbrefToMuckResponse($dbref);
 
         // To allow muckobject testing we'll return things that were registered within the DB
         $row = DB::table('muck_objects')
@@ -284,8 +291,9 @@ class MuckConnectionFaker implements MuckConnection
         $result = "FAKEWEBSOCKETAUTHTOKEN:" . $accountId;
 
         /** @var MuckDbref $character */
-        $character = array_key_exists('character', $data) ? $data['character'] : null;
-        if ($character) $result = $result . ':' . $character . ':name';
+        $characterDbref = array_key_exists('character', $data) ? $data['character'] : null;
+        $character = $characterDbref ? $this->getDbrefFromFakerDatabase($characterDbref) : null;
+        if ($character) $result = $result . ':' . $characterDbref . ':' . $character->name;
 
         return $result;
     }
