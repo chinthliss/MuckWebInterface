@@ -4,18 +4,19 @@ export default class ChannelCharacter extends Channel {
     messageReceived = (connection, message, data) => {
         switch (message) {
             case 'getCharacterProfile':
+                const character = this.getDbrefFromDatabase(data);
                 const characterName = data.characterName;
                 const profile = {
                     name: characterName,
-                    sex: '',
-                    species: '',
-                    shortDescription: '',
+                    sex: character?.sex || 'Unknown',
+                    species: character?.species || 'Unknown',
+                    shortDescription: character?.shortDescription || '',
                     faction: '',
                     group: '',
                     height: '',
                     role: '',
                     whatIs: '',
-                    equipment: ''
+                    equipment: []
                 };
                 this.sendMessageToConnection(connection, 'characterProfile', profile);
                 break;
