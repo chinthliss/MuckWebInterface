@@ -287,7 +287,7 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getWebsocketAuthTokenFor(array $data): string
     {
-        $accountId = $data['aid'];
+        $accountId = array_key_exists('aid', $data) ? $data['aid'] : -1;
         $result = "FAKEWEBSOCKETAUTHTOKEN:" . $accountId;
 
         /** @var MuckDbref $character */
