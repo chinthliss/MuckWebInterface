@@ -24,29 +24,29 @@ export default class Channel {
         this.#database = database;
     }
 
-    #transmitMessageToConnection = (connection, message, data) => {
+    #transmitMessageToConnection(connection, message, data) {
         const parsedMessage = 'MSG' + this.#name + ',' + message + ',' + (data ? JSON.stringify(data) : '');
         console.log(" >> " + parsedMessage);
         connection.send(parsedMessage + '\r\n');
     }
 
-    sendMessageToConnection = (connection, message, data) => {
+    sendMessageToConnection(connection, message, data) {
         this.#transmitMessageToConnection(connection, message, data);
     }
 
-    sendMessageToChannel = (message, data) => {
+    sendMessageToChannel(message, data) {
         for (const connection of this.#connections) {
             this.#transmitMessageToConnection(connection, message, data);
         }
     }
 
-    disconnect = (connection) => {
+    disconnect(connection) {
         this.#connections.filter((value) => {
             return (value !== connection);
         })
     }
 
-    connect = (connection, accountId = null, dbref = null) => {
+    connect(connection, accountId = null, dbref = null) {
         this.#connections.push(connection);
         this.sendMessageToConnection(connection, 'connected', 1)
         this.sendMessageToConnection(connection, 'playerConnected', 1)
@@ -56,20 +56,27 @@ export default class Channel {
         this.accountEnteredChannel(connection, accountId);
     }
 
-    connectionEnteredChannel = (connection) => {
+    connectionEnteredChannel(connection) {
 
     }
 
-    playerEnteredChannel = (connection, dbref) => {
+    playerEnteredChannel(connection, dbref) {
 
     }
 
-    accountEnteredChannel = (connection, account) => {
+    accountEnteredChannel(connection, account) {
 
     }
 
-    messageReceived = (connection, message, data) => {
+    messageReceived(connection, message, data) {
 
+    }
+
+    getDbrefFromDatabase(dbref) {
+        for (const candidate of this.#database) {
+            if (candidate.dbref === dbref) return dbref;
+        }
+        return null;
     }
 
 }
