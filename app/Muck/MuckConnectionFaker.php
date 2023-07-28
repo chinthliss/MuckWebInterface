@@ -6,45 +6,9 @@ use Carbon\Carbon;
 use Error;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Database\Seeders\DatabaseSeeder;
 
 class MuckConnectionFaker implements MuckConnection
 {
-    /**
-     * Collection of fixed fake data to run tests against.
-     * Late loaded to avoid it being populated for every test.
-     * @var MuckDbref[]
-     */
-    private array $muckDatabase = [];
-
-    private function populateDatabaseIfRequired(): void
-    {
-        if (count($this->muckDatabase)) return;
-        $this->muckDatabase[] = new MuckDbref(1234, 'TestCharacter', 'p', Carbon::now(), Carbon::now(), [
-            'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
-            'level' => '10',
-            'approved' => '1'
-        ]);
-        $this->muckDatabase[] = new MuckDbref(1235, 'TestAltCharacter', 'p', Carbon::now(), Carbon::now(), [
-            'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
-            'level' => '2',
-            'approved' => '1'
-        ]);
-        $this->muckDatabase[] = new MuckDbref(1236, 'unapprovedCharacter', 'p', Carbon::now(), Carbon::now(), [
-            'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
-            'level' => '1'
-        ]);
-        $this->muckDatabase[] = new MuckDbref(1240, 'otherUsersCharacter', 'p', Carbon::now(), Carbon::now(), [
-            'accountId' => strval(DatabaseSeeder::$secondNormalUserAccountId),
-            'level' => '1'
-        ]);
-        $this->muckDatabase[] = new MuckDbref(1300, 'adminCharacter', 'p', Carbon::now(), Carbon::now(), [
-            'accountId' => strval(DatabaseSeeder::$adminUserAccountId),
-            'staffLevel' => '2'
-        ]);
-
-    }
-
     // Converts a dbref into the string the muck would return, in order to test parsing of such.
     private function dbrefToMuckResponse(MuckDbref $dbref): string
     {
@@ -58,12 +22,20 @@ class MuckConnectionFaker implements MuckConnection
         return join(',', $piecesArray);
     }
 
+    private function getDbrefFromFakerDatabase(int $dbrefWanted): ?MuckDbref
+    {
+        $database = MuckDatabaseFaker::getDatabase();
+        foreach ($database as $dbref) {
+            if ($dbref->dbref == $dbrefWanted) return $dbref;
+        }
+        return null;
+    }
+
     public function fake_getByDbref(array $data): string
     {
         $dbrefWanted = $data['dbref'];
-        foreach ($this->muckDatabase as $dbref) {
-            if ($dbref->dbref == $dbrefWanted) return $this->dbrefToMuckResponse($dbref);
-        }
+        $dbref = $this->getDbrefFromFakerDatabase($dbrefWanted);
+        if ($dbref) return $this->dbrefToMuckResponse($dbref);
 
         // To allow muckobject testing we'll return things that were registered within the DB
         $row = DB::table('muck_objects')
@@ -83,8 +55,9 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getByPlayerName(array $data): string
     {
+        $database = MuckDatabaseFaker::getDatabase();
         $nameWanted = $data['name'];
-        foreach ($this->muckDatabase as $dbref) {
+        foreach ($database as $dbref) {
             if (strtolower($dbref->name) == strtolower($nameWanted)) return $this->dbrefToMuckResponse($dbref);
         }
 
@@ -111,9 +84,10 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getCharacters(array $data): string
     {
+        $database = MuckDatabaseFaker::getDatabase();
         $accountWanted = $data['aid'];
         $characters = [];
-        foreach ($this->muckDatabase as $dbref) {
+        foreach ($database as $dbref) {
             if ($dbref->accountId() == $accountWanted) $characters[] = $dbref;
         }
         return join(chr(13) . chr(10), array_map(function ($character) {
@@ -123,9 +97,10 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_findAccountsByCharacterName(array $data): string
     {
+        $database = MuckDatabaseFaker::getDatabase();
         $name = $data['name'];
         $accountIds = [];
-        foreach ($this->muckDatabase as $dbref) {
+        foreach ($database as $dbref) {
             if (str_contains(strtolower($dbref->name), strtolower($name))) $accountIds[] = $dbref->accountId();
         }
         return join(chr(13) . chr(10), array_unique($accountIds));
@@ -312,12 +287,13 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_getWebsocketAuthTokenFor(array $data): string
     {
-        $accountId = $data['aid'];
+        $accountId = array_key_exists('aid', $data) ? $data['aid'] : -1;
         $result = "FAKEWEBSOCKETAUTHTOKEN:" . $accountId;
 
         /** @var MuckDbref $character */
-        $character = array_key_exists('character', $data) ? $data['character'] : null;
-        if ($character) $result = $result . ':' . $character . ':name';
+        $characterDbref = array_key_exists('character', $data) ? $data['character'] : null;
+        $character = $characterDbref ? $this->getDbrefFromFakerDatabase($characterDbref) : null;
+        if ($character) $result = $result . ':' . $characterDbref . ':' . $character->name;
 
         return $result;
     }
@@ -375,7 +351,6 @@ class MuckConnectionFaker implements MuckConnection
     public function request(string $request, array $data = []): string
     {
         Log::debug('FakeMuckRequest:' . $request . ', request: ' . json_encode($data));
-        $this->populateDatabaseIfRequired();
 
         $fakerFunction = 'fake_' . $request;
         if (method_exists($this, $fakerFunction)) {

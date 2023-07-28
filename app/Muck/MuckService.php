@@ -311,9 +311,10 @@ class MuckService
      * @param MuckDbref|null $character
      * @return string
      */
-    public function getWebsocketAuthTokenFor(User $user, ?MuckDbref $character): string
+    public function getWebsocketAuthTokenFor(?User $user, ?MuckDbref $character): string
     {
-        $data = ['aid' => $user->id()];
+        $data = [];
+        if ($user) $data['aid'] = $user->id();
         if ($character) $data['character'] = $character->dbref;
         return $this->connection->request('getWebsocketAuthTokenFor', $data);
     }

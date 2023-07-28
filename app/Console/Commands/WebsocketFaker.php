@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Muck\MuckDatabaseFaker;
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 
@@ -38,7 +39,9 @@ class WebsocketFaker extends Command
     {
         $this->comment('Launching the server in node.');
 
-        $process = new Process(['node', 'index.mjs'], app_path() . '/Console/Websocket-Faker/');
+        $process = new Process(['node', 'index.mjs'], app_path() . '/Console/Websocket-Faker/', [
+            'MUCK_DATABASE' => json_encode(MuckDatabaseFaker::getDatabase())
+        ]);
         $process->setTimeout(null);
         $process->run(function ($type, $buffer): void {
             if (Process::ERR === $type) {

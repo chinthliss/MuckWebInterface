@@ -44,6 +44,9 @@ Route::withoutMiddleware('web')->group(function () {
 Route::get('c/{name}', [CharacterController::class, 'showCharacterProfile'])
     ->name('multiplayer.character.view');
 
+// Websocket authentication
+Route::get('auth/websocketToken', [LoginController::class, 'getWebsocketToken']);
+
 /*
 |--------------------------------------------------------------------------
 | Core resources that are available only when NOT logged in
@@ -143,10 +146,6 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('payment.cardmanagement.delete');
     Route::patch('account/cardmanagement.api', [CardManagementController::class, 'setDefaultCard'])
         ->name('payment.cardmanagement.setdefault');
-
-    // Websocket authentication
-    Route::get('auth/websocketToken', [LoginController::class, 'getWebsocketToken']);
-
 });
 
 /*
