@@ -20,21 +20,20 @@ const character = ref({
     group: null,
     role: null,
     whatIs: null,
-    equipment: null
+    views: null,
+    pinfo: null,
+    equipment: null,
+    badges: null
 });
 
 const websocket = /** @type {MwiWebsocket} */ (window.MwiWebsocket);
 const channel = websocket.channel('character');
 
-const processWebsocketConnectionChange = (status) => {
-    if (status === 'connected') channel.send('getCharacterProfile', props.characterIn.dbref);
-}
-
-onMounted(() => {
-    websocket.onConnectionStateChange(processWebsocketConnectionChange);
+channel.on('connected', (data) => {
+    channel.send('getCharacterProfile', props.characterIn.dbref);
 });
 
-channel.on('characterProfile', (data) => {
+channel.on('characterProfileCore', (data) => {
     character.value.sex = data.sex;
     character.value.species = data.species;
     character.value.height = data.height;
@@ -43,8 +42,25 @@ channel.on('characterProfile', (data) => {
     character.value.group = data.group;
     character.value.role = data.role;
     character.value.whatIs = data.whatIs;
-    character.value.equipment = data.equipment;
 });
+
+channel.on('characterProfileViews', (data) => {
+    character.value.views = data;
+});
+
+channel.on('characterProfilePinfo', (data) => {
+    character.value.pinfo = data;
+});
+
+channel.on('characterProfileEquipment', (data) => {
+    character.value.equipment = data;
+});
+
+
+channel.on('characterProfileBadges', (data) => {
+    character.value.badges = data;
+});
+
 
 </script>
 
