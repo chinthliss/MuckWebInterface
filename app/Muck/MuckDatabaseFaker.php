@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Database\Seeders\DatabaseSeeder;
 
 /**
- * Provides a single point to hold faker muck database during location development
+ * Provides a single point to hold faker muck database during local development
  * Used by the MuckConnectionFaker and Websocket faker service.
  */
 class MuckDatabaseFaker
@@ -23,7 +23,28 @@ class MuckDatabaseFaker
         self::$database[] = new MuckDbref(1234, 'TestCharacter', 'p', Carbon::now(), Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
             'level' => '10',
-            'approved' => '1'
+            'approved' => '1',
+            // Data for character profile testing
+            'height' => "5'9\"",
+            'sex' => 'Test Gender',
+            'species' => '100% Test Species',
+            'role' => 'Test Role',
+            'faction' => 'Test Faction',
+            'group' => 'Test Group',
+            'shortDescription' => 'Test Short Description',
+            'whatIs' => 'Test WI',
+            'views' => [
+                ['view' => 'Test View', 'content' => 'Test View Content']
+            ],
+            'pinfo' => [
+                ['field' => 'Test View', 'value' => 'Test Pinfo Content']
+            ],
+            'equipment' => [
+                ['name' => 'Test View', 'description' => 'Test Equipment']
+            ],
+            'badges' => [
+                ['name' => 'Test Badge', 'description' => 'Test Badge Description', 'awarded' => '01/01/2020']
+            ]
         ]);
         self::$database[] = new MuckDbref(1235, 'TestAltCharacter', 'p', Carbon::now(), Carbon::now(), [
             'accountId' => strval(DatabaseSeeder::$normalUserAccountId),
