@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Log;
 
 class MuckConnectionFaker implements MuckConnection
 {
+    /**
+     * Since the faker database contains many properties, this is a list of those that'll be passed as a fake response
+     * @var string[]
+     */
+    private static array $propertiesForPlayer = ['accountId', 'level', 'approved', 'staffLevel'];
+
     // Converts a dbref into the string the muck would return, in order to test parsing of such.
     private function dbrefToMuckResponse(MuckDbref $dbref): string
     {
@@ -17,7 +23,7 @@ class MuckConnectionFaker implements MuckConnection
         if ($dbref->accountId()) $piecesArray[] = "\"accountId=" . $dbref->accountId() . "\"";
         if ($dbref->level()) $piecesArray[] = "\"level=" . $dbref->level() . "\"";
         foreach ($dbref->properties as $key => $value) {
-            $piecesArray[] = "\"$key=$value\"";
+            if (in_array($key, self::$propertiesForPlayer)) $piecesArray[] = "\"$key=$value\"";
         }
         return join(',', $piecesArray);
     }
