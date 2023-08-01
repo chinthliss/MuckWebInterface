@@ -15,8 +15,6 @@
         :character-in="{{ json_encode($character->ToPlayerArray()) }}"
         :controls="{{ $controls }}"
         avatar-url="{{ $avatarUrl }}"
-        :avatar-width="{{ $avatarWidth / 2 }}"
-        :avatar-height="{{ $avatarHeight / 2 }}"
     ></character-profile>
 @endsection
 

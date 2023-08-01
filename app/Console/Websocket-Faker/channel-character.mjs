@@ -9,6 +9,7 @@ export default class ChannelCharacter extends Channel {
                 if (!character) throw "No character found. This should have already been blocked by a 404.";
                 const profile = {
                     name: character.name,
+                    level: character.properties.level,
                     sex: character.properties?.sex || 'Unknown',
                     species: character.properties?.species || 'Unknown',
                     shortDescription: character.properties?.shortDescription || '',

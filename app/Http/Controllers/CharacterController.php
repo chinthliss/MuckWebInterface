@@ -94,7 +94,7 @@ class CharacterController extends Controller
         return redirect()->route('multiplayer.character.initial-setup');
     }
 
-    public function showCharacterInitialSetup(MuckService $muck): View | RedirectResponse
+    public function showCharacterInitialSetup(MuckService $muck): View|RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -254,9 +254,7 @@ class CharacterController extends Controller
         return view('multiplayer.character-profile')->with([
             'character' => $character,
             'avatarUrl' => $avatarUrl,
-            'controls' => $character->accountId() === $user?->id() ? 'true' : 'false',
-            'avatarWidth' => AvatarService::DOLL_WIDTH,
-            'avatarHeight' => AvatarService::DOLL_HEIGHT
+            'controls' => $character->accountId() === $user?->id() ? 'true' : 'false'
         ]);
 
     }
