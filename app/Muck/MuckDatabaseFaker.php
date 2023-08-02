@@ -37,10 +37,10 @@ class MuckDatabaseFaker
                 ['view' => 'Test View', 'content' => 'Test View Content']
             ],
             'pinfo' => [
-                ['field' => 'Test View', 'value' => 'Test Pinfo Content']
+                ['field' => 'Test Field', 'value' => 'Test Pinfo Content']
             ],
             'equipment' => [
-                ['name' => 'Test View', 'description' => 'Test Equipment']
+                ['name' => 'Test Equipment', 'description' => 'Test Equipment Description']
             ],
             'badges' => [
                 ['name' => 'Test Badge', 'description' => 'Test Badge Description', 'awarded' => '01/01/2020']

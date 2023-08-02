@@ -1,5 +1,7 @@
 <script setup>
-import {ref, onMounted} from "vue";
+import {ref} from "vue";
+import {carbonToString} from "../formatting";
+import DataTable from "datatables.net-vue3";
 
 const props = defineProps({
     /** @type {Character} */
@@ -29,7 +31,62 @@ const websocket = /** @type {MwiWebsocket} */ (window.MwiWebsocket);
 const channel = websocket.channel('character');
 const profileLoading = ref(true);
 
-channel.on('connected', (data) => {
+const viewsTableConfiguration = {
+    columns: [
+        {data: 'view'},
+        {data: 'content', sortable: false},
+    ],
+    language: {
+        "emptyTable": "No views configured."
+    },
+    paging: false,
+    info: false,
+    searching: true
+};
+
+const pinfoTableConfiguration = {
+    columns: [
+        {data: 'field'},
+        {data: 'value', sortable: false},
+    ],
+    language: {
+        "emptyTable": "No extra information configured."
+    },
+    paging: false,
+    info: false,
+    searching: true
+};
+
+const equipmentTableConfiguration = {
+    columns: [
+        {data: 'name'},
+        {data: 'description', sortable: false},
+    ],
+    language: {
+        "emptyTable": "No equipment."
+    },
+    paging: false,
+    info: false,
+    searching: true
+};
+
+const badgesTableConfiguration = {
+    columns: [
+        {data: 'name'},
+        {data: 'description', sortable: false},
+        {data: 'awarded', render: carbonToString},
+    ],
+    language: {
+        "emptyTable": "No badges."
+    },
+    paging: false,
+    info: false,
+    searching: true
+};
+
+
+
+channel.on('connected', () => {
     channel.send('getCharacterProfile', props.characterIn.dbref);
 });
 
@@ -107,7 +164,7 @@ channel.on('characterProfileBadges', (data) => {
                     <div class="mt-2 d-flex">
                         <div>
                             <div class="label">Level</div>
-                            <div class="value">{{ profile.level  || '--' }}</div>
+                            <div class="value">{{ profile.level || '--' }}</div>
                         </div>
                         <div class="flex-grow-1 ms-4">
                             <div class="label">Role</div>
@@ -141,10 +198,65 @@ channel.on('characterProfileBadges', (data) => {
                 </div>
             </div>
         </div>
+
+        <!-- Views -->
+        <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="viewsTableConfiguration" :data="profile.views">
+            <thead>
+            <tr>
+                <th scope="col">View</th>
+                <th scope="col">Content</th>
+            </tr>
+            </thead>
+        </DataTable>
+
+        <!-- Pinfo -->
+        <h3 class="mt-2">Custom Information <span class="text-muted">(+finger)</span></h3>
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="pinfoTableConfiguration" :data="profile.pinfo">
+            <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Value</th>
+            </tr>
+            </thead>
+        </DataTable>
+
+        <!-- Equipment -->
+        <h3 class="mt-2">Equipment <span class="text-muted">(+equip)</span></h3>
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="equipmentTableConfiguration" :data="profile.equipment">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+        </DataTable>
+
+        <!-- Badges -->
+        <h3 class="mt-2">Badges <span class="text-muted">(+badge)</span></h3>
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="badgesTableConfiguration" :data="profile.badges">
+            <thead>
+            <tr>
+                <th scope="col">Badge</th>
+                <th scope="col">Description</th>
+                <th scope="col">Awarded</th>
+            </tr>
+            </thead>
+        </DataTable>
     </div>
 
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use 'resources/sass/variables' as *;
+
+.label {
+    font-weight: 600;
+    color: $primary;
+}
 
 </style>
