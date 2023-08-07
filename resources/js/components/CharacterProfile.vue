@@ -41,7 +41,7 @@ const viewsTableConfiguration = {
     },
     paging: false,
     info: false,
-    searching: true
+    searching: false
 };
 
 const pinfoTableConfiguration = {
@@ -54,7 +54,7 @@ const pinfoTableConfiguration = {
     },
     paging: false,
     info: false,
-    searching: true
+    searching: false
 };
 
 const equipmentTableConfiguration = {
@@ -67,7 +67,7 @@ const equipmentTableConfiguration = {
     },
     paging: false,
     info: false,
-    searching: true
+    searching: false
 };
 
 const badgesTableConfiguration = {
@@ -81,7 +81,7 @@ const badgesTableConfiguration = {
     },
     paging: false,
     info: false,
-    searching: true
+    searching: false
 };
 
 
