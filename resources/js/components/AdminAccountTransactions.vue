@@ -22,10 +22,7 @@
 
         </div>
 
-        <div v-if="loading" class="text-center">
-            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
-            <div>Loading..</div>
-        </div>
+        <Spinner v-if="loading"/>
         <DataTable v-else id="Transactions-Table"
                    class="table table-dark table-hover table-striped table-bordered small"
                    :options="transactionsTableConfiguration" :data="transactions">
@@ -55,6 +52,7 @@
 import {ref, onMounted} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString, usdToString} from "../formatting";
+import Spinner from "./Spinner.vue";
 
 /** @type {Ref<AccountTransaction[]>} */
 const transactions = ref([]);

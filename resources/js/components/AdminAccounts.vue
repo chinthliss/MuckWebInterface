@@ -58,10 +58,7 @@
 
         <hr>
 
-        <div v-if="tableLoading" class="text-center">
-            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
-            <div>Loading..</div>
-        </div>
+        <Spinner v-if="tableLoading"/>
         <div v-else-if="!tableData" class="text-center">No data loaded yet...</div>
         <div v-else class="table-responsive-xl">
             <DataTable ref="table" id="AccountsTable" class="table table-dark table-hover table-striped table-bordered w-100"
@@ -75,6 +72,7 @@
 import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
+import Spinner from "./Spinner.vue";
 
 const props = defineProps({
     apiUrl: {type: String, required: true},

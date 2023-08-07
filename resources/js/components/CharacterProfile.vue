@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import {carbonToString} from "../formatting";
 import DataTable from "datatables.net-vue3";
+import Spinner from "./Spinner.vue";
 
 const props = defineProps({
     /** @type {Character} */
@@ -137,11 +138,7 @@ channel.on('characterProfileBadges', (data) => {
             </div>
 
             <div id="ProfileContainer" class="flex-grow-1 mt-2 mt-xl-0 ms-xl-4">
-                <div v-if="profileLoading" class="text-center">
-                    <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
-                    <div>Loading..</div>
-                </div>
-
+                <Spinner v-if="profileLoading"/>
                 <div v-else>
                     <!-- Gender, Species and Height -->
                     <div class="d-flex">

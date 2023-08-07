@@ -3,10 +3,7 @@
 
         <h1>Notifications</h1>
 
-        <div v-if="loadingNotifications" class="text-center">
-            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
-            <div>Loading..</div>
-        </div>
+        <Spinner v-if="loadingNotifications"/>
 
         <div v-if="!initialLoading">
 
@@ -51,6 +48,7 @@ import {ref, onMounted} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
+import Spinner from "./Spinner.vue";
 
 const props = defineProps({
     apiUrl: {type: String, required: true}
