@@ -85,7 +85,6 @@ const badgesTableConfiguration = {
 };
 
 
-
 channel.on('connected', () => {
     channel.send('getCharacterProfile', props.characterIn.dbref);
 });
@@ -199,54 +198,57 @@ channel.on('characterProfileBadges', (data) => {
             </div>
         </div>
 
-        <!-- Views -->
-        <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="viewsTableConfiguration" :data="profile.views">
-            <thead>
-            <tr>
-                <th scope="col">View</th>
-                <th scope="col">Content</th>
-            </tr>
-            </thead>
-        </DataTable>
+        <template v-if="!profileLoading">
+            <!-- Views -->
+            <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="viewsTableConfiguration" :data="profile.views">
+                <thead>
+                <tr>
+                    <th scope="col">View</th>
+                    <th scope="col">Content</th>
+                </tr>
+                </thead>
+            </DataTable>
 
-        <!-- Pinfo -->
-        <h3 class="mt-2">Custom Information <span class="text-muted">(+finger)</span></h3>
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="pinfoTableConfiguration" :data="profile.pinfo">
-            <thead>
-            <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Value</th>
-            </tr>
-            </thead>
-        </DataTable>
+            <!-- Pinfo -->
+            <h3 class="mt-2">Custom Information <span class="text-muted">(+finger)</span></h3>
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="pinfoTableConfiguration" :data="profile.pinfo">
+                <thead>
+                <tr>
+                    <th scope="col">Field</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+            </DataTable>
 
-        <!-- Equipment -->
-        <h3 class="mt-2">Equipment <span class="text-muted">(+equip)</span></h3>
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="equipmentTableConfiguration" :data="profile.equipment">
-            <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-            </tr>
-            </thead>
-        </DataTable>
+            <!-- Equipment -->
+            <h3 class="mt-2">Equipment <span class="text-muted">(+equip)</span></h3>
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="equipmentTableConfiguration" :data="profile.equipment">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                </tr>
+                </thead>
+            </DataTable>
 
-        <!-- Badges -->
-        <h3 class="mt-2">Badges <span class="text-muted">(+badge)</span></h3>
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="badgesTableConfiguration" :data="profile.badges">
-            <thead>
-            <tr>
-                <th scope="col">Badge</th>
-                <th scope="col">Description</th>
-                <th scope="col">Awarded</th>
-            </tr>
-            </thead>
-        </DataTable>
+            <!-- Badges -->
+            <h3 class="mt-2">Badges <span class="text-muted">(+badge)</span></h3>
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="badgesTableConfiguration" :data="profile.badges">
+                <thead>
+                <tr>
+                    <th scope="col">Badge</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Awarded</th>
+                </tr>
+                </thead>
+            </DataTable>
+        </template>
+
     </div>
 
 </template>
