@@ -20,7 +20,7 @@
  * @property {string[]} roles
  * @property {AccountEmail[]} emails
  * @property {AccountNote[]} notes
- * @property {Character[]} characters
+ * @property {MuckDbref[]} characters
  * @property {object} [patreon]
  * @property {boolean} subscriptionActive
  * @property {boolean} subscriptionRenewing
@@ -118,11 +118,20 @@
  */
 
 /**
- * @typedef {object} Character
+ * @typedef {object} MuckDbref
  * @property {int} dbref
  * @property {string} type
  * @property {string} name
  * @property {string} created
+ */
+
+/**
+ * @typedef {object} Character
+ * @property {string} name
+ * @property {boolean} approved
+ * @property {number} dbref
+ * @property {number} level
+ * @property {number} [staffLevel]
  */
 
 /**

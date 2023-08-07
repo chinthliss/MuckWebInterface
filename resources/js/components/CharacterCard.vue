@@ -15,15 +15,6 @@
 
 <script setup>
 
-/**
- * @typedef {object} Character
- * @property {string} name
- * @property {boolean} approved
- * @property {number} dbref
- * @property {number} level
- * @property {number} [staffLevel]
- */
-
 const props = defineProps({
     /** @type {Character} */
     character: {type: Object, required: true},
