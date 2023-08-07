@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Avatar\AvatarService;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
 use App\Notifications\MuckWebInterfaceNotification;
@@ -93,7 +94,7 @@ class CharacterController extends Controller
         return redirect()->route('multiplayer.character.initial-setup');
     }
 
-    public function showCharacterInitialSetup(MuckService $muck): View | RedirectResponse
+    public function showCharacterInitialSetup(MuckService $muck): View|RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -237,5 +238,24 @@ class CharacterController extends Controller
         if (!$user) abort(401);
 
         return $muck->buyCharacterSlot($user);
+    }
+
+    public function showCharacterProfile(MuckService $muck, string $name): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $character = $muck->getByPlayerName($name);
+        if (!$character) abort(404);
+
+        $avatarUrl = route('avatar.render', ['name' => $character->name]);
+        if ($user && $user->getAvatarPreference() === $user::AVATAR_PREFERENCE_HIDDEN) $avatarUrl = '';
+
+        return view('multiplayer.character-profile')->with([
+            'character' => $character,
+            'avatarUrl' => $avatarUrl,
+            'controls' => $character->accountId() === $user?->id() ? 'true' : 'false'
+        ]);
+
     }
 }

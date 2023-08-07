@@ -127,11 +127,11 @@
 
 /**
  * @typedef {object} Character
+ * @property {int} dbref
  * @property {string} name
  * @property {boolean} approved
- * @property {number} dbref
- * @property {number} level
- * @property {number} [staffLevel]
+ * @property {int} staffLevel
+ * @property {int} level
  */
 
 /**

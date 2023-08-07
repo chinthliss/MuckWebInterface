@@ -73,8 +73,9 @@ export default class Channel {
     }
 
     getDbrefFromDatabase(dbref) {
+        if (typeof dbref === 'string') dbref = parseInt(dbref);
         for (const candidate of this.#database) {
-            if (candidate.dbref === dbref) return dbref;
+            if (candidate.dbref === dbref) return candidate;
         }
         return null;
     }
