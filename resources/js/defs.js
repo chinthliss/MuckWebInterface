@@ -20,7 +20,7 @@
  * @property {string[]} roles
  * @property {AccountEmail[]} emails
  * @property {AccountNote[]} notes
- * @property {Character[]} characters
+ * @property {MuckDbref[]} characters
  * @property {object} [patreon]
  * @property {boolean} subscriptionActive
  * @property {boolean} subscriptionRenewing
