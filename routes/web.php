@@ -205,6 +205,11 @@ Route::prefix('/admin/')->group(function () {
             ->name('admin.transactions.api');
         Route::get('transactions/{id}', [AccountCurrencyController::class, 'adminShowTransaction'])
             ->name('admin.transaction');
+
+        Route::get('logs', [AdminController::class, 'showLogViewer'])
+            ->name('admin.logs');
+        Route::get('logs/{date}', [AdminController::class, 'getLogForDate']);
+
     });
 
 });

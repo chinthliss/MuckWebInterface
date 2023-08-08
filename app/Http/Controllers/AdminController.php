@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin\LogManager;
 use App\MuckWebInterfaceUserProvider;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AdminController extends Controller
 {
@@ -100,4 +102,18 @@ class AdminController extends Controller
             return $account->toArray('admin');
         }, $results);
     }
+
+    #region Site Logs
+    public function showLogViewer(): View
+    {
+        return view('admin.logviewer')->with([
+            'dates' => LogManager::getDates()
+        ]);
+    }
+
+    public function getLogForDate(string $date): BinaryFileResponse
+    {
+        return response()->file(LogManager::getLogFilePathForDate($date));
+    }
+    #endregion Site Logs
 }
