@@ -2,7 +2,6 @@
 import {ref} from "vue";
 import Spinner from "./Spinner.vue";
 import DataTable from 'datatables.net-vue3';
-import {carbonToString, usdToString} from "../formatting";
 
 const logRegEx = /^\[\d{4}-\d\d-\d\d (\d\d:\d\d:\d\d)] (?:\S*)?\.(\S*): /mg;
 
@@ -18,11 +17,17 @@ const renderLines = (lines) => {
     return lines.join('\n');
 }
 
+const classForLevel = (cell, data) => {
+
+    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) $(cell).addClass('text-danger');
+    if (data.level === 'WARNING') $(cell).addClass('text-warning');
+}
+
 const logTableConfiguration = {
     columns: [
         {data: 'time'},
-        {data: 'level'},
-        {data: 'lines', render: renderLines},
+        {data: 'level', createdCell: classForLevel},
+        {data: 'lines', render: renderLines, className: 'text-break'},
     ],
     language: {
         "emptyTable": "No lines in log file."
@@ -31,17 +36,19 @@ const logTableConfiguration = {
     info: false,
     searching: false,
     ordering: false
-};
+}
 
 const loadDate = (date, event) => {
     event.preventDefault();
     loading.value = true;
     axios.get('/admin/logs/' + date)
         .then(response => parseLog(response.data))
-        .finally(() => { loading.value = false });
+        .finally(() => {
+            loading.value = false
+        });
 }
 
-const parseLog =  (rawText) => {
+const parseLog = (rawText) => {
     log.value = [];
     let slicePoints = [];
     // Figure out where individual line entries start
@@ -65,12 +72,6 @@ const parseLog =  (rawText) => {
             .slice(logStart, logEnd)
             .split('\n');
     }
-}
-
-const classForLevel = (level) => {
-    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(level) !== -1) return 'text-danger';
-    if (level === 'WARNING') return 'text-warning';
-    return null;
 }
 
 </script>
@@ -112,7 +113,5 @@ const classForLevel = (level) => {
 </template>
 
 <style scoped>
-.log-line {
-    word-break: break-word;
-}
+
 </style>
