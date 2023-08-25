@@ -46,14 +46,14 @@ DataTable.use(DataTablesLib);
  * Websocket
  */
 import MwiWebsocket from "muckwebinterface-websocket";
-window.MwiWebsocket = MwiWebsocket;
+window.mwiWebsocket = MwiWebsocket;
 if (!mwiWebsocketAuthUrl || !mwiWebsocketUrl)
     console.log("Websocket configuration wasn't set.");
 else {
-    MwiWebsocket.init({
+    mwiWebsocket.start({
         'authenticationUrl': mwiWebsocketAuthUrl,
         'websocketUrl': mwiWebsocketUrl
-    });
+    })
 }
 /**
  * Vue
