@@ -7,6 +7,7 @@ use App\Muck\MuckService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -89,7 +90,7 @@ class LoginController extends Controller
         $response = response($token)
             ->header('Content-Type', 'text/plain');
 
-        if (config('env') === 'local')
+        if (App::environment() === 'local')
             $response->header('Access-Control-Allow-Origin', '*');
 
         return $response;
