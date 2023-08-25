@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "es2020",
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "strict": true,
+        // "skipLibCheck": true
+        // "allowJs": false
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": ["resources/js/**/*"]  // Frontend paths pattern
+}
