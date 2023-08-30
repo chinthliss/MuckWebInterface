@@ -37,7 +37,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url('/favicon32.png') }}">
 
     <!-- Default style / scripts loaded in by Vite -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/js/app.ts'])
 
 </head>
 <body>

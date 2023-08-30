@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 
 import {ref, onMounted} from "vue";
 import {lex} from "../siteutils";
@@ -18,7 +18,7 @@ const previewUrl = ref('');
 let ctx = null;
 
 onMounted(() => {
-    let canvasElement = document.getElementById('GradientCanvas');
+    const canvasElement: HTMLCanvasElement = document.getElementById('GradientCanvas') as HTMLCanvasElement;
     ctx = canvasElement.getContext('2d');
     renderGradient();
 });
