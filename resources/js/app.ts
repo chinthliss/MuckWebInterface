@@ -2,6 +2,20 @@
  * Load and configure dependencies for our app here.
  */
 
+// Globals we'll be configuring here
+declare global {
+    interface Window {
+        bootstrap: any;
+        axios: any;
+        $: any;
+        mwiWebsocket: any;
+    }
+}
+
+// These are set in the PHP blade markup
+declare var mwiWebsocketAuthUrl: string;
+declare var mwiWebsocketUrl: string;
+
 /**
  * Bootstrap
  */
@@ -30,7 +44,7 @@ if (dbref) {
  * jQuery
  */
 
-import jQuery from 'jquery';
+import * as jQuery from 'jquery';
 
 window.$ = jQuery;
 
@@ -50,7 +64,7 @@ window.mwiWebsocket = MwiWebsocket;
 if (!mwiWebsocketAuthUrl || !mwiWebsocketUrl)
     console.log("Websocket configuration wasn't set.");
 else {
-    mwiWebsocket.start({
+    MwiWebsocket.start({
         'authenticationUrl': mwiWebsocketAuthUrl,
         'websocketUrl': mwiWebsocketUrl
     })
@@ -72,7 +86,7 @@ const app = createApp({});
  * Vue components. It will recursively scan this directory for the Vue
  * components and automatically register them with their "basename".
  *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ * E.g. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
 Object.entries(import.meta.glob('./**/*.vue', {eager: true})).forEach(([path, definition]) => {

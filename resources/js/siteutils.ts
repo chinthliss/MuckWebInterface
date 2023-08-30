@@ -2,6 +2,9 @@
  * Common functions that might get reused across the site
  */
 
+// Set externally in PHP blade markup.
+declare var mwiSiteLexicon: { [word: string]: string };
+
 /**
  * Returns the last set csrf token, which is always set on a response.
  */

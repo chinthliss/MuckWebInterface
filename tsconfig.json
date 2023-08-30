@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "module": "es2020",
+        "lib": ["es2020", "DOM"],
         "moduleResolution": "node",
         "baseUrl": "./",
         "strict": true,
