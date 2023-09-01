@@ -2,16 +2,6 @@
  * Load and configure dependencies for our app here.
  */
 
-// Globals we'll be configuring here
-declare global {
-    interface Window {
-        bootstrap: any;
-        axios: any;
-        $: any;
-        mwiWebsocket: any;
-    }
-}
-
 // These are set in the PHP blade markup
 declare var mwiWebsocketAuthUrl: string;
 declare var mwiWebsocketUrl: string;
@@ -61,6 +51,7 @@ DataTable.use(DataTablesLib);
  */
 import MwiWebsocket from "muckwebinterface-websocket";
 window.mwiWebsocket = MwiWebsocket;
+
 if (!mwiWebsocketAuthUrl || !mwiWebsocketUrl)
     console.log("Websocket configuration wasn't set.");
 else {
@@ -90,6 +81,8 @@ const app = createApp({});
  */
 
 Object.entries(import.meta.glob('./**/*.vue', {eager: true})).forEach(([path, definition]) => {
+    // Ignoring errors from the base laravel line here since not experienced enough to fix them
+    // @ts-ignore
     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
 });
 
