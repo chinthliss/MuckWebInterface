@@ -8,17 +8,20 @@ export {};
 
 declare global {
 
-    // These declarations are so we can set them on Window.
+    // These declarations are so we can set intended globals on Window.
     interface Window {
         bootstrap: any;
         axios: any;
-        $: JQueryStatic;
-        mwiWebsocket: typeof MwiWebsocket;
+        $: any;
+        mwiWebsocket: any;
     }
 
-    // These are delcared in their own types
-    // var bootstrap: object;
+    // Jquery declares itself as a global
     // var $: JQueryStatic;
+
+    // Bootstrap declares itself as a global
+    // var bootstrap: Object;
+
     var axios: AxiosStatic;
 
     var mwiWebsocket: typeof MwiWebsocket;
