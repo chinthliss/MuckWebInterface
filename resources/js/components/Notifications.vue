@@ -1,48 +1,4 @@
-<template>
-    <div class="container">
-
-        <h1>Notifications</h1>
-
-        <Spinner v-if="loadingNotifications"/>
-
-        <div v-if="!initialLoading">
-
-            <div class="d-flex justify-content-center mb-2">
-                <button class="btn btn-warning" @click="verifyIntentToDeleteAllNotifications">
-                    <i class="fas fa-trash btn-icon-left"></i>Delete All Notifications
-                </button>
-            </div>
-
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="notificationTableConfiguration" :data="notifications">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th scope="col">Character</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Message</th>
-                </tr>
-                </thead>
-            </DataTable>
-
-            <div class="d-flex justify-content-center mt-2">
-                <button class="btn btn-warning" @click="verifyIntentToDeleteAllNotifications">
-                    <i class="fas fa-trash btn-icon-left"></i>Delete All Notifications
-                </button>
-            </div>
-
-        </div>
-
-        <ModalConfirmation id="confirm-delete-all-notifications" @yes="deleteAllNotifications"
-                           yes-label="Delete All" no-label="Cancel">
-            Are you sure you wish to delete all your notifications?
-        </ModalConfirmation>
-
-    </div>
-
-</template>
-
-<script setup>
+<script setup lang="ts">
 
 import {ref, onMounted} from 'vue';
 import DataTable from 'datatables.net-vue3';
@@ -50,10 +6,9 @@ import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 
-const props = defineProps({
-    apiUrl: {type: String, required: true}
-});
-
+const props = defineProps<{
+    apiUrl: string
+}>();
 
 const loadingNotifications = ref(true);
 const initialLoading = ref(true);
@@ -74,7 +29,8 @@ const renderControlsColumn = (data, type, row) => {
 };
 
 const linkButtonsInTable = () => {
-    $('.notification-delete-button').click(deleteNotification);
+    const buttons = document.querySelectorAll(".notification-delete-button");
+    buttons.forEach(el => el.addEventListener("click", deleteNotification));
 };
 
 const notificationTableConfiguration = {
@@ -107,10 +63,11 @@ const refreshNotifications = () => {
 };
 
 const deleteNotification = function () {
-    const id = $(this).data('id');
+    // const id = $(this).data('id');
+    const id = this.dataset.id;
 
     axios.delete(props.apiUrl + '/' + id)
-        .then(response => {
+        .then(_response => {
             //Find the actual entry with this ID to delete locally
             for (let i = 0; i < notifications.value.length; i++) {
                 if (notifications.value[i].id === id) notifications.value.splice(i, 1);
@@ -134,7 +91,7 @@ const deleteAllNotifications = () => {
     }
 
     axios.delete(props.apiUrl, {data: {'highestId': highestId}})
-        .then(response => {
+        .then(_response => {
             notifications.value = [];
         })
         .catch(error => {
@@ -149,6 +106,54 @@ onMounted(() => {
 });
 
 </script>
+
+<template>
+    <div class="container">
+
+        <h1>Notifications</h1>
+
+        <Spinner v-if="loadingNotifications"/>
+
+        <div v-if="!initialLoading">
+
+            <div class="d-flex justify-content-center mb-2">
+                <button class="btn btn-warning" @click="verifyIntentToDeleteAllNotifications">
+                    <i class="fas fa-trash btn-icon-left"></i>
+                    Delete All Notifications
+                </button>
+            </div>
+
+            <DataTable class="table table-dark table-hover table-striped table-bordered"
+                       :options="notificationTableConfiguration" :data="notifications"
+            >
+                <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Character</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Message</th>
+                </tr>
+                </thead>
+            </DataTable>
+
+            <div class="d-flex justify-content-center mt-2">
+                <button class="btn btn-warning" @click="verifyIntentToDeleteAllNotifications">
+                    <i class="fas fa-trash btn-icon-left"></i>
+                    Delete All Notifications
+                </button>
+            </div>
+
+        </div>
+
+        <ModalConfirmation id="confirm-delete-all-notifications" @yes="deleteAllNotifications"
+                           yes-label="Delete All" no-label="Cancel"
+        >
+            Are you sure you wish to delete all your notifications?
+        </ModalConfirmation>
+
+    </div>
+
+</template>
 
 <style scoped>
 

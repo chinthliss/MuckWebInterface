@@ -1,3 +1,32 @@
+<script setup lang="ts">
+
+type pageRecommendation = {
+    url: string,
+    page: string,
+    description: string
+}
+
+defineProps<{
+    account: boolean,
+    accountUrl: string,
+
+    character: boolean,
+    characterUrl: string,
+
+    characterActive: boolean,
+
+    characterApproved: boolean,
+    characterApprovedUrl: string,
+
+    directConnectUrl: string,
+
+    resetCharacterPasswordUrl: string,
+
+    pageRecommendations: pageRecommendation[]
+}>();
+
+</script>
+
 <template>
     <div class="container">
 
@@ -108,27 +137,6 @@
 
     </div>
 </template>
-
-<script setup>
-defineProps({
-    account: {type: Boolean, required: true},
-    accountUrl: {type: String, required: true},
-
-    character: {type: Boolean, required: true},
-    characterUrl: {type: String, required: true},
-
-    characterActive: {type: Boolean, required: true},
-
-    characterApproved: {type: Boolean, required: true},
-    characterApprovedUrl: {type: String, required: true},
-
-    directConnectUrl: {type: String, required: true},
-
-    resetCharacterPasswordUrl: {type: String, required: true},
-
-    pageRecommendations: {type: Object, required: false}
-});
-</script>
 
 <style scoped>
 
