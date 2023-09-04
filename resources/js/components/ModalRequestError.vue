@@ -1,6 +1,35 @@
 <!--
 Modal dialog that intercepts axios communication errors and shows itself if one occurs
 -->
+<script setup type="ts">
+
+import {ref, onMounted} from "vue";
+import type {Ref} from 'vue';
+import type {Modal} from "bootstrap";
+
+const lastError = ref("");
+const self: Ref<Element | null> = ref(null);
+
+onMounted(() => {
+    console.log("Registering Axios interceptor for response errors.");
+    const modal: Modal = bootstrap.Modal.getOrCreateInstance(self.value!);
+    axios.interceptors.response.use(function (response) {
+        return response;
+    }, function (error) {
+        if (error.response.status === 422) {
+            // We don't intercept validation errors
+            throw error;
+        } else {
+            console.log("Server error: ", error);
+            lastError.value = error?.response?.data?.message || error || "";
+            modal.value.show();
+            return Promise.reject(error);
+        }
+    });
+});
+
+</script>
+
 <template>
     <div ref="self" class="modal" tabindex="-1">
         <div class="modal-dialog">
@@ -27,34 +56,6 @@ Modal dialog that intercepts axios communication errors and shows itself if one 
         </div>
     </div>
 </template>
-
-<script setup>
-
-import {ref, onMounted} from "vue";
-
-const lastError = ref("");
-const self = ref(null);
-const modal = ref(null);
-
-onMounted(() => {
-    modal.value = bootstrap.Modal.getOrCreateInstance(self.value);
-    console.log("Registering Axios interceptor for response errors.");
-    axios.interceptors.response.use(function (response) {
-        return response;
-    }, function (error) {
-        if (error.response.status === 422) {
-            // We don't intercept validation errors
-            throw error;
-        } else {
-            console.log("Server error: ", error);
-            lastError.value = error?.response?.data?.message || error || "";
-            modal.value.show();
-            return Promise.reject(error);
-        }
-    });
-});
-
-</script>
 
 <style scoped>
 
