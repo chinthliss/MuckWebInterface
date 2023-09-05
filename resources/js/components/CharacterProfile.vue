@@ -1,19 +1,37 @@
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
+import type {Ref} from "vue";
 import {carbonToString} from "../formatting";
 import DataTable from "datatables.net-vue3";
 import Spinner from "./Spinner.vue";
+import type {Character} from "../defs";
 
-const props = defineProps({
-    /** @type {Character} */
-    characterIn: {Type: Object, required: true},
-    controls: {Type: Boolean, required: false, default: false},
-    avatarUrl: {Type: String, required: true}
-});
+const props = defineProps<{
+    characterIn: Character,
+    controls?: boolean,
+    avatarUrl: string
+}>();
 
-const profile = ref({
-    name: props.characterIn.name,
-    level: props.characterIn.level,
+type characterProfile = {
+    name?: string
+    level?: number
+    sex?: string
+    species?: string
+    height?: string
+    shortDescription?: string
+    faction?: string
+    group?: string
+    role?: string
+    whatIs?: string
+    views?: any[] | null
+    pinfo?: any[] | null
+    equipment?: any[] | null
+    badges?: any[] | null
+}
+
+const profile: Ref<characterProfile> = ref({
+    name: props.characterIn?.name,
+    level: props.characterIn?.level,
     sex: null,
     species: null,
     height: null,
@@ -26,10 +44,9 @@ const profile = ref({
     pinfo: null,
     equipment: null,
     badges: null
-});
+} as characterProfile);
 
-const websocket = /** @type {MwiWebsocket} */ (window.MwiWebsocket);
-const channel = websocket.channel('character');
+const channel = mwiWebsocket.channel('character');
 const profileLoading = ref(true);
 
 const viewsTableConfiguration = {
