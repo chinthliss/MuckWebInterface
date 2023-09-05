@@ -1,10 +1,10 @@
 <!--
 Modal dialog that intercepts axios communication errors and shows itself if one occurs
 -->
-<script setup type="ts">
+<script setup lang="ts">
 
 import {ref, onMounted} from "vue";
-import type {Ref} from 'vue';
+import type {Ref} from "vue";
 import type {Modal} from "bootstrap";
 
 const lastError = ref("");
