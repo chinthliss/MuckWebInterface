@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {ref, onMounted, computed} from 'vue';
-import CharacterCard from './CharacterCard.vue';
 import {lex} from "../siteutils";
+import {Character} from "../defs";
+import CharacterCard from './CharacterCard.vue';
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 
@@ -16,7 +17,7 @@ const props = defineProps<{
 
 const characters = ref([]);
 const slots = ref(0);
-const cost = ref(null);
+const cost = ref(0);
 const self = ref();
 const lastMessage = ref('');
 let initialLoading = ref(true);
@@ -27,10 +28,18 @@ const freeSlots = computed(() => {
     return Math.max(slots.value - characters.value.length, 0);
 });
 
+interface expectedResponse {
+    data: {
+        characters: Character[],
+        characterSlotCount: number,
+        characterSlotCost: number
+    }
+}
+
 const refreshCharacterList = () => {
     // console.log("(site) Booting character select from " + props.links.getState);
     axios.get(props.links.getState)
-        .then(response => {
+        .then((response: expectedResponse) => {
             characters.value = response.data.characters;
             slots.value = response.data.characterSlotCount;
             cost.value = response.data.characterSlotCost;
