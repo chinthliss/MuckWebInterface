@@ -7,8 +7,8 @@ interface CharacterSubmission {
     gender: string
     birthday: string
     faction: string
-    perks: any[]
-    flaws: any[]
+    perks: string[]
+    flaws: string[]
 }
 
 interface PerkOrFlawConfig {
@@ -95,9 +95,16 @@ const updateExclusions = (type: string) => {
     });
 
     // Unset anything excluded
-    selected = selected.filter(value => !excluded.includes(value));
-    console.log(selected);
-    console.log(character.value.flaws);
+    // selected = selected.filter(value => !excluded.includes(value));
+    let changed: boolean = false;
+    for (const excludedKey of excluded) {
+        const index = selected.indexOf(excludedKey);
+        if (index !== -1) {
+            selected.splice(index, 1);
+            changed = true;
+        }
+    }
+    if (changed) updateExclusions(type); // Because unsetting something may remove additional exclusions
 };
 
 </script>
