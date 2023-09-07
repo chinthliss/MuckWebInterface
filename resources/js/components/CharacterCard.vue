@@ -6,7 +6,8 @@
             </div>
             <div class="name">{{ character.name }}</div>
             <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>
-            <div v-else-if="character.staffLevel === 1" class="flag staff">Staff</div>
+            <!-- Flags -->
+            <div v-if="character.staffLevel === 1" class="flag staff">Staff</div>
             <div v-else-if="character.staffLevel === 2" class="flag staff">Admin</div>
             <div v-else-if="!character.approved" class="flag unapproved">Unapproved</div>
         </div>
@@ -131,6 +132,7 @@ const clicked = () => {
 
     .unapproved {
         color: $secondary;
+        text-shadow: 2px 2px black;
     }
 }
 
