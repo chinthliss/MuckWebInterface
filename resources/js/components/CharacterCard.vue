@@ -1,27 +1,13 @@
-<template>
-    <div class="card character-card" :class="'mode-' + mode" @click="clicked">
-        <div class="card-body">
-            <div class="avatar" v-bind:style="styleObject">
-                <i class="fas fa-user-alt fa-5x"></i>
-            </div>
-            <div class="name">{{ character.name }}</div>
-            <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>
-            <!-- Flags -->
-            <div v-if="character.staffLevel === 1" class="flag staff">Staff</div>
-            <div v-else-if="character.staffLevel === 2" class="flag staff">Admin</div>
-            <div v-else-if="!character.approved" class="flag unapproved">Unapproved</div>
-        </div>
-    </div>
-</template>
+<script setup lang="ts">
 
-<script setup>
+import {Character} from "../defs";
 
-const props = defineProps({
-    /** @type {Character} */
-    character: {type: Object, required: true},
-    mode: {type: String, required: false, default: 'tag'},
-    onClick: {type: Function, required: false}
-});
+// Todo: Need to revisit this as mode is not going to be reactive anymore
+const props = defineProps<{
+    character: Character
+    mode?: string
+    onClick?: Function | undefined
+}>();
 
 const styleObject = {
     'backgroundImage': 'url(/a/' + props.character.name + '.png)'
@@ -33,8 +19,23 @@ const clicked = () => {
     else
         window.location = '/c/' + props.character.name;
 };
-
 </script>
+
+<template>
+    <div class="card character-card" :class="'mode-' + (mode || 'tag')" @click="clicked">
+        <div class="card-body">
+            <div class="avatar" v-bind:style="styleObject">
+                <!-- <i class="fas fa-user-alt fa-5x"></i> -->
+            </div>
+            <div class="name">{{ character.name }}</div>
+            <div v-if="!character.staffLevel" class="level">{{ character.level }}</div>
+            <!-- Flags -->
+            <div v-if="character.staffLevel === 1" class="flag staff">Staff</div>
+            <div v-else-if="character.staffLevel === 2" class="flag staff">Admin</div>
+            <div v-else-if="!character.approved" class="flag unapproved">Unapproved</div>
+        </div>
+    </div>
+</template>
 
 <style scoped lang="scss">
 @import 'resources/sass/variables';

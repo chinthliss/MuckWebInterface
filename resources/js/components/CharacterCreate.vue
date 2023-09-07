@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import {csrf} from "../siteutils";
+
+interface CharacterSubmission {
+    characterName: string
+}
+
+const props = defineProps<{
+    old?: CharacterSubmission
+    errors?: {
+        characterName?: string[]
+    }
+}>();
+
+</script>
+
 <template>
     <div class="container">
         <h1>Create a new Character</h1>
@@ -13,11 +29,11 @@
                     <div class="form-group">
                         <label for="characterName">New Character Name</label>
                         <input type="text" class="form-control" id="characterName" name="characterName"
-                               placeholder="Enter name" v-bind:class="{ 'is-invalid' : errors.characterName }"
-                               :value="old.characterName"
+                               placeholder="Enter name" v-bind:class="{ 'is-invalid' : errors?.characterName }"
+                               :value="old?.characterName"
                         >
                         <div class="invalid-feedback" role="alert">
-                            <p v-for="error in errors.characterName">{{ error }}</p>
+                            <p v-for="error in errors?.characterName">{{ error }}</p>
                         </div>
                     </div>
                     <button type="submit" class="mt-2 btn btn-primary">Submit</button>
@@ -27,15 +43,6 @@
     </div>
 </template>
 
-<script setup>
-import {csrf} from "../siteutils";
-
-defineProps({
-    errors: {required: false},
-    old: {type: Object, required: false}
-});
-
-</script>
 <style scoped>
 
 </style>
