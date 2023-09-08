@@ -3,9 +3,10 @@
 import {ref, onMounted} from "vue";
 import {lex} from "../siteutils";
 
-const props = defineProps({
-    basePreviewUrl: {type: String, required: true}
-});
+const props = defineProps<{
+    basePreviewUrl: string
+}>();
+
 
 const name = ref('');
 const description = ref('');
@@ -177,6 +178,7 @@ const addStepAfter = (index) => {
             Create Gradient
             <span class="btn-second-line">20 {{ lex('accountcurrency') }}</span>
         </button>
+        <!-- TODO: Submission of created avatar gradients -->
         (Presently not available)
 
     </div>

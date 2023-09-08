@@ -12,7 +12,7 @@
 
 @section('content')
     <avatar-gradient-viewer
-        :admin="{{ 'true' }}"
+        :admin-mode="{{ 'true' }}"
         :gradients="{{ json_encode($gradients) }}"
     >
     </avatar-gradient-viewer>

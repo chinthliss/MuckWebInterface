@@ -123,6 +123,12 @@ export type AvatarItem = {
     scale: number
 }
 
+export type AvatarItemInstance = {
+    base: AvatarItem
+    z: number
+    image: HTMLImageElement
+}
+
 export type AvatarGradient = {
     name: string
     desc: string

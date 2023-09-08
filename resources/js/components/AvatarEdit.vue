@@ -1,19 +1,25 @@
-<script setup>
-import {ref, onMounted} from "vue";
+<script setup lang="ts">
+import {ref, onMounted, Ref} from "vue";
 import ModalMessage from "./ModalMessage.vue";
 import {lex} from "../siteutils";
+import {AvatarGradient, AvatarItem, AvatarItemInstance} from "../defs";
+import {Modal} from "bootstrap";
 
-const props = defineProps({
-    itemsIn: {type: Array, required: true},
-    backgroundsIn: {type: Array, required: true},
-    gradientsIn: {type: Object, required: true},
-    renderUrl: {type: String, required: true},
-    stateUrl: {type: String, required: true},
-    gradientUrl: {type: String, required: true},
-    itemUrl: {type: String, required: true},
-    avatarWidth: {type: Number, required: false, default: 384},
-    avatarHeight: {type: Number, required: false, default: 640}
-});
+const props = defineProps<{
+    itemsIn: AvatarItem[],
+    backgroundsIn: AvatarItem[],
+    gradientsIn: AvatarGradient[],
+    renderUrl: string,
+    stateUrl: string,
+    gradientUrl: string
+    itemUrl: string
+    avatarWidthIn: number,
+    avatarHeightIn: number
+}>();
+
+const avatarWidth = props.avatarWidthIn ?? 384;
+const avatarHeight = props.avatarHeightIn ?? 640;
+
 
 const colorSlots = ref([
     {id: 'skin1', slot: 'fur', label: 'Primary Fur / Skin'},
@@ -23,12 +29,27 @@ const colorSlots = ref([
     {id: 'eyes', slot: 'eyes', label: 'Eyes'}
 ]);
 
-const items = ref(null);
-const backgrounds = ref(null);
-const gradients = ref(null);
-const avatarCanvasContext = ref(null);
-const avatarImg = ref(null);
-const avatar = ref({
+type AvatarColorSet = {
+    skin1?: string | null
+    skin2?: string | null
+    skin3?: string | null
+    hair?: string | null
+    eyes?: string | null
+}
+type AvatarInstance = {
+    colors: AvatarColorSet
+    background: (AvatarItem & AvatarItemInstance) | null
+    items: (AvatarItem & AvatarItemInstance)[]
+}
+
+let avatarCanvasContext: CanvasRenderingContext2D | null = null;
+let messageDialog: Modal | null = null;
+
+const items: Ref<AvatarItem[] | null> = ref(null);
+const backgrounds: Ref<AvatarItem[] | null> = ref(null);
+const gradients: Ref<AvatarGradient[] | null> = ref(null);
+const avatarImg: Ref<HTMLImageElement | null> = ref(null);
+const avatar: Ref<AvatarInstance> = ref({
     colors: {
         skin1: null,
         skin2: null,
@@ -48,7 +69,6 @@ const background = ref({ // Used to limit the sliders for such
 });
 const loading = ref(true);
 const saving = ref(false);
-let messageDialog = ref(null);
 const messageDialogHeader = ref('');
 const messageDialogContent = ref('');
 const purchases = ref({
@@ -57,8 +77,8 @@ const purchases = ref({
 });
 
 onMounted(() => {
-    let canvasElement = document.getElementById('Renderer');
-    avatarCanvasContext.value = canvasElement.getContext('2d');
+    const canvasElement: HTMLCanvasElement = document.getElementById('Renderer') as HTMLCanvasElement;
+    avatarCanvasContext = canvasElement.getContext('2d');
     items.value = props.itemsIn;
     backgrounds.value = props.backgroundsIn;
     gradients.value = props.gradientsIn;
@@ -113,9 +133,11 @@ const loadAvatarState = () => {
 const saveAvatarState = () => {
     console.log("Saving avatar state");
     saving.value = true;
+    if (!avatar.value.background?.base) throw "Base background wasn't set whilst saving item.";
     let avatarState = {
         colors: avatar.value.colors,
         items: avatar.value.items.map((item) => {
+            if (!item?.base) throw "Base item wasn't set whilst saving item.";
             return {
                 id: item.base.id,
                 name: item.base.name,
@@ -124,7 +146,7 @@ const saveAvatarState = () => {
                 x: item.x,
                 y: item.y,
                 z: item.z
-            };
+            } as AvatarItem;
         }),
         background: {
             id: avatar.value.background.base.id,
@@ -151,14 +173,14 @@ const saveAvatarState = () => {
 const updateDollImage = () => {
     console.log("Updating doll image");
     //For the editor the only thing on the doll loaded from the server is the coloring
-    let setColors = {};
+    let setColors: AvatarColorSet = {};
     if (avatar.value.colors.skin1) setColors.skin1 = avatar.value.colors.skin1;
     if (avatar.value.colors.skin2) setColors.skin2 = avatar.value.colors.skin2;
     if (avatar.value.colors.skin3) setColors.skin3 = avatar.value.colors.skin3;
     if (avatar.value.colors.hair) setColors.hair = avatar.value.colors.hair;
     if (avatar.value.colors.eyes) setColors.eyes = avatar.value.colors.eyes;
     avatarImg.value = new Image();
-    avatarImg.value.onload = () => {
+    if (avatarImg.value?.onload)  avatarImg.value.onload = () => {
         console.log("Avatar Doll loaded: " + avatarImg.value.src);
         redrawCanvas();
     }
@@ -241,9 +263,10 @@ const changeBackground = (newId) => {
         x: template.x,
         y: template.y,
         z: template.z
-    };
+    } as (AvatarItem & AvatarItemInstance);
     avatar.value.background.image = new Image();
     avatar.value.background.image.onload = () => {
+        if (!avatar.value.background) return;
         background.value.minWidth = -avatar.value.background.image.naturalWidth;
         background.value.minHeight = -avatar.value.background.image.naturalHeight;
         background.value.maxWidth = avatar.value.background.image.naturalWidth;

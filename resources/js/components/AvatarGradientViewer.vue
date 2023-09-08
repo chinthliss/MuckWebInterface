@@ -1,3 +1,17 @@
+<script setup lang="ts">
+
+import {carbonToString} from "../formatting";
+import {AvatarGradient} from "../defs";
+
+const props = defineProps<{
+    adminMode?: boolean
+    gradients: AvatarGradient[]
+}>();
+
+const admin = props.adminMode ?? false;
+
+</script>
+
 <template>
     <div class="container">
         <h2>Avatar Gradients</h2>
@@ -31,17 +45,6 @@
         </div>
     </div>
 </template>
-
-<script setup>
-
-import {carbonToString} from "../formatting";
-
-const props = defineProps({
-    admin: {Type: Boolean, required: false, default: false},
-    /** @type {AvatarGradient[]} */
-    gradients: {Type: Array, required: true}
-});
-</script>
 
 <style scoped>
 .gradient-preview {
