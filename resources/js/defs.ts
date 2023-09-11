@@ -112,6 +112,7 @@ export type AvatarItem = {
     type: string
     desc: string
     requirement: string
+    earned?: boolean
     created_at?: string
     cost: number
     free: boolean
@@ -120,10 +121,11 @@ export type AvatarItem = {
     x: number
     y: number
     rotate: number
-    scale: number
+    scale: number,
+    preview_url?: string
 }
 
-export type AvatarItemInstance = {
+export type AvatarItemInstance = AvatarItem & {
     base: AvatarItem
     z: number
     image: HTMLImageElement

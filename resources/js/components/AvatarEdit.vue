@@ -2,13 +2,14 @@
 import {ref, onMounted, Ref} from "vue";
 import ModalMessage from "./ModalMessage.vue";
 import {lex} from "../siteutils";
-import {AvatarGradient, AvatarItem, AvatarItemInstance} from "../defs";
+import {AvatarItem, AvatarItemInstance} from "../defs";
 import {Modal} from "bootstrap";
 
 const props = defineProps<{
     itemsIn: AvatarItem[],
     backgroundsIn: AvatarItem[],
-    gradientsIn: AvatarGradient[],
+    //Format: gradientId: [slots available]
+    gradientsIn: { [gradientId: string]: string[] },
     renderUrl: string,
     stateUrl: string,
     gradientUrl: string
@@ -21,7 +22,13 @@ const avatarWidth = props.avatarWidthIn ?? 384;
 const avatarHeight = props.avatarHeightIn ?? 640;
 
 
-const colorSlots = ref([
+type AvatarColorSlot = {
+    id: string,
+    slot: string,
+    label: string
+}
+
+const colorSlots: Ref<AvatarColorSlot[]> = ref([
     {id: 'skin1', slot: 'fur', label: 'Primary Fur / Skin'},
     {id: 'skin2', slot: 'fur', label: 'Secondary Fur / Skin'},
     {id: 'skin3', slot: 'skin', label: 'Naughty Bits'},
@@ -38,16 +45,16 @@ type AvatarColorSet = {
 }
 type AvatarInstance = {
     colors: AvatarColorSet
-    background: (AvatarItem & AvatarItemInstance) | null
-    items: (AvatarItem & AvatarItemInstance)[]
+    background: AvatarItemInstance | null
+    items: AvatarItemInstance[]
 }
 
 let avatarCanvasContext: CanvasRenderingContext2D | null = null;
 let messageDialog: Modal | null = null;
 
-const items: Ref<AvatarItem[] | null> = ref(null);
-const backgrounds: Ref<AvatarItem[] | null> = ref(null);
-const gradients: Ref<AvatarGradient[] | null> = ref(null);
+const items: Ref<AvatarItem[]> = ref(props.itemsIn);
+const backgrounds: Ref<AvatarItem[]> = ref(props.backgroundsIn);
+const gradients: Ref<{ [gradientId: string]: string[] }> = ref(props.gradientsIn);
 const avatarImg: Ref<HTMLImageElement | null> = ref(null);
 const avatar: Ref<AvatarInstance> = ref({
     colors: {
@@ -71,7 +78,10 @@ const loading = ref(true);
 const saving = ref(false);
 const messageDialogHeader = ref('');
 const messageDialogContent = ref('');
-const purchases = ref({
+const purchases: Ref<{
+    gradients: {[gradientId: string]: string[]}, // Slots that require purchasing gradient for
+    items: {[itemId: string]: { name: string, cost: number }}
+}> = ref({
     gradients: {},
     items: {}
 });
@@ -79,9 +89,6 @@ const purchases = ref({
 onMounted(() => {
     const canvasElement: HTMLCanvasElement = document.getElementById('Renderer') as HTMLCanvasElement;
     avatarCanvasContext = canvasElement.getContext('2d');
-    items.value = props.itemsIn;
-    backgrounds.value = props.backgroundsIn;
-    gradients.value = props.gradientsIn;
     messageDialog = bootstrap.Modal.getOrCreateInstance(document.getElementById('DialogMessage'));
     loadAvatarState();
 });
@@ -180,11 +187,11 @@ const updateDollImage = () => {
     if (avatar.value.colors.hair) setColors.hair = avatar.value.colors.hair;
     if (avatar.value.colors.eyes) setColors.eyes = avatar.value.colors.eyes;
     avatarImg.value = new Image();
-    if (avatarImg.value?.onload)  avatarImg.value.onload = () => {
-        console.log("Avatar Doll loaded: " + avatarImg.value.src);
+    avatarImg.value!.onload = () => {
+        console.log("Avatar Doll loaded: " + avatarImg.value?.src);
         redrawCanvas();
     }
-    avatarImg.value.src = props.renderUrl + '/' + (Object.values(setColors).length > 0 ? btoa(JSON.stringify(setColors)) : '');
+    avatarImg.value!.src = props.renderUrl + '/' + (Object.values(setColors).length > 0 ? btoa(JSON.stringify(setColors)) : '');
     refreshPurchases();
 };
 
@@ -194,7 +201,7 @@ const drawItemOnContext = (ctx, item) => {
     ctx.translate(item.x, item.y);
     ctx.scale(item.scale, item.scale);
     // Ideally we wouldn't do the next line and we'd work from the centre
-    // However the existing framework works from the topleft, so we need to match
+    // However the existing framework works from the top-left, so we need to match
     ctx.translate(imageWidth / 2, imageHeight / 2);
     ctx.rotate(item.rotate * (Math.PI / 180.0));
 
@@ -204,8 +211,9 @@ const drawItemOnContext = (ctx, item) => {
 };
 
 const redrawCanvas = () => {
+    if (!avatarCanvasContext) return;
     console.log("Redrawing canvas");
-    const ctx = avatarCanvasContext.value;
+    const ctx = avatarCanvasContext;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     if (avatar.value.background) drawItemOnContext(ctx, avatar.value.background);
@@ -216,7 +224,7 @@ const redrawCanvas = () => {
     }
 
     //Draw Avatar
-    if (avatarImg.value) ctx.drawImage(avatarImg.value, 0, 0);
+    if (avatarImg.value) ctx.drawImage(avatarImg.value as CanvasImageSource, 0, 0);
 
     //Draw items in front of avatar
     for (const item of avatar.value.items) {
@@ -263,7 +271,7 @@ const changeBackground = (newId) => {
         x: template.x,
         y: template.y,
         z: template.z
-    } as (AvatarItem & AvatarItemInstance);
+    } as AvatarItemInstance;
     avatar.value.background.image = new Image();
     avatar.value.background.image.onload = () => {
         if (!avatar.value.background) return;
@@ -303,7 +311,7 @@ const addItem = (newId) => {
         x: template.x,
         y: template.y,
         z: 1
-    };
+    }  as AvatarItemInstance;
     // Find highest Z so far
     for (const otherItem of avatar.value.items) {
         item.z = Math.max(item.z, otherItem.z + 1);
@@ -373,8 +381,10 @@ const refreshPurchases = () => {
             cost: avatar.value.background.base.cost
         };
 };
-const purchaseGradient = (gradientId, slot, event) => {
-    $(`button[data-gradient="${gradientId}"]`).prop('disabled', true);
+const purchaseGradient = (gradientId, slot) => {
+    const buttons = document.querySelectorAll(`button[data-gradient="${gradientId}"]`) as NodeListOf<HTMLButtonElement>;
+    buttons.forEach(el => el.disabled = true);
+
     console.log("Purchasing gradient: ", gradientId, " for slot ", slot);
     axios.post(props.gradientUrl, {gradient: gradientId, slot: slot})
         .then((response) => {
@@ -388,19 +398,21 @@ const purchaseGradient = (gradientId, slot, event) => {
                 console.log("Purchasing gradient refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                messageDialog.show();
+                if (messageDialog) messageDialog.show();
             }
         })
         .catch((error) => {
             console.log("Error with purchasing gradient: ", error);
         })
         .then(() => {
-            $(`button[data-gradient="${gradientId}"]`).prop('disabled', false);
+            const buttons = document.querySelectorAll(`button[data-gradient="${gradientId}"]`) as NodeListOf<HTMLButtonElement>;
+            buttons.forEach(el => el.disabled = false);
         });
 };
 
-const purchaseItem = (itemId, event) => {
-    $(`button[data-item="${itemId}"]`).prop('disabled', true);
+const purchaseItem = (itemId) => {
+    const buttons = document.querySelectorAll(`button[data-item="${itemId}"]`) as NodeListOf<HTMLButtonElement>;
+    buttons.forEach(el => el.disabled = true);
     console.log("Purchasing item: ", itemId);
     axios.post(props.itemUrl, {item: itemId})
         .then((response) => {
@@ -418,14 +430,16 @@ const purchaseItem = (itemId, event) => {
                 console.log("Purchasing item refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                messageDialog.show();
+                if (messageDialog) messageDialog.show();
             }
         })
         .catch((error) => {
             console.log("Error with purchasing item: ", error);
         })
         .then(() => {
-            $(`button[data-item="${itemId}"]`).prop('disabled', false);
+            const buttons = document.querySelectorAll(`button[data-item="${itemId}"]`) as NodeListOf<HTMLButtonElement>;
+            buttons.forEach(el => el.disabled = false);
+
         });
 };
 
@@ -542,7 +556,7 @@ const purchaseItem = (itemId, event) => {
                 </div>
                 <h4 class="mt-2">Change to a different background:</h4>
                 <div class="row">
-                    <div role="button" class="card item-card " v-for="background in backgrounds"
+                    <div role="button" class="card item-card" v-for="background in backgrounds"
                          :class="[{
                              border: avatar.background && background.id === avatar.background.base.id,
                              unavailable: !background.earned && !background.owner && !background.cost && background.requirement
