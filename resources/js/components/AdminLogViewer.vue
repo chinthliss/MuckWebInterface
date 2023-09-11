@@ -1,13 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
 import Spinner from "./Spinner.vue";
 import DataTable from 'datatables.net-vue3';
 
 const logRegEx = /^\[\d{4}-\d\d-\d\d (\d\d:\d\d:\d\d)] (?:\S*)?\.(\S*): /mg;
 
-const props = defineProps({
-    dates: {Type: Array, required: true}
-});
+const props = defineProps<{
+    dates: string[]
+}>();
 
 const log = ref();
 
@@ -17,10 +17,9 @@ const renderLines = (lines) => {
     return lines.join('\n');
 }
 
-const classForLevel = (cell, data) => {
-
-    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) $(cell).addClass('text-danger');
-    if (data.level === 'WARNING') $(cell).addClass('text-warning');
+const classForLevel = (cell: HTMLTableCellElement, data) => {
+    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) cell.classList.add('text-danger');
+    if (data.level === 'WARNING') cell.classList.add('text-warning');
 }
 
 const logTableConfiguration = {
