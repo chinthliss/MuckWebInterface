@@ -5,7 +5,7 @@ Modal dialog that shows a dismissible message
 <script setup lang="ts">
 
 defineProps<{
-    title?: boolean
+    title?: string
 }>();
 
 </script>
