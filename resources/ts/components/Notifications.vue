@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, Ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
+import {AccountNotification} from "../defs";
 
 const props = defineProps<{
     apiUrl: string
@@ -13,8 +14,7 @@ const props = defineProps<{
 const loadingNotifications = ref(true);
 const initialLoading = ref(true);
 
-/** @type {Ref<AccountNotification[]>} */
-const notifications = ref([]);
+const notifications: Ref<AccountNotification[]> = ref([]);
 
 let confirmationModal = null;
 
