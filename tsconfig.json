@@ -7,10 +7,10 @@
         "baseUrl": "./",
         "strict": true,
         // "skipLibCheck": true
-        // "allowJs": false
+        "allowJs": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["resources/js/"]  // Frontend paths pattern
+    "include": ["resources/ts/"]  // Frontend paths pattern
 }
