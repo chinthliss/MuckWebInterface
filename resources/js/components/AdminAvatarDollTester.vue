@@ -1,20 +1,51 @@
-<script setup>
+<script setup lang="ts">
 
-import {ref, onMounted} from "vue";
+import {ref, onMounted, Ref} from "vue";
+import {AvatarGradient} from "../defs";
 
-const props = defineProps({
-    drawingSteps: {Type: Array, required: true},
-    dolls: {type: Array, required: true},
-    gradients: {type: Array, required: true},
-    initialCode: {type: String, required: true},
-    baseUrl: {type: String, required: true},
-    renderUrl: {type: String, required: true},
-    avatarWidth: {type: Number, required: false, default: 384},
-    avatarHeight: {type: Number, required: false, default: 640}
-});
+type ColorSet = {
+    skin1: string,
+    skin2: string
+    skin3: string,
+    hair: string,
+    eyes: string
+}
 
-const code = ref("");
-const json = ref("");
+type DecodedJson = {
+    base: string,
+    head: string,
+    arms: string,
+    legs: string,
+    groin: string,
+    ass: string,
+    skin: string,
+    colors: ColorSet
+}
+
+type DrawingStep = {
+    dollName: string,
+    part: string,
+    subPart: string,
+    layers: {colorChannel: string, layerIndex: number}[]
+}
+
+const props = defineProps<{
+    drawingSteps: DrawingStep[],
+    dolls: string[],
+    gradients: AvatarGradient[],
+    initialCode: string,
+    baseUrl: string,
+    renderUrl: string,
+    avatarWidthIn?: number,
+    avatarHeightIn?: number
+}>();
+
+const avatarWidth = props.avatarWidthIn ?? 384;
+const avatarHeight = props.avatarHeightIn ?? 640;
+const avatarImgSrc: Ref<string> = ref('');
+
+const code: Ref<string> = ref("");
+const json: Ref<DecodedJson> = ref({});
 const head = ref("");
 const torso = ref("");
 const arms = ref("");
@@ -29,7 +60,7 @@ const colors = ref({
     hair: '',
     eyes: ''
 });
-const avatarImg = ref(null);
+
 
 onMounted(() => {
     code.value = props.initialCode;
@@ -41,14 +72,14 @@ onMounted(() => {
     groin.value = json.value.groin ?? '';
     ass.value = json.value.ass ?? '';
     skin.value = json.value.skin ?? '';
-    if (json.colors) {
+    if (json.value.colors) {
         colors.value.skin1 = json.value.colors.skin1 || '';
         colors.value.skin2 = json.value.colors.skin2 || '';
         colors.value.skin3 = json.value.colors.skin3 || '';
         colors.value.hair = json.value.colors.hair || '';
         colors.value.eyes = json.value.colors.eyes || '';
     }
-    avatarImg.value = props.renderUrl + '/' + code.value;
+    avatarImgSrc.value = props.renderUrl + '/' + code.value;
 });
 
 const updateAndRefresh = () => {
@@ -56,7 +87,7 @@ const updateAndRefresh = () => {
         base: torso.value,
         male: true,
         female: true
-    };
+    } as DecodedJson;
     if (head.value && head.value !== torso.value) newJson.head = head.value;
     if (arms.value && arms.value !== torso.value) newJson.arms = arms.value;
     if (legs.value && legs.value !== torso.value) newJson.legs = legs.value;
@@ -64,7 +95,7 @@ const updateAndRefresh = () => {
     if (ass.value && ass.value !== torso.value) newJson.ass = ass.value;
     if (skin.value) newJson.skin = skin.value;
 
-    let setColors = {};
+    let setColors = {} as ColorSet;
     if (colors.value.skin1) setColors.skin1 = colors.value.skin1;
     if (colors.value.skin2) setColors.skin2 = colors.value.skin2;
     if (colors.value.skin3) setColors.skin3 = colors.value.skin3;
@@ -95,8 +126,9 @@ const layerListToString = unparsed => {
             <!-- Avatar -->
             <div class="me-xl-4">
                 <div class="avatarHolder">
-                    <img class="avatar" v-if="avatarImg" :width="avatarWidth" :height="avatarHeight" :src="avatarImg"
-                         alt="Avatar Render">
+                    <img class="avatar" v-if="avatarImgSrc" :width="avatarWidth" :height="avatarHeight" :src="avatarImgSrc"
+                         alt="Avatar Render"
+                    >
                 </div>
             </div>
 
@@ -221,7 +253,8 @@ const layerListToString = unparsed => {
             <div class="value">
                 <ul>
                     <li v-for="step in drawingSteps">
-                        {{ step.part}}/{{ step.subPart }} from {{ step.dollName }}, using: {{ layerListToString(step.layers) }}
+                        {{ step.part }}/{{ step.subPart }} from {{ step.dollName }}, using:
+                        {{ layerListToString(step.layers) }}
                     </li>
                 </ul>
             </div>

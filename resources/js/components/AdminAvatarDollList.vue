@@ -1,10 +1,21 @@
-<script setup>
-const props = defineProps({
-    dolls: {type: Array, required: true},
-    invalid: {type: Object, required: false},
-    avatarWidth: {type: Number, required: false, default: 384},
-    avatarHeight: {type: Number, required: false, default: 640}
-});
+<script setup lang="ts">
+
+type Doll = {
+    name: string,
+    url: string,
+    edit: string,
+    usage: string[]
+}
+const props = defineProps<{
+    dolls: Doll[],
+    invalid: string[],
+    avatarWidthIn?: number,
+    avatarHeightIn?: number
+}>();
+
+const avatarWidth = props.avatarWidthIn ?? 384;
+const avatarHeight = props.avatarHeightIn ?? 640;
+
 </script>
 
 <template>

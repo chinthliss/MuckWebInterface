@@ -1,10 +1,33 @@
+<script setup lang="ts">
+import {carbonToString} from "../formatting";
+import {AvatarItem} from "../defs";
+
+
+type FileUsage = {
+    filename: string
+    inUse: boolean
+}
+
+const props = defineProps<{
+    items: AvatarItem[],
+    fileUsage: FileUsage[]
+}>();
+
+const unusedFiles = [];
+props.fileUsage.forEach((file) => {
+    if (!file.inUse) unusedFiles.push(file);
+});
+
+</script>
+
 <template>
     <div class="container">
         <h2>Avatar Items</h2>
         <div v-for="category in [
             {type: 'item', label: 'Items'},
             {type: 'background', label: 'Backgrounds'}
-        ]">
+        ]"
+        >
             <h3>{{ category.label }}</h3>
             <table class="table table-responsive small">
                 <thead>
@@ -48,26 +71,6 @@
         <div v-else v-for="file in unusedFiles">{{ file.filename }}</div>
     </div>
 </template>
-
-<script setup>
-import {computed} from 'vue';
-import {carbonToString} from "../formatting";
-
-const props = defineProps({
-    /** @type {AvatarItem[]} */
-    items: {type: Array, required: true},
-    fileUsage: {type: Array, required: false}
-});
-
-const unusedFiles = computed(() => {
-    let result = [];
-    props.fileUsage.forEach((file) => {
-        if (!file.inUse) result.push(file);
-    });
-    return result;
-});
-
-</script>
 
 <style scoped>
 

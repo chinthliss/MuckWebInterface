@@ -122,6 +122,7 @@ export type AvatarItem = {
     y: number
     rotate: number
     scale: number,
+    filename?: string
     preview_url?: string
 }
 
