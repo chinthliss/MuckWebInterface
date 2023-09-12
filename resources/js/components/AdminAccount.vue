@@ -57,14 +57,16 @@
             <dt class="col-sm-2 text-primary">Characters ({{ lex('game_name') }})</dt>
             <dd class="col-sm-10">
                 <character-card v-for="character in account.characters" :character="character"
-                                class="me-2"></character-card>
+                                class="me-2"
+                ></character-card>
             </dd>
 
 
             <dt class="col-sm-2 text-primary">Emails</dt>
             <dd class="col-sm-10">
                 <DataTable class="table table-dark table-hover table-striped table-bordered"
-                           :options="emailTableConfiguration" :data="account.emails">
+                           :options="emailTableConfiguration" :data="account.emails"
+                >
                     <thead>
                     <tr>
                         <th scope="col">Email</th>
@@ -79,7 +81,8 @@
             <dt class="col-sm-2 text-primary">Account Notes</dt>
             <dd class="col-sm-10">
                 <DataTable class="table table-dark table-hover table-striped table-bordered"
-                           :options="accountNotesTableConfiguration" :data="account.notes">
+                           :options="accountNotesTableConfiguration" :data="account.notes"
+                >
                     <thead>
                     <tr>
                         <th scope="col">When</th>
@@ -95,7 +98,8 @@
                     </div>
                     <div class="col-12 col-xl-6">
                         <input type="text" class="form-control" id="NewAccountNote" placeholder="New Account Note"
-                               v-model="newAccountNote">
+                               v-model="newAccountNote"
+                        >
                     </div>
                     <div class="col-12 col-xl-3">
                         <button class="btn btn-primary form-control align-middle" @click="addAccountNote">
@@ -122,7 +126,6 @@ import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
 import DataTable from 'datatables.net-vue3';
-// import {unused} from '../defs';
 
 const props = defineProps({
     account: {type: Object, required: true},

@@ -1,3 +1,131 @@
+<script setup lang="ts">
+
+import {ref} from 'vue';
+import DataTable from 'datatables.net-vue3';
+import {AccountCard} from "../defs";
+
+const props = defineProps<{
+    profileId: string,
+    cardsIn: AccountCard[],
+    links: {
+        addCard: string,
+        deleteCard: string,
+        setDefaultCard: string
+    }
+}>();
+
+const cards = ref(props.cardsIn);
+
+const errors = ref({});
+
+const cardNumber = ref('');
+const expiryDate = ref('');
+const securityCode = ref('');
+const pendingRequest = ref(false);
+
+const renderControlsColumn = (data, type, row) => {
+    let controls = ''
+    controls += `<button class="btn btn-secondary ms-2 card-delete-button" data-id="${row.id}"><i class="fas fa-trash btn-icon-left"></i>Delete</button>`;
+    if (!row.isDefault)
+        controls += `<button class="btn btn-secondary ms-2 card-set-default-button" data-id="${row.id}"><i class="fas fa-check btn-icon-left"></i>Make Default</button>`;
+
+    return controls;
+};
+
+const linkButtonsInTable = () => {
+    const deleteButtons = document.querySelectorAll('.card-delete-button') as NodeListOf<HTMLButtonElement>;
+    // TODO: Delete card should really have a confirmation
+    deleteButtons.forEach(el => {
+        el.addEventListener('click', deleteCard);
+    })
+
+    const makeDefaultButtons = document.querySelectorAll('.card-set-default-button') as NodeListOf<HTMLButtonElement>;
+    makeDefaultButtons.forEach(el => {
+        el.addEventListener('click', setCardAsDefault);
+    })
+};
+
+const cardTableConfiguration = {
+    columns: [
+        {data: 'cardType'},
+        {data: 'maskedCardNumber'},
+        {data: 'expiryDate'},
+        {render: renderControlsColumn, sortable: false, className: 'text-nowrap'}
+    ],
+    language: {
+        "emptyTable": "You have no cards registered."
+    },
+    paging: false,
+    info: false,
+    searching: false,
+    ordering: false,
+    drawCallback: linkButtonsInTable
+};
+
+const addCard = (e) => {
+    e.preventDefault();
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
+    axios.post(props.links.addCard, {
+        'cardNumber': cardNumber.value,
+        'expiryDate': expiryDate.value,
+        'securityCode': securityCode.value
+    }).then(response => {
+        cardNumber.value = '';
+        expiryDate.value = '';
+        securityCode.value = '';
+        cards.value.push(response.data);
+        //Any new card is the default, so need to reflect this
+        cards.value.forEach((card) => {
+            card.isDefault = card.id === response.data.id;
+        });
+    }).catch(error => {
+        if (error.response?.data?.errors)
+            errors.value = error.response.data.errors;
+        else console.log("Error in addCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
+    });
+};
+
+const deleteCard = (event: Event) => {
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
+    const id = (event.currentTarget as HTMLButtonElement).dataset.id;
+    axios.delete(props.links.deleteCard, {
+        data: {'id': id}
+    }).then(_response => {
+        cards.value = cards.value.filter(card => card.id != id);
+    }).catch(error => {
+        if (error.response?.data?.errors)
+            errors.value = error.response.data.errors;
+        else console.log("Error in deleteCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
+    });
+}
+
+const setCardAsDefault = (event: Event) => {
+    if (pendingRequest.value) return;
+    pendingRequest.value = true;
+    const id = (event.currentTarget as HTMLButtonElement).dataset.id;
+    axios.patch(props.links.setDefaultCard, {
+        'id': id
+    }).then(_response => {
+        cards.value.forEach((card) => {
+            card.isDefault = card.id == id;
+        });
+    }).catch(error => {
+        if (error.response?.data?.errors)
+            errors.value = error.response.data.errors;
+        else console.log("Error in setDefaultCard: " + error);
+    }).finally(() => {
+        pendingRequest.value = false;
+    });
+}
+
+</script>
+
 <template>
     <div class="container">
 
@@ -73,122 +201,6 @@
 
     </div>
 </template>
-
-<script setup>
-
-import {ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
-
-const props = defineProps({
-    profileId: {type: String, required: false},
-    cardsIn: {type: Array, required: true},
-    links: {type: Object, required: true}
-});
-
-/** @type {Ref<AccountCard[]>} */
-const cards = ref(props.cardsIn);
-
-const errors = ref({});
-
-const cardNumber = ref('');
-const expiryDate = ref('');
-const securityCode = ref('');
-const pendingRequest = ref(false);
-
-const renderControlsColumn = (data, type, row) => {
-    let controls = ''
-    controls += `<button class="btn btn-secondary ms-2 card-delete-button" data-id="${row.id}"><i class="fas fa-trash btn-icon-left"></i>Delete</button>`;
-    if (!row.isDefault)
-        controls += `<button class="btn btn-secondary ms-2 card-set-default-button" data-id="${row.id}"><i class="fas fa-check btn-icon-left"></i>Make Default</button>`;
-
-    return controls;
-};
-
-const linkButtonsInTable = () => {
-    $('.card-delete-button').click(deleteCard);
-    $('.card-set-default-button').click(setCardAsDefault);
-};
-
-const cardTableConfiguration = {
-    columns: [
-        {data: 'cardType'},
-        {data: 'maskedCardNumber'},
-        {data: 'expiryDate'},
-        {render: renderControlsColumn, sortable: false, className: 'text-nowrap'}
-    ],
-    language: {
-        "emptyTable": "You have no cards registered."
-    },
-    paging: false,
-    info: false,
-    searching: false,
-    ordering: false,
-    drawCallback: linkButtonsInTable
-};
-
-const addCard = (e) => {
-    e.preventDefault();
-    if (pendingRequest.value) return;
-    pendingRequest.value = true;
-    axios.post(props.links.addCard, {
-        'cardNumber': cardNumber.value,
-        'expiryDate': expiryDate.value,
-        'securityCode': securityCode.value
-    }).then(response => {
-        cardNumber.value = '';
-        expiryDate.value = '';
-        securityCode.value = '';
-        cards.value.push(response.data);
-        //Any new card is the default, so need to reflect this
-        cards.value.forEach((card) => {
-            card.isDefault = card.id === response.data.id;
-        });
-    }).catch(error => {
-        if (error.response?.data?.errors)
-            errors.value = error.response.data.errors;
-        else console.log("Error in addCard: " + error);
-    }).finally(() => {
-        pendingRequest.value = false;
-    });
-};
-
-const deleteCard = function () {
-    if (pendingRequest.value) return;
-    pendingRequest.value = true;
-    const id = $(this).data('id');
-    axios.delete(props.links.deleteCard, {
-        data: {'id': id}
-    }).then(response => {
-        cards.value = cards.value.filter(card => card.id !== id);
-    }).catch(error => {
-        if (error.response?.data?.errors)
-            errors.value = error.response.data.errors;
-        else console.log("Error in deleteCard: " + error);
-    }).finally(() => {
-        pendingRequest.value = false;
-    });
-}
-
-const setCardAsDefault = function () {
-    if (pendingRequest.value) return;
-    pendingRequest.value = true;
-    const id = $(this).data('id');
-    axios.patch(props.links.setDefaultCard, {
-        'id': id
-    }).then(response => {
-        cards.value.forEach((card) => {
-            card.isDefault = card.id === id;
-        });
-    }).catch(error => {
-        if (error.response?.data?.errors)
-            errors.value = error.response.data.errors;
-        else console.log("Error in setDefaultCard: " + error);
-    }).finally(() => {
-        pendingRequest.value = false;
-    });
-}
-
-</script>
 
 <style scoped>
 

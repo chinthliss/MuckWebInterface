@@ -1,43 +1,15 @@
-<template>
-    <div class="container">
+<script setup lang="ts">
 
-        <h1>Account Transactions</h1>
-
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="transactionsTableConfiguration"
-                   :data="transactions">
-            <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Created</th>
-                <th scope="col">Completed</th>
-                <th scope="col">Type</th>
-                <th scope="col">USD</th>
-                <th scope="col">Account Currency</th>
-                <th scope="col">Items</th>
-                <th scope="col">Subscription?</th>
-                <th scope="col">Result</th>
-            </tr>
-            </thead>
-        </DataTable>
-
-    </div>
-
-</template>
-
-<script setup>
-
-import {ref} from 'vue';
+import {Ref, ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString, usdToString} from "../formatting";
+import {AccountTransaction} from "../defs";
 
-const props = defineProps({
+const props = defineProps<{
+    transactionsIn: AccountTransaction
+}>();
 
-    transactionsIn: {type: Array, required: true}
-});
-
-/** @type {Ref<AccountTransaction[]>} */
-const transactions = ref(props.transactionsIn);
+const transactions: Ref<AccountTransaction> = ref(props.transactionsIn);
 
 const renderResult = (result) => {
     if (!result) return 'Open'
@@ -74,6 +46,33 @@ const transactionsTableConfiguration = {
 
 </script>
 
+<template>
+    <div class="container">
+
+        <h1>Account Transactions</h1>
+
+        <DataTable class="table table-dark table-hover table-striped table-bordered"
+                   :options="transactionsTableConfiguration"
+                   :data="transactions"
+        >
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Created</th>
+                <th scope="col">Completed</th>
+                <th scope="col">Type</th>
+                <th scope="col">USD</th>
+                <th scope="col">Account Currency</th>
+                <th scope="col">Items</th>
+                <th scope="col">Subscription?</th>
+                <th scope="col">Result</th>
+            </tr>
+            </thead>
+        </DataTable>
+
+    </div>
+
+</template>
 
 <style scoped>
 

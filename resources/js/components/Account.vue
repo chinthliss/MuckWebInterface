@@ -1,3 +1,118 @@
+<script setup lang="ts">
+
+import {Ref, ref} from 'vue';
+import DataTable from 'datatables.net-vue3';
+import ModalConfirmation from './ModalConfirmation.vue';
+import {usdToString, carbonToString, arrayToList} from "../formatting";
+import {csrf, lex} from "../siteutils";
+import {Account} from "../defs";
+
+const props = defineProps<{
+    accountIn: Account
+    links: {
+        changePassword: string,
+        changeEmail: string,
+        newEmail: string,
+        cardManagement: string,
+        transactions: string
+    }
+}>();
+
+const account: Ref<Account> = ref(props.accountIn);
+const emailToMakePrimary = ref();
+
+const confirmMakeEmailPrimary = (e: Event) => {
+    emailToMakePrimary.value = (e.currentTarget as HTMLButtonElement).dataset.email;
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-primary-email'));
+    modal.show();
+}
+
+const makeEmailPrimary = () => {
+    (document.getElementById('changeEmailForm') as HTMLFormElement).submit();
+}
+
+const displayEmailRowForControls = (data, type, row) => {
+    let controls = '';
+    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
+    return controls;
+};
+
+const displayEmailRowForIsPrimary = (data) => {
+    return data ? '<i class="fa-solid fa-check"></i>' : '';
+};
+
+const emailTableDrawCallback = () => {
+    const buttons = document.querySelectorAll('.btn-make-primary') as NodeListOf<HTMLButtonElement>;
+    buttons.forEach(el => {
+        el.addEventListener('click', confirmMakeEmailPrimary);
+    })
+};
+
+const emailTableConfiguration = {
+    columns: [
+        {data: 'email'},
+        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString},
+        {render: displayEmailRowForControls, sortable: false, className: 'dt-center'}
+    ],
+    paging: false,
+    info: false,
+    searching: false,
+    drawCallback: emailTableDrawCallback
+};
+
+const displaySubscriptionRowForControls = (data, type, row) => {
+    return `
+    <a href="${row.url}"><i class="fas fa-search"></i></a>
+    <button class="btn btn-secondary ms-2" v-if="${row.status} === 'active'" @click="cancelSubscription(${row.id})">Cancel</button>
+    `;
+};
+
+const friendlySubscriptionStatus = (status) => {
+    switch (status) {
+        case 'user_declined':
+            return 'Never Accepted';
+        case 'approval_pending':
+            return 'Never Accepted';
+        case 'suspended':
+            return 'Suspended';
+        case 'cancelled':
+            return 'Cancelled';
+        case 'expired':
+            return 'Expired';
+        case 'active':
+            return 'Active';
+    }
+    return 'Unknown';
+}
+const subscriptionsTableConfiguration = {
+    columns: [
+        {data: 'type'},
+        {data: 'amount_usd', render: usdToString},
+        {data: 'recurring_interval'},
+        {data: 'next_charge_at', render: carbonToString},
+        {data: 'status', render: friendlySubscriptionStatus},
+        {render: displaySubscriptionRowForControls, sortable: false}
+    ],
+    paging: false,
+    info: false,
+    searching: false
+};
+
+
+const overallSubscriptionStatus = () => {
+    if (!account.value.subscriptionActive) return 'No Active Subscription';
+    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
+    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
+}
+
+const cancelSubscription = (id) => {
+    // TODO - restore subscription cancelling
+}
+
+</script>
+
 <template>
     <div class="container">
 
@@ -65,17 +180,17 @@
         <h2 class="mt-2">Account Controls</h2>
         <div class="row g-2">
             <div class="col-12 col-sm-6">
-                <a :href="links.changepassword">
+                <a :href="links.changePassword">
                     <button class="w-100 btn btn-primary">Change Password</button>
                 </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.changeemail">
+                <a :href="links.changeEmail">
                     <button class="w-100 btn btn-primary">Change to new Email</button>
                 </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.cardmanagement">
+                <a :href="links.cardManagement">
                     <button class="w-100 btn btn-primary">Card Management</button>
                 </a>
             </div>
@@ -93,7 +208,7 @@
         <!-- Change primary email modal -->
         <modal-confirmation id="confirm-primary-email" @yes="makeEmailPrimary"
                             title="Change Primary Email?" yes-label="Change" no-label="Cancel">
-            <form id="changeEmailForm" :action="links.changeemail" method="POST">
+            <form id="changeEmailForm" :action="links.changeEmail" method="POST">
                 <input type="hidden" name="_token" :value="csrf()">
                 <input type="hidden" name="email" :value="emailToMakePrimary">
             </form>
@@ -103,115 +218,6 @@
 
     </div>
 </template>
-
-<script setup>
-
-import {ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
-import ModalConfirmation from './ModalConfirmation.vue';
-import {usdToString, carbonToString, arrayToList} from "../formatting";
-import {csrf, lex} from "../siteutils";
-// import {unused} from '../defs';
-
-const props = defineProps({
-    accountIn: {type: Object, required: true},
-    links: {type: Object, required: true},
-});
-
-/**
- * @type {Ref<Account>}
- */
-const account = ref(props.accountIn);
-const emailToMakePrimary = ref();
-
-const confirmMakeEmailPrimary = (e) => {
-    emailToMakePrimary.value = $(e.currentTarget).data('email');
-    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-primary-email'));
-    modal.show();
-}
-
-const makeEmailPrimary = (e) => {
-    $('#changeEmailForm').submit();
-}
-
-const displayEmailRowForControls = (data, type, row) => {
-    let controls = '';
-    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
-    return controls;
-};
-
-const displayEmailRowForIsPrimary = (data) => {
-    return data ? '<i class="fa-solid fa-check"></i>' : '';
-};
-
-const emailTableDrawCallback = () => {
-    $('.btn-make-primary').click(confirmMakeEmailPrimary);
-};
-
-const emailTableConfiguration = {
-    columns: [
-        {data: 'email'},
-        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString},
-        {render: displayEmailRowForControls, sortable: false, className: 'dt-center'}
-    ],
-    paging: false,
-    info: false,
-    searching: false,
-    drawCallback: emailTableDrawCallback
-};
-
-const displaySubscriptionRowForControls = (data, type, row) => {
-    return `
-    <a href="${row.url}"><i class="fas fa-search"></i></a>
-    <button class="btn btn-secondary ms-2" v-if="${row.status} === 'active'" @click="cancelSubscription(${row.id})">Cancel</button>
-    `;
-};
-
-const friendlySubscriptionStatus = (status) => {
-    switch (status) {
-        case 'user_declined':
-            return 'Never Accepted';
-        case 'approval_pending':
-            return 'Never Accepted';
-        case 'suspended':
-            return 'Suspended';
-        case 'cancelled':
-            return 'Cancelled';
-        case 'expired':
-            return 'Expired';
-        case 'active':
-            return 'Active';
-    }
-    return 'Unknown';
-}
-const subscriptionsTableConfiguration = {
-    columns: [
-        {data: 'type'},
-        {data: 'amount_usd', render: usdToString},
-        {data: 'recurring_interval'},
-        {data: 'next_charge_at', render: carbonToString},
-        {data: 'status', render: friendlySubscriptionStatus},
-        {render: displaySubscriptionRowForControls, sortable: false}
-    ],
-    paging: false,
-    info: false,
-    searching: false
-};
-
-
-const overallSubscriptionStatus = () => {
-    if (!account.value.subscriptionActive) return 'No Active Subscription';
-    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
-    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
-}
-
-const cancelSubscription = (id) => {
-    // TODO - restore subscription cancelling
-}
-
-</script>
 
 <style scoped>
 

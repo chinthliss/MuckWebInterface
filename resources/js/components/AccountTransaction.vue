@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import {Ref, ref} from "vue";
+import {carbonToString} from "../formatting";
+import {accountId} from "../siteutils";
+import {AccountTransaction} from "../defs";
+
+const props = defineProps<{
+    transactionIn: AccountTransaction
+}>();
+
+const transaction: Ref<AccountTransaction> = ref(props.transactionIn);
+
+const renderStatus = () => {
+    if (!transaction.value.result) return transaction.value.paid_at ? "Paid and pending fulfillment." : 'Open';
+    switch (transaction.value.result) {
+        case 'fulfilled':
+            return 'Fulfilled';
+        case 'user_declined':
+            return 'User declined transaction';
+        case 'vendor_refused':
+            return "Payment attempted but wasn't accepted";
+        case 'expired':
+            return "Timed out (Expired)";
+        default:
+            return 'Unknown';
+    }
+};
+
+</script>
+
 <template>
     <div class="container">
 
@@ -60,38 +90,6 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import {ref} from "vue";
-import {carbonToString} from "../formatting";
-import {accountId} from "../siteutils";
-
-const props = defineProps({
-    transactionIn: {type: Object, required: true}
-});
-
-/**
- * @type Ref<AccountTransaction>
- */
-const transaction = ref(props.transactionIn);
-
-const renderStatus = () => {
-    if (!transaction.value.result) return transaction.value.paid_at ? "Paid and pending fulfillment." : 'Open';
-    switch (transaction.value.result) {
-        case 'fulfilled':
-            return 'Fulfilled';
-        case 'user_declined':
-            return 'User declined transaction';
-        case 'vendor_refused':
-            return "Payment attempted but wasn't accepted";
-        case 'expired':
-            return "Timed out (Expired)";
-        default:
-            return 'Unknown';
-    }
-};
-
-</script>
 
 <style scoped>
 

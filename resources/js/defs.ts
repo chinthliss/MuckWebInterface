@@ -44,6 +44,7 @@ export type AccountTransaction = {
     items: number
     result: string
     url: string
+    subscription_url?: string
 }
 
 export type AccountSubscription = {
@@ -76,7 +77,7 @@ export type AccountEmail = {
 }
 
 export type AccountCard = {
-    id: string
+    id: number
     cardType: string
     maskedCardNumber: string
     expiryDate: string
