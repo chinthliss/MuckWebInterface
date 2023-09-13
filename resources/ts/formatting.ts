@@ -13,7 +13,7 @@ export const carbonToString = (carbonString: string | null): string => {
 /**
  * Takes a USD value and turns it into something friendlier
  */
-export const usdToString = (usd: number | string | null) => {
+export const usdToString = (usd: number | string | null): string => {
     if (!usd) return '--';
     if (typeof usd === 'number') usd = usd.toFixed(2);
     return "$" + usd;
@@ -30,7 +30,7 @@ export const capital = (text: string): string => {
 /**
  * Joins an array of strings into one string
  */
-export const arrayToList = (arrayToParse: string[], emptyWord: string = '') => {
+export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): string => {
     if (!arrayToParse.length) return emptyWord;
     return arrayToParse.join(', ');
 };

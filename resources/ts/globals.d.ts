@@ -12,12 +12,8 @@ declare global {
     interface Window {
         bootstrap: any;
         axios: any;
-        $: any;
         mwiWebsocket: any;
     }
-
-    // Jquery declares itself as a global
-    // var $: JQueryStatic;
 
     // Bootstrap declares itself as a global
     // var bootstrap: Object;

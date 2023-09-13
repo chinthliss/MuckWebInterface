@@ -6,7 +6,8 @@ import {carbonToString, usdToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {AccountTransaction} from "../defs";
 
-declare var $: any;
+import * as jQuery from 'jquery';
+const $ = jQuery;
 
 const props = defineProps<{
     api: string

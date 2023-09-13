@@ -31,14 +31,6 @@ if (dbref) {
 }
 
 /**
- * jQuery
- */
-
-import * as jQuery from 'jquery';
-
-window.$ = jQuery;
-
-/**
  * DataTables
  */
 

@@ -10,7 +10,8 @@
         "allowJs": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true
     },
     "include": ["resources/ts/"]  // Frontend paths pattern
 }
