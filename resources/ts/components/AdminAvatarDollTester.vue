@@ -22,11 +22,16 @@ type DecodedJson = {
     colors: ColorSet
 }
 
+type DrawingStepLayer = {
+    colorChannel: string,
+    layerIndex: number
+}
+
 type DrawingStep = {
     dollName: string,
     part: string,
     subPart: string,
-    layers: {colorChannel: string, layerIndex: number}[]
+    layers: DrawingStepLayer[]
 }
 
 const props = defineProps<{
@@ -107,7 +112,7 @@ const updateAndRefresh = () => {
     window.location = props.baseUrl + '/' + newCode;
 }
 
-const layerListToString = unparsed => {
+const layerListToString = (unparsed: DrawingStepLayer[]): string => {
     let parsed = [];
     for (let i = 0; i < unparsed.length; i++) {
         parsed.push("layer " + unparsed[i].layerIndex + ", color " + unparsed[i].colorChannel);

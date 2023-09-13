@@ -143,7 +143,7 @@ const saveAvatarState = () => {
     if (!avatar.value.background?.base) throw "Base background wasn't set whilst saving item.";
     let avatarState = {
         colors: avatar.value.colors,
-        items: avatar.value.items.map((item) => {
+        items: avatar.value.items.map((item: AvatarItemInstance): AvatarItem => {
             if (!item?.base) throw "Base item wasn't set whilst saving item.";
             return {
                 id: item.base.id,
@@ -195,7 +195,7 @@ const updateDollImage = () => {
     refreshPurchases();
 };
 
-const drawItemOnContext = (ctx, item) => {
+const drawItemOnContext = (ctx: CanvasRenderingContext2D, item: AvatarItemInstance) => {
     const imageWidth = item.image.naturalWidth;
     const imageHeight = item.image.naturalHeight;
     ctx.translate(item.x, item.y);
@@ -251,7 +251,7 @@ const sortItems = () => {
     });
 };
 
-const changeBackground = (newId) => {
+const changeBackground = (newId: string) => {
     console.log("Changing background to: " + newId);
     let template = null;
     for (const item of backgrounds.value) {
@@ -291,7 +291,7 @@ const removeBackground = () => {
     redrawCanvas();
 };
 
-const addItem = (newId) => {
+const addItem = (newId: string) => {
     console.log("Adding item: " + newId);
     let template = null;
     // Find and make a new instanced version
@@ -327,14 +327,14 @@ const addItem = (newId) => {
     return item;
 };
 
-const addItemAndGotoIt = (itemId) => {
+const addItemAndGotoIt = (itemId: string) => {
     if (avatar.value.items.length >= 10) return;
     addItem(itemId);
     let triggerEl = document.getElementById('nav-items-edit-tab');
     triggerEl.click();
 };
 
-const deleteItem = (item) => {
+const deleteItem = (item: AvatarItemInstance) => {
     let index = avatar.value.items.indexOf(item);
     if (index === -1) throw "Couldn't find an index to delete requested item!";
     avatar.value.items.splice(index, 1);
@@ -343,7 +343,7 @@ const deleteItem = (item) => {
     refreshPurchases();
 };
 
-const itemCostOrStatus = (item) => {
+const itemCostOrStatus = (item: AvatarItem) => {
     if (item.owner) return 'Owner';
     if (item.earned) return 'Earned';
     if (item.cost) return item.cost + ' ' + lex('accountcurrency');
@@ -381,7 +381,7 @@ const refreshPurchases = () => {
             cost: avatar.value.background.base.cost
         };
 };
-const purchaseGradient = (gradientId, slot) => {
+const purchaseGradient = (gradientId: string, slot: string) => {
     const buttons = document.querySelectorAll(`button[data-gradient="${gradientId}"]`) as NodeListOf<HTMLButtonElement>;
     buttons.forEach(el => el.disabled = true);
 
@@ -410,7 +410,7 @@ const purchaseGradient = (gradientId, slot) => {
         });
 };
 
-const purchaseItem = (itemId) => {
+const purchaseItem = (itemId: string) => {
     const buttons = document.querySelectorAll(`button[data-item="${itemId}"]`) as NodeListOf<HTMLButtonElement>;
     buttons.forEach(el => el.disabled = true);
     console.log("Purchasing item: ", itemId);

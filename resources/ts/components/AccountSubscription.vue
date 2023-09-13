@@ -33,7 +33,7 @@ const friendlyStatus = () => {
     }
 }
 
-const renderResult = (result) => {
+const renderResult = (result: string):string => {
     if (!result) return 'Open'
     if (result === 'fulfilled') return 'Fulfilled';
     if (result === 'user_declined') return 'User Declined';
@@ -42,7 +42,7 @@ const renderResult = (result) => {
     return result;
 }
 
-const renderIdWithLink = (data, type, row) => {
+const renderIdWithLink = (data: any, type: string, row: any) => {
     return `<a href="${row.url}">${data}</a>`;
 }
 

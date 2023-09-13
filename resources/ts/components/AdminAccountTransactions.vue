@@ -19,7 +19,7 @@ const loading = ref(true);
 
 const filter = ref('');
 
-const renderIdWithLink = (data, type, row) => {
+const renderIdWithLink = (data: any, type: string, row: any): string => {
     return `<a href="${row.url}">${data}</a>`;
 }
 

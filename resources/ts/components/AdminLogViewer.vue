@@ -13,11 +13,11 @@ const log = ref();
 
 let loading = ref(false);
 
-const renderLines = (lines) => {
+const renderLines = (lines: string[]): string => {
     return lines.join('\n');
 }
 
-const classForLevel = (cell: HTMLTableCellElement, data) => {
+const classForLevel = (cell: HTMLTableCellElement, data: any) => {
     if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) cell.classList.add('text-danger');
     if (data.level === 'WARNING') cell.classList.add('text-warning');
 }
@@ -37,7 +37,7 @@ const logTableConfiguration = {
     ordering: false
 }
 
-const loadDate = (date, event) => {
+const loadDate = (date: string, event: Event) => {
     event.preventDefault();
     loading.value = true;
     axios.get('/admin/logs/' + date)
@@ -47,7 +47,7 @@ const loadDate = (date, event) => {
         });
 }
 
-const parseLog = (rawText) => {
+const parseLog = (rawText: string) => {
     log.value = [];
     let slicePoints = [];
     // Figure out where individual line entries start

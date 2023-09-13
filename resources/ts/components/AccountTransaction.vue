@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const transaction: Ref<AccountTransaction> = ref(props.transactionIn);
 
-const renderStatus = () => {
+const renderStatus = (): string => {
     if (!transaction.value.result) return transaction.value.paid_at ? "Paid and pending fulfillment." : 'Open';
     switch (transaction.value.result) {
         case 'fulfilled':

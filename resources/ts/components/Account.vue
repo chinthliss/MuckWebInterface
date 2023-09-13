@@ -31,13 +31,13 @@ const makeEmailPrimary = () => {
     (document.getElementById('changeEmailForm') as HTMLFormElement).submit();
 }
 
-const displayEmailRowForControls = (data, type, row) => {
+const displayEmailRowForControls = (data: any, type: string, row: any) => {
     let controls = '';
     if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
     return controls;
 };
 
-const displayEmailRowForIsPrimary = (data) => {
+const displayEmailRowForIsPrimary = (data: any) => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
 };
 
@@ -62,14 +62,14 @@ const emailTableConfiguration = {
     drawCallback: emailTableDrawCallback
 };
 
-const displaySubscriptionRowForControls = (data, type, row) => {
+const displaySubscriptionRowForControls = (data: any, type: string, row: any): string => {
     return `
     <a href="${row.url}"><i class="fas fa-search"></i></a>
     <button class="btn btn-secondary ms-2" v-if="${row.status} === 'active'" @click="cancelSubscription(${row.id})">Cancel</button>
     `;
 };
 
-const friendlySubscriptionStatus = (status) => {
+const friendlySubscriptionStatus = (status: string): string => {
     switch (status) {
         case 'user_declined':
             return 'Never Accepted';
@@ -99,7 +99,6 @@ const subscriptionsTableConfiguration = {
     info: false,
     searching: false
 };
-
 
 const overallSubscriptionStatus = () => {
     if (!account.value.subscriptionActive) return 'No Active Subscription';

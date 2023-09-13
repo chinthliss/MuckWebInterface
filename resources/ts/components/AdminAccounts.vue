@@ -3,6 +3,7 @@ import {ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
+import {Character} from "../defs";
 
 const props = defineProps<{
     apiUrl: string,
@@ -19,7 +20,7 @@ const table = ref();
 const tableLoading = ref(false);
 const tableData = ref();
 
-const listCharacters = (characters) => {
+const listCharacters = (characters: Character[]): string => {
     let names = [];
     for (const character of characters) {
         names.push(character.name)

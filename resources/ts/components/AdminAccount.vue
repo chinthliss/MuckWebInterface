@@ -15,7 +15,7 @@ const props = defineProps<{
 const account: Ref<Account> = ref(props.account);
 const newAccountNote = ref('');
 
-const displayEmailRowForIsPrimary = (data) => {
+const displayEmailRowForIsPrimary = (data: any): string => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
 };
 
@@ -87,7 +87,7 @@ const unlockAccount = () => {
 
 }
 
-const overallSubscriptionStatus = () => {
+const overallSubscriptionStatus = (): string => {
     if (!account.value.subscriptionActive) return 'No Active Subscription';
     if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
     return 'Active, expires sometime before ' + account.value.subscriptionExpires;

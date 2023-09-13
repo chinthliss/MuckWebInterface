@@ -13,8 +13,8 @@ const props = defineProps<{
     fileUsage: FileUsage[]
 }>();
 
-const unusedFiles = [];
-props.fileUsage.forEach((file) => {
+const unusedFiles: FileUsage[] = [];
+props.fileUsage.forEach((file: FileUsage) => {
     if (!file.inUse) unusedFiles.push(file);
 });
 

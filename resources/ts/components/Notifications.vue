@@ -18,7 +18,7 @@ const notifications: Ref<AccountNotification[]> = ref([]);
 
 let confirmationModal = null;
 
-const renderControlsColumn = (data, type, row) => {
+const renderControlsColumn = (data: any, type: string, row: any) => {
     let controls = ''
     if (row.read_at)
         controls += `<i class="fas fa-envelope-open text-muted"></i>`;

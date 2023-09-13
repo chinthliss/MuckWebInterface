@@ -23,7 +23,7 @@ const expiryDate = ref('');
 const securityCode = ref('');
 const pendingRequest = ref(false);
 
-const renderControlsColumn = (data, type, row) => {
+const renderControlsColumn = (data: any, type: string, row: any): string => {
     let controls = ''
     controls += `<button class="btn btn-secondary ms-2 card-delete-button" data-id="${row.id}"><i class="fas fa-trash btn-icon-left"></i>Delete</button>`;
     if (!row.isDefault)
@@ -62,8 +62,8 @@ const cardTableConfiguration = {
     drawCallback: linkButtonsInTable
 };
 
-const addCard = (e) => {
-    e.preventDefault();
+const addCard = (event: Event) => {
+    event.preventDefault();
     if (pendingRequest.value) return;
     pendingRequest.value = true;
     axios.post(props.links.addCard, {
