@@ -1,3 +1,98 @@
+<script setup lang="ts">
+import {ref} from 'vue';
+import DataTable from 'datatables.net-vue3';
+import {carbonToString} from "../formatting";
+import Spinner from "./Spinner.vue";
+
+const props = defineProps<{
+    apiUrl: string,
+    accountRoot: string
+}>();
+
+const quickOpen = ref('');
+const searchEmail = ref('');
+const searchCharacter = ref('');
+const searchCreatedBefore = ref('');
+const searchCreatedAfter = ref('');
+
+const table = ref();
+const tableLoading = ref(false);
+const tableData = ref();
+
+const listCharacters = (characters) => {
+    let names = [];
+    for (const character of characters) {
+        names.push(character.name)
+    }
+    return names.join(', ');
+};
+
+const rowClicked = (event: Event) => {
+    console.log(table.value);
+    const data = table.value.dt.row(event.currentTarget).data();
+    if (data?.url)
+        window.open(data.url, '_blank');
+    else
+        console.log("Clicked row doesn't have an associated url with it!");
+}
+
+const tableDrawCallback = () => {
+    const elements = document.querySelectorAll('#AccountsTable tbody tr') as NodeListOf<HTMLTableRowElement>;
+    elements.forEach(el => {
+        el.addEventListener('click', rowClicked);
+    })
+};
+
+const tableConfiguration = {
+    columns: [
+        {data: 'id', title: 'ID'},
+        {data: 'primaryEmail', title: 'Primary Email'},
+        {data: 'characters', title: 'Characters', render: listCharacters},
+        {data: 'created', title: 'Created', render: carbonToString},
+        {data: 'lastConnected', title: 'Last Connected', render: carbonToString}
+    ],
+    language: {
+        "emptyTable": "No accounts found matching the present criteria."
+    },
+    paging: false,
+    info: false,
+    searching: false,
+    drawCallback: tableDrawCallback
+};
+
+type SearchCriteria = {
+    character?: string
+    email?: string
+    createdAfter?: string
+    createdBefore?: string
+}
+const doAccountSearch = () => {
+    let searchCriteria = {} as SearchCriteria;
+    if (searchCharacter.value) searchCriteria.character = searchCharacter.value;
+    if (searchEmail.value) searchCriteria.email = searchEmail.value;
+    if (searchCreatedAfter.value) searchCriteria.createdAfter = searchCreatedAfter.value;
+    if (searchCreatedBefore.value) searchCriteria.createdBefore = searchCreatedBefore.value;
+
+    tableLoading.value = true;
+    tableData.value = [];
+
+    axios
+        .get(props.apiUrl, {params: searchCriteria})
+        .then(response => {
+            tableData.value = response.data;
+        })
+        .catch(error => {
+            console.log("Search request failed:", error.message || error);
+        })
+        .finally(() => tableLoading.value = false);
+}
+
+const jumpToAccount = () => {
+    window.location = props.accountRoot.replace('DUMMY', quickOpen.value);
+};
+
+</script>
+
 <template>
     <div class="container">
 
@@ -67,90 +162,6 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import {ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
-import {carbonToString} from "../formatting";
-import Spinner from "./Spinner.vue";
-
-const props = defineProps({
-    apiUrl: {type: String, required: true},
-    accountRoot: {type: String, required: true}
-});
-
-const quickOpen = ref('');
-const searchEmail = ref('');
-const searchCharacter = ref('');
-const searchCreatedBefore = ref('');
-const searchCreatedAfter = ref('');
-
-const table = ref();
-const tableLoading = ref(false);
-const tableData = ref();
-
-const listCharacters = (characters) => {
-    let names = [];
-    for (const character of characters) {
-        names.push(character.name)
-    }
-    return names.join(', ');
-};
-
-const tableDrawCallback = () => {
-    $('#AccountsTable tbody tr').click(function () {
-        console.log(table.value);
-        const row = table.value.dt.row(this).data();
-        if (row?.url)
-            window.open(row.url, '_blank');
-        else
-            console.log("Clicked row doesn't have an associated url with it!");
-    });
-};
-
-const tableConfiguration = {
-    columns: [
-        {data: 'id', title: 'ID'},
-        {data: 'primaryEmail', title: 'Primary Email'},
-        {data: 'characters', title: 'Characters', render: listCharacters},
-        {data: 'created', title: 'Created', render: carbonToString},
-        {data: 'lastConnected', title: 'Last Connected', render: carbonToString}
-    ],
-    language: {
-        "emptyTable": "No accounts found matching the present criteria."
-    },
-    paging: false,
-    info: false,
-    searching: false,
-    drawCallback: tableDrawCallback
-};
-
-const doAccountSearch = () => {
-    let searchCriteria = {};
-    if (searchCharacter.value) searchCriteria.character = searchCharacter.value;
-    if (searchEmail.value) searchCriteria.email = searchEmail.value;
-    if (searchCreatedAfter.value) searchCriteria.createdAfter = searchCreatedAfter.value;
-    if (searchCreatedBefore.value) searchCriteria.createdBefore = searchCreatedBefore.value;
-
-    tableLoading.value = true;
-    tableData.value = [];
-
-    axios
-        .get(props.apiUrl, {params: searchCriteria})
-        .then(response => {
-            tableData.value = response.data;
-        })
-        .catch(error => {
-            console.log("Search request failed:", error.message || error);
-        })
-        .finally(() => tableLoading.value = false);
-}
-
-const jumpToAccount = () => {
-    window.location = props.accountRoot.replace('DUMMY', quickOpen.value);
-};
-
-</script>
 
 <style scoped>
 :deep(tr) {

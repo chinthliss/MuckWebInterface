@@ -1,3 +1,99 @@
+<script setup lang="ts">
+
+import {Ref, ref} from 'vue';
+import {arrayToList, carbonToString} from "../formatting";
+import {lex} from "../siteutils";
+import CharacterCard from "./CharacterCard.vue";
+import DataTable from 'datatables.net-vue3';
+import {Account} from "../defs";
+
+const props = defineProps<{
+    account: Account,
+    apiUrl: string
+}>();
+
+const account: Ref<Account> = ref(props.account);
+const newAccountNote = ref('');
+
+const displayEmailRowForIsPrimary = (data) => {
+    return data ? '<i class="fa-solid fa-check"></i>' : '';
+};
+
+const emailTableConfiguration = {
+    columns: [
+        {data: 'email'},
+        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString}
+    ],
+    language: {
+        "emptyTable": "No emails associated with this account."
+    },
+    paging: false,
+    info: false,
+    searching: false
+};
+
+const accountNotesTableConfiguration = {
+    columns: [
+        {data: 'whenAt', render: carbonToString},
+        {data: 'staffMember'},
+        {data: 'game'},
+        {data: 'body'}
+    ],
+    language: {
+        "emptyTable": "No notes found on this account."
+    },
+    paging: false,
+    info: false,
+    searching: false
+};
+
+const addAccountNote = () => {
+    axios
+        .post(props.apiUrl, {operation: 'addAccountNote', note: newAccountNote.value})
+        .then(response => {
+            if (response?.data === 'OK') location.reload();
+            else console.log("Unrecognized response to adding an account note: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+        })
+};
+
+const lockAccount = () => {
+    axios
+        .post(props.apiUrl, {operation: 'lock'})
+        .then(response => {
+            if (response?.data === 'OK') account.value.lockedAt = new Date().toISOString();
+            else console.log("Unrecognized response to locking account: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+        })
+}
+
+
+const unlockAccount = () => {
+    axios
+        .post(props.apiUrl, {operation: 'unlock'})
+        .then(response => {
+            if (response?.data === 'OK') account.value.lockedAt = '';
+            else console.log("Unrecognized response to unlocking account: ", response);
+        })
+        .catch(error => {
+            console.log("Request failed:", error);
+        })
+
+}
+
+const overallSubscriptionStatus = () => {
+    if (!account.value.subscriptionActive) return 'No Active Subscription';
+    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
+    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
+}
+</script>
+
 <template>
     <div class="container">
 
@@ -118,104 +214,6 @@
         </dl>
     </div>
 </template>
-
-<script setup>
-
-import {ref} from 'vue';
-import {arrayToList, carbonToString} from "../formatting";
-import {lex} from "../siteutils";
-import CharacterCard from "./CharacterCard.vue";
-import DataTable from 'datatables.net-vue3';
-
-const props = defineProps({
-    account: {type: Object, required: true},
-    apiUrl: {type: String, required: true}
-});
-
-/**
- * @type {Ref<Account>}
- */
-const account = ref(props.account);
-const newAccountNote = ref('');
-
-const displayEmailRowForIsPrimary = (data) => {
-    return data ? '<i class="fa-solid fa-check"></i>' : '';
-};
-
-const emailTableConfiguration = {
-    columns: [
-        {data: 'email'},
-        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString}
-    ],
-    language: {
-        "emptyTable": "No emails associated with this account."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const accountNotesTableConfiguration = {
-    columns: [
-        {data: 'whenAt', render: carbonToString},
-        {data: 'staffMember'},
-        {data: 'game'},
-        {data: 'body'}
-    ],
-    language: {
-        "emptyTable": "No notes found on this account."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const addAccountNote = () => {
-    axios
-        .post(props.apiUrl, {operation: 'addAccountNote', note: newAccountNote.value})
-        .then(response => {
-            if (response?.data === 'OK') location.reload();
-            else console.log("Unrecognized response to adding an account note: ", response);
-        })
-        .catch(error => {
-            console.log("Request failed:", error);
-        })
-};
-
-const lockAccount = () => {
-    axios
-        .post(props.apiUrl, {operation: 'lock'})
-        .then(response => {
-            if (response?.data === 'OK') account.value.lockedAt = new Date().toISOString();
-            else console.log("Unrecognized response to locking account: ", response);
-        })
-        .catch(error => {
-            console.log("Request failed:", error);
-        })
-}
-
-
-const unlockAccount = () => {
-    axios
-        .post(props.apiUrl, {operation: 'unlock'})
-        .then(response => {
-            if (response?.data === 'OK') account.value.lockedAt = null;
-            else console.log("Unrecognized response to unlocking account: ", response);
-        })
-        .catch(error => {
-            console.log("Request failed:", error);
-        })
-
-}
-
-const overallSubscriptionStatus = () => {
-    if (!account.value.subscriptionActive) return 'No Active Subscription';
-    if (account.value.subscriptionRenewing) return 'Active, renews sometime before ' + account.value.subscriptionExpires;
-    return 'Active, expires sometime before ' + account.value.subscriptionExpires;
-}
-</script>
 
 <style scoped>
 

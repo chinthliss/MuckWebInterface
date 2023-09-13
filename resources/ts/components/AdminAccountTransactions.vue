@@ -1,3 +1,78 @@
+<script setup lang="ts">
+
+import {ref, onMounted, Ref} from 'vue';
+import DataTable from 'datatables.net-vue3';
+import {carbonToString, usdToString} from "../formatting";
+import Spinner from "./Spinner.vue";
+import {AccountTransaction} from "../defs";
+
+declare var $: any;
+
+const props = defineProps<{
+    api: string
+}>();
+
+const transactions: Ref<AccountTransaction[]> = ref([]);
+
+const loading = ref(true);
+
+const filter = ref('');
+
+const renderIdWithLink = (data, type, row) => {
+    return `<a href="${row.url}">${data}</a>`;
+}
+
+const refreshFilter = () => {
+    const table = $('#Transactions-Table').DataTable();
+    table.draw();
+}
+
+const transactionsTableConfiguration = {
+    columns: [
+        {data: 'account_id'},
+        {data: 'id', render: renderIdWithLink, className: "text-truncate small limit-column-width"},
+        {data: 'type'},
+        {data: 'created_at', render: carbonToString},
+        {data: 'paid_at', render: carbonToString},
+        {data: 'completed_at', render: carbonToString},
+        {data: 'total_usd', render: usdToString},
+        {data: 'account_currency_quoted'},
+        {data: 'items'},
+        {data: 'subscription_id'},
+        {data: 'result'}
+    ],
+    language: {
+        "emptyTable": "No transactions found."
+    },
+    order: [[3, 'asc']],
+    paging: false,
+    info: false
+};
+
+const loadTransactions = () => {
+    loading.value = true;
+    axios.get(props.api)
+        .then(response => {
+            transactions.value = response.data;
+        })
+        .catch(error => {
+            console.log("An error occurred whilst refreshing the transaction list: ", error.message || error);
+        })
+        .finally(() => {
+            loading.value = false;
+        });
+};
+
+onMounted(() => {
+    $.fn.dataTable.ext.search.push(function (settings, data, _dataIndex) {
+        let type = data[2];
+        return (!filter.value || type === filter.value);
+    });
+    loadTransactions();
+});
+
+</script>
+
 <template>
     <div class="container">
 
@@ -46,79 +121,6 @@
     </div>
 
 </template>
-
-<script setup>
-
-import {ref, onMounted} from 'vue';
-import DataTable from 'datatables.net-vue3';
-import {carbonToString, usdToString} from "../formatting";
-import Spinner from "./Spinner.vue";
-
-/** @type {Ref<AccountTransaction[]>} */
-const transactions = ref([]);
-
-const loading = ref(true);
-
-const filter = ref('');
-const props = defineProps({
-    api: {type: String, required: true}
-});
-
-const renderIdWithLink = (data, type, row) => {
-    return `<a href="${row.url}">${data}</a>`;
-}
-
-const refreshFilter = () => {
-    const table = $('#Transactions-Table').DataTable();
-    table.draw();
-}
-
-const transactionsTableConfiguration = {
-    columns: [
-        {data: 'account_id'},
-        {data: 'id', render: renderIdWithLink, className: "text-truncate small limit-column-width"},
-        {data: 'type'},
-        {data: 'created_at', render: carbonToString},
-        {data: 'paid_at', render: carbonToString},
-        {data: 'completed_at', render: carbonToString},
-        {data: 'total_usd', render: usdToString},
-        {data: 'account_currency_quoted'},
-        {data: 'items'},
-        {data: 'subscription_id'},
-        {data: 'result'}
-    ],
-    language: {
-        "emptyTable": "No transactions found."
-    },
-    order: [[3, 'asc']],
-    paging: false,
-    info: false
-};
-
-const loadTransactions = () => {
-    loading.value = true;
-    axios.get(props.api)
-        .then(response => {
-            transactions.value = response.data;
-        })
-        .catch(error => {
-            console.log("An error occurred whilst refreshing the transaction list: ", error.message || error);
-        })
-        .finally(() => {
-            loading.value = false;
-        });
-};
-
-onMounted(() => {
-    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        let type = data[2];
-        return (!filter.value || type === filter.value);
-    });
-    loadTransactions();
-});
-
-</script>
-
 
 <style scoped>
 :deep(.limit-column-width) {

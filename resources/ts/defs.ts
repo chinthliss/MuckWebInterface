@@ -19,7 +19,16 @@ export type Account = {
     emails: AccountEmail[]
     notes: AccountNote[]
     characters: MuckDbref[]
-    patreon?: object
+    patreon?: {
+        patreonId: string
+        name: string
+        email: string
+        url: string
+        thumbUrl: string
+        updatedAt: string
+        totalSupportUsd: number
+        totalRewardedUsd: number
+    }
     subscriptionActive: boolean
     subscriptionRenewing: boolean
     subscriptionExpires: string
