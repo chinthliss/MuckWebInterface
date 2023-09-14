@@ -13,8 +13,8 @@
 
 @section('content')
     <avatar-edit
-        :avatar-width="{{ $avatarWidth }}"
-        :avatar-height="{{ $avatarHeight }}"
+        :avatar-width-in="{{ $avatarWidth }}"
+        :avatar-height-in="{{ $avatarHeight }}"
         :items-in="{{ json_encode($items) }}"
         :backgrounds-in="{{ json_encode($backgrounds) }}"
         :gradients-in="{{ json_encode($gradients) }}"
