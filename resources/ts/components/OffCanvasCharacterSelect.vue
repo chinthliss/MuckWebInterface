@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, computed, Ref} from 'vue';
 import {lex} from "../siteutils";
 import {Character} from "../defs";
 import CharacterCard from './CharacterCard.vue';
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
+import {Modal} from "bootstrap";
 
 const props = defineProps<{
     links: {
@@ -15,20 +16,20 @@ const props = defineProps<{
     }
 }>();
 
-const characters = ref([]);
-const slots = ref(0);
-const cost = ref(0);
-const self = ref();
-const lastMessage = ref('');
-let initialLoading = ref(true);
-let confirmationModal = null;
-let messageModal = null;
+const characters: Ref<Character[]> = ref([]);
+const slots: Ref<number> = ref(0);
+const cost: Ref<number> = ref(0);
+const self: Ref<Element | null> = ref(null);
+const lastMessage: Ref<string> = ref('');
+let initialLoading: Ref<boolean> = ref(true);
+let confirmationModal: Modal | null = null;
+let messageModal: Modal | null = null;
 
-const freeSlots = computed(() => {
+const freeSlots = computed((): number => {
     return Math.max(slots.value - characters.value.length, 0);
 });
 
-interface expectedResponse {
+type CharacterListResponse = {
     data: {
         characters: Character[],
         characterSlotCount: number,
@@ -39,7 +40,7 @@ interface expectedResponse {
 const refreshCharacterList = () => {
     // console.log("(site) Booting character select from " + props.links.getState);
     axios.get(props.links.getState)
-        .then((response: expectedResponse) => {
+        .then((response: CharacterListResponse) => {
             characters.value = response.data.characters;
             slots.value = response.data.characterSlotCount;
             cost.value = response.data.characterSlotCost;
@@ -53,12 +54,12 @@ const refreshCharacterList = () => {
 };
 
 onMounted(() => {
-    self.value.addEventListener('show.bs.offcanvas', refreshCharacterList);
+    self.value!.addEventListener('show.bs.offcanvas', refreshCharacterList);
     confirmationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-buy-character-slot'));
     messageModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('message-display'));
 });
 
-const selectCharacter = (character) => {
+const selectCharacter = (character: Character) => {
     // console.log("(site) Character selected: ", character);
     axios.post(props.links.setCharacter, {'dbref': character.dbref})
         .then(response => {
@@ -75,11 +76,11 @@ const selectCharacter = (character) => {
 };
 
 const verifyBuyCharacterSlot = () => {
-    confirmationModal.show();
+    if (confirmationModal) confirmationModal.show();
 }
 
 const buyCharacterSlot = () => {
-    confirmationModal.hide();
+    if (confirmationModal) confirmationModal.hide();
     axios.post(props.links.buySlot, {})
         .then(response => {
             if (response?.data?.result === 'OK') {
@@ -87,7 +88,7 @@ const buyCharacterSlot = () => {
                 cost.value = response.data.characterSlotCost;
             } else {
                 lastMessage.value = "The request was declined: " + response.data.error;
-                messageModal.show();
+                if (messageModal) messageModal.show();
             }
         })
         .catch(error => {

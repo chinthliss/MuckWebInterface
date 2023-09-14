@@ -47,7 +47,7 @@ const profile: Ref<characterProfile> = ref({
 } as characterProfile);
 
 const channel = mwiWebsocket.channel('character');
-const profileLoading = ref(true);
+const profileLoading: Ref<boolean> = ref(true);
 
 const viewsTableConfiguration = {
     columns: [

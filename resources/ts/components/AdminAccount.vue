@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const account: Ref<Account> = ref(props.account);
-const newAccountNote = ref('');
+const newAccountNote: Ref<string> = ref('');
 
 const displayEmailRowForIsPrimary = (data: any): string => {
     return data ? '<i class="fa-solid fa-check"></i>' : '';
@@ -72,7 +72,6 @@ const lockAccount = () => {
             console.log("Request failed:", error);
         })
 }
-
 
 const unlockAccount = () => {
     axios

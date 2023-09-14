@@ -4,21 +4,23 @@ import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {Character} from "../defs";
+import {Ref} from "vue/dist/vue";
 
 const props = defineProps<{
     apiUrl: string,
     accountRoot: string
 }>();
 
-const quickOpen = ref('');
-const searchEmail = ref('');
-const searchCharacter = ref('');
-const searchCreatedBefore = ref('');
-const searchCreatedAfter = ref('');
+const quickOpen: Ref<string> = ref('');
+const searchEmail: Ref<string> = ref('');
+const searchCharacter: Ref<string> = ref('');
+const searchCreatedBefore: Ref<string> = ref('');
+const searchCreatedAfter: Ref<string> = ref('');
 
-const table = ref();
-const tableLoading = ref(false);
-const tableData = ref();
+const table: Ref<any> = ref();
+const tableLoading: Ref<boolean> = ref(false);
+const tableData: Ref<any[] | null> = ref(null);
+
 
 const listCharacters = (characters: Character[]): string => {
     let names = [];
@@ -29,7 +31,6 @@ const listCharacters = (characters: Character[]): string => {
 };
 
 const rowClicked = (event: Event) => {
-    console.log(table.value);
     const data = table.value.dt.row(event.currentTarget).data();
     if (data?.url)
         window.open(data.url, '_blank');
@@ -74,6 +75,7 @@ const doAccountSearch = () => {
     if (searchCreatedAfter.value) searchCriteria.createdAfter = searchCreatedAfter.value;
     if (searchCreatedBefore.value) searchCriteria.createdBefore = searchCreatedBefore.value;
 
+    console.log("Table is: ", table.value);
     tableLoading.value = true;
     tableData.value = [];
 

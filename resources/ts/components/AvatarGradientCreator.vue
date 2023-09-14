@@ -61,16 +61,16 @@ const maybeReorderSteps = () => {
     });
     renderGradient();
 }
-const stepPreviewCss = (r, g, b) => {
+const stepPreviewCss = (r: number, g: number, b: number): object => {
     return {'background-color': `rgb(${r}, ${g}, ${b})`};
 }
-const deleteStep = (index) => {
+const deleteStep = (index: number) => {
     if (steps.value.length === 1) return; // No deleting the last step!
     steps.value.splice(index, 1);
     renderGradient();
 
 }
-const addStepAfter = (index) => {
+const addStepAfter = (index: number) => {
     if (steps.value.length >= 16) return;
 
     let previousStep = steps.value[index];

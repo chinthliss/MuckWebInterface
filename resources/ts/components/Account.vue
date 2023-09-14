@@ -19,10 +19,11 @@ const props = defineProps<{
 }>();
 
 const account: Ref<Account> = ref(props.accountIn);
-const emailToMakePrimary = ref();
+const emailToMakePrimary: Ref<string> = ref('');
 
 const confirmMakeEmailPrimary = (e: Event) => {
     emailToMakePrimary.value = (e.currentTarget as HTMLButtonElement).dataset.email;
+    // TODO: Rewrite all uses of getOrCreateInstance of a modal into a utility class
     const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-primary-email'));
     modal.show();
 }

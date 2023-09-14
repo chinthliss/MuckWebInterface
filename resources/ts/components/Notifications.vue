@@ -6,19 +6,20 @@ import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {AccountNotification} from "../defs";
+import {Modal} from "bootstrap";
 
 const props = defineProps<{
     apiUrl: string
 }>();
 
-const loadingNotifications = ref(true);
-const initialLoading = ref(true);
+const loadingNotifications: Ref<boolean> = ref(true);
+const initialLoading: Ref<boolean> = ref(true);
 
 const notifications: Ref<AccountNotification[]> = ref([]);
 
-let confirmationModal = null;
+let confirmationModal: Modal | null = null;
 
-const renderControlsColumn = (data: any, type: string, row: any) => {
+const renderControlsColumn = (data: any, type: string, row: any): string => {
     let controls = ''
     if (row.read_at)
         controls += `<i class="fas fa-envelope-open text-muted"></i>`;
@@ -79,11 +80,11 @@ const deleteNotification = function () {
 }
 
 const verifyIntentToDeleteAllNotifications = () => {
-    confirmationModal.show();
+    if (confirmationModal) confirmationModal.show();
 };
 
 const deleteAllNotifications = () => {
-    confirmationModal.hide();
+    if (confirmationModal) confirmationModal.hide();
     // Find highest seen ID so that delete all doesn't delete one we haven't seen yet
     let highestId = 0;
     for (let i = 0; i < notifications.value.length; i++) {

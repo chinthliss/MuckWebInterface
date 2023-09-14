@@ -13,19 +13,18 @@ const props = defineProps<{
     api: string
 }>();
 
+const table: Ref<any> = ref();
 const transactions: Ref<AccountTransaction[]> = ref([]);
-
-const loading = ref(true);
-
-const filter = ref('');
+const loading: Ref<boolean> = ref(true);
+const filter: Ref<string> = ref('');
 
 const renderIdWithLink = (data: any, type: string, row: any): string => {
     return `<a href="${row.url}">${data}</a>`;
 }
 
 const refreshFilter = () => {
-    const table = $('#Transactions-Table').DataTable();
-    table.draw();
+    if (!table) return;
+    table.value.dt.draw();
 }
 
 const transactionsTableConfiguration = {
@@ -65,6 +64,7 @@ const loadTransactions = () => {
 };
 
 onMounted(() => {
+    // Set an external callback for filtering
     $.fn.dataTable.ext.search.push(function (settings, data, _dataIndex) {
         let type = data[2];
         return (!filter.value || type === filter.value);
@@ -99,7 +99,7 @@ onMounted(() => {
         </div>
 
         <Spinner v-if="loading"/>
-        <DataTable v-else id="Transactions-Table"
+        <DataTable v-else ref="table"
                    class="table table-dark table-hover table-striped table-bordered small"
                    :options="transactionsTableConfiguration" :data="transactions">
             <thead>

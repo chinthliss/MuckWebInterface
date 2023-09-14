@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref} from 'vue';
+import {Ref, ref} from 'vue';
 import DataTable from 'datatables.net-vue3';
 import {AccountCard} from "../defs";
 
@@ -14,14 +14,14 @@ const props = defineProps<{
     }
 }>();
 
-const cards = ref(props.cardsIn);
+const cards: Ref<AccountCard[]> = ref(props.cardsIn);
 
-const errors = ref({});
+const errors: Ref<object> = ref({});
 
-const cardNumber = ref('');
-const expiryDate = ref('');
-const securityCode = ref('');
-const pendingRequest = ref(false);
+const cardNumber: Ref<string> = ref('');
+const expiryDate: Ref<string> = ref('');
+const securityCode: Ref<string> = ref('');
+const pendingRequest: Ref<boolean> = ref(false);
 
 const renderControlsColumn = (data: any, type: string, row: any): string => {
     let controls = ''

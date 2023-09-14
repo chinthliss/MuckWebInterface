@@ -3,26 +3,37 @@ import {ref, onMounted, Ref} from 'vue';
 import {csrf} from "../siteutils";
 import {arrayToList} from "../formatting";
 
-interface CharacterSubmission {
-    gender: string
-    birthday: string
-    faction: string
-    perks: string[]
+type CharacterSubmission = {
+    gender: string,
+    birthday: string,
+    faction: string,
+    perks: string[],
     flaws: string[]
 }
 
-interface PerkOrFlawConfig {
-    name: string
-    description: string
-    category?: string
-    excludes: string[]
+type PerkOrFlawConfig = {
+    name: string,
+    description: string,
+    category?: string,
+    excludes: string[],
     excluded: boolean
+}
+
+type FactionConfig = {
+    name: string,
+    description: string
+}
+
+type PerkCategoryConfig = {
+    label: string,
+    category: string,
+    description: string
 }
 
 const props = defineProps<{
     config: {
-        factions: any[]
-        perkCategories: any[]
+        factions: FactionConfig[]
+        perkCategories: PerkCategoryConfig[]
         perks: PerkOrFlawConfig[]
         flaws: PerkOrFlawConfig[]
     },
@@ -37,10 +48,10 @@ const props = defineProps<{
     old?: CharacterSubmission
 }>();
 
-const factions = ref(props.config?.factions || []);
-const perks = ref(props.config?.perks || []);
-const flaws = ref(props.config?.flaws || []);
-const perkCategories = ref(props.config?.perkCategories || []);
+const factions: Ref<FactionConfig[]> = ref(props.config?.factions || []);
+const perks: Ref<PerkOrFlawConfig[]> = ref(props.config?.perks || []);
+const flaws: Ref<PerkOrFlawConfig[]> = ref(props.config?.flaws || []);
+const perkCategories: Ref<PerkCategoryConfig[]> = ref(props.config?.perkCategories || []);
 
 const character: Ref<CharacterSubmission> = ref({
     gender: '',
