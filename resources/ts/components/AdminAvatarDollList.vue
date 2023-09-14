@@ -8,13 +8,8 @@ type Doll = {
 }
 const props = defineProps<{
     dolls: Doll[],
-    invalid: string[],
-    avatarWidthIn?: number,
-    avatarHeightIn?: number
+    invalid: string[]
 }>();
-
-const avatarWidth = props.avatarWidthIn ?? 384;
-const avatarHeight = props.avatarHeightIn ?? 640;
 
 </script>
 
