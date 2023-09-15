@@ -5,7 +5,6 @@ import {Character} from "../defs";
 import CharacterCard from './CharacterCard.vue';
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
-import {Modal} from "bootstrap";
 
 const props = defineProps<{
     links: {
@@ -21,9 +20,9 @@ const slots: Ref<number> = ref(0);
 const cost: Ref<number> = ref(0);
 const self: Ref<Element | null> = ref(null);
 const lastMessage: Ref<string> = ref('');
+const confirmationModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const messageModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 let initialLoading: Ref<boolean> = ref(true);
-let confirmationModal: Modal | null = null;
-let messageModal: Modal | null = null;
 
 const freeSlots = computed((): number => {
     return Math.max(slots.value - characters.value.length, 0);
@@ -55,8 +54,6 @@ const refreshCharacterList = () => {
 
 onMounted(() => {
     self.value!.addEventListener('show.bs.offcanvas', refreshCharacterList);
-    confirmationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-buy-character-slot'));
-    messageModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('message-display'));
 });
 
 const selectCharacter = (character: Character) => {
@@ -76,11 +73,10 @@ const selectCharacter = (character: Character) => {
 };
 
 const verifyBuyCharacterSlot = () => {
-    if (confirmationModal) confirmationModal.show();
+    if (confirmationModal) confirmationModal.value.show();
 }
 
 const buyCharacterSlot = () => {
-    if (confirmationModal) confirmationModal.hide();
     axios.post(props.links.buySlot, {})
         .then(response => {
             if (response?.data?.result === 'OK') {
@@ -88,7 +84,7 @@ const buyCharacterSlot = () => {
                 cost.value = response.data.characterSlotCost;
             } else {
                 lastMessage.value = "The request was declined: " + response.data.error;
-                if (messageModal) messageModal.show();
+                if (messageModal) messageModal.value.show();
             }
         })
         .catch(error => {
@@ -157,13 +153,13 @@ defineExpose({refreshCharacterList});
         </div>
     </div>
 
-    <ModalConfirmation id="confirm-buy-character-slot" @yes="buyCharacterSlot"
+    <ModalConfirmation ref="confirmationModal" @yes="buyCharacterSlot"
                        yes-label="Buy Character" no-label="Cancel"
     >
         Are you sure you wish to buy a new character slot for {{ cost }} {{ lex('accountcurrency') }}?
     </ModalConfirmation>
 
-    <ModalMessage id="message-display">{{ lastMessage }}</ModalMessage>
+    <ModalMessage ref="messageModal">{{ lastMessage }}</ModalMessage>
 
 
 </template>

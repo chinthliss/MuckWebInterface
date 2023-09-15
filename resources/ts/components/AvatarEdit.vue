@@ -3,7 +3,6 @@ import {ref, onMounted, Ref} from "vue";
 import ModalMessage from "./ModalMessage.vue";
 import {lex} from "../siteutils";
 import {AvatarItem, AvatarItemInstance} from "../defs";
-import {Modal} from "bootstrap";
 
 const props = defineProps<{
     itemsIn: AvatarItem[],
@@ -50,8 +49,7 @@ type AvatarInstance = {
 }
 
 let avatarCanvasContext: CanvasRenderingContext2D | null = null;
-let messageDialog: Modal | null = null;
-
+const messageDialog: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 const items: Ref<AvatarItem[]> = ref(props.itemsIn);
 const backgrounds: Ref<AvatarItem[]> = ref(props.backgroundsIn);
 const gradients: Ref<{ [gradientId: string]: string[] }> = ref(props.gradientsIn);
@@ -89,7 +87,6 @@ const purchases: Ref<{
 onMounted(() => {
     const canvasElement: HTMLCanvasElement = document.getElementById('Renderer') as HTMLCanvasElement;
     avatarCanvasContext = canvasElement.getContext('2d');
-    messageDialog = bootstrap.Modal.getOrCreateInstance(document.getElementById('DialogMessage'));
     loadAvatarState();
 });
 
@@ -398,7 +395,7 @@ const purchaseGradient = (gradientId: string, slot: string) => {
                 console.log("Purchasing gradient refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                if (messageDialog) messageDialog.show();
+                if (messageDialog) messageDialog.value.show();
             }
         })
         .catch((error) => {
@@ -430,7 +427,7 @@ const purchaseItem = (itemId: string) => {
                 console.log("Purchasing item refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                if (messageDialog) messageDialog.show();
+                if (messageDialog) messageDialog.value.show();
             }
         })
         .catch((error) => {
@@ -676,7 +673,7 @@ const purchaseItem = (itemId: string) => {
             <span v-if="saving" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         </button>
 
-        <modal-message id="DialogMessage" :title="messageDialogHeader">
+        <modal-message ref="messageDialog" :title="messageDialogHeader">
             {{ messageDialogContent }}
         </modal-message>
     </div>

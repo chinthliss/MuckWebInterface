@@ -37,7 +37,7 @@ defineExpose({show});
             <button type="button" class="btn btn-secondary" @click="$emit('no')" data-bs-dismiss="modal">
                 {{ noLabel ?? 'No' }}
             </button>
-            <button type="button" class="btn btn-primary" @click="$emit('yes')">
+            <button type="button" class="btn btn-primary" @click="$emit('yes')" data-bs-dismiss="modal">
                 {{ yesLabel ?? 'Yes' }}
             </button>
         </template>

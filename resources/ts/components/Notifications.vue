@@ -6,7 +6,6 @@ import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {AccountNotification} from "../defs";
-import {Modal} from "bootstrap";
 
 const props = defineProps<{
     apiUrl: string
@@ -17,7 +16,7 @@ const initialLoading: Ref<boolean> = ref(true);
 
 const notifications: Ref<AccountNotification[]> = ref([]);
 
-let confirmationModal: Modal | null = null;
+const confirmationModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 
 const renderControlsColumn = (data: any, type: string, row: any): string => {
     let controls = ''
@@ -80,11 +79,10 @@ const deleteNotification = function () {
 }
 
 const verifyIntentToDeleteAllNotifications = () => {
-    if (confirmationModal) confirmationModal.show();
+    if (confirmationModal.value) confirmationModal.value.show();
 };
 
 const deleteAllNotifications = () => {
-    if (confirmationModal) confirmationModal.hide();
     // Find highest seen ID so that delete all doesn't delete one we haven't seen yet
     let highestId = 0;
     for (let i = 0; i < notifications.value.length; i++) {
@@ -102,7 +100,6 @@ const deleteAllNotifications = () => {
 
 
 onMounted(() => {
-    confirmationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-delete-all-notifications'));
     refreshNotifications();
 });
 
@@ -146,7 +143,7 @@ onMounted(() => {
 
         </div>
 
-        <ModalConfirmation id="confirm-delete-all-notifications" @yes="deleteAllNotifications"
+        <ModalConfirmation ref="confirmationModal" @yes="deleteAllNotifications"
                            yes-label="Delete All" no-label="Cancel"
         >
             Are you sure you wish to delete all your notifications?

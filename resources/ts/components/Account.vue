@@ -20,12 +20,11 @@ const props = defineProps<{
 
 const account: Ref<Account> = ref(props.accountIn);
 const emailToMakePrimary: Ref<string> = ref('');
+const confirmPrimaryEmailModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 
 const confirmMakeEmailPrimary = (e: Event) => {
     emailToMakePrimary.value = (e.currentTarget as HTMLButtonElement).dataset.email;
-    // TODO: Rewrite all uses of getOrCreateInstance of a modal into a utility class
-    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirm-primary-email'));
-    modal.show();
+    confirmPrimaryEmailModal.value.show();
 }
 
 const makeEmailPrimary = () => {
@@ -206,7 +205,7 @@ const cancelSubscription = (id) => {
         <!-- TODO: Restore preferences on account screen -->
 
         <!-- Change primary email modal -->
-        <modal-confirmation id="confirm-primary-email" @yes="makeEmailPrimary"
+        <modal-confirmation ref="confirmPrimaryEmailModal" @yes="makeEmailPrimary"
                             title="Change Primary Email?" yes-label="Change" no-label="Cancel">
             <form id="changeEmailForm" :action="links.changeEmail" method="POST">
                 <input type="hidden" name="_token" :value="csrf()">
