@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\HostLogManager;
 use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
@@ -37,6 +38,15 @@ class HostLogTest extends TestCase
         $this->assertAuthenticated();
         $user = auth()->user();
         $this->assertDatabaseHas('log_hosts', ['aid' => $user->id(), 'plyr_ref' => 1234]);
+    }
+
+    public function test_logged_host_for_user_returns_timestamp()
+    {
+        $user = UserFactory::create();
+        $this->actingAs($user)->get('/');
+        $hostLogManager = $this->app->make(HostLogManager::class);
+        $lastTimestamp = $hostLogManager->getLastTimestampForUser($user);
+        $this->assertNotNull($lastTimestamp);
     }
 
 }

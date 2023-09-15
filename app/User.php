@@ -563,8 +563,12 @@ class User implements Authenticatable, MustVerifyEmail
     {
         if ($this->lastConnect) return $this->lastConnect;
 
-        //TODO: getLastConnect should also check when ACCOUNT last connected, not just character last connects
-        $lastConnect = null;
+        //Grab account last connect
+        /** @var HostLogManager $hostLogManager */
+        $hostLogManager = App::make(HostLogManager::class);
+        $lastConnect = $hostLogManager->getLastTimestampForUser($this);
+
+        //Then see if any characters have registered a newer one
         foreach ($this->getCharacters() as $character) {
             if ($character->lastUsedTimestamp) {
                 $lastConnect = max($lastConnect, $character->lastUsedTimestamp);
