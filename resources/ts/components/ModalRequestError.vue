@@ -5,14 +5,18 @@ Modal dialog that intercepts axios communication errors and shows itself if one 
 
 import {ref, onMounted} from "vue";
 import type {Ref} from "vue";
-import type {Modal} from "bootstrap";
+import ModalBase from "./ModalBase.vue";
 
 const lastError = ref("");
-const self: Ref<Element | null> = ref(null);
+const self = ref<Element | null>(null);
+
+const show = () => {
+    if (self.value) self.value.show();
+}
+defineExpose({show});
 
 onMounted(() => {
     console.log("Registering Axios interceptor for response errors.");
-    const modal: Modal = bootstrap.Modal.getOrCreateInstance(self.value!);
     axios.interceptors.response.use(function (response) {
         return response;
     }, function (error) {
@@ -22,7 +26,7 @@ onMounted(() => {
         } else {
             console.log("Server error: ", error);
             lastError.value = error?.response?.data?.message || error || "";
-            modal.value.show();
+            show();
             return Promise.reject(error);
         }
     });
@@ -31,30 +35,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <div ref="self" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Server Error</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div v-if="lastError">
-                            Whilst processing the request, the server responded with the following error:
-                            <br/>{{ lastError }}
-                        </div>
-                        <div v-else>
-                            An error occurred with the request to the server.
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
+    <modal-base ref="self">
+        <template v-slot:title>
+            <h5 class="modal-title">Server Error</h5>
+        </template>
+        <template v-slot:content>
+            <div v-if="lastError">
+                Whilst processing the request, the server responded with the following error:
+                <br/>{{ lastError }}
             </div>
-        </div>
-    </div>
+            <div v-else>
+                An error occurred with the request to the server.
+            </div>
+        </template>
+        <template v-slot:footer>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </template>
+    </modal-base>
 </template>
 
 <style scoped>

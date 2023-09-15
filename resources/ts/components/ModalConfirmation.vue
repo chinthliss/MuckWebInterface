@@ -6,41 +6,42 @@ Will emit 'yes' or 'no' depending on choice
 
 <script setup lang="ts">
 
+import {ref} from "vue";
+import ModalBase from "./ModalBase.vue";
+
 defineProps<{
     title?: string,
     yesLabel?: string,
     noLabel?: string
 }>();
 
+const self = ref<InstanceType<typeof ModalBase> | null>(null);
+
+const show = () => {
+    if (self.value) self.value.show();
+}
+defineExpose({show});
+
 
 </script>
 
 <template>
-    <div class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ title ?? 'Confirm?' }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="$emit('no')"
-                            aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <slot></slot>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @click="$emit('no')" data-bs-dismiss="modal">
-                        {{ noLabel ?? 'No' }}
-                    </button>
-                    <button type="button" class="btn btn-primary" @click="$emit('yes')">
-                        {{ yesLabel ?? 'Yes' }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <modal-base ref="self">
+        <template v-slot:title>
+            <h5 class="modal-title">{{ title ?? 'Confirm?' }}</h5>
+        </template>
+        <template v-slot:content>
+            <slot></slot>
+        </template>
+        <template v-slot:footer>
+            <button type="button" class="btn btn-secondary" @click="$emit('no')" data-bs-dismiss="modal">
+                {{ noLabel ?? 'No' }}
+            </button>
+            <button type="button" class="btn btn-primary" @click="$emit('yes')">
+                {{ yesLabel ?? 'Yes' }}
+            </button>
+        </template>
+    </modal-base>
 </template>
 
 <style scoped>
