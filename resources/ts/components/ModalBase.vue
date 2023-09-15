@@ -9,7 +9,7 @@ import {ref} from "vue";
 const self = ref<Element | null>(null);
 
 const show = () => {
-    if (self.value) self.value.show();
+    if (self.value) bootstrap.Modal.getOrCreateInstance(self).show();
 }
 defineExpose({show});
 
