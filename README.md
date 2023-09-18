@@ -2,32 +2,31 @@
 This project contains the framework to run the supporting webpage for the muck.
 
 ## Deployment
-Make sure Composer is installed  
-Clone project from git or Download files to a folder  
-Rename .env.example to .env
-Fill out settings in .env
-Run commands:
-```
-php composer.phar install --optimize-autoloader --no-dev  
-npm install
-php artisan key:generate
-```
+Make sure Composer and NPM are installed  
+Clone project from git or Download files to a folder    
+Rename .env.example to .env and fill out the settings in it  
 
-### Production Deployment
-```
-php artisan config:cache
-php artisan route:cache
-npm run production
-php artisan migrate
-```
 The following resources need to be downloaded separately:
 * /public/sitelogo.png
 * /public/favicon32.png
 * /storage/app/avatar/
 
+### Production Deployment
+```
+php artisan key:generate
+php composer.phar install --optimize-autoloader --no-dev  
+npm install
+php artisan config:cache
+php artisan route:cache
+npm run production
+php artisan migrate
+```
 ### Development Deployment
 Project uses Laravel Sail so see the documentation for that for more information.
 ```  
+php artisan key:generate
+php composer.phar install  
+npm install
 sail up -d   
 sail artisan migrate --seed
 sail artisan cache:clear
