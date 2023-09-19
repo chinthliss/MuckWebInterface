@@ -18,7 +18,7 @@ npm install
 php artisan key:generate
 php artisan config:cache
 php artisan route:cache
-npm run production
+npm run build
 php artisan migrate
 ```
 ### Development Deployment
