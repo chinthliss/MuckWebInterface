@@ -5,7 +5,7 @@
     "keywords": ["muck", "laravel", "mwi"],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.2.0",
         "ext-imagick": "*",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
