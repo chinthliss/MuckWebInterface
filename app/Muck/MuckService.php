@@ -115,8 +115,8 @@ class MuckService
     {
         $accounts = [];
         $response = $this->connection->request('findAccountsByCharacterName', ['name' => $name]);
-        //Form of result is account IDs separated by \r\n
-        foreach (explode(chr(13) . chr(10), $response) as $line) {
+        //Form of result is account IDs separated by commas
+        foreach (explode(',', $response) as $line) {
             if (!trim($line)) continue;
             $accounts[] = User::find($line);
         }

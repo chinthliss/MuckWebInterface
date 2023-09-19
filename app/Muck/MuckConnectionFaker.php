@@ -109,7 +109,7 @@ class MuckConnectionFaker implements MuckConnection
         foreach ($database as $dbref) {
             if (str_contains(strtolower($dbref->name), strtolower($name))) $accountIds[] = $dbref->accountId();
         }
-        return join(chr(13) . chr(10), array_unique($accountIds));
+        return join(',', array_unique($accountIds));
     }
 
     public function fake_validateCredentials(array $data): string
