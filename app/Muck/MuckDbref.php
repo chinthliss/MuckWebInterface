@@ -106,9 +106,10 @@ class MuckDbref
 
     /**
      * Basic array implement of a muck object
+     * Only really suitable for basic listings / utilities
      * @return array
      */
-    public function toArray(): array
+    public function toBasicArray(): array
     {
         return [
             'dbref' => $this->dbref,
@@ -119,7 +120,7 @@ class MuckDbref
     }
 
     /**
-     * Returns a public array representing a player object
+     * Returns a public array representing an player object
      * @return array
      */
     public function toPlayerArray(): array

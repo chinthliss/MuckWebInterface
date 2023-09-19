@@ -180,7 +180,7 @@ class CharacterController extends Controller
         $user = auth()->user();
         $characters = [];
         foreach ($user->getCharacters() as $character) {
-            $characters[] = $character->toArray();
+            $characters[] = $character->toPlayertoArray();
         }
         return view('multiplayer.character-password-change', ['characters' => $characters]);
     }
