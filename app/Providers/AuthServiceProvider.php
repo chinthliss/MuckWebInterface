@@ -27,7 +27,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
         Auth::provider('accounts', function($app, array $config) {
             return new MuckWebInterfaceUserProvider(
                 $app->make(MuckService::class),

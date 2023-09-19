@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Notifications\VerifyEmail;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
@@ -18,7 +19,10 @@ class AccountCreationTest extends TestCase
 
     public function test_can_create_account_with_valid_credentials()
     {
-        $this->expectsEvents(Registered::class);
+        Event::fake();
+        Event::assertListening(Registered::class, SendEmailVerificationNotification::class);
+        Event::except(Registered::class);
+
         $this->assertDatabaseMissing('accounts', [
             'email' => 'testnew@test.com'
         ]);
