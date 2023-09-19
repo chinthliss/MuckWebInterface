@@ -36,11 +36,15 @@ class MuckService
         list($dbref, $creationTimestamp, $lastUsedTimestamp, $typeFlag, $name) = $parts;
         // Extended properties
         $properties = [];
-        if (count($parts) > 5) {
-            for ($i = 5; $i < count($parts); $i++) {
+        for ($i = 5; $i < count($parts); $i++) {
+            if (!$parts[$i]) continue; // May be an empty string chunk if there's no properties
+            if (str_contains($parts[$i], '=')) {
                 list($key, $value) = explode('=', $parts[$i], 2);
-                $properties[$key] = $value;
+            } else {
+                $key = $parts[$i];
+                $value = 1;
             }
+            $properties[$key] = $value;
         }
         $result = new MuckDbref($dbref, $name, $typeFlag,
             Carbon::createFromTimestamp($creationTimestamp), Carbon::createFromTimestamp($lastUsedTimestamp),
