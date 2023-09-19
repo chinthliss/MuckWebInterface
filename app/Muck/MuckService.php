@@ -23,7 +23,7 @@ class MuckService
     }
 
     /**
-     * Expected format: 'dbref,creationTimestamp,typeFlag,"name","property1=value1",.."propertyN=valueN"'
+     * Expected format: 'dbref,creationTimestamp,lastUsedTimeStamp,typeFlag,"name","property1=value1",.."propertyN=valueN"'
      * @param string $response
      * @return MuckDbref
      */
@@ -36,9 +36,11 @@ class MuckService
         list($dbref, $creationTimestamp, $lastUsedTimestamp, $typeFlag, $name) = $parts;
         // Extended properties
         $properties = [];
-        for ($i = 5; $i < count($parts); $i++) {
-            list($key, $value) = explode('=', $parts[$i], 2);
-            $properties[$key] = $value;
+        if (count($parts) > 5) {
+            for ($i = 5; $i < count($parts); $i++) {
+                list($key, $value) = explode('=', $parts[$i], 2);
+                $properties[$key] = $value;
+            }
         }
         $result = new MuckDbref($dbref, $name, $typeFlag,
             Carbon::createFromTimestamp($creationTimestamp), Carbon::createFromTimestamp($lastUsedTimestamp),
@@ -309,7 +311,7 @@ class MuckService
      * Gets a single-use auth token from the muck, to allow someone to use it connecting to the websocket
      * @param User $user
      * @param MuckDbref|null $character
-     * @return string
+     * @return string The issued websocket authentication token
      */
     public function getWebsocketAuthTokenFor(?User $user, ?MuckDbref $character): string
     {
