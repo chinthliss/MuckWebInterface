@@ -254,7 +254,7 @@ class MuckService
         return [
             "result" => "OK",
             "character" => $this->getByDbref($result[1]),
-            "initialPassword" => $response[2]
+            "initialPassword" => $result[2]
         ];
     }
 
@@ -268,7 +268,7 @@ class MuckService
         $response = $this->connection->request('getCharacterInitialSetupConfiguration', ['aid' => $user->id()]);
         $config = json_decode($response, true);
         foreach (['factions', 'perks', 'flaws', 'perkCategories'] as $section) {
-            foreach ($config[$section] as &$item) {
+            foreach ($config[$section] as $item) {
                 if (array_key_exists('description', $item))
                     $item['description'] = Ansi::unparsedToHtml($item['description']);
             }
@@ -278,14 +278,14 @@ class MuckService
     }
 
     /**
-     * Character Request should contain [dbref, gender, birthday, faction, perks and flaws]
+     * Takes the array [dbref, gender, birthday, faction, perks? and flaws?]
      * Returns [result:'OK'] or [result:'ERROR', messages:[]]
      * @param array $characterRequest
      * @return array
      */
     public function finalizeCharacter(array $characterRequest): array
     {
-        $response = $this->connection->request('finalizeCharacter', $characterRequest);
+        $response = $this->connection->request('finalizeCharacter', ['characterData' => json_encode($characterRequest)]);
 
         // On success we get the string 'OK'
         if ($response === 'OK') return ["result" => "OK"];

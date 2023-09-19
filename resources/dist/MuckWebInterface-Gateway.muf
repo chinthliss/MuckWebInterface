@@ -15,6 +15,7 @@ i
 (   Requests to the muck from the server aren't encrypted. )
 (   The requests are signed by SHA1 which is considered compromised. If they were exposed externally it's assumed an attacker could get the key. )
 ( Outgoing requests to the website are presently disabled due to networking issues. )
+$version 1.0
 $pubdef :
 $libdef objectToString (for testing)
  
@@ -314,7 +315,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     else response400 then
 ; selfcall handleRequest_buyCharacterSlot
 
-(Expects 'name' and 'aid' set, returns OK|<InitialPassword>|<character> if successful or ERROR|<error> if there was an issue. )
+(Expects 'name' and 'aid' set, returns OK|<characterDbref>|<InitialPassword> if successful or ERROR|<error> if there was an issue. )
 : handleRequest_createCharacter[ arr:webcall -- ]
     webcall @ "aid" array_getitem ?dup if acct_any2aid else response400 exit then var! account
     webcall @ "name" array_getitem ?dup if capital else response400 exit then var! newName
@@ -339,7 +340,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     newCharacter @ "@/initial_password" newPassword @ setprop
     newCharacter @ "@/created_by" prog setprop
     
-    "OK|" newPassword @ intostr strcat "|" strcat newCharacter @ objectToString strcat
+    "OK|" newCharacter @ intostr strcat "|" strcat newPassword @ strcat
     descr swap descrnotify
 ; selfcall handleRequest_createCharacter
  
@@ -374,40 +375,65 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     { }dict (Result)
     
     (Factions)
-    { }dict
+    { }list
     rpSys "/faction/" array_get_propdirs foreach nip var! present
         "/faction/" present @ strcat "/" strcat workingDir !
         rpSys workingDir @ "no chargen" strcat getpropstr "Y" instring if continue then
-        { }dict
+        { "name" present @ }dict
         rpSys workingdir @ "desc" strcat getpropstr swap "description" array_setitem
-        swap present @ array_setitem
+        swap array_appenditem
     repeat
     swap "factions" array_setitem
     
     (Perks)
-    { }dict
+    { }list
     rpSys "/merit/" array_get_propdirs foreach nip var! present
         "/merit/" present @ strcat "/" strcat workingDir !
         rpSys workingDir @ "chargen" strcat getpropstr ?dup not if continue then
-        { }dict
+        { "name" present @ }dict
         "category" array_setitem
         rpSys workingdir @ "desc" strcat getpropstr swap "description" array_setitem
         rpSys workingdir @ "exclude" strcat getpropstr ?dup if ":" explode_array else { }list then swap "excludes" array_setitem        
-        swap present @ array_setitem
+        swap array_appenditem
     repeat
     swap "perks" array_setitem
     
     (Flaws)
-    { }dict
+    { }list
     rpSys "/flaw/" array_get_propdirs foreach nip var! present
         "/flaw/" present @ strcat "/" strcat workingDir !
-        { }dict
+        { "name" present @ }dict
         rpSys workingdir @ "desc" strcat getpropstr swap "description" array_setitem
         rpSys workingdir @ "exclude" strcat getpropstr ?dup if ":" explode_array else { }list then swap "excludes" array_setitem        
-        swap present @ array_setitem
+        swap array_appenditem
     repeat
     swap "flaws" array_setitem
- 
+    
+    (Perk Categories)
+    (TODO: Move to $lib/chargen)
+    {
+        {
+            "category" "infection"
+            "label" "Infection Resistance"
+            "description" "These perks control the overall rate of how quickly or how slowly transformation will effect you."
+        }dict
+        {
+            "category" "gender"
+            "label" "Infection Resistance"
+            "description" "There are many more preference related perks but these are the critical ones controlling your gender preferences."
+        }dict
+        {
+            "category" "appearance"
+            "label" "Gender"
+            "description" "Following on from gender perks, these perks control how you appear to others."
+        }dict
+        {
+            "category" "history"
+            "label" "Historic"
+            "description" "Finally, these perks effect how you start in this world."
+        }dict
+    }list
+    swap "perkCategories" array_setitem
     
     descr swap encodeJson descrnotify
 ; public handleRequest_getCharacterInitialSetupConfiguration

@@ -164,6 +164,7 @@ class CharacterController extends Controller
             throw ValidationException::withMessages(['other' => $response['messages']]);
         }
 
+        session()->flash('message-success', "Your character is set up and you're ready to go!");
         return redirect()->route('multiplayer.guide.starting');
 
 
@@ -180,7 +181,7 @@ class CharacterController extends Controller
         $user = auth()->user();
         $characters = [];
         foreach ($user->getCharacters() as $character) {
-            $characters[] = $character->toPlayertoArray();
+            $characters[] = $character->toPlayerArray();
         }
         return view('multiplayer.character-password-change', ['characters' => $characters]);
     }

@@ -192,7 +192,7 @@ const updateExclusions = (type: string) => {
               }}</label>
           </td>
           <td class="ps-2 pb-2">
-            <div v-html="faction.description"></div>
+            <div>{{ faction.description }}</div>
           </td>
         </tr>
       </table>
@@ -223,7 +223,7 @@ const updateExclusions = (type: string) => {
                   }}</label>
               </td>
               <td class="ps-2 pb-2">
-                <div v-html="perk.description"></div>
+                <div>{{ perk.description }}</div>
                 <div class="small text-muted" v-if="perk.excludes.length">Excludes: {{
                     arrayToList(perk.excludes)
                   }}
@@ -248,7 +248,7 @@ const updateExclusions = (type: string) => {
             <label class="btn btn-outline-primary w-100" :for="'flaw-' + flaw.name">{{ flaw.name }}</label>
           </td>
           <td class="ps-2 pb-2">
-            <div v-html="flaw.description"></div>
+            <div>{{ flaw.description }}</div>
             <div class="small text-muted" v-if="flaw.excludes.length">Excludes: {{
                 arrayToList(flaw.excludes)
               }}
