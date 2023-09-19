@@ -308,6 +308,7 @@ class AvatarController extends Controller
         if ($user && $user->getAvatarPreference() == User::AVATAR_PREFERENCE_HIDDEN) abort(204);
 
         if (str_ends_with(strtolower($name), '.png')) $name = substr($name, 0, -4);
+        //TODO: Investigate a muckservice function to do this in one muck call
         $character = $muckObjectService->getByPlayerName($name);
         if (!$character) abort(404);
         $avatarInstance = $service->getAvatarInstanceFor($character);
