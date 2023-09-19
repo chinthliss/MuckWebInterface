@@ -21,8 +21,6 @@ return new class extends Migration
                 $table->text('user_agent')->nullable();
                 $table->text('payload');
                 $table->integer('last_activity')->index();
-                //TODO Later - investigate live db, which has aid instead of user_id and different indexes
-                //$table->unsignedBigInteger('aid')->nullable()->unsigned();
             });
         }
     }
