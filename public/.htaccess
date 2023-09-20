@@ -24,6 +24,7 @@
 <Limit GET POST PUT DELETE>
   Require all granted
 </Limit>
-<LimitExcept GET POST PUT DELETE>
-  Require all denied
-</LimitExcept>
+# In case we need to limit it to the methods in question
+#<LimitExcept GET POST PUT DELETE>
+#  Require all denied
+#</LimitExcept>
