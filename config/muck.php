@@ -76,5 +76,5 @@ return [
     |
     */
     'websocketAuthUri' => ENV('MUCK_CLIENT_WEBSOCKET_AUTH_URI', '/auth/websocketToken'),
-    'websocketUri' => ENV('MUCK_CLIENT_WEBSOCKET_URI', 'mwi/mws'),
+    'websocketUri' => ENV('MUCK_CLIENT_WEBSOCKET_URI', 'ws://localhost:8001/mwi/ws'),
 ];

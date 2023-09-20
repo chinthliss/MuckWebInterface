@@ -19,3 +19,12 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Allow additional methods
+<Limit GET POST PUT DELETE>
+  Require all granted
+</Limit>
+# In case we need to limit it to the methods in question
+#<LimitExcept GET POST PUT DELETE>
+#  Require all denied
+#</LimitExcept>

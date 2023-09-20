@@ -654,7 +654,7 @@ class User implements Authenticatable, MustVerifyEmail
         if ($scope != 'basic') {
             $characters = [];
             foreach ($this->getCharacters() as $character) {
-                $characters[] = $character->toArray();
+                $characters[] = $character->toPlayerArray();
             }
             $array['characters'] = $characters;
             $array['lastConnected'] = $this->getLastConnect();

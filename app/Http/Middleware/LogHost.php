@@ -6,7 +6,6 @@ use App\HostLogManager;
 use App\User as User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Saves an entry to the host table
@@ -15,11 +14,9 @@ class LogHost
 {
 
     /**
-     * @param Request $request
-     * @param Closure $next
-     * @return mixed
+     * Handle the request
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         $response = $next($request);
 

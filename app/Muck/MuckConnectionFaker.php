@@ -226,6 +226,12 @@ class MuckConnectionFaker implements MuckConnection
                     "excludes" => ["FakePerk2"]
                 ],
                 [
+                    "name" => "Fake Perk with a link",
+                    "description" => 'This is text that should be sanitised <a href="#">This should not be a link</a>',
+                    "category" => 'appearance',
+                    "excludes" => ["FakePerk2"]
+                ],
+                [
                     "name" => "Fake Perk in a different category",
                     "description" => "As noted",
                     "category" => 'history',
@@ -260,7 +266,8 @@ class MuckConnectionFaker implements MuckConnection
 
     public function fake_finalizeCharacter(array $data): string
     {
-        if (array_key_exists('flaws', $data) && in_array('Unselectable Flaw', $data['flaws']))
+        $request = $data['characterData'];
+        if (array_key_exists('flaws', $request) && in_array('Unselectable Flaw', $request['flaws']))
             return 'The unselectable flaw was selected.';
         return 'OK';
     }
