@@ -181,7 +181,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     else response400 then
 ; selfcall handleRequest_validateCredentials
 
-(Expects 'aid' and maybe 'character' set)
+(Expects 'aid' and maybe 'dbref' set)
 (Retrns a string with the token in)
 : handleRequest_getWebsocketAuthTokenFor[ arr:webcall -- ]
     0 var! aid
@@ -191,7 +191,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     (At the moment allowing any connection to have a websocket )
     ( aid @ not if response400 exit then )
     
-    webcall @ "characterDbref" array_getitem ?dup if atoi dbref else #-1 then var! character
+    webcall @ "dbref" array_getitem ?dup if atoi dbref else #-1 then var! character
  
     startAcceptedResponse
     aid @ character @ websocketIssueAuthenticationToken 

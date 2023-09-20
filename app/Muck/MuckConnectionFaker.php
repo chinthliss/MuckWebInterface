@@ -304,7 +304,7 @@ class MuckConnectionFaker implements MuckConnection
         $result = "FAKEWEBSOCKETAUTHTOKEN:" . $accountId;
 
         /** @var MuckDbref $character */
-        $characterDbref = array_key_exists('character', $data) ? $data['character'] : null;
+        $characterDbref = array_key_exists('dbref', $data) ? $data['dbref'] : null;
         $character = $characterDbref ? $this->getDbrefFromFakerDatabase($characterDbref) : null;
         if ($character) $result = $result . ':' . $characterDbref . ':' . $character->name;
 

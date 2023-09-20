@@ -321,7 +321,7 @@ class MuckService
     {
         $data = [];
         if ($user) $data['aid'] = $user->id();
-        if ($character) $data['character'] = $character->dbref;
+        if ($character) $data['dbref'] = $character->dbref;
         return $this->connection->request('getWebsocketAuthTokenFor', $data);
     }
 
