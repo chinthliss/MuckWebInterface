@@ -17,10 +17,6 @@ class SaveActiveCharacter
     /**
      * If a character dbref is specified, verifies and sets active character on the User object
      * Takes it from the header or cookie with the former getting precedence.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
     {

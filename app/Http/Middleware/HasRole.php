@@ -12,18 +12,14 @@ class HasRole
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @param Closure $next
-     * @param string $role
-     * @return mixed
      */
-    public function handle(Request $request, Closure $next, string $role)
+    public function handle(Request $request, Closure $next, string $role): mixed
     {
         /** @var User $user */
         $user = $request->user();
 
         if (!$user) {
-            Log::Warn("HasRole was used on an incoming connection with no user. A previous middleware should be assured this.");
+            Log::critical("HasRole was used on an incoming connection with no user. A previous middleware should be assured this.");
             abort(403);
         }
 
