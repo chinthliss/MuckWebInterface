@@ -93,10 +93,13 @@ class EmailVerificationTest extends TestCase
         ]));
         /** @var User $user */
         $user = auth()->user();
+        $this->logoutUser(); // Because we allow verification without logging in
+
         Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification, $channels) use ($user) {
             $mail = $notification->toMail($user)->toArray();
             $response = $this->get($mail['actionUrl']);
             $response->assertRedirect();
+            $user = User::find($user->id()); //Re-fetch user
             $this->assertTrue($user->hasVerifiedEmail());
             $this->assertEquals($user->getEmail(), 'testnew@test.com');
             return true;
@@ -127,6 +130,7 @@ class EmailVerificationTest extends TestCase
             $mail = $notification->toMail($user)->toArray();
             $response = $this->get($mail['actionUrl']);
             $response->assertRedirect();
+            $user = User::find($user->id()); //Re-fetch user
             $this->assertDatabaseHas('account_emails', [
                 'email' => $user->getEmail()
             ]);

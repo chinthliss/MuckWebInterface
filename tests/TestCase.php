@@ -17,18 +17,26 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Login as one of the fixed seeded users used for muck testing (seeding needs to have been done first)
-     * @return void
      */
-    public function loginAsValidatedUser() {
+    public function loginAsValidatedUser(): void
+    {
         auth()->loginUsingId(DatabaseSeeder::$normalUserAccountId);
     }
 
     /**
      * Login as one of the fixed seeded users used for muck testing (seeding needs to have been done first)
-     * @return void
      */
-    public function loginAsOtherValidatedUser() {
+    public function loginAsOtherValidatedUser(): void
+    {
         auth()->loginUsingId(DatabaseSeeder::$secondNormalUserAccountId);
+    }
+
+    /**
+     * Logout present user
+     */
+    public function logoutUser(): void
+    {
+        auth()->logout();
     }
 
 }

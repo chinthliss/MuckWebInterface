@@ -39,12 +39,15 @@ class EmailController extends Controller
 
     /**
      * Should be protected by the 'signed' middleware!
-     * @return RedirectResponse
      */
-    public function verifyEmail(): RedirectResponse
+    public function verifyEmail(Request $request, string $id): RedirectResponse
     {
+        if (! $request->hasValidSignature()) abort(401);
+
         /** @var User $user */
-        $user = auth()->user();
+        $user = User::find($id);
+
+        if (!$user) abort(400);
 
         if ($user->hasVerifiedEmail()) return redirect(route('welcome'));
 
@@ -94,6 +97,9 @@ class EmailController extends Controller
         return view('auth.email-new');
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function newEmail(Request $request): View
     {
         /** @var User $user */
