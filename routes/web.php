@@ -25,6 +25,9 @@ Route::get('termsofservice', [TermsOfServiceController::class, 'showTermsOfServi
     ->name('auth.terms-of-service');
 Route::get('accountlocked', [HomeController::class, 'showLocked'])
     ->name('auth.locked');
+// Clicking email verification is always allowed in case the user is using a different device/browser for mail.
+Route::get('verifyemail/{id}/{hash}', [EmailController::class, 'verifyEmail'])
+    ->name('auth.email.verification')->middleware('signed', 'throttle:8,1');
 
 //Character Avatar related images (Image resources that skip middleware)
 Route::withoutMiddleware('web')->group(function () {
@@ -80,8 +83,6 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('auth.logout');
     Route::get('verifyemail', [EmailController::class, 'showVerifyEmail'])
         ->name('auth.email.verify');
-    Route::get('verifyemail/{id}/{hash}', [EmailController::class, 'verifyEmail'])
-        ->name('auth.email.verification')->middleware('signed', 'throttle:8,1');
     Route::get('resendverifyemail', [EmailController::class, 'resendVerificationEmail'])
         ->name('auth.email.resendVerification');
     Route::post('termsofservice', [TermsOfServiceController::class, 'acceptTermsOfService']);
