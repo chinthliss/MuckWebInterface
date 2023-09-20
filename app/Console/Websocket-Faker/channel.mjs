@@ -24,19 +24,29 @@ export default class Channel {
         this.#database = database;
     }
 
-    #transmitMessageToConnection(connection, message, data) {
+    #transmitChannelMessageToConnection(connection, message, data) {
         const parsedMessage = 'MSG' + this.#name + ',' + message + ',' + (data ? JSON.stringify(data) : '');
         console.log(" >> " + parsedMessage);
         connection.send(parsedMessage + '\r\n');
     }
 
+    #transmitSystemMessageToConnection(connection, message, data) {
+        const parsedMessage = 'SYS' + message + ',' + (data ? JSON.stringify(data) : '');
+        console.log(" >> " + parsedMessage);
+        connection.send(parsedMessage + '\r\n');
+    }
+
     sendMessageToConnection(connection, message, data) {
-        this.#transmitMessageToConnection(connection, message, data);
+        this.#transmitChannelMessageToConnection(connection, message, data);
+    }
+
+    sendSystemMessageToConnection(connection, message, data) {
+        this.#transmitSystemMessageToConnection(connection, message, data);
     }
 
     sendMessageToChannel(message, data) {
         for (const connection of this.#connections) {
-            this.#transmitMessageToConnection(connection, message, data);
+            this.#transmitChannelMessageToConnection(connection, message, data);
         }
     }
 
@@ -48,6 +58,7 @@ export default class Channel {
 
     connect(connection, accountId = null, dbref = null) {
         this.#connections.push(connection);
+        this.sendSystemMessageToConnection(connection,'joinedChannel', this.#name);
         this.sendMessageToConnection(connection, 'connected', 1)
         this.sendMessageToConnection(connection, 'playerConnected', 1)
         this.sendMessageToConnection(connection, 'accountConnected', 1)
