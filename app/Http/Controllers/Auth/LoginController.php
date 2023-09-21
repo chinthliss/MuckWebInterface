@@ -93,7 +93,8 @@ class LoginController extends Controller
         if (App::environment() === 'local')
             $response->header('Access-Control-Allow-Origin', '*');
 
-        return $response;
+        return response($response, 200)
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 
     }
 
