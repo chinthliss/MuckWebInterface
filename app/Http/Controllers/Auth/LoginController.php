@@ -88,13 +88,14 @@ class LoginController extends Controller
         $token = $muck->getWebsocketAuthTokenFor($user, $character);
 
         $response = response($token)
-            ->header('Content-Type', 'text/plain');
+            ->header('Content-Type', 'text/plain')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 
         if (App::environment() === 'local')
             $response->header('Access-Control-Allow-Origin', '*');
 
-        return response($response, 200)
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return $response;
+
 
     }
 
