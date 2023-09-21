@@ -29,7 +29,7 @@ props.fileUsage.forEach((file: FileUsage) => {
         ]"
         >
             <h3>{{ category.label }}</h3>
-            <table class="table table-responsive small">
+            <table class="table table-dark table-hover table-striped table-responsive small">
                 <thead>
                 <tr>
                     <th scope="col"></th>
