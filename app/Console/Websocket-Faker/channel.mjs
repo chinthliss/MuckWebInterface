@@ -25,8 +25,9 @@ export default class Channel {
     }
 
     #transmitChannelMessageToConnection(connection, message, data) {
-        const parsedMessage = 'MSG' + this.#name + ',' + message + ',' + (data ? JSON.stringify(data) : '');
-        console.log(" >> " + parsedMessage);
+        const parsedJson = (data ? JSON.stringify(data) : '');
+        const parsedMessage = 'MSG' + this.#name + ',' + message + ',' + parsedJson;
+        console.log(" >> " + this.#name + '.' + message + ': ' + parsedJson);
         connection.send(parsedMessage + '\r\n');
     }
 

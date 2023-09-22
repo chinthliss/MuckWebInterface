@@ -4,13 +4,15 @@
 import {WebSocketServer} from 'ws';
 import Channel from "./channel.mjs";
 import ChannelCharacter from "./channel-character.mjs";
+import ChannelHelp from "./channel-help.mjs";
 
 // A fake database to use for queries
 const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABASE) : null;
 
 // Any channels configured in here will use a specialized faker
 const channelOverrides = {
-    'character': ChannelCharacter
+    'character': ChannelCharacter,
+    'help': ChannelHelp
 }
 
 console.log("Creating the server.");
@@ -27,18 +29,20 @@ const connections = new Map();
 const channels = new Map();
 
 const processIncomingMessage = (connection, unprocessedMessage) => {
-    const [channelName, message, data] = unprocessedMessage.split(',', 3);
-    console.log(" << " + channelName + "." + message + ": " + data);
+    const [channelName, message, dataAsJson] = unprocessedMessage.split(',', 3);
+    let data = (dataAsJson ? JSON.parse(dataAsJson) : null);
+    console.log(" << " + channelName + "." + message + ": " + dataAsJson);
     const channel = channels[channelName];
     channel.messageReceived(connection, message, data);
 }
 
 const processIncomingSystemMessage = (connection, unprocessedMessage) => {
-    let [message, data] = unprocessedMessage.split(',', 2);
-    console.log(" << SYS." + message + ": " + data);
+    let [message, dataAsJson] = unprocessedMessage.split(',', 2);
+    let data = (dataAsJson ? JSON.parse(dataAsJson) : null);
+    console.log(" << SYS." + message + ": " + dataAsJson);
     switch (message) {
         case 'joinChannels':
-            let channelsToJoin = JSON.parse(data);
+            let channelsToJoin = data;
             if (typeof (channelsToJoin) === 'string') channelsToJoin = [channelsToJoin];
             for (const channel of channelsToJoin) {
                 if (!channels.has(channel)) {

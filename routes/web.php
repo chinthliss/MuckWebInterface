@@ -309,6 +309,9 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.forms');
         Route::get('inventory', [HomeController::class, 'showPending'])
             ->name('multiplayer.inventory');
+        Route::get('help/{startingPage?}', [MultiplayerController::class, 'showHelp'])
+            ->name('multiplayer.help')
+            ->where('startingPage', '(.*)'); // To allow nested values
 
         // Avatar functionality
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])
