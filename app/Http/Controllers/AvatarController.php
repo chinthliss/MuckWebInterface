@@ -58,7 +58,7 @@ class AvatarController extends Controller
 
         return [
             'background' => $avatar->background?->toCatalogArray(),
-            'items' => array_map(function($item) {
+            'items' => array_map(function ($item) {
                 return $item->toCatalogArray();
             }, $avatar->items),
             'colors' => $avatar->colors
@@ -78,7 +78,7 @@ class AvatarController extends Controller
         Log::Debug('Avatar - setAvatarState called with: ' . json_encode($request->all()));
 
         if (!$request->has('colors') || !$request->has('items') || !$request->has('background'))
-            abort (400, 'Missing fields in request.');
+            abort(400, 'Missing fields in request.');
 
         /** @var User $user */
         $user = auth()->user();
@@ -88,7 +88,7 @@ class AvatarController extends Controller
         $options = $service->getAvatarOptions($character);
 
         //Colors
-        foreach($request->get('colors') as $slot => $gradientId) {
+        foreach ($request->get('colors') as $slot => $gradientId) {
             if (!$gradientId) continue;
             if (!array_key_exists($gradientId, $options['gradients'])) abort(400, "The gradient '$gradientId' isn't available.");
             $correctedSlot = $slot;
@@ -105,9 +105,9 @@ class AvatarController extends Controller
             foreach ($options['backgrounds'] as $background) {
                 if ($background['id'] == $backgroundWanted['id']) $backgroundDetails = $background;
             }
-            if (!$backgroundDetails) abort (400, "The requested background '" . $backgroundWanted['name'] . "' wasn't an option.");
+            if (!$backgroundDetails) abort(400, "The requested background '" . $backgroundWanted['name'] . "' wasn't an option.");
             if ($backgroundDetails['cost'] && !$backgroundDetails['earned'] && !$backgroundDetails['owner']) {
-                abort (400, "The requested background '" . $backgroundWanted['name'] . "' isn't owned/earned.");
+                abort(400, "The requested background '" . $backgroundWanted['name'] . "' isn't owned/earned.");
             }
         }
 
@@ -130,7 +130,7 @@ class AvatarController extends Controller
             $backgroundWanted['z'] = 0; // This is so the previous system at least draws it behind foreground objects
             $items[] = $backgroundWanted;
         }
-        $items = array_map(function($item) {
+        $items = array_map(function ($item) {
             return [
                 'id' => $item['id'],
                 'x' => $item['x'],
@@ -148,6 +148,11 @@ class AvatarController extends Controller
             $request->get('colors'),
             $items
         );
+    }
+
+    public function showAdminHub(): View
+    {
+        return view('admin.avatar-hub');
     }
 
     public function showAdminDollList(AvatarService $service, MuckService $muckConnection): View
@@ -302,7 +307,7 @@ class AvatarController extends Controller
     public function getAvatarFromCharacterName(AvatarService $service, MuckObjectService $muckObjectService,
                                                Request       $request, string $name): Response
     {
-        /** @var User $user Optional*/
+        /** @var User $user Optional */
         $user = auth()->user();
 
         if ($user && $user->getAvatarPreference() == User::AVATAR_PREFERENCE_HIDDEN) abort(204);
@@ -405,7 +410,8 @@ class AvatarController extends Controller
             ->header('Content-Type', $image->getImageFormat());
     }
 
-    public function buyGradient(Request $request, AvatarService $avatarService, MuckService $muck) {
+    public function buyGradient(Request $request, AvatarService $avatarService, MuckService $muck): string
+    {
         if (!$request->has('gradient')) abort(400, "Gradient not specified.");
         $gradient = $avatarService->getGradient($request->get('gradient'));
         if (!$gradient) abort(400, "No gradient found with the id of:" . $request->get('gradient'));
@@ -483,7 +489,8 @@ class AvatarController extends Controller
 
     }
 
-    public function buyItem(Request $request, AvatarService $avatarService, MuckService $muck) {
+    public function buyItem(Request $request, AvatarService $avatarService, MuckService $muck): string
+    {
         if (!$request->has('item')) abort(400, "Item not specified.");
         $item = $avatarService->getAvatarItem($request->get('item'));
         if (!$item) abort(400, "No item found with the id of:" . $request->get('item'));

@@ -16,9 +16,7 @@
     @Staff
     <div class="mt-2 fw-bold"><i class="fas fa-fw fa-hat-wizard me-1 mt-2"></i>Administrative</div>
     <a class="nav-link rounded" href="{{ route('admin.tickets') }}">Support / Request (Agent)</a>
-    <a class="nav-link" href="{{ route('admin.avatar.dolllist') }}">Avatar Doll Tester</a>
-    <a class="nav-link" href="{{ route('admin.avatar.gradients') }}">Avatar Gradients</a>
-    <a class="nav-link" href="{{ route('admin.avatar.items') }}">Avatar Items</a>
+    <a class="nav-link rounded" href="{{ route('admin.avatar') }}">Avatar Administration</a>
     @Admin
     <a class="nav-link rounded" href="{{ route('admin.accounts') }}">Account Browser</a>
     @endAdmin

@@ -163,8 +163,13 @@ Route::prefix('/admin/')->group(function () {
         Route::get('tickets', [HomeController::class, 'showPending'])
             ->name('admin.tickets');
 
-        //Avatar Doll testing
+
         Route::prefix('avatar/')->group(function () {
+
+            Route::get('', [AvatarController::class, 'showAdminHub'])
+                ->name('admin.avatar');
+
+            //Avatar Doll testing
             Route::get('dolllist', [AvatarController::class, 'showAdminDollList'])
                 ->name('admin.avatar.dolllist');
             Route::get('dolltest/{code?}', [AvatarController::class, 'showAdminDollTest'])
@@ -174,15 +179,18 @@ Route::prefix('/admin/')->group(function () {
             Route::get('render/{code?}', [AvatarController::class, 'getAvatarFromAdminCode'])
                 ->name('admin.avatar.render');
             Route::get('testall', [AvatarController::class, 'getAllAvatarsAsAGif']);
+
+            //Avatar Gradients
+            Route::get('gradients', [AvatarController::class, 'showAdminAvatarGradients'])
+                ->name('admin.avatar.gradients');
+
+            //Avatar Items
+            Route::get('items', [AvatarController::class, 'showAdminAvatarItems'])
+                ->name('admin.avatar.items');
+
         });
 
-        //Avatar Gradients
-        Route::get('avatar/gradients', [AvatarController::class, 'showAdminAvatarGradients'])
-            ->name('admin.avatar.gradients');
 
-        //Avatar Items
-        Route::get('avatar/items', [AvatarController::class, 'showAdminAvatarItems'])
-            ->name('admin.avatar.items');
     });
 
     // ----------------------------- Admin level
