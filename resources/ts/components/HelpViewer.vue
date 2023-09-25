@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import {ref, Ref} from "vue";
+import {ref, Ref, computed} from "vue";
+import Spinner from "./Spinner.vue";
 
 const props = defineProps<{
     startingPage: string,
@@ -24,6 +25,7 @@ const pageIsInvalid = ref(false);
 
 
 const loadPage = (wantedPage: string, firstLoad: boolean = false) => {
+
     if (wantedPage.startsWith('/')) wantedPage = wantedPage.slice(1);
     loadingPage.value = true;
     if (firstLoad) {
@@ -43,6 +45,18 @@ const loadPage = (wantedPage: string, firstLoad: boolean = false) => {
 
     channel.send('getHelp', wantedPage);
 }
+
+const previousPage = computed<null | string>(() => {
+    const lastIndex = page.value.title.lastIndexOf('/');
+    if (lastIndex === -1) return null;
+    return page.value.title.slice(0, lastIndex);
+});
+
+const currentPage = computed<null | string>(() => {
+    const lastIndex = page.value.title.lastIndexOf('/');
+    if (lastIndex === -1) return page.value.title;
+    return page.value.title.slice(lastIndex + 1);
+});
 
 window.addEventListener('popstate', (event: PopStateEvent) => {
     console.log(event.state);
@@ -71,13 +85,13 @@ loadPage(page.value.title, true);
 <template>
     <div class="container">
         <h1>
-            <template v-if="page.title">{{ page.title }}</template>
+            <template v-if="page.title">
+                <span v-if="previousPage" class="text-muted">{{ previousPage }}/</span>{{ currentPage }}
+            </template>
             <template v-else>Contents</template>
         </h1>
 
-        <div v-if="loadingPage">
-            Loading
-        </div>
+        <spinner v-if="loadingPage"></spinner>
         <div v-else-if="pageIsInvalid">
             Couldn't find a page with the requested topic.
         </div>
@@ -85,16 +99,20 @@ loadPage(page.value.title, true);
             <div v-for="line in page.content">
                 {{ line }}
             </div>
-            <div v-for="child in page.contains">
-                <a class="pt-2" @click="loadPage(page.title + '/' + child)">{{ child }}</a>
-            </div>
         </div>
 
         <div>
-            <button class="btn btn-secondary mt-2" @click="loadPage('')">
-                Return to contents
-            </button>
+            <div v-for="child in page.contains" class="mt-2">
+                <a :href="rootUrl + '/' + page.title + '/' + child " @click.prevent="loadPage(page.title + '/' + child)">{{ child }}</a>
+            </div>
+            <div v-if="previousPage" class="mt-2">
+                <a :href="rootUrl + '/' + previousPage" @click.prevent="loadPage(previousPage)">Back to: {{ previousPage }}</a>
+            </div>
+            <div v-if="page.title" class="mt-2">
+                <a :href="rootUrl" @click.prevent="loadPage('')">Return to Contents</a>
+            </div>
         </div>
+
     </div>
 </template>
 
