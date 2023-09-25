@@ -50,8 +50,8 @@ const tableConfiguration = {
         {data: 'id', title: 'ID'},
         {data: 'primaryEmail', title: 'Primary Email'},
         {data: 'characters', title: 'Characters', render: listCharacters},
-        {data: 'created', title: 'Created', render: carbonToString},
-        {data: 'lastConnected', title: 'Last Connected', render: carbonToString}
+        {data: 'created', title: 'Created', render: carbonToString, type: 'date'},
+        {data: 'lastConnected', title: 'Last Connected', render: carbonToString, type: 'date'}
     ],
     language: {
         "emptyTable": "No accounts found matching the present criteria."

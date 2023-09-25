@@ -23,8 +23,8 @@ const emailTableConfiguration = {
     columns: [
         {data: 'email'},
         {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString}
+        {data: 'createdAt', render: carbonToString, type: 'date'},
+        {data: 'verifiedAt', render: carbonToString, type: 'date'}
     ],
     language: {
         "emptyTable": "No emails associated with this account."
@@ -36,7 +36,7 @@ const emailTableConfiguration = {
 
 const accountNotesTableConfiguration = {
     columns: [
-        {data: 'whenAt', render: carbonToString},
+        {data: 'whenAt', render: carbonToString, type: 'date'},
         {data: 'staffMember'},
         {data: 'game'},
         {data: 'body'}
