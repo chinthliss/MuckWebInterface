@@ -96,7 +96,7 @@ loadPage(page.value.title, true);
             Couldn't find a page with the requested topic.
         </div>
         <div v-else>
-            <div v-for="line in page.content">
+            <div class="mt-2" v-for="line in page.content">
                 {{ line }}
             </div>
         </div>
