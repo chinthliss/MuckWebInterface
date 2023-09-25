@@ -92,7 +92,7 @@ const badgesTableConfiguration = {
     columns: [
         {data: 'name'},
         {data: 'description', sortable: false},
-        {data: 'awarded', render: carbonToString, type: 'date'},
+        {data: 'awarded', render: carbonToString},
     ],
     language: {
         "emptyTable": "No badges."

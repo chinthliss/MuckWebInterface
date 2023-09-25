@@ -49,8 +49,8 @@ const renderIdWithLink = (data: any, type: string, row: any) => {
 const transactionsTableConfiguration = {
     columns: [
         {data: 'id', render: renderIdWithLink},
-        {data: 'created_at', render: carbonToString, type: 'date'},
-        {data: 'completed_at', render: carbonToString, type: 'date'},
+        {data: 'created_at', render: carbonToString},
+        {data: 'completed_at', render: carbonToString},
         {data: 'total_usd', render: usdToString},
         {data: 'account_currency_quoted'},
         {data: 'items'},

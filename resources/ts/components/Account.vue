@@ -52,8 +52,8 @@ const emailTableConfiguration = {
     columns: [
         {data: 'email'},
         {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString, type: 'date'},
-        {data: 'verifiedAt', render: carbonToString, type: 'date'},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString},
         {render: displayEmailRowForControls, sortable: false, className: 'dt-center'}
     ],
     paging: false,
@@ -91,7 +91,7 @@ const subscriptionsTableConfiguration = {
         {data: 'type'},
         {data: 'amount_usd', render: usdToString},
         {data: 'recurring_interval'},
-        {data: 'next_charge_at', render: carbonToString, type: 'date'},
+        {data: 'next_charge_at', render: carbonToString},
         {data: 'status', render: friendlySubscriptionStatus},
         {render: displaySubscriptionRowForControls, sortable: false}
     ],

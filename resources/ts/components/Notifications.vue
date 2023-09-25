@@ -37,7 +37,7 @@ const notificationTableConfiguration = {
     columns: [
         {render: renderControlsColumn, sortable: false, className: 'text-nowrap'},
         {data: 'character'},
-        {data: 'created_at', render: carbonToString, type: 'date'},
+        {data: 'created_at', render: carbonToString},
         {data: 'message'}
     ],
     order: [[2, 'asc']],
