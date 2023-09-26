@@ -215,7 +215,7 @@ class MuckConnectionFaker implements MuckConnection
                 ],
                 [
                     "name" => "FakePerk3",
-                    "description" => "The third fake perk for testing.",
+                    "description" => "The third fake perk for testing. And this line has [1;33mAnsi[0m!",
                     "category" => 'appearance',
                     "excludes" => ["FakePerk2"]
                 ],

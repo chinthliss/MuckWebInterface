@@ -219,7 +219,6 @@ return [
         'PageLinks' => App\Helpers\PageLinks::class,
         'MuckInterop' => App\Helpers\MuckInterop::class,
         'Lex' => App\Helpers\Lexicon::class,
-        'Ansi' => App\Helpers\Ansi::class,
     ])->toArray(),
 
     // Whether to process subscriptions, can be set to false to allow for a staging site
