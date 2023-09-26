@@ -2,6 +2,9 @@
  * Frequently used formatting functions
  */
 
+import {AnsiUp} from "ansi_up";
+const ansi_up = new AnsiUp();
+
 /**
  * Takes a string representation of a Carbon object exported from PHP and turns it into something friendlier
  */
@@ -35,8 +38,27 @@ export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): str
     return arrayToParse.join(', ');
 };
 
-import {AnsiUp} from "ansi_up";
-const ansi_up = new AnsiUp();
+/**
+ * Replaces key parts of HTML so that it can be used without being parsed
+ */
+export const escapeHTML = (text: string): string  => {
+    return text.replace(
+        /[&<>'"]/g,
+        found =>
+            ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[found] || found)
+    );
+}
+
+/**
+ * Converts the parsed ANSI in a string into an HTML representation
+ * Note that this will escape special characters so should not be used with escapeHTML
+ */
 export const ansiToHtml = (ansi: string): string => {
     return ansi_up.ansi_to_html(ansi);
 }

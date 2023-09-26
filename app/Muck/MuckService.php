@@ -4,7 +4,6 @@ namespace App\Muck;
 
 use App\Avatar\AvatarGradient;
 use App\Avatar\AvatarItem;
-use App\Helpers\Ansi;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +15,7 @@ class MuckService
      * @param MuckConnection $connection
      */
     public function __construct(
-        private MuckConnection $connection
+        private readonly MuckConnection $connection
     )
     {
 
@@ -37,7 +36,7 @@ class MuckService
         // Extended properties
         $properties = [];
         for ($i = 5; $i < count($parts); $i++) {
-            if (!$parts[$i]) continue; // May be an empty string chunk if there's no properties
+            if (!$parts[$i]) continue; // Might be an empty string chunk if there's no properties
             if (str_contains($parts[$i], '=')) {
                 list($key, $value) = explode('=', $parts[$i], 2);
             } else {
@@ -266,15 +265,7 @@ class MuckService
     public function getCharacterInitialSetupConfigurationFor(User $user): array
     {
         $response = $this->connection->request('getCharacterInitialSetupConfiguration', ['aid' => $user->id()]);
-        $config = json_decode($response, true);
-        foreach (['factions', 'perks', 'flaws', 'perkCategories'] as $section) {
-            foreach ($config[$section] as $item) {
-                if (array_key_exists('description', $item))
-                    $item['description'] = Ansi::unparsedToHtml($item['description']);
-            }
-        }
-        return $config;
-
+        return json_decode($response, true);
     }
 
     /**
@@ -313,7 +304,7 @@ class MuckService
 
     /**
      * Gets a single-use auth token from the muck, to allow someone to use it connecting to the websocket
-     * @param User $user
+     * @param User|null $user
      * @param MuckDbref|null $character
      * @return string The issued websocket authentication token
      */
