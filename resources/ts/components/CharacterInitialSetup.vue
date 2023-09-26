@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, Ref} from 'vue';
 import {csrf} from "../siteutils";
-import {arrayToList, ansiToHtml, escapeHTML} from "../formatting";
+import {arrayToList, ansiToHtml} from "../formatting";
 
 type CharacterSubmission = {
     gender: string,
@@ -248,7 +248,7 @@ const updateExclusions = (type: string) => {
             <label class="btn btn-outline-primary w-100" :for="'flaw-' + flaw.name">{{ flaw.name }}</label>
           </td>
           <td class="ps-2 pb-2">
-            <div>{{ ansiToHtml(flaw.description) }}</div>
+            <div v-html="ansiToHtml(flaw.description)"></div>
             <div class="small text-muted" v-if="flaw.excludes.length">Excludes: {{
                 arrayToList(flaw.excludes)
               }}

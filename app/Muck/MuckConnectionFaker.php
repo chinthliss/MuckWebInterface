@@ -162,7 +162,7 @@ class MuckConnectionFaker implements MuckConnection
             "factions" => [
                 [
                     "name" => "FakeFaction1",
-                    "description" => "The first fake faction for testing."
+                    "description" => "The first fake faction for testing. This line has > ' < special characters."
                 ],
                 [
                     "name" => "FakeFaction2",

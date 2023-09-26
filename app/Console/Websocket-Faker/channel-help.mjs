@@ -12,7 +12,7 @@ export default class ChannelHelp extends Channel {
             contains: ["Test"]
         },
         "Normal": {
-            content: ["This is a page with some actual content.", "And multiple lines at that.", "And this line has [1;33mAnsi[0m!"]
+            content: ["This is a page with some actual content.", "And multiple lines at that.", "And this line has [1;33mAnsi[0m!", "This line has > ' < special characters."]
         },
         "Test/Test": {
             content: ["Still a test!"]
