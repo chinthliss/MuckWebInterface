@@ -34,3 +34,9 @@ export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): str
     if (!arrayToParse.length) return emptyWord;
     return arrayToParse.join(', ');
 };
+
+import {AnsiUp} from "ansi_up";
+const ansi_up = new AnsiUp();
+export const ansiToHtml = (ansi: string): string => {
+    return ansi_up.ansi_to_html(ansi);
+}

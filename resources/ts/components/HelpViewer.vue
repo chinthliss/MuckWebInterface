@@ -2,6 +2,7 @@
 
 import {ref, Ref, computed} from "vue";
 import Spinner from "./Spinner.vue";
+import {ansiToHtml} from "../formatting";
 
 const props = defineProps<{
     startingPage: string,
@@ -96,9 +97,7 @@ loadPage(page.value.title, true);
             Couldn't find a page with the requested topic.
         </div>
         <div v-else>
-            <div class="mt-2" v-for="line in page.content">
-                {{ line }}
-            </div>
+            <div class="mt-2" v-for="line in page.content" v-html="ansiToHtml(line)"></div>
         </div>
 
         <div>
