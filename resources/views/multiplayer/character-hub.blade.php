@@ -1,25 +1,22 @@
 @extends('layout.page-with-navigation')
 
-@section('title', 'Edit Character')
+@section('title', 'Character')
 
 @section('breadcrumbs')
     {{ Breadcrumbs::render([
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
         [ 'route' => 'multiplayer.home', 'label' => 'Multiplayer' ],
-        [ 'label' => 'Edit Character' ]
+        [ 'label' => 'Character' ]
     ]) }}
 @endsection
-
-<!-- TODO: Profile and Inventory were initially listed here and need relocating -->
-<!-- TODO: Add form list page (presently on the bottom of the existing skills page.) -->
 
 @section('content')
     <div class="container">
         <div class="row">
-            <h1>Edit Character</h1>
+            <h1>Character</h1>
         </div>
         <div class="row">
-            <p>This page acts as a hub for all the things you can edit on your character.</p>
+            <p>This page acts as a hub for all the things you can view or edit on your character.</p>
             <p>TODO: Description and short description</p>
         </div>
 
@@ -43,6 +40,6 @@
         ['title' => 'Dedication', 'description' => 'Get information about dedications or switch your current one. There\'s also some fake terminal output?', 'url' => route('multiplayer.dedication')],
         ['title' => 'Avatar', 'description' => 'Customize the graphical representation of your character.', 'url' => route('multiplayer.avatar.edit')],
         ['title' => 'Kinks', 'description' => 'Set your detailed preferences for interacting with other characters.', 'url' => route('multiplayer.kinks')],
-        ['title' => 'AI', 'description' => 'Adjust how your character acts in combat while under automatic control.', 'url' => route('multiplayer.ai')],
+        ['title' => 'AI', 'description' => 'Adjust how your character acts in combat while under automatic control.', 'url' => route('multiplayer.ai')]
     ]) }}
 @endsection
