@@ -5,6 +5,7 @@ import {WebSocketServer} from 'ws';
 import Channel from "./channel.mjs";
 import ChannelCharacter from "./channel-character.mjs";
 import ChannelHelp from "./channel-help.mjs";
+import ChannelForms from "./channel-forms.mjs";
 
 // A fake database to use for queries
 const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABASE) : null;
@@ -12,7 +13,8 @@ const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABA
 // Any channels configured in here will use a specialized faker
 const channelOverrides = {
     'character': ChannelCharacter,
-    'help': ChannelHelp
+    'help': ChannelHelp,
+    'forms': ChannelForms
 }
 
 console.log("Creating the server.");
@@ -28,9 +30,20 @@ const connections = new Map();
  */
 const channels = new Map();
 
+const tryToParseJson = (json) => {
+    if (!json) return null;
+    let parsedJson = null;
+    try {
+        parsedJson = JSON.parse(json);
+    } catch {
+        console.log("Couldn't parse the following JSON: ", json);
+    }
+    return parsedJson;
+}
+
 const processIncomingMessage = (connection, unprocessedMessage) => {
     const [channelName, message, dataAsJson] = unprocessedMessage.split(',', 3);
-    let data = (dataAsJson ? JSON.parse(dataAsJson) : null);
+    let data = tryToParseJson(dataAsJson);
     console.log(" << " + channelName + "." + message + ": " + dataAsJson);
     const channel = channels[channelName];
     channel.messageReceived(connection, message, data);
@@ -38,13 +51,13 @@ const processIncomingMessage = (connection, unprocessedMessage) => {
 
 const processIncomingSystemMessage = (connection, unprocessedMessage) => {
     let [message, dataAsJson] = unprocessedMessage.split(',', 2);
-    let data = (dataAsJson ? JSON.parse(dataAsJson) : null);
+    let data = tryToParseJson(dataAsJson);
     console.log(" << SYS." + message + ": " + dataAsJson);
     switch (message) {
         case 'joinChannels':
             let channelsToJoin = data;
             if (typeof (channelsToJoin) === 'string') channelsToJoin = [channelsToJoin];
-            for (const channel of channelsToJoin) {
+            for (const channel of channelsToJoin || []) {
                 if (!channels.has(channel)) {
                     console.log("Creating channel: " + channel);
                     if (typeof channelOverrides[channel] !== 'undefined')

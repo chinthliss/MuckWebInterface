@@ -59,4 +59,9 @@ class MultiplayerController extends Controller
         ]);
     }
 
+    public function showFormBrowser(): View
+    {
+        return view('multiplayer.form-browser');
+    }
+
 }
