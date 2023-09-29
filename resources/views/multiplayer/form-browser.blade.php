@@ -1,6 +1,6 @@
 @extends('layout.page-with-navigation')
 
-@section('title', 'Help')
+@section('title', 'Form Browser')
 
 @section('breadcrumbs')
     {{ Breadcrumbs::render([

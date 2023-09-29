@@ -2,7 +2,32 @@ import Channel from './channel.mjs';
 
 export default class ChannelForms extends Channel {
 
-    formsCatalogue = {
+    formsCatalogue = [
+        {
+            name: "Test Form 1"
+
+        },
+        {
+            name: "Private Test Form 1",
+            private: 1
+        },
+        {
+            name: "Private Test Form 2",
+            private: 1
+        },
+        {
+            name: "Placement-pending Test Form 1",
+            placement: "Pending",
+            staffonly: 1
+        }
+    ]
+
+    formsMastery = {
+        "testcharacter": {
+            'Test Form 1': 1,
+            'Private Test Form 2': 2,
+            'Not a real form': 1
+        }
     }
 
     sendFormCatalogue = (connection) => {
@@ -10,11 +35,16 @@ export default class ChannelForms extends Channel {
     };
 
     sendFormMastery = (connection, who) => {
+        const mastery = this.formsMastery[who.toLowerCase()];
         const response = {
-            who: who,
-            error: "Not Implemented Yet"
+            who: who
         };
-        this.sendMessageToConnection(connection, 'formDatabase', response);
+        if (!mastery) {
+            response.error = 'No mastery found for the given target.';
+        } else {
+            response.forms = mastery;
+        }
+        this.sendMessageToConnection(connection, 'mastery', response);
     }
 
     messageReceived = (connection, message, data) => {
