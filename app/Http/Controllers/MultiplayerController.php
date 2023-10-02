@@ -6,6 +6,7 @@ use App\User as User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Log;
 
 class MultiplayerController extends Controller
 {
@@ -61,7 +62,14 @@ class MultiplayerController extends Controller
 
     public function showFormBrowser(): View
     {
-        return view('multiplayer.form-browser');
+        /** @var User $user */
+        $user = auth()->user();
+        $character = ($user?->getCharacter());
+
+        return view('multiplayer.form-browser')->with([
+            'startingPlayerName' => $character?->name,
+            'staff' => $user->isStaff()
+        ]);
     }
 
 }

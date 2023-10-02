@@ -5,7 +5,8 @@ import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 
 const props = defineProps<{
-    startingPlayerName?: string
+    startingPlayerName?: string,
+    staff?: boolean
 }>();
 
 type Form = {
@@ -15,12 +16,15 @@ type Form = {
     nonmasterable?: number,
     powerset?: string,
     placement?: string,
-    private?: number
+    private?: number,
+    lstats: string[], // List of parts with lstats
+    tags: string[], // List of tags
+    flags: string[] // List of flags
 }
 
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
-const formsToLoad: Ref<number> = ref(0);
+const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const changeTargetModal: Ref<Element | null> = ref(null);
 const intendedTarget: Ref<string> = ref('');
 
@@ -76,8 +80,16 @@ const unknownForms = computed((): string => {
 });
 
 const shouldWeShow = (form: Form) => {
-    if (filterMode.value === 'mastered' && !targetsForms.value[form.name]) return false;
-    if (filterMode.value === 'unmastered' && targetsForms.value[form.name] > 0) return false;
+    // Filtering on a target, if selected
+    if (targetsName.value) {
+        if (filterMode.value === 'mastered' && !targetsForms.value[form.name]) return false;
+        if (filterMode.value === 'unmastered' && targetsForms.value[form.name] > 0) return false;
+    }
+    if (! props.staff) {
+        if (form.staffonly) return false;
+        // Only show private forms that we know
+        if (form.private && !targetsForms.value[form.name]) return false;
+    }
     return true;
 }
 
@@ -91,7 +103,7 @@ changeFormMasteryTarget();
 <template>
     <div class="container">
 
-        <h1>Form Browser</h1>
+        <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
         <p>This is presently a root page and should have some introductory text here for new users that might click on
             it. Something about forms being a key part of the game?</p>

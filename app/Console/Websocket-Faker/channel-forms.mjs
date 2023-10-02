@@ -19,7 +19,20 @@ export default class ChannelForms extends Channel {
             name: "Placement-pending Test Form 1",
             placement: "Pending",
             staffonly: 1
+        },
+        {
+            name: "Form with Lstats 1",
+            lstats: ['legs']
+        },
+        {
+            name: "Form with flags 1",
+            flags: ['flag1', 'flag2']
+        },
+        {
+            name: "Form with tags 1",
+            tags: ['tag1', 'tag2']
         }
+
     ]
 
     formsMastery = {
