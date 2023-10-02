@@ -20,7 +20,7 @@ type Form = {
 
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
-const loadingData: Ref<boolean> = ref(true);
+const formsToLoad: Ref<number> = ref(0);
 const changeTargetModal: Ref<Element | null> = ref(null);
 const intendedTarget: Ref<string> = ref('');
 
@@ -29,9 +29,14 @@ const targetsForms: Ref<{ [form: string]: number }> = ref({});
 const filterMode: Ref<string> = ref('mastered');
 const error: Ref<string | null> = ref(null);
 
-channel.on('formDatabase', (data: Form[]) => {
-    formDatabase.value = data;
-    loadingData.value = false;
+channel.on('formDatabase', (data: number) => {
+    formDatabase.value = [];
+    formsToLoad.value = data;
+});
+
+channel.on('formListing', (data: Form) => {
+    formDatabase.value.push(data);
+    formsToLoad.value--;
 });
 
 type FormMasteryResponse = {
@@ -91,7 +96,7 @@ changeFormMasteryTarget();
         <p>This is presently a root page and should have some introductory text here for new users that might click on
             it. Something about forms being a key part of the game?</p>
 
-        <spinner v-if="loadingData"></spinner>
+        <spinner v-if="formsToLoad > 0"></spinner>
         <div v-else>
 
             <!-- Target row -->

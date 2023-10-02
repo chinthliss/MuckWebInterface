@@ -31,7 +31,10 @@ export default class ChannelForms extends Channel {
     }
 
     sendFormCatalogue = (connection) => {
-        this.sendMessageToConnection(connection, 'formDatabase', this.formsCatalogue);
+        this.sendMessageToConnection(connection, 'formDatabase', this.formsCatalogue.length);
+        for (let i = 0; i < this.formsCatalogue.length; i++) {
+            this.sendMessageToConnection(connection, 'formListing', this.formsCatalogue[i]);
+        }
     };
 
     sendFormMastery = (connection, who) => {
