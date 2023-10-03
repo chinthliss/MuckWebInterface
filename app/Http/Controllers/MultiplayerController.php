@@ -68,7 +68,7 @@ class MultiplayerController extends Controller
 
         return view('multiplayer.form-browser')->with([
             'startingPlayerName' => $character?->name,
-            'staff' => $user->isStaff()
+            'staff' => $character?->isStaff()
         ]);
     }
 
