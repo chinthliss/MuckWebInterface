@@ -32,6 +32,7 @@ class EmailController extends Controller
             return redirect(route('welcome'));
         }
 
+        //TODO: Need something here to deal with the email being invalid
         $user->sendEmailVerificationNotification();
 
         return back()->with('resent', true);
