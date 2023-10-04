@@ -26,12 +26,17 @@ const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
 const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const changeTargetModal: Ref<Element | null> = ref(null);
-const intendedTarget: Ref<string> = ref('');
+const changeTargetIndex: Ref<number> = ref(0);
+const changeTargetName: Ref<string> = ref('');
 
-const targetsName: Ref<string | null> = ref('');
-const targetsForms: Ref<{ [form: string]: number }> = ref({});
+type Target = {
+    name?: string,
+    loading?: boolean,
+    error?: string,
+    forms?: { [form: string]: number }
+}
+const targets: Ref<Target[]> = ref([{}, {}, {}, {}]);
 const filterMode: Ref<string> = ref('mastered');
-const error: Ref<string | null> = ref(null);
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
@@ -50,53 +55,77 @@ type FormMasteryResponse = {
 }
 
 channel.on('mastery', (data: FormMasteryResponse) => {
-    targetsName.value = data.who;
-    error.value = data.error || null;
-    targetsForms.value = data.forms || {};
+    // User might have entered the same target in multiple rows, so just step through them all
+    let updatedCount = 0;
+    for (const target of targets.value) {
+        if (target.name !== data.who) continue;
+        target.name = data.who;
+        target.error = data.error;
+        target.forms = data.forms;
+        target.loading = false;
+        updatedCount++;
+    }
+    if (!updatedCount) {
+        console.log("Unable to find a target to update for: ", data);
+        return;
+    }
 });
 
-const changeFormMasteryTarget = (): void => {
-    if (!intendedTarget.value) return;
-    channel.send('getFormMasteryOf', intendedTarget.value);
+const changeTarget = (): void => {
+    if (!changeTargetName.value) return;
+    let target = targets.value[changeTargetIndex.value];
+    target.loading = true;
+    target.name = changeTargetName.value;
+    channel.send('getFormMasteryOf', target.name);
 }
 
-const clearTarget = () => {
-    targetsName.value = null;
-    targetsForms.value = {};
-    error.value = null;
+const launchChangeTarget = (index: number): void => {
+    changeTargetIndex.value = index;
+    changeTargetModal.value.show()
+}
 
+const clearTarget = (index: number) => {
+    targets.value[index] = {};
 }
 
 const unknownForms = computed((): string => {
-    if (! targetsName.value) return '';
     const result = [];
     const formList = formDatabase.value.map((form) => {
         return form.name;
     });
-    for (const form in targetsForms.value) {
-        if (formList.indexOf(form) === -1) result.push(form)
+    for (const target of targets.value) {
+        for (const form in target.forms) {
+            if (formList.indexOf(form) === -1 && result.indexOf(form) === -1) result.push(form)
+        }
     }
     return result.join(', ');
 });
 
-const shouldWeShow = (form: Form) => {
-    // Filtering on a target, if selected
-    if (targetsName.value) {
-        if (filterMode.value === 'mastered' && !targetsForms.value[form.name]) return false;
-        if (filterMode.value === 'unmastered' && targetsForms.value[form.name] > 0) return false;
+const shouldWeShow = (form: Form): boolean => {
+    // Filtering on targets, if selected
+    if (! form.name) return false;
+    let count = 0;
+    for (const target of targets.value) {
+        if (target.forms && target.forms[form.name]) count++;
     }
+    if (filterMode.value === 'mastered' && !count) return false;
+    if (filterMode.value === 'unmastered' && count) return false;
+
     if (! props.staff) {
         if (form.staffonly) return false;
-        // Only show private forms that we know
-        if (form.private && !targetsForms.value[form.name]) return false;
+        // Only show private forms that are present
+        if (form.private && !count) return false;
     }
     return true;
 }
 
 // Send requests for data
 channel.send('getFormCatalogue');
-if (props.startingPlayerName) intendedTarget.value = props.startingPlayerName;
-changeFormMasteryTarget();
+if (props.startingPlayerName) {
+    changeTargetIndex.value = 0;
+    changeTargetName.value = props.startingPlayerName;
+    changeTarget();
+}
 
 </script>
 
@@ -111,11 +140,33 @@ changeFormMasteryTarget();
         <spinner v-if="formsToLoad > 0"></spinner>
         <div v-else>
 
-            <!-- Target row -->
-            <div class="d-lg-flex align-items-center">
+            <!-- Mode selector -->
+            <div class="d-lg-flex align-items-center justify-content-center mb-2">
+                <div class="me-1 text-primary">Mode: </div>
+                <div class="btn-group" role="group" aria-label="Filter mode">
+                    <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
+                           v-model="filterMode" value="mastered"
+                    >
+                    <label class="btn btn-secondary" for="filter_mastered">Mastered Forms</label>
+
+                    <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
+                           v-model="filterMode" value="unmastered"
+                    >
+                    <label class="btn btn-secondary" for="filter_unmastered">Un-mastered Forms</label>
+
+                    <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
+                           v-model="filterMode" value="none"
+                    >
+                    <label class="btn btn-secondary" for="filter_none">All Forms</label>
+
+                </div>
+            </div>
+            <!-- Target rows -->
+            <div v-for="(target, index) in targets" class="d-lg-flex align-items-center mb-2">
                 <div class="flex-grow-1">
-                    <template v-if="targetsName">
-                        <span class="text-primary">Present Target:</span> {{ targetsName }}
+                    <span class="text-primary">Target {{index + 1}}: </span>
+                    <template v-if="target.name">
+                        {{ target.name }}
                     </template>
                     <template v-else>
                         No Target Selected
@@ -124,58 +175,47 @@ changeFormMasteryTarget();
                 </div>
 
                 <div>
-                    <button class="btn btn-primary me-lg-2" @click="changeTargetModal.show()">
+                    <div v-if="target.loading" class="me-2">
+                        <spinner></spinner>
+                    </div>
+                    <div v-if="target.error" class="me-2 text-danger">
+                        Can't display: {{ target.error }}
+                    </div>
+                </div>
+
+                <div>
+                    <button class="btn btn-primary me-lg-2" @click="launchChangeTarget(index)">
                         <i class="fas fa-search btn-icon-left"></i>Select Target
                     </button>
 
-                    <button class="btn btn-primary me-lg-2" @click="clearTarget" :disabled="!targetsName" >
+                    <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name" >
                         <i class="fas fa-close btn-icon-left"></i>Clear Target
                     </button>
                 </div>
 
-                <div class="me-1">Target Mode: </div>
-                <div class="btn-group" role="group" aria-label="Filter mode">
-                    <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
-                           v-model="filterMode" value="mastered" :disabled="!targetsName"
-                    >
-                    <label class="btn btn-secondary" for="filter_mastered">Mastered Forms</label>
-
-                    <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
-                           v-model="filterMode" value="unmastered" :disabled="!targetsName"
-                    >
-                    <label class="btn btn-secondary" for="filter_unmastered">Un-mastered Forms</label>
-
-                    <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
-                           v-model="filterMode" value="none" :disabled="!targetsName"
-                    >
-                    <label class="btn btn-secondary" for="filter_none">All Forms</label>
-                </div>
             </div>
 
             <hr>
 
-            <div v-if="error" class="alert alert-danger">
-                The game refused the request to view the present target with the following reason:
-                {{ error }}
-            </div>
-            <div v-else>
+            <div>
                 <template v-for="form in formDatabase">
                     <div v-if="shouldWeShow(form)">
                         {{ form.name }}
                     </div>
                 </template>
                 <div v-if="unknownForms" class="mt-4 alert alert-warning">
-                    <div>Form mastery was found for the following forms but they don't seem to be in the database:</div>
+                    <div>Form mastery was found for the following forms but no information on them was available:</div>
                     <div>{{ unknownForms }}</div>
+                    <div>(This might just mean the form hasn't been released yet.)</div>
                 </div>
             </div>
 
         </div>
     </div>
-    <modal-confirmation ref="changeTargetModal" title="Change Target" yes-label="Search" no-label="Cancel" @yes="changeFormMasteryTarget">
+    <modal-confirmation ref="changeTargetModal" title="Change Target" yes-label="Search" no-label="Cancel" @yes="changeTarget">
         <div class="mb-2">
             <label for="changeTargetInput" class="form-label">Enter the name of the player you want to view:</label>
-            <input type="text" class="form-control" id="changeTargetInput" v-model="intendedTarget">
+            <input type="text" class="form-control" id="changeTargetInput" v-model="changeTargetName">
         </div>
     </modal-confirmation>
 

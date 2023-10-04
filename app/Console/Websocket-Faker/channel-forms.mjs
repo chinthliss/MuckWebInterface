@@ -9,6 +9,7 @@ export default class ChannelForms extends Channel {
         },
         {
             name: "Private Test Form 1",
+            placement: ['something@somewhere'],
             private: 1
         },
         {
@@ -17,7 +18,7 @@ export default class ChannelForms extends Channel {
         },
         {
             name: "Placement-pending Test Form 1",
-            placement: "Pending",
+            placementNote: "Pending",
             staffonly: 1
         },
         {
@@ -55,11 +56,17 @@ export default class ChannelForms extends Channel {
         const response = {
             who: who
         };
+
         if (!mastery) {
-            response.error = 'No mastery found for the given target.';
+            response.error = "Couldn't find someone with that name.";
         } else {
             response.forms = mastery;
         }
+
+        if (who.toLowerCase() === 'refused') {
+            response.error = "You don't have permission to view.";
+        }
+
         this.sendMessageToConnection(connection, 'mastery', response);
     }
 
