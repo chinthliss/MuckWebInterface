@@ -4,34 +4,46 @@ export default class ChannelForms extends Channel {
 
     formsCatalogue = [
         {
-            name: "Test Form 1"
+            name: "Test Form 1",
+            gender: 'male'
 
         },
         {
             name: "Private Test Form 1",
+            gender: 'male',
             placement: ['something@somewhere'],
             private: 1
         },
         {
             name: "Private Test Form 2",
+            gender: 'male',
             private: 1
         },
         {
             name: "Placement-pending Test Form 1",
+            gender: 'male',
             placementNote: "Pending",
             staffonly: 1
         },
         {
             name: "Form with Lstats 1",
+            gender: 'male',
             lstats: ['legs']
         },
         {
             name: "Form with flags 1",
+            gender: 'female',
             flags: ['flag1', 'flag2']
         },
         {
             name: "Form with tags 1",
+            gender: 'herm',
             tags: ['tag1', 'tag2']
+        },
+        {
+            name: "Form with a special note",
+            gender: 'shemale',
+            specialNote: 'Test Special Note'
         }
 
     ]
