@@ -3,6 +3,8 @@
 import {ref, Ref, computed} from "vue";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import DataTable from "datatables.net-vue3";
+import {capital} from "../formatting";
 
 const props = defineProps<{
     startingPlayerName?: string,
@@ -14,12 +16,21 @@ type Form = {
     staffonly?: number,
     hidden?: number,
     nonmasterable?: number,
-    powerset?: string,
-    placement?: string,
+    powersetNote?: string,
+    placementNote?: string,
+    specialNote?: string,
     private?: number,
-    lstats: string[], // List of parts with lstats
+    gender: string
+    lstats?: string[], // List of parts with lstats
     tags: string[], // List of tags
     flags: string[] // List of flags
+    noFunnel?: string,
+    noReward?: string,
+    noZap?: string,
+    noNative?: string,
+    noExtract?: string,
+    bypassImmune?: string,
+    sayVerb?: string
 }
 
 const formDatabase: Ref<Form[]> = ref([]);
@@ -35,8 +46,16 @@ type Target = {
     error?: string,
     forms?: { [form: string]: number }
 }
-const targets: Ref<Target[]> = ref([{}, {}, {}, {}]);
+const targets: Ref<[Target, Target, Target, Target]> = ref([{}, {}, {}, {}]);
 const filterMode: Ref<string> = ref('mastered');
+
+const filteredFormDatabase = computed(() => {
+    const result = [];
+    for (const form of formDatabase.value) {
+        if (shouldWeShow(form)) result.push(form);
+    }
+    return result;
+});
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
@@ -81,7 +100,7 @@ const changeTarget = (): void => {
 
 const launchChangeTarget = (index: number): void => {
     changeTargetIndex.value = index;
-    changeTargetModal.value.show()
+    changeTargetModal.value.show();
 }
 
 const clearTarget = (index: number) => {
@@ -118,6 +137,17 @@ const shouldWeShow = (form: Form): boolean => {
     }
     return true;
 }
+
+const formTableConfiguration = {
+    columns: [
+        {data: 'name'},
+        {data: 'gender', render: capital}
+    ],
+    paging: false,
+    info: false,
+    searching: true,
+    scrollX: true
+};
 
 // Send requests for data
 channel.send('getFormCatalogue');
@@ -198,16 +228,23 @@ if (props.startingPlayerName) {
             <hr>
 
             <div>
-                <template v-for="form in formDatabase">
-                    <div v-if="shouldWeShow(form)">
-                        {{ form.name }}
-                    </div>
-                </template>
-                <div v-if="unknownForms" class="mt-4 alert alert-warning">
-                    <div>Form mastery was found for the following forms but no information on them was available:</div>
-                    <div>{{ unknownForms }}</div>
-                    <div>(This might just mean the form hasn't been released yet.)</div>
-                </div>
+                <DataTable class="table table-dark table-hover table-striped table-bordered"
+                           :options="formTableConfiguration"
+                           :data="filteredFormDatabase"
+                >
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Gender</th>
+                    </tr>
+                    </thead>
+                </Datatable>
+            </div>
+
+            <div v-if="unknownForms" class="mt-4 alert alert-warning">
+                <div>Form mastery was found for the following forms but no information on them was available:</div>
+                <div>{{ unknownForms }}</div>
+                <div>(This might just mean the form hasn't been released yet.)</div>
             </div>
 
         </div>
