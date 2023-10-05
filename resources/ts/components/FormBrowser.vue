@@ -15,22 +15,25 @@ type Form = {
     name: string,
     staffonly?: number,
     hidden?: number,
-    nonmasterable?: number,
+    placement?: string[],
     powersetNote?: string,
     placementNote?: string,
     specialNote?: string,
     private?: number,
-    gender: string
+    gender: string,
+    size?: number,
     lstats?: string[], // List of parts with lstats
     tags: string[], // List of tags
     flags: string[] // List of flags
+    noMastering?: number,
     noFunnel?: string,
     noReward?: string,
     noZap?: string,
     noNative?: string,
     noExtract?: string,
     bypassImmune?: string,
-    sayVerb?: string
+    sayVerb?: string,
+    holiday?: string
 }
 
 const formDatabase: Ref<Form[]> = ref([]);
@@ -122,7 +125,7 @@ const unknownForms = computed((): string => {
 
 const shouldWeShow = (form: Form): boolean => {
     // Filtering on targets, if selected
-    if (! form.name) return false;
+    if (!form.name) return false;
     let count = 0;
     for (const target of targets.value) {
         if (target.forms && target.forms[form.name]) count++;
@@ -130,7 +133,7 @@ const shouldWeShow = (form: Form): boolean => {
     if (filterMode.value === 'mastered' && !count) return false;
     if (filterMode.value === 'unmastered' && count) return false;
 
-    if (! props.staff) {
+    if (!props.staff) {
         if (form.staffonly) return false;
         // Only show private forms that are present
         if (form.private && !count) return false;
@@ -141,7 +144,32 @@ const shouldWeShow = (form: Form): boolean => {
 const formTableConfiguration = {
     columns: [
         {data: 'name'},
-        {data: 'gender', render: capital}
+        {data: 'gender', render: capital},
+        {data: 'size', defaultContent: ''},
+        {data: 'cockCount', defaultContent: ''},
+        {data: 'cockSize', defaultContent: ''},
+        {data: 'ballCount', defaultContent: ''},
+        {data: 'ballSize', defaultContent: ''},
+        {data: 'cuntCount', defaultContent: ''},
+        {data: 'cuntSize', defaultContent: ''},
+        {data: 'breastCount', defaultContent: ''},
+        {data: 'breastSize', defaultContent: ''},
+        {data: 'tags', defaultContent: ''},
+        {data: 'flags', defaultContent: '', render: JSON.stringify},
+        {data: 'sayVerb', defaultContent: ''},
+        {data: 'noMastering', defaultContent: ''},
+        {data: 'noFunnel', defaultContent: ''},
+        {data: 'noReward', defaultContent: ''},
+        {data: 'noZap', defaultContent: ''},
+        {data: 'noNative', defaultContent: ''},
+        {data: 'noExtract', defaultContent: ''},
+        {data: 'bypassImmune', defaultContent: ''},
+        {data: 'placement', defaultContent: '', render: JSON.stringify},
+        {data: 'holiday', defaultContent: ''},
+        {data: 'placementNote', defaultContent: ''},
+        {data: 'powerNote', defaultContent: ''},
+        {data: 'specialNote', defaultContent: ''},
+
     ],
     paging: false,
     info: false,
@@ -172,7 +200,7 @@ if (props.startingPlayerName) {
 
             <!-- Mode selector -->
             <div class="d-lg-flex align-items-center justify-content-center mb-2">
-                <div class="me-1 text-primary">Mode: </div>
+                <div class="me-1 text-primary">Mode:</div>
                 <div class="btn-group" role="group" aria-label="Filter mode">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
                            v-model="filterMode" value="mastered"
@@ -194,7 +222,7 @@ if (props.startingPlayerName) {
             <!-- Target rows -->
             <div v-for="(target, index) in targets" class="d-lg-flex align-items-center mb-2">
                 <div class="flex-grow-1">
-                    <span class="text-primary">Target {{index + 1}}: </span>
+                    <span class="text-primary">Target {{ index + 1 }}: </span>
                     <template v-if="target.name">
                         {{ target.name }}
                     </template>
@@ -218,7 +246,7 @@ if (props.startingPlayerName) {
                         <i class="fas fa-search btn-icon-left"></i>Select Target
                     </button>
 
-                    <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name" >
+                    <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name">
                         <i class="fas fa-close btn-icon-left"></i>Clear Target
                     </button>
                 </div>
@@ -236,6 +264,31 @@ if (props.startingPlayerName) {
                     <tr>
                         <th scope="col">Name</th>
                         <th scope="col">Gender</th>
+                        <th scope="col">Size</th>
+                        <th scope="col">Cock Count</th>
+                        <th scope="col">Cock Size</th>
+                        <th scope="col">Ball Count</th>
+                        <th scope="col">Ball Size</th>
+                        <th scope="col">Cunt Count</th>
+                        <th scope="col">Cunt Size</th>
+                        <th scope="col">Breast Count</th>
+                        <th scope="col">Breast Size</th>
+                        <th scope="col">Tags</th>
+                        <th scope="col">Flags</th>
+                        <th scope="col">Say Verb</th>
+                        <th scope="col">No Mastering</th>
+                        <th scope="col">No Funnel</th>
+                        <th scope="col">No Reward</th>
+                        <th scope="col">No Zap</th>
+                        <th scope="col">No Native</th>
+                        <th scope="col">No Extract</th>
+                        <th scope="col">Bypass Immune</th>
+                        <th scope="col">Placement</th>
+                        <th scope="col">Holiday</th>
+                        <th scope="col">Placement Note</th>
+                        <th scope="col">Powers Note</th>
+                        <th scope="col">Special Note</th>
+
                     </tr>
                     </thead>
                 </Datatable>
@@ -249,7 +302,8 @@ if (props.startingPlayerName) {
 
         </div>
     </div>
-    <modal-confirmation ref="changeTargetModal" title="Change Target" yes-label="Search" no-label="Cancel" @yes="changeTarget">
+    <modal-confirmation ref="changeTargetModal" title="Change Target" yes-label="Search" no-label="Cancel"
+                        @yes="changeTarget">
         <div class="mb-2">
             <label for="changeTargetInput" class="form-label">Enter the name of the player you want to view:</label>
             <input type="text" class="form-control" id="changeTargetInput" v-model="changeTargetName">

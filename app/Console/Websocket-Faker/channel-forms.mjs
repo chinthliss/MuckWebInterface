@@ -33,7 +33,7 @@ export default class ChannelForms extends Channel {
         {
             name: "Form with flags 1",
             gender: 'female',
-            flags: ['flag1', 'flag2']
+            flags: {torso: ['flag1', 'flag2']}
         },
         {
             name: "Form with tags 1",
