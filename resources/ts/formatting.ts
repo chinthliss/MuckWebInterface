@@ -7,9 +7,11 @@ const ansi_up = new AnsiUp();
 
 /**
  * Takes a string representation of a Carbon object exported from PHP and turns it into something friendlier
+ * Type is to support DataTables - if it's for sorting, the conversion to a string isn't done.
  */
-export const carbonToString = (carbonString: string | null): string => {
+export const carbonToString = (carbonString: string | null, type?: string): string => {
     if (!carbonString) return '--';
+    if (type === 'sort') return carbonString;
     return new Date(carbonString).toLocaleString();
 };
 
