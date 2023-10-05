@@ -178,7 +178,7 @@ const formTableConfiguration = {
 };
 
 // Send requests for data
-channel.send('getFormCatalogue');
+channel.send('getFormDatabase');
 if (props.startingPlayerName) {
     changeTargetIndex.value = 0;
     changeTargetName.value = props.startingPlayerName;
