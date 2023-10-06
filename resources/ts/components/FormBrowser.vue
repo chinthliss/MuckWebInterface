@@ -6,6 +6,7 @@ import Column from "primevue/column";
 import {capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import {FilterService, FilterMatchMode} from "primevue/api";
 
 const props = defineProps<{
     startingPlayerName?: string,
@@ -16,25 +17,33 @@ type Form = {
     name: string,
     staffonly?: number,
     hidden?: number,
-    placement?: string[],
-    powersetNote?: string,
-    placementNote?: string,
-    specialNote?: string,
     private?: number,
     gender: string,
     size?: number,
-    lstats?: string[], // List of parts with lstats
+    lstats?: { [lstat: string]: { [bodyPart: string]: string[] } }, // List of lstats and which parts they're in
     tags: string[], // List of tags
-    flags: string[] // List of flags
+    flags: { [bodyPart: string]: string[] } // List of flags by bodypart
+    powers: { [bodyPart: string]: string[] } // List of powers by bodypart
+    kemo: string[], // List of bodyparts that support it
+    chubby: string[], // List of bodyparts that support it
+    color: string[], // List of bodyparts that support it
+    armDivider: string[], // List of bodyparts that support it
+    legDivider: string[], // List of bodyparts that support it
+    tailDivider: string[], // List of bodyparts that support it
     noMastering?: number,
-    noFunnel?: string,
-    noReward?: string,
-    noZap?: string,
-    noNative?: string,
-    noExtract?: string,
-    bypassImmune?: string,
+    noFunnel?: number,
+    noReward?: number,
+    noZap?: number,
+    noNative?: number,
+    noExtract?: number,
+    bypassImmune?: number,
     sayVerb?: string,
-    holiday?: string
+    holiday?: string,
+    // These only appear to staff
+    placement?: string[], // Maybe allow with terminal download?
+    powersetNote?: string,
+    placementNote?: string,
+    specialNote?: string
 }
 
 const formDatabase: Ref<Form[]> = ref([]);
@@ -43,6 +52,10 @@ const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loadi
 const changeTargetModal: Ref<Element | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
+const filters = ref({
+    name: {value: null, matchMode: FilterMatchMode.CONTAINS},
+    powers: {value: null, matchMode: 'filterByJson'}
+});
 
 type Target = {
     name?: string,
@@ -142,6 +155,19 @@ const shouldWeShow = (form: Form): boolean => {
     return true;
 }
 
+FilterService.register('filterByJson', (data, value) => {
+    const filterContent = JSON.stringify(data) || '';
+    return filterContent.indexOf(value) !== -1;
+});
+
+const highestUsedTargetIndex = () => {
+    let result = 0;
+    for (let i = 0; i < targets.value.length; i++) {
+        if (targets.value[i].name) result = i;
+    }
+    return result;
+}
+
 // Send requests for data
 channel.send('getFormDatabase');
 if (props.startingPlayerName) {
@@ -185,74 +211,117 @@ if (props.startingPlayerName) {
                 </div>
             </div>
             <!-- Target rows -->
-            <div v-for="(target, index) in targets" class="d-lg-flex align-items-center mb-2">
-                <div class="flex-grow-1">
-                    <span class="text-primary">Target {{ index + 1 }}: </span>
-                    <template v-if="target.name">
-                        {{ target.name }}
-                    </template>
-                    <template v-else>
-                        No Target Selected
-                    </template>
+            <template v-for="(target, index) in targets">
+                <div v-if="index <= highestUsedTargetIndex() + 1" class="d-lg-flex align-items-center mb-2">
+                    <div class="flex-grow-1">
+                        <span class="text-primary">Target {{ index + 1 }}: </span>
+                        <template v-if="target.name">
+                            {{ target.name }}
+                        </template>
+                        <template v-else>
+                            No Target Selected
+                        </template>
 
-                </div>
-
-                <div>
-                    <div v-if="target.loading" class="me-2">
-                        <spinner></spinner>
                     </div>
-                    <div v-if="target.error" class="me-2 text-danger">
-                        Can't display: {{ target.error }}
+
+                    <div>
+                        <div v-if="target.loading" class="me-2">
+                            <spinner></spinner>
+                        </div>
+                        <div v-if="target.error" class="me-2 text-danger">
+                            Can't display: {{ target.error }}
+                        </div>
                     </div>
+
+                    <div>
+                        <button class="btn btn-primary me-lg-2" @click="launchChangeTarget(index)">
+                            <i class="fas fa-search btn-icon-left"></i>Select Target
+                        </button>
+
+                        <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name">
+                            <i class="fas fa-close btn-icon-left"></i>Clear Target
+                        </button>
+                    </div>
+
                 </div>
-
-                <div>
-                    <button class="btn btn-primary me-lg-2" @click="launchChangeTarget(index)">
-                        <i class="fas fa-search btn-icon-left"></i>Select Target
-                    </button>
-
-                    <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name">
-                        <i class="fas fa-close btn-icon-left"></i>Clear Target
-                    </button>
-                </div>
-
-            </div>
+            </template>
 
             <hr>
 
             <div>
-                <DataTable :value="filteredFormDatabase" dataKey="name" stripedRows scrollable scrollHeight="600px">
-                    <Column header="Name" field="name" class="fw-bold" frozen></Column>
-                    <Column header="Gender" field="gender">
+                <DataTable :value="filteredFormDatabase" dataKey="name" stripedRows scrollable scrollHeight="600px"
+                           v-model:filters="filters" filterDisplay="row"
+                >
+                    <Column header="Name" field="name" class="fw-bold" frozen sortable style="min-width: 12rem">
+                        <template #filter="{ filterModel, filterCallback }">
+                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                                   class="p-column-filter" placeholder="Search by name"
+                            />
+                        </template>
+                    </Column>
+                    <Column header="Gender" field="gender" sortable>
                         <template #body="{ data }">
                             {{ capital((data as Form).gender) }}
                         </template>
                     </Column>
-                    <Column header="Size" field="size"></Column>
-                    <Column header="Cock Count" field="cockCount"></Column>
-                    <Column header="Cock Size" field="cockSize"></Column>
-                    <Column header="Ball Count" field="ballCount"></Column>
-                    <Column header="Ball Size" field="ballSize"></Column>
-                    <Column header="Cunt Count" field="cuntCount"></Column>
-                    <Column header="Cunt Size" field="cuntSize"></Column>
-                    <Column header="Breast Count" field="breastCount"></Column>
-                    <Column header="Breast Size" field="breastSize"></Column>
-                    <Column header="Tags" field="tags"></Column>
-                    <Column header="Flags" field="flags"></Column>
-                    <Column header="Say Verb" field="sayVerb"></Column>
-                    <Column header="Powers" field="powers"></Column>
-                    <Column header="No Mastering" field="noMastering"></Column>
-                    <Column header="No Funnel" field="noFunnel"></Column>
-                    <Column header="No Reward" field="noReward"></Column>
-                    <Column header="No Zap" field="noZap"></Column>
-                    <Column header="No Native" field="noNative"></Column>
-                    <Column header="No Extract" field="noExtract"></Column>
-                    <Column header="Bypass Immune" field="bypassImmune"></Column>
-                    <Column header="Placement" field="placement"></Column>
-                    <Column header="Holiday" field="holiday"></Column>
-                    <Column header="Placement Note" field="placementNote"></Column>
-                    <Column header="Power Note" field="powerNote"></Column>
-                    <Column header="Special Note" field="specialNote"></Column>
+                    <Column header="Size" field="size" sortable></Column>
+                    <Column header="Cock Count" field="cockCount" sortable></Column>
+                    <Column header="Cock Size" field="cockSize" sortable></Column>
+                    <Column header="Ball Count" field="ballCount" sortable></Column>
+                    <Column header="Ball Size" field="ballSize" sortable></Column>
+                    <Column header="Cunt Count" field="cuntCount" sortable></Column>
+                    <Column header="Cunt Size" field="cuntSize" sortable></Column>
+                    <Column header="Breast Count" field="breastCount" sortable></Column>
+                    <Column header="Breast Size" field="breastSize" sortable></Column>
+                    <Column header="Say Verb" field="sayVerb" sortable></Column>
+                    <Column header="Holiday" field="holiday" sortable></Column>
+                    <Column header="Private" field="private" sortable></Column>
+                    <Column header="Tags" field="tags" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ (data as Form).tags?.join(' ') }}
+                        </template>
+                    </Column>
+                    <Column header="Flags" field="flags" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <template v-for="(nestedList, bodyPart) in (data as Form).flags">
+                                <div v-if="nestedList">
+                                    <span class="text-primary">
+                                        {{ capital(bodyPart) }}</span>: {{ nestedList.join(' ') }}
+                                </div>
+                            </template>
+                        </template>
+                    </Column>
+                    <Column header="Powers" field="powers" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <template v-for="(nestedList, bodyPart) in (data as Form).powers">
+                                <div v-if="nestedList">
+                                    <span class="text-primary">
+                                        {{ capital(bodyPart) }}</span>: {{ nestedList.join(' ') }}
+                                </div>
+                            </template>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                                   class="p-column-filter" placeholder="Search by power"
+                            />
+                        </template>
+                    </Column>
+                    <Column header="No Mastering" field="noMastering" sortable></Column>
+                    <Column header="No Funnel" field="noFunnel" sortable></Column>
+                    <Column header="No Reward" field="noReward" sortable></Column>
+                    <Column header="No Zap" field="noZap" sortable></Column>
+                    <Column header="No Native" field="noNative" sortable></Column>
+                    <Column header="No Extract" field="noExtract" sortable></Column>
+                    <Column header="Bypass Immune" field="bypassImmune" sortable></Column>
+                    <Column header="Placement" field="placement" v-if="staff" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ (data as Form).placement?.join(' ') }}
+                        </template>
+                    </Column>
+                    <Column header="Placement Note" field="placementNote" v-if="staff" style="min-width: 12rem"
+                    ></Column>
+                    <Column header="Power Note" field="powerNote" v-if="staff" style="min-width: 12rem"></Column>
+                    <Column header="Special Note" field="specialNote" v-if="staff" style="min-width: 12rem"></Column>
                 </Datatable>
             </div>
 
@@ -276,5 +345,4 @@ if (props.startingPlayerName) {
 </template>
 
 <style scoped>
-
 </style>
