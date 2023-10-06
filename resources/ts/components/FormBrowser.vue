@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
 import {ref, Ref, computed} from "vue";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
+import {capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
-import DataTable from "datatables.net-vue3";
-import {capital} from "../formatting";
 
 const props = defineProps<{
     startingPlayerName?: string,
@@ -141,42 +142,6 @@ const shouldWeShow = (form: Form): boolean => {
     return true;
 }
 
-const formTableConfiguration = {
-    columns: [
-        {data: 'name'},
-        {data: 'gender', render: capital},
-        {data: 'size', defaultContent: ''},
-        {data: 'cockCount', defaultContent: ''},
-        {data: 'cockSize', defaultContent: ''},
-        {data: 'ballCount', defaultContent: ''},
-        {data: 'ballSize', defaultContent: ''},
-        {data: 'cuntCount', defaultContent: ''},
-        {data: 'cuntSize', defaultContent: ''},
-        {data: 'breastCount', defaultContent: ''},
-        {data: 'breastSize', defaultContent: ''},
-        {data: 'tags', defaultContent: ''},
-        {data: 'flags', defaultContent: '', render: JSON.stringify},
-        {data: 'sayVerb', defaultContent: ''},
-        {data: 'noMastering', defaultContent: ''},
-        {data: 'noFunnel', defaultContent: ''},
-        {data: 'noReward', defaultContent: ''},
-        {data: 'noZap', defaultContent: ''},
-        {data: 'noNative', defaultContent: ''},
-        {data: 'noExtract', defaultContent: ''},
-        {data: 'bypassImmune', defaultContent: ''},
-        {data: 'placement', defaultContent: '', render: JSON.stringify},
-        {data: 'holiday', defaultContent: ''},
-        {data: 'placementNote', defaultContent: ''},
-        {data: 'powerNote', defaultContent: ''},
-        {data: 'specialNote', defaultContent: ''},
-
-    ],
-    paging: false,
-    info: false,
-    searching: true,
-    scrollX: true
-};
-
 // Send requests for data
 channel.send('getFormDatabase');
 if (props.startingPlayerName) {
@@ -256,41 +221,38 @@ if (props.startingPlayerName) {
             <hr>
 
             <div>
-                <DataTable class="table table-dark table-hover table-striped table-bordered"
-                           :options="formTableConfiguration"
-                           :data="filteredFormDatabase"
-                >
-                    <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Gender</th>
-                        <th scope="col">Size</th>
-                        <th scope="col">Cock Count</th>
-                        <th scope="col">Cock Size</th>
-                        <th scope="col">Ball Count</th>
-                        <th scope="col">Ball Size</th>
-                        <th scope="col">Cunt Count</th>
-                        <th scope="col">Cunt Size</th>
-                        <th scope="col">Breast Count</th>
-                        <th scope="col">Breast Size</th>
-                        <th scope="col">Tags</th>
-                        <th scope="col">Flags</th>
-                        <th scope="col">Say Verb</th>
-                        <th scope="col">No Mastering</th>
-                        <th scope="col">No Funnel</th>
-                        <th scope="col">No Reward</th>
-                        <th scope="col">No Zap</th>
-                        <th scope="col">No Native</th>
-                        <th scope="col">No Extract</th>
-                        <th scope="col">Bypass Immune</th>
-                        <th scope="col">Placement</th>
-                        <th scope="col">Holiday</th>
-                        <th scope="col">Placement Note</th>
-                        <th scope="col">Powers Note</th>
-                        <th scope="col">Special Note</th>
-
-                    </tr>
-                    </thead>
+                <DataTable :value="filteredFormDatabase" dataKey="name" stripedRows scrollable scrollHeight="600px">
+                    <Column header="Name" field="name" class="fw-bold" frozen></Column>
+                    <Column header="Gender" field="gender">
+                        <template #body="{ data }">
+                            {{ capital((data as Form).gender) }}
+                        </template>
+                    </Column>
+                    <Column header="Size" field="size"></Column>
+                    <Column header="Cock Count" field="cockCount"></Column>
+                    <Column header="Cock Size" field="cockSize"></Column>
+                    <Column header="Ball Count" field="ballCount"></Column>
+                    <Column header="Ball Size" field="ballSize"></Column>
+                    <Column header="Cunt Count" field="cuntCount"></Column>
+                    <Column header="Cunt Size" field="cuntSize"></Column>
+                    <Column header="Breast Count" field="breastCount"></Column>
+                    <Column header="Breast Size" field="breastSize"></Column>
+                    <Column header="Tags" field="tags"></Column>
+                    <Column header="Flags" field="flags"></Column>
+                    <Column header="Say Verb" field="sayVerb"></Column>
+                    <Column header="Powers" field="powers"></Column>
+                    <Column header="No Mastering" field="noMastering"></Column>
+                    <Column header="No Funnel" field="noFunnel"></Column>
+                    <Column header="No Reward" field="noReward"></Column>
+                    <Column header="No Zap" field="noZap"></Column>
+                    <Column header="No Native" field="noNative"></Column>
+                    <Column header="No Extract" field="noExtract"></Column>
+                    <Column header="Bypass Immune" field="bypassImmune"></Column>
+                    <Column header="Placement" field="placement"></Column>
+                    <Column header="Holiday" field="holiday"></Column>
+                    <Column header="Placement Note" field="placementNote"></Column>
+                    <Column header="Power Note" field="powerNote"></Column>
+                    <Column header="Special Note" field="specialNote"></Column>
                 </Datatable>
             </div>
 
@@ -302,8 +264,9 @@ if (props.startingPlayerName) {
 
         </div>
     </div>
-    <modal-confirmation ref="changeTargetModal" title="Change Target" yes-label="Search" no-label="Cancel"
-                        @yes="changeTarget">
+    <modal-confirmation ref="changeTargetModal" title="Change Target"
+                        yes-label="Search" no-label="Cancel" @yes="changeTarget"
+    >
         <div class="mb-2">
             <label for="changeTargetInput" class="form-label">Enter the name of the player you want to view:</label>
             <input type="text" class="form-control" id="changeTargetInput" v-model="changeTargetName">

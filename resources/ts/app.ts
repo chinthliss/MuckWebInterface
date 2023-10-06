@@ -60,6 +60,9 @@ import {createApp} from 'vue';
 
 const app = createApp({});
 
+import PrimeVue from 'primevue/config';
+app.use(PrimeVue);
+
 // Code to load components manually:
 // import ExampleComponent from './components/ExampleComponent.vue';
 // app.component('example-component', ExampleComponent);

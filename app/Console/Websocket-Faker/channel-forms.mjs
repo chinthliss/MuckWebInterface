@@ -4,9 +4,33 @@ export default class ChannelForms extends Channel {
 
     formsCatalogue = [
         {
-            name: "Test Form 1",
-            gender: 'male'
-
+            name: "Complete Test Form",
+            gender: 'male',
+            size: 1,
+            cockCount: 2,
+            cockSize: 3,
+            ballCount: 4,
+            ballSize: 5,
+            cuntCount: 6,
+            cuntSize: 7,
+            breastCount: 8,
+            breastSize: 9,
+            tags: ['tag1', 'tag2'],
+            flags: {arm: ['flag1', 'flag2']},
+            placementNote: 'Placement Note',
+            specialNote: 'Special Note',
+            powerNote: 'Power Note',
+            sayVerb: 'says',
+            noMastering: 1,
+            noFunnel: 1,
+            noReward: 1,
+            noZap: 1,
+            noNative: 1,
+            noExtract: 1,
+            bypassImmune: 1,
+            placement: ['something@somewhere'],
+            holiday: 'July',
+            powers: {'legs': ['A power']}
         },
         {
             name: "Private Test Form 1",
@@ -50,13 +74,13 @@ export default class ChannelForms extends Channel {
 
     formsMastery = {
         "testcharacter": {
-            'Test Form 1': 1,
+            'Complete Test Form': 1,
             'Private Test Form 2': 2,
             'Not a real form': 1
         }
     }
 
-    sendFormCatalogue = (connection) => {
+    sendFormDatabase = (connection) => {
         this.sendMessageToConnection(connection, 'formDatabase', this.formsCatalogue.length);
         for (let i = 0; i < this.formsCatalogue.length; i++) {
             this.sendMessageToConnection(connection, 'formListing', this.formsCatalogue[i]);
@@ -84,8 +108,8 @@ export default class ChannelForms extends Channel {
 
     messageReceived = (connection, message, data) => {
         switch (message) {
-            case 'getFormCatalogue':
-                this.sendFormCatalogue(connection);
+            case 'getFormDatabase':
+                this.sendFormDatabase(connection);
                 break;
             case 'getFormMasteryOf':
                 this.sendFormMastery(connection, data);
