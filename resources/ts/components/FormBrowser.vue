@@ -15,9 +15,7 @@ const props = defineProps<{
 
 type Form = {
     name: string,
-    staffonly?: number,
-    hidden?: number,
-    private?: number,
+    private?: number, // We'll list private forms IF they're mastered
     gender: string,
     size?: number,
     lstats?: { [lstat: string]: { [bodyPart: string]: string[] } }, // List of lstats and which parts they're in
@@ -40,6 +38,8 @@ type Form = {
     sayVerb?: string,
     holiday?: string,
     // These only appear to staff
+    staffonly?: number, // Not a field from the muck, computed flag for logic
+    hidden?: number,
     placement?: string[], // Maybe allow with terminal download?
     powersetNote?: string,
     placementNote?: string,
