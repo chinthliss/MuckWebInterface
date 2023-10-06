@@ -30,7 +30,15 @@ export default class ChannelForms extends Channel {
             bypassImmune: 1,
             placement: ['something@somewhere'],
             holiday: 'July',
-            powers: {'legs': ['A power']}
+            powers: {'legs': ['A power']},
+            lstats: {waffle: ['legs', 'arms']},
+            kemo: ['arms', 'legs'],
+            chubby: ['arms', 'legs'],
+            color: ['arms', 'legs'],
+            armDivider: 1,
+            legDivider: 1,
+            tailDivider: 1
+
         },
         {
             name: "Private Test Form 1",

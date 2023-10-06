@@ -18,16 +18,16 @@ type Form = {
     private?: number, // We'll list private forms IF they're mastered
     gender: string,
     size?: number,
-    lstats?: { [lstat: string]: { [bodyPart: string]: string[] } }, // List of lstats and which parts they're in
+    lstats?: { [lstat: string]: string[] }, // List of lstats and which parts they're in
     tags: string[], // List of tags
     flags: { [bodyPart: string]: string[] } // List of flags by bodypart
     powers: { [bodyPart: string]: string[] } // List of powers by bodypart
     kemo: string[], // List of bodyparts that support it
     chubby: string[], // List of bodyparts that support it
     color: string[], // List of bodyparts that support it
-    armDivider: string[], // List of bodyparts that support it
-    legDivider: string[], // List of bodyparts that support it
-    tailDivider: string[], // List of bodyparts that support it
+    armDivider: number,
+    legDivider: number,
+    tailDivider: number,
     noMastering?: number,
     noFunnel?: number,
     noReward?: number,
@@ -306,6 +306,13 @@ if (props.startingPlayerName) {
                             />
                         </template>
                     </Column>
+                    <Column header="Local Stats" field="lstats" sortable style="min-width: 12rem"></Column>
+                    <Column header="Kemo Support" field="kemo" sortable></Column>
+                    <Column header="Chubby Support" field="chubby" sortable></Column>
+                    <Column header="Color Support" field="color" sortable></Column>
+                    <Column header="Arm Divider" field="armDivider" sortable></Column>
+                    <Column header="Leg Divider" field="legDivider" sortable></Column>
+                    <Column header="Tail Divider" field="tailDivider" sortable></Column>
                     <Column header="No Mastering" field="noMastering" sortable></Column>
                     <Column header="No Funnel" field="noFunnel" sortable></Column>
                     <Column header="No Reward" field="noReward" sortable></Column>
