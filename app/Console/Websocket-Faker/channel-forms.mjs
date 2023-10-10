@@ -60,7 +60,7 @@ export default class ChannelForms extends Channel {
         {
             name: "Form with Lstats 1",
             gender: 'male',
-            lstats: ['legs']
+            lstats: {stat: ['legs']}
         },
         {
             name: "Form with flags 1",

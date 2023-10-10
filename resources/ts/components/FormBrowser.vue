@@ -275,7 +275,11 @@ if (props.startingPlayerName) {
                     <Column header="Breast Size" field="breastSize" sortable></Column>
                     <Column header="Say Verb" field="sayVerb" sortable></Column>
                     <Column header="Holiday" field="holiday" sortable></Column>
-                    <Column header="Private" field="private" sortable></Column>
+                    <Column header="Private" field="private" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).private"></i>
+                        </template>
+                    </Column>
                     <Column header="Tags" field="tags" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ (data as Form).tags?.join(' ') }}
@@ -296,7 +300,8 @@ if (props.startingPlayerName) {
                             <template v-for="(nestedList, bodyPart) in (data as Form).powers">
                                 <div v-if="nestedList">
                                     <span class="text-primary">
-                                        {{ capital(bodyPart) }}</span>: {{ nestedList.join(' ') }}
+                                        {{ capital(bodyPart) }}
+                                    </span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
                         </template>
@@ -306,20 +311,82 @@ if (props.startingPlayerName) {
                             />
                         </template>
                     </Column>
-                    <Column header="Local Stats" field="lstats" sortable style="min-width: 12rem"></Column>
-                    <Column header="Kemo Support" field="kemo" sortable></Column>
-                    <Column header="Chubby Support" field="chubby" sortable></Column>
-                    <Column header="Color Support" field="color" sortable></Column>
-                    <Column header="Arm Divider" field="armDivider" sortable></Column>
-                    <Column header="Leg Divider" field="legDivider" sortable></Column>
-                    <Column header="Tail Divider" field="tailDivider" sortable></Column>
-                    <Column header="No Mastering" field="noMastering" sortable></Column>
-                    <Column header="No Funnel" field="noFunnel" sortable></Column>
-                    <Column header="No Reward" field="noReward" sortable></Column>
-                    <Column header="No Zap" field="noZap" sortable></Column>
-                    <Column header="No Native" field="noNative" sortable></Column>
-                    <Column header="No Extract" field="noExtract" sortable></Column>
-                    <Column header="Bypass Immune" field="bypassImmune" sortable></Column>
+                    <Column header="Local Stats" field="lstats" sortable style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <template v-for="(nestedList, localStat) in (data as Form).lstats">
+                                <div v-if="nestedList">
+                                    <span class="text-primary">
+                                        {{ capital(localStat) }}
+                                    </span>: {{ nestedList.join(' ') }}
+                                </div>
+                            </template>
+                        </template>
+                    </Column>
+                    <Column header="Kemo Support" field="kemo" sortable>
+                        <template #body="{ data }">
+                            {{ (data as Form).kemo?.join(' ') }}
+                        </template>
+                    </Column>
+                    <Column header="Chubby Support" field="chubby" sortable>
+                        <template #body="{ data }">
+                            {{ (data as Form).chubby?.join(' ') }}
+                        </template>
+                    </Column>
+                    <Column header="Color Support" field="color" sortable>
+                        <template #body="{ data }">
+                            {{ (data as Form).color?.join(' ') }}
+                        </template>
+                    </Column>
+                    <Column header="Arm Divider" field="armDivider" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).armDivider"></i>
+                        </template>
+                    </Column>
+                    <Column header="Leg Divider" field="legDivider" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).legDivider"></i>
+                        </template>
+                    </Column>
+                    <Column header="Tail Divider" field="tailDivider" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).tailDivider"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Mastering" field="noMastering" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noMastering"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Funnel" field="noFunnel" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noFunnel"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Reward" field="noReward" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noReward"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Zap" field="noZap" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noZap"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Native" field="noNative" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noNative"></i>
+                        </template>
+                    </Column>
+                    <Column header="No Extract" field="noExtract" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).noExtract"></i>
+                        </template>
+                    </Column>
+                    <Column header="Bypass Immune" field="bypassImmune" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check" v-if="(data as Form).bypassImmune"></i>
+                        </template>
+                    </Column>
                     <Column header="Placement" field="placement" v-if="staff" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ (data as Form).placement?.join(' ') }}
