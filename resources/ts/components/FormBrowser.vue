@@ -164,12 +164,12 @@ const shouldWeShow = (form: Form): boolean => {
 }
 
 const genderClassForForm = (form: Form): string => {
-    if (form.cockCount > 1)
-        if (form.cuntCount > 1)
+    if (form.cockCount)
+        if (form.cuntCount)
             return 'fa-venus-mars';
         else
             return 'fa-mars';
-    else if (form.cuntCount > 1)
+    else if (form.cuntCount)
         return 'fa-venus';
     else
         return 'fa-genderless';
