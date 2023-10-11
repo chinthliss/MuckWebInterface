@@ -30,7 +30,7 @@ export default class ChannelForms extends Channel {
             noNative: 1,
             noExtract: 1,
             bypassImmune: 1,
-            placement: ['something@somewhere'],
+            placement: ['something@somewhere', 'somethingelse@somewhereelse'],
             holiday: 'July',
             powers: {'legs': ['A power']},
             lstats: {waffle: ['legs', 'arms']},

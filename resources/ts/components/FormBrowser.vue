@@ -270,7 +270,7 @@ if (props.startingPlayerName) {
             <hr>
 
             <div>
-                <DataTable :value="filteredFormDatabase" dataKey="name" stripedRows scrollable scrollHeight="600px"
+                <DataTable :value="filteredFormDatabase" dataKey="name" size="small" stripedRows scrollable scrollHeight="600px"
                            v-model:filters="filters" filterDisplay="row"
                 >
                     <Column header="Name" field="name" class="fw-bold" frozen sortable style="min-width: 12rem">
@@ -411,9 +411,9 @@ if (props.startingPlayerName) {
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
                         </template>
                     </Column>
-                    <Column header="Placement" field="placement" v-if="staff" style="min-width: 12rem">
+                    <Column header="Placement" field="placement" v-if="staff" style="min-width: 25rem">
                         <template #body="{ data }">
-                            {{ (data as Form).placement?.join(' ') }}
+                            {{ (data as Form).placement?.join('\n ') }}
                         </template>
                     </Column>
                     <Column header="Placement Note" field="placementNote" v-if="staff" style="min-width: 12rem"
