@@ -35,9 +35,7 @@ type Form = {
     kemo: string[], // List of bodyparts that support it
     chubby: string[], // List of bodyparts that support it
     color: string[], // List of bodyparts that support it
-    armDivider: number,
-    legDivider: number,
-    tailDivider: number,
+    dividers: string[],
     noMastering?: number,
     noFunnel?: number,
     noReward?: number,
@@ -360,17 +358,17 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Arm Divider" field="armDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).armDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('arm') >= 0"></i>
                         </template>
                     </Column>
                     <Column header="Leg Divider" field="legDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).legDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('leg') >= 0"></i>
                         </template>
                     </Column>
                     <Column header="Tail Divider" field="tailDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).tailDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('tail') >= 0"></i>
                         </template>
                     </Column>
                     <Column header="Private" field="private" sortable>

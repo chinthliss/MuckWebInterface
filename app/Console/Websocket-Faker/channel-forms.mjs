@@ -37,10 +37,7 @@ export default class ChannelForms extends Channel {
             kemo: ['arms', 'legs'],
             chubby: ['arms', 'legs'],
             color: ['arms', 'legs'],
-            armDivider: 1,
-            legDivider: 1,
-            tailDivider: 1
-
+            dividers: ['arm', 'leg', 'tail']
         },
         {
             name: "Private Test Form 1",
