@@ -413,7 +413,7 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Placement" field="placement" v-if="staff" style="min-width: 25rem">
                         <template #body="{ data }">
-                            {{ (data as Form).placement?.join('\n ') }}
+                            <div v-for="placement in (data as Form).placement">{{ placement}}</div>
                         </template>
                     </Column>
                     <Column header="Placement Note" field="placementNote" v-if="staff" style="min-width: 12rem"
