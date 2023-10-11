@@ -18,6 +18,16 @@ type Form = {
     private?: number, // We'll list private forms IF they're mastered
     gender: string,
     size?: number,
+    ballCount: number,
+    ballSize: number,
+    breastCount: number,
+    breastSize: number,
+    clitCount: number,
+    clitSize: number,
+    cockCount: number,
+    cockSize: number,
+    cuntCount: number,
+    cuntSize: number,
     lstats?: { [lstat: string]: string[] }, // List of lstats and which parts they're in
     tags: string[], // List of tags
     flags: { [bodyPart: string]: string[] } // List of flags by bodypart
@@ -155,6 +165,19 @@ const shouldWeShow = (form: Form): boolean => {
     return true;
 }
 
+const genderClassForForm = (form: Form): string => {
+    if (form.cockCount > 1)
+        if (form.cuntCount > 1)
+            return 'fa-venus-mars';
+        else
+            return 'fa-mars';
+    else if (form.cuntCount > 1)
+        return 'fa-venus';
+    else
+        return 'fa-genderless';
+
+}
+
 FilterService.register('filterByJson', (data, value) => {
     const filterContent = JSON.stringify(data) || '';
     return filterContent.indexOf(value) !== -1;
@@ -259,27 +282,25 @@ if (props.startingPlayerName) {
                             />
                         </template>
                     </Column>
-                    <Column header="Gender" field="gender" sortable>
+                    <Column header="Gender" field="gender" sortable style="min-width: 10rem">
                         <template #body="{ data }">
+                            <i class="fa-solid" :class="genderClassForForm((data as Form))"></i>
                             {{ capital((data as Form).gender) }}
                         </template>
                     </Column>
-                    <Column header="Size" field="size" sortable></Column>
-                    <Column header="Cock Count" field="cockCount" sortable></Column>
-                    <Column header="Cock Size" field="cockSize" sortable></Column>
-                    <Column header="Ball Count" field="ballCount" sortable></Column>
-                    <Column header="Ball Size" field="ballSize" sortable></Column>
-                    <Column header="Cunt Count" field="cuntCount" sortable></Column>
-                    <Column header="Cunt Size" field="cuntSize" sortable></Column>
-                    <Column header="Breast Count" field="breastCount" sortable></Column>
-                    <Column header="Breast Size" field="breastSize" sortable></Column>
-                    <Column header="Say Verb" field="sayVerb" sortable></Column>
-                    <Column header="Holiday" field="holiday" sortable></Column>
-                    <Column header="Private" field="private" sortable>
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).private"></i>
-                        </template>
-                    </Column>
+                    <Column header="Size" field="size" class="text-end" sortable></Column>
+                    <Column header="Cock Count" field="cockCount" class="text-end" sortable></Column>
+                    <Column header="Cock Size" field="cockSize" class="text-end" sortable></Column>
+                    <Column header="Ball Count" field="ballCount" class="text-end" sortable></Column>
+                    <Column header="Ball Size" field="ballSize" class="text-end" sortable></Column>
+                    <Column header="Cunt Count" field="cuntCount" class="text-end" sortable></Column>
+                    <Column header="Cunt Size" field="cuntSize" class="text-end" sortable></Column>
+                    <Column header="Clit Count" field="clitCount" class="text-end" sortable></Column>
+                    <Column header="Clit Size" field="clitSize" class="text-end" sortable></Column>
+                    <Column header="Breast Count" field="breastCount" class="text-end" sortable></Column>
+                    <Column header="Breast Size" field="breastSize" class="text-end" sortable></Column>
+                    <Column header="Say Verb" field="sayVerb" class="text-end" sortable></Column>
+                    <Column header="Holiday" field="holiday" class="text-end" sortable></Column>
                     <Column header="Tags" field="tags" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ (data as Form).tags?.join(' ') }}
@@ -339,52 +360,57 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Arm Divider" field="armDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).armDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).armDivider"></i>
                         </template>
                     </Column>
                     <Column header="Leg Divider" field="legDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).legDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).legDivider"></i>
                         </template>
                     </Column>
                     <Column header="Tail Divider" field="tailDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).tailDivider"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).tailDivider"></i>
+                        </template>
+                    </Column>
+                    <Column header="Private" field="private" sortable>
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).private"></i>
                         </template>
                     </Column>
                     <Column header="No Mastering" field="noMastering" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noMastering"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noMastering"></i>
                         </template>
                     </Column>
                     <Column header="No Funnel" field="noFunnel" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noFunnel"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noFunnel"></i>
                         </template>
                     </Column>
                     <Column header="No Reward" field="noReward" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noReward"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noReward"></i>
                         </template>
                     </Column>
                     <Column header="No Zap" field="noZap" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noZap"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noZap"></i>
                         </template>
                     </Column>
                     <Column header="No Native" field="noNative" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noNative"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noNative"></i>
                         </template>
                     </Column>
                     <Column header="No Extract" field="noExtract" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).noExtract"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noExtract"></i>
                         </template>
                     </Column>
                     <Column header="Bypass Immune" field="bypassImmune" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check" v-if="(data as Form).bypassImmune"></i>
+                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
                         </template>
                     </Column>
                     <Column header="Placement" field="placement" v-if="staff" style="min-width: 12rem">
