@@ -33,6 +33,7 @@ export default class ChannelForms extends Channel {
             placement: ['something@somewhere', 'somethingelse@somewhereelse'],
             holiday: 'July',
             powers: {'legs': ['A power']},
+            powersBonus: {'2': ['A set power']},
             lstats: {waffle: ['legs', 'arms']},
             kemo: ['arms', 'legs'],
             chubby: ['arms', 'legs'],
@@ -84,6 +85,10 @@ export default class ChannelForms extends Channel {
             'Complete Test Form': 1,
             'Private Test Form 2': 2,
             'Not a real form': 1
+        },
+        "admincharacter": {
+            'Private Test Form 2': 2,
+            'Form with tags 1': 1
         }
     }
 

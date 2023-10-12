@@ -32,6 +32,7 @@ type Form = {
     tags: string[], // List of tags
     flags: { [bodyPart: string]: string[] } // List of flags by bodypart
     powers: { [bodyPart: string]: string[] } // List of powers by bodypart
+    powersBonus: { [requirement: string]: string[] } // List of powers by requirement (setN)
     kemo: string[], // List of bodyparts that support it
     chubby: string[], // List of bodyparts that support it
     color: string[], // List of bodyparts that support it
@@ -62,7 +63,9 @@ const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
 const filters = ref({
     name: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    powers: {value: null, matchMode: 'filterByJson'}
+    powers: {value: null, matchMode: 'filterByJson'},
+    tags: {value: null, matchMode: 'filterByJson'},
+    flags: {value: null, matchMode: 'filterByJson'}
 });
 
 type Target = {
@@ -175,7 +178,7 @@ const genderClassForForm = (form: Form): string => {
         return 'fa-genderless';
 
 }
-
+//TODO: Rewrite as nested search
 FilterService.register('filterByJson', (data, value) => {
     const filterContent = JSON.stringify(data) || '';
     return filterContent.indexOf(value) !== -1;
@@ -270,7 +273,8 @@ if (props.startingPlayerName) {
             <hr>
 
             <div>
-                <DataTable :value="filteredFormDatabase" dataKey="name" size="small" stripedRows scrollable scrollHeight="600px"
+                <DataTable :value="filteredFormDatabase" dataKey="name" size="small" stripedRows scrollable
+                           scrollHeight="600px"
                            v-model:filters="filters" filterDisplay="row"
                 >
                     <Column header="Name" field="name" class="fw-bold" frozen sortable style="min-width: 12rem">
@@ -303,6 +307,11 @@ if (props.startingPlayerName) {
                         <template #body="{ data }">
                             {{ (data as Form).tags?.join(' ') }}
                         </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                                   class="p-column-filter" placeholder="Search by tag"
+                            />
+                        </template>
                     </Column>
                     <Column header="Flags" field="flags" style="min-width: 12rem">
                         <template #body="{ data }">
@@ -312,6 +321,11 @@ if (props.startingPlayerName) {
                                         {{ capital(bodyPart) }}</span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                                   class="p-column-filter" placeholder="Search by flag"
+                            />
                         </template>
                     </Column>
                     <Column header="Powers" field="powers" style="min-width: 12rem">
@@ -323,6 +337,13 @@ if (props.startingPlayerName) {
                                     </span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
+                            <template v-for="(nestedList, requirement) in (data as Form).powersBonus">
+                                <div v-if="nestedList">
+                                    <span class="text-secondary">
+                                        {{ requirement }} parts
+                                    </span>: {{ nestedList.join(' ') }}
+                                </div>
+                            </template>
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
                             <input v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -330,7 +351,7 @@ if (props.startingPlayerName) {
                             />
                         </template>
                     </Column>
-                    <Column header="Local Stats" field="lstats" sortable style="min-width: 12rem">
+                    <Column header="Local Stats" field="lstats" style="min-width: 12rem">
                         <template #body="{ data }">
                             <template v-for="(nestedList, localStat) in (data as Form).lstats">
                                 <div v-if="nestedList">
@@ -358,17 +379,23 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Arm Divider" field="armDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('arm') >= 0"></i>
+                            <i class="fa-solid fa-check w-100 text-center"
+                               v-if="(data as Form).dividers?.indexOf('arm') >= 0"
+                            ></i>
                         </template>
                     </Column>
                     <Column header="Leg Divider" field="legDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('leg') >= 0"></i>
+                            <i class="fa-solid fa-check w-100 text-center"
+                               v-if="(data as Form).dividers?.indexOf('leg') >= 0"
+                            ></i>
                         </template>
                     </Column>
                     <Column header="Tail Divider" field="tailDivider" sortable>
                         <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).dividers?.indexOf('tail') >= 0"></i>
+                            <i class="fa-solid fa-check w-100 text-center"
+                               v-if="(data as Form).dividers?.indexOf('tail') >= 0"
+                            ></i>
                         </template>
                     </Column>
                     <Column header="Private" field="private" sortable>
@@ -411,15 +438,28 @@ if (props.startingPlayerName) {
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
                         </template>
                     </Column>
-                    <Column header="Placement" field="placement" v-if="staff" style="min-width: 25rem">
-                        <template #body="{ data }">
-                            <div v-for="placement in (data as Form).placement">{{ placement}}</div>
-                        </template>
-                    </Column>
-                    <Column header="Placement Note" field="placementNote" v-if="staff" style="min-width: 12rem"
-                    ></Column>
-                    <Column header="Power Note" field="powerNote" v-if="staff" style="min-width: 12rem"></Column>
-                    <Column header="Special Note" field="specialNote" v-if="staff" style="min-width: 12rem"></Column>
+                    <!-- Staff -->
+                    <template v-if="staff">
+                        <Column header="Placement" field="placement" style="min-width: 25rem">
+                            <template #body="{ data }">
+                                <div v-for="placement in (data as Form).placement">{{ placement }}</div>
+                            </template>
+                        </Column>
+                        <Column header="Placement Note" field="placementNote" style="min-width: 12rem"
+                        ></Column>
+                        <Column header="Power Note" field="powerNote" style="min-width: 12rem"></Column>
+                        <Column header="Special Note" field="specialNote" style="min-width: 12rem"></Column>
+                    </template>
+                    <!-- Comparison -->
+                    <template v-if="highestUsedTargetIndex() > 0" v-for="target in targets">
+                        <Column v-if="target.name"
+                                :header="target.name"
+                        >
+                            <template #body="{ data }">
+                                <i class="fa-solid fa-check w-100 text-center" v-if="target.forms && target.forms[(data as Form).name]"></i>
+                            </template>
+                        </Column>
+                    </template>
                 </Datatable>
             </div>
 
