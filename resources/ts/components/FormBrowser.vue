@@ -58,14 +58,15 @@ type Form = {
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
 const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
+const tableLoading: Ref<boolean> = ref(true);
 const changeTargetModal: Ref<Element | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
 const filters = ref({
     name: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    powers: {value: null, matchMode: 'filterByJson'},
-    tags: {value: null, matchMode: 'filterByJson'},
-    flags: {value: null, matchMode: 'filterByJson'}
+    powers: {value: null, matchMode: 'filteredNestedList'},
+    tags: {value: null, matchMode: FilterMatchMode.CONTAINS},
+    flags: {value: null, matchMode: 'filteredNestedList'}
 });
 
 type Target = {
@@ -93,6 +94,7 @@ channel.on('formDatabase', (data: number) => {
 channel.on('formListing', (data: Form) => {
     formDatabase.value.push(data);
     formsToLoad.value--;
+    if (!formsToLoad.value) tableLoading.value = false;
 });
 
 type FormMasteryResponse = {
@@ -133,6 +135,14 @@ const launchChangeTarget = (index: number): void => {
 
 const clearTarget = (index: number) => {
     targets.value[index] = {};
+}
+
+const setTableLoadingWhilstBusy = () => {
+    if (tableLoading.value) return;
+    tableLoading.value = true;
+    setTimeout(() => {
+        tableLoading.value = false;
+    });
 }
 
 const unknownForms = computed((): string => {
@@ -178,10 +188,14 @@ const genderClassForForm = (form: Form): string => {
         return 'fa-genderless';
 
 }
-//TODO: Rewrite as nested search
-FilterService.register('filterByJson', (data, value) => {
-    const filterContent = JSON.stringify(data) || '';
-    return filterContent.indexOf(value) !== -1;
+
+FilterService.register('filteredNestedList', (data, value) => {
+    for (const key in data) {
+        for (const nestedItem of data[key]) {
+            if (nestedItem.indexOf && nestedItem.indexOf(value) !== -1) return true;
+        }
+    }
+    return false;
 });
 
 const highestUsedTargetIndex = () => {
@@ -207,8 +221,10 @@ if (props.startingPlayerName) {
 
         <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
-        <p>This is presently a root page and should have some introductory text here for new users that might click on
+        <p class="lead">This is presently a root page and should have some introductory text here for new users that might click on
             it. Something about forms being a key part of the game?</p>
+
+        <p>By default this page will show forms you've mastered. You can use the controls below to change this and even to add additional people to view, providing they've given you the permission to do so. If more then one person is set as a target, additional columns will also appear to compare who has mastered what.</p>
 
         <spinner v-if="formsToLoad > 0"></spinner>
         <div v-else>
@@ -272,9 +288,9 @@ if (props.startingPlayerName) {
 
             <hr>
 
-            <div>
+            <div :style="{ height: '75vh' }">
                 <DataTable :value="filteredFormDatabase" dataKey="name" size="small" stripedRows scrollable
-                           scrollHeight="600px"
+                           scrollHeight="flex" :loading="tableLoading" @sort="setTableLoadingWhilstBusy()"
                            v-model:filters="filters" filterDisplay="row"
                 >
                     <Column header="Name" field="name" class="fw-bold" frozen sortable style="min-width: 12rem">

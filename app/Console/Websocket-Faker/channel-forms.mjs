@@ -2,6 +2,9 @@ import Channel from './channel.mjs';
 
 export default class ChannelForms extends Channel {
 
+    /**
+     * @type object[]
+     */
     formsCatalogue = [
         {
             name: "Complete Test Form",
@@ -18,7 +21,7 @@ export default class ChannelForms extends Channel {
             breastCount: 10,
             breastSize: 11,
             tags: ['tag1', 'tag2'],
-            flags: {arm: ['flag1', 'flag2']},
+            flags: {arm: ['flag1', 'flag2'], legs: ['flag3'], head: ['flag4']},
             placementNote: 'Placement Note',
             specialNote: 'Special Note',
             powerNote: 'Power Note',
@@ -73,11 +76,20 @@ export default class ChannelForms extends Channel {
             tags: ['tag1', 'tag2']
         },
         {
+            name: "Form with tags 2",
+            gender: 'herm',
+            tags: ['tag3', 'tag1']
+        },
+        {
             name: "Form with a special note",
             gender: 'shemale',
             specialNote: 'Test Special Note'
+        },
+        {
+            name: "Form with a special note 2",
+            gender: 'shemale',
+            specialNote: 'Another special note'
         }
-
     ]
 
     formsMastery = {
@@ -128,6 +140,16 @@ export default class ChannelForms extends Channel {
                 break;
             default:
                 console.log("Unhandled message: ", message);
+        }
+    }
+
+    constructor(channelName, database) {
+        super(channelName, database);
+        for (let i = 0; i < 50; i++) {
+            this.formsCatalogue.push({
+                name: "Random Form " + i,
+                gender: 'neuter'
+            });
         }
     }
 
