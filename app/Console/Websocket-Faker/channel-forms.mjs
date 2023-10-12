@@ -45,7 +45,7 @@ export default class ChannelForms extends Channel {
         },
         {
             name: "Private Test Form 1",
-            gender: 'male',
+            gender: 'maleherm',
             placement: ['something@somewhere'],
             private: 1
         },

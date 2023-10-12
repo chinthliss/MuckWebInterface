@@ -335,7 +335,7 @@ if (props.startingPlayerName) {
                             />
                         </template>
                     </Column>
-                    <Column header="Gender" field="gender" :sortable="true" style="min-width: 10rem">
+                    <Column header="Gender" field="gender" :sortable="true" style="min-width: 8rem">
                         <template #body="{ data }">
                             <i class="fa-solid" :class="genderClassForForm((data as Form))"></i>
                             {{ capital((data as Form).gender) }}
