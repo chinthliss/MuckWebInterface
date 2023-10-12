@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Avatar\AvatarService;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
 use App\Notifications\MuckWebInterfaceNotification;
@@ -218,6 +217,11 @@ class CharacterController extends Controller
         }
         if (!$character) {
             throw ValidationException::withMessages(['character' => ["The provided character was incorrect."]]);
+        }
+
+        // If we ever change this, also need to change the functionality blocking it from the muck gateway
+        if ($character->isStaff() || $character->isAdmin()) {
+            throw ValidationException::withMessages(['character' => ["At the moment, staff characters can not use this functionality."]]);
         }
 
         $passwordIssues = $muck->findProblemsWithCharacterPassword($request['character_password']);
