@@ -212,7 +212,7 @@ const outputNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): s
             if (result.indexOf(value) == -1) result.push(value);
         }
     }
-    return result.join(' ');
+    return result.join(', ');
 }
 
 const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] }): string => {
@@ -221,7 +221,7 @@ const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] }): st
     for (const key in nestedList) {
         if (result.indexOf(key) == -1) result.push(key);
     }
-    return result.join(' ');
+    return result.join(', ');
 }
 
 
@@ -274,15 +274,15 @@ if (props.startingPlayerName) {
 
                 <div class="me-1 text-primary">Detail:</div>
                 <div class="btn-group" role="group" aria-label="Detail mode">
-                    <input type="radio" class="btn-check" name="detail" id="detail_on" autocomplete="off"
-                           v-model="detailedOutput" :value="true"
-                    >
-                    <label class="btn btn-secondary" for="detail_on">Detail by part</label>
-
                     <input type="radio" class="btn-check" name="detail" id="detail_off" autocomplete="off"
                            v-model="detailedOutput" :value="false"
                     >
                     <label class="btn btn-secondary" for="detail_off">Simplify Lists</label>
+
+                    <input type="radio" class="btn-check" name="detail" id="detail_on" autocomplete="off"
+                           v-model="detailedOutput" :value="true"
+                    >
+                    <label class="btn btn-secondary" for="detail_on">Detail by part</label>
                 </div>
             </div>
             <!-- Target rows -->
@@ -356,7 +356,7 @@ if (props.startingPlayerName) {
                     <Column header="Holiday" field="holiday" class="text-end" :sortable="true"></Column>
                     <Column header="Tags" field="tags" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ (data as Form).tags?.join(' ') }}
+                            {{ (data as Form).tags?.join(', ') }}
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
                             <input v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -370,7 +370,7 @@ if (props.startingPlayerName) {
                                 <div>
                                     <span class="text-primary">
                                         {{ capital(bodyPart) }}
-                                    </span>: {{ nestedList.join(' ') }}
+                                    </span>: {{ nestedList.join(', ') }}
                                 </div>
                             </template>
                             <template v-else>{{ outputNestedListItemsOnly((data as Form).flags) }}</template>
@@ -387,7 +387,7 @@ if (props.startingPlayerName) {
                                 <div>
                                     <span class="text-primary">
                                         {{ capital(bodyPart) }}
-                                    </span>: {{ nestedList.join(' ') }}
+                                    </span>: {{ nestedList.join(', ') }}
                                 </div>
                             </template>
                             <template v-else>{{ outputNestedListItemsOnly((data as Form).powers) }}</template>
@@ -395,7 +395,7 @@ if (props.startingPlayerName) {
                                 <div>
                                     <span class="text-secondary">
                                         {{ requirement }} parts
-                                    </span>: {{ nestedList.join(' ') }}
+                                    </span>: {{ nestedList.join(', ') }}
                                 </div>
                             </template>
                         </template>
@@ -411,7 +411,7 @@ if (props.startingPlayerName) {
                                 <div>
                                     <span class="text-primary">
                                         {{ capital(localStat) }}
-                                    </span>: {{ nestedList.join(' ') }}
+                                    </span>: {{ nestedList.join(', ') }}
                                 </div>
                             </template>
                             <template v-else>{{ outputNestedListKeysOnly((data as Form).lstats) }}</template>
@@ -419,17 +419,17 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Kemo Support" field="kemo" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).kemo?.join(' ') }}
+                            {{ (data as Form).kemo?.join(', ') }}
                         </template>
                     </Column>
                     <Column header="Chubby Support" field="chubby" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).chubby?.join(' ') }}
+                            {{ (data as Form).chubby?.join(', ') }}
                         </template>
                     </Column>
                     <Column header="Color Support" field="color" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).color?.join(' ') }}
+                            {{ (data as Form).color?.join(', ') }}
                         </template>
                     </Column>
                     <Column header="Arm Divider" field="armDivider" :sortable="true">
