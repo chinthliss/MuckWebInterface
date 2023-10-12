@@ -305,7 +305,7 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::get('ai', [HomeController::class, 'showPending'])
             ->name('multiplayer.ai');
 
-        Route::get('forms', [HomeController::class, 'showPending'])
+        Route::get('forms', [MultiplayerController::class, 'showFormBrowser'])
             ->name('multiplayer.forms');
         Route::get('inventory', [HomeController::class, 'showPending'])
             ->name('multiplayer.inventory');
