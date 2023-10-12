@@ -59,14 +59,14 @@ const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
 const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const tableLoading: Ref<boolean> = ref(true);
-const changeTargetModal: Ref<Element | null> = ref(null);
-const changeTargetIndex: Ref<number> = ref(0);
-const changeTargetName: Ref<string> = ref('');
+const detailedOutput: Ref<boolean> = ref(false);
+
 const filters = ref({
     name: {value: null, matchMode: FilterMatchMode.CONTAINS},
     powers: {value: null, matchMode: 'filteredNestedList'},
     tags: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    flags: {value: null, matchMode: 'filteredNestedList'}
+    flags: {value: null, matchMode: 'filteredNestedList'},
+    global: {value: 'mastered', matchMode: 'filteredFormList'}
 });
 
 type Target = {
@@ -76,15 +76,9 @@ type Target = {
     forms?: { [form: string]: number }
 }
 const targets: Ref<[Target, Target, Target, Target]> = ref([{}, {}, {}, {}]);
-const filterMode: Ref<string> = ref('mastered');
-
-const filteredFormDatabase = computed(() => {
-    const result = [];
-    for (const form of formDatabase.value) {
-        if (shouldWeShow(form)) result.push(form);
-    }
-    return result;
-});
+const changeTargetModal: Ref<Element | null> = ref(null);
+const changeTargetIndex: Ref<number> = ref(0);
+const changeTargetName: Ref<string> = ref('');
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
@@ -94,7 +88,10 @@ channel.on('formDatabase', (data: number) => {
 channel.on('formListing', (data: Form) => {
     formDatabase.value.push(data);
     formsToLoad.value--;
-    if (!formsToLoad.value) tableLoading.value = false;
+    if (!formsToLoad.value) {
+        tableLoading.value = false;
+        // filters.value.global.value = 'mastered';
+    }
 });
 
 type FormMasteryResponse = {
@@ -158,24 +155,6 @@ const unknownForms = computed((): string => {
     return result.join(', ');
 });
 
-const shouldWeShow = (form: Form): boolean => {
-    // Filtering on targets, if selected
-    if (!form.name) return false;
-    let count = 0;
-    for (const target of targets.value) {
-        if (target.forms && target.forms[form.name]) count++;
-    }
-    if (filterMode.value === 'mastered' && !count) return false;
-    if (filterMode.value === 'unmastered' && count) return false;
-
-    if (!props.staff) {
-        if (form.staffonly) return false;
-        // Only show private forms that are present
-        if (form.private && !count) return false;
-    }
-    return true;
-}
-
 const genderClassForForm = (form: Form): string => {
     if (form.cockCount)
         if (form.cuntCount)
@@ -189,7 +168,26 @@ const genderClassForForm = (form: Form): string => {
 
 }
 
+FilterService.register('filteredFormList', (name: string, mode: string) => {
+    const form: Form = formDatabase.value.find((form) => form.name == name);
+    if (!form) return false;
+    let count = 0;
+    for (const target of targets.value) {
+        if (target.forms && target.forms[name]) count++;
+    }
+    if (mode === 'mastered' && !count) return false;
+    if (mode === 'unmastered' && count) return false;
+
+    if (!props.staff) {
+        if (form.staffonly) return false;
+        // Only show private forms that are present
+        if (form.private && !count) return false;
+    }
+    return true;
+});
+
 FilterService.register('filteredNestedList', (data, value) => {
+    if (!value) return true;
     for (const key in data) {
         for (const nestedItem of data[key]) {
             if (nestedItem.indexOf && nestedItem.indexOf(value) !== -1) return true;
@@ -206,6 +204,27 @@ const highestUsedTargetIndex = () => {
     return result;
 }
 
+const outputNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): string => {
+    if (!nestedList) return '';
+    const result = [];
+    for (const key in nestedList) {
+        for (const value of nestedList[key]) {
+            if (result.indexOf(value) == -1) result.push(value);
+        }
+    }
+    return result.join(' ');
+}
+
+const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] }): string => {
+    if (!nestedList) return '';
+    const result = [];
+    for (const key in nestedList) {
+        if (result.indexOf(key) == -1) result.push(key);
+    }
+    return result.join(' ');
+}
+
+
 // Send requests for data
 channel.send('getFormDatabase');
 if (props.startingPlayerName) {
@@ -221,33 +240,49 @@ if (props.startingPlayerName) {
 
         <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
-        <p class="lead">This is presently a root page and should have some introductory text here for new users that might click on
+        <p class="lead">This is presently a root page and should have some introductory text here for new users that
+            might click on
             it. Something about forms being a key part of the game?</p>
 
-        <p>By default this page will show forms you've mastered. You can use the controls below to change this and even to add additional people to view, providing they've given you the permission to do so. If more then one person is set as a target, additional columns will also appear to compare who has mastered what.</p>
+        <p>By default this page will show forms you've mastered. You can use the controls below to change this and even
+            to add additional people to view, if they've given you permission to do so. If more then one
+            person is set as a target, additional columns will also appear to compare form mastery.</p>
 
         <spinner v-if="formsToLoad > 0"></spinner>
         <div v-else>
 
-            <!-- Mode selector -->
+            <!-- Mode and detail selector -->
             <div class="d-lg-flex align-items-center justify-content-center mb-2">
                 <div class="me-1 text-primary">Mode:</div>
-                <div class="btn-group" role="group" aria-label="Filter mode">
+                <div class="me-4 btn-group" role="group" aria-label="Filter mode">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
-                           v-model="filterMode" value="mastered"
+                           v-model="filters.global.value" value="mastered"
                     >
                     <label class="btn btn-secondary" for="filter_mastered">Mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
-                           v-model="filterMode" value="unmastered"
+                           v-model="filters.global.value" value="unmastered"
                     >
                     <label class="btn btn-secondary" for="filter_unmastered">Un-mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
-                           v-model="filterMode" value="none"
+                           v-model="filters.global.value" value="none"
                     >
                     <label class="btn btn-secondary" for="filter_none">All Forms</label>
 
+                </div>
+
+                <div class="me-1 text-primary">Detail:</div>
+                <div class="btn-group" role="group" aria-label="Detail mode">
+                    <input type="radio" class="btn-check" name="detail" id="detail_on" autocomplete="off"
+                           v-model="detailedOutput" :value="true"
+                    >
+                    <label class="btn btn-secondary" for="detail_on">Detail by part</label>
+
+                    <input type="radio" class="btn-check" name="detail" id="detail_off" autocomplete="off"
+                           v-model="detailedOutput" :value="false"
+                    >
+                    <label class="btn btn-secondary" for="detail_off">Simplify Lists</label>
                 </div>
             </div>
             <!-- Target rows -->
@@ -289,36 +324,36 @@ if (props.startingPlayerName) {
             <hr>
 
             <div :style="{ height: '75vh' }">
-                <DataTable :value="filteredFormDatabase" dataKey="name" size="small" stripedRows scrollable
+                <DataTable :value="formDatabase" dataKey="name" size="small" stripedRows scrollable
                            scrollHeight="flex" :loading="tableLoading" @sort="setTableLoadingWhilstBusy()"
-                           v-model:filters="filters" filterDisplay="row"
+                           v-model:filters="filters" filterDisplay="row" :globalFilterFields="['name']"
                 >
-                    <Column header="Name" field="name" class="fw-bold" frozen sortable style="min-width: 12rem">
+                    <Column header="Name" field="name" class="fw-bold" frozen :sortable="true" style="min-width: 12rem">
                         <template #filter="{ filterModel, filterCallback }">
                             <input v-model="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by name"
                             />
                         </template>
                     </Column>
-                    <Column header="Gender" field="gender" sortable style="min-width: 10rem">
+                    <Column header="Gender" field="gender" :sortable="true" style="min-width: 10rem">
                         <template #body="{ data }">
                             <i class="fa-solid" :class="genderClassForForm((data as Form))"></i>
                             {{ capital((data as Form).gender) }}
                         </template>
                     </Column>
-                    <Column header="Size" field="size" class="text-end" sortable></Column>
-                    <Column header="Cock Count" field="cockCount" class="text-end" sortable></Column>
-                    <Column header="Cock Size" field="cockSize" class="text-end" sortable></Column>
-                    <Column header="Ball Count" field="ballCount" class="text-end" sortable></Column>
-                    <Column header="Ball Size" field="ballSize" class="text-end" sortable></Column>
-                    <Column header="Cunt Count" field="cuntCount" class="text-end" sortable></Column>
-                    <Column header="Cunt Size" field="cuntSize" class="text-end" sortable></Column>
-                    <Column header="Clit Count" field="clitCount" class="text-end" sortable></Column>
-                    <Column header="Clit Size" field="clitSize" class="text-end" sortable></Column>
-                    <Column header="Breast Count" field="breastCount" class="text-end" sortable></Column>
-                    <Column header="Breast Size" field="breastSize" class="text-end" sortable></Column>
-                    <Column header="Say Verb" field="sayVerb" class="text-end" sortable></Column>
-                    <Column header="Holiday" field="holiday" class="text-end" sortable></Column>
+                    <Column header="Size" field="size" class="text-end" :sortable="true"></Column>
+                    <Column header="Cock Count" field="cockCount" class="text-end" :sortable="true"></Column>
+                    <Column header="Cock Size" field="cockSize" class="text-end" :sortable="true"></Column>
+                    <Column header="Ball Count" field="ballCount" class="text-end" :sortable="true"></Column>
+                    <Column header="Ball Size" field="ballSize" class="text-end" :sortable="true"></Column>
+                    <Column header="Cunt Count" field="cuntCount" class="text-end" :sortable="true"></Column>
+                    <Column header="Cunt Size" field="cuntSize" class="text-end" :sortable="true"></Column>
+                    <Column header="Clit Count" field="clitCount" class="text-end" :sortable="true"></Column>
+                    <Column header="Clit Size" field="clitSize" class="text-end" :sortable="true"></Column>
+                    <Column header="Breast Count" field="breastCount" class="text-end" :sortable="true"></Column>
+                    <Column header="Breast Size" field="breastSize" class="text-end" :sortable="true"></Column>
+                    <Column header="Say Verb" field="sayVerb" class="text-end" :sortable="true"></Column>
+                    <Column header="Holiday" field="holiday" class="text-end" :sortable="true"></Column>
                     <Column header="Tags" field="tags" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ (data as Form).tags?.join(' ') }}
@@ -331,12 +366,14 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Flags" field="flags" style="min-width: 12rem">
                         <template #body="{ data }">
-                            <template v-for="(nestedList, bodyPart) in (data as Form).flags">
-                                <div v-if="nestedList">
+                            <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (data as Form).flags">
+                                <div>
                                     <span class="text-primary">
-                                        {{ capital(bodyPart) }}</span>: {{ nestedList.join(' ') }}
+                                        {{ capital(bodyPart) }}
+                                    </span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
+                            <template v-else>{{ outputNestedListItemsOnly((data as Form).flags) }}</template>
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
                             <input v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -346,15 +383,16 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Powers" field="powers" style="min-width: 12rem">
                         <template #body="{ data }">
-                            <template v-for="(nestedList, bodyPart) in (data as Form).powers">
-                                <div v-if="nestedList">
+                            <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (data as Form).powers">
+                                <div>
                                     <span class="text-primary">
                                         {{ capital(bodyPart) }}
                                     </span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
+                            <template v-else>{{ outputNestedListItemsOnly((data as Form).powers) }}</template>
                             <template v-for="(nestedList, requirement) in (data as Form).powersBonus">
-                                <div v-if="nestedList">
+                                <div>
                                     <span class="text-secondary">
                                         {{ requirement }} parts
                                     </span>: {{ nestedList.join(' ') }}
@@ -369,87 +407,88 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Local Stats" field="lstats" style="min-width: 12rem">
                         <template #body="{ data }">
-                            <template v-for="(nestedList, localStat) in (data as Form).lstats">
-                                <div v-if="nestedList">
+                            <template v-if="detailedOutput" v-for="(nestedList, localStat) in (data as Form).lstats">
+                                <div>
                                     <span class="text-primary">
                                         {{ capital(localStat) }}
                                     </span>: {{ nestedList.join(' ') }}
                                 </div>
                             </template>
+                            <template v-else>{{ outputNestedListKeysOnly((data as Form).lstats) }}</template>
                         </template>
                     </Column>
-                    <Column header="Kemo Support" field="kemo" sortable>
+                    <Column header="Kemo Support" field="kemo" :sortable="true">
                         <template #body="{ data }">
                             {{ (data as Form).kemo?.join(' ') }}
                         </template>
                     </Column>
-                    <Column header="Chubby Support" field="chubby" sortable>
+                    <Column header="Chubby Support" field="chubby" :sortable="true">
                         <template #body="{ data }">
                             {{ (data as Form).chubby?.join(' ') }}
                         </template>
                     </Column>
-                    <Column header="Color Support" field="color" sortable>
+                    <Column header="Color Support" field="color" :sortable="true">
                         <template #body="{ data }">
                             {{ (data as Form).color?.join(' ') }}
                         </template>
                     </Column>
-                    <Column header="Arm Divider" field="armDivider" sortable>
+                    <Column header="Arm Divider" field="armDivider" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('arm') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Leg Divider" field="legDivider" sortable>
+                    <Column header="Leg Divider" field="legDivider" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('leg') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Tail Divider" field="tailDivider" sortable>
+                    <Column header="Tail Divider" field="tailDivider" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('tail') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Private" field="private" sortable>
+                    <Column header="Private" field="private" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).private"></i>
                         </template>
                     </Column>
-                    <Column header="No Mastering" field="noMastering" sortable>
+                    <Column header="No Mastering" field="noMastering" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noMastering"></i>
                         </template>
                     </Column>
-                    <Column header="No Funnel" field="noFunnel" sortable>
+                    <Column header="No Funnel" field="noFunnel" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noFunnel"></i>
                         </template>
                     </Column>
-                    <Column header="No Reward" field="noReward" sortable>
+                    <Column header="No Reward" field="noReward" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noReward"></i>
                         </template>
                     </Column>
-                    <Column header="No Zap" field="noZap" sortable>
+                    <Column header="No Zap" field="noZap" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noZap"></i>
                         </template>
                     </Column>
-                    <Column header="No Native" field="noNative" sortable>
+                    <Column header="No Native" field="noNative" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noNative"></i>
                         </template>
                     </Column>
-                    <Column header="No Extract" field="noExtract" sortable>
+                    <Column header="No Extract" field="noExtract" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noExtract"></i>
                         </template>
                     </Column>
-                    <Column header="Bypass Immune" field="bypassImmune" sortable>
+                    <Column header="Bypass Immune" field="bypassImmune" :sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
                         </template>
@@ -472,7 +511,8 @@ if (props.startingPlayerName) {
                                 :header="target.name"
                         >
                             <template #body="{ data }">
-                                <i class="fa-solid fa-check w-100 text-center" v-if="target.forms && target.forms[(data as Form).name]"></i>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="target.forms && target.forms[(data as Form).name]"></i>
                             </template>
                         </Column>
                     </template>
