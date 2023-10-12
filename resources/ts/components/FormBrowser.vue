@@ -238,6 +238,8 @@ if (props.startingPlayerName) {
 <template>
     <div class="container">
 
+        <div class="p-3 mb-2 bg-warning text-dark rounded">Changing the mode and sorting on this page are presently slow. Be patient!</div>
+
         <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
         <p class="lead">This is presently a root page and should have some introductory text here for new users that
