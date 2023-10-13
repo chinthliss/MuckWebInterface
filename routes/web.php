@@ -329,8 +329,7 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.avatar.edit.render');
 
         //Direct Connect
-        // TODO: Actual direct connect
-        Route::get('multiplayer/connect', [MultiplayerController::class, 'showConnect'])
+        Route::get('connect', [HomeController::class, 'showPending'])
             ->name('multiplayer.connect');
 
     });

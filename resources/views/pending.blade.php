@@ -6,13 +6,14 @@
     {{ Breadcrumbs::render([
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
         [ 'route' => 'multiplayer.home', 'label' => 'Multiplayer' ],
-        [ 'label' => 'Pending' ]
+        [ 'label' => 'Pending Content' ]
     ]) }}
 @endsection
 
 @section('content')
     <div class="container">
-        This content is still pending being written.
+        <p class="lead">This content hasn't been written yet.</p>
+        <p>This is just a placeholder to help layout the skeleton for the site.</p>
     </div>
 @endsection
 
