@@ -11,9 +11,12 @@
 
 @section('content')
     <div class="container">
-        TODO: Singleplayer home content
 
-        Most likely a link to the blog but consider moving or having a copy of 'how to download/play' here.
+        <h1>Singleplayer</h1>
+
+        <p class="lead">Progress, news and downloads of the singleplayer version are available from <a href="https://blog.flexiblesurvival.com">blog.flexiblesurvival.com</a></p>
+
+        <div>TODO: Consider having more content here, maybe direct links to downloads? Or do we scrap this page entirely and have the front splash go to the blog directly.</div>
     </div>
 @endsection
 
