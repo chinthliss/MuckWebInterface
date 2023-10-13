@@ -3,6 +3,7 @@
 import {ref, Ref, computed} from "vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
+import ProgressBar from "primevue/progressbar";
 import {capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
@@ -57,7 +58,8 @@ type Form = {
 
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
-const formsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
+const remainingFormsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
+const formsToLoad: Ref<number | null> = ref(null);
 const tableLoading: Ref<boolean> = ref(true);
 const detailedOutput: Ref<boolean> = ref(false);
 
@@ -82,13 +84,14 @@ const changeTargetName: Ref<string> = ref('');
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
+    remainingFormsToLoad.value = data;
     formsToLoad.value = data;
 });
 
 channel.on('formListing', (data: Form) => {
     formDatabase.value.push(data);
-    formsToLoad.value--;
-    if (!formsToLoad.value) {
+    remainingFormsToLoad.value--;
+    if (!remainingFormsToLoad.value) {
         tableLoading.value = false;
         // filters.value.global.value = 'mastered';
     }
@@ -250,7 +253,13 @@ if (props.startingPlayerName) {
             to add additional people to view, if they've given you permission to do so. If more then one
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
-        <spinner v-if="formsToLoad > 0"></spinner>
+        <div>formsToLoad: {{ formsToLoad }}</div>
+        <div>remainingFormsToLoad: {{ remainingFormsToLoad }}</div>
+        <ProgressBar v-if="remainingFormsToLoad" :indeterminate="!formsToLoad"
+                     :value="(formsToLoad - remainingFormsToLoad) / formsToLoad"
+        >
+            Remaining forms to load: {{ formsToLoad }}
+        </ProgressBar>
         <div v-else>
 
             <!-- Mode and detail selector -->
@@ -421,17 +430,39 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Kemo Support" field="kemo" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).kemo?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).kemo?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).kemo?.length"
+                                ></i>
+                            </template>
                         </template>
                     </Column>
                     <Column header="Chubby Support" field="chubby" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).chubby?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).chubby?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).chubby?.length"
+                                ></i>
+                            </template>
                         </template>
                     </Column>
                     <Column header="Color Support" field="color" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).color?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).color?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).color?.length > 0"
+                                ></i>
+                            </template>
+
                         </template>
                     </Column>
                     <Column header="Arm Divider" field="armDivider" :sortable="true">
@@ -514,7 +545,8 @@ if (props.startingPlayerName) {
                         >
                             <template #body="{ data }">
                                 <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="target.forms && target.forms[(data as Form).name]"></i>
+                                   v-if="target.forms && target.forms[(data as Form).name]"
+                                ></i>
                             </template>
                         </Column>
                     </template>
