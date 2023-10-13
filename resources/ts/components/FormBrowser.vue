@@ -419,17 +419,39 @@ if (props.startingPlayerName) {
                     </Column>
                     <Column header="Kemo Support" field="kemo" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).kemo?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).kemo?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).kemo?.length"
+                                ></i>
+                            </template>
                         </template>
                     </Column>
                     <Column header="Chubby Support" field="chubby" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).chubby?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).chubby?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).chubby?.length"
+                                ></i>
+                            </template>
                         </template>
                     </Column>
                     <Column header="Color Support" field="color" :sortable="true">
                         <template #body="{ data }">
-                            {{ (data as Form).color?.join(', ') }}
+                            <template v-if="detailedOutput">
+                                {{ (data as Form).color?.join(', ') }}
+                            </template>
+                            <template v-else>
+                                <i class="fa-solid fa-check w-100 text-center"
+                                   v-if="(data as Form).color?.length > 0"
+                                ></i>
+                            </template>
+
                         </template>
                     </Column>
                     <Column header="Arm Divider" field="armDivider" :sortable="true">
@@ -512,7 +534,8 @@ if (props.startingPlayerName) {
                         >
                             <template #body="{ data }">
                                 <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="target.forms && target.forms[(data as Form).name]"></i>
+                                   v-if="target.forms && target.forms[(data as Form).name]"
+                                ></i>
                             </template>
                         </Column>
                     </template>
