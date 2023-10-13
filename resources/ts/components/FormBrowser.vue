@@ -58,8 +58,8 @@ type Form = {
 
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
-const remainingFormsToLoad: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const formsToLoad: Ref<number | null> = ref(null);
+const formsToLoadRemaining: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const tableLoading: Ref<boolean> = ref(true);
 const detailedOutput: Ref<boolean> = ref(false);
 
@@ -84,14 +84,14 @@ const changeTargetName: Ref<string> = ref('');
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
-    remainingFormsToLoad.value = data;
+    formsToLoadRemaining.value = data;
     formsToLoad.value = data;
 });
 
 channel.on('formListing', (data: Form) => {
     formDatabase.value.push(data);
-    remainingFormsToLoad.value--;
-    if (!remainingFormsToLoad.value) {
+    formsToLoadRemaining.value--;
+    if (!formsToLoadRemaining.value) {
         tableLoading.value = false;
         // filters.value.global.value = 'mastered';
     }
@@ -241,8 +241,6 @@ if (props.startingPlayerName) {
 <template>
     <div class="container">
 
-        <div class="p-3 mb-2 bg-warning text-dark rounded">Changing the mode and sorting on this page are presently slow. Be patient!</div>
-
         <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
         <p class="lead">This is presently a root page and should have some introductory text here for new users that
@@ -253,12 +251,10 @@ if (props.startingPlayerName) {
             to add additional people to view, if they've given you permission to do so. If more then one
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
-        <div>formsToLoad: {{ formsToLoad }}</div>
-        <div>remainingFormsToLoad: {{ remainingFormsToLoad }}</div>
-        <ProgressBar v-if="remainingFormsToLoad" :indeterminate="!formsToLoad"
-                     :value="(formsToLoad - remainingFormsToLoad) / formsToLoad"
+        <ProgressBar v-if="formsToLoadRemaining" :indeterminate="!formsToLoad"
+                     :value="(formsToLoad - formsToLoadRemaining) * 100 / formsToLoad"
         >
-            Remaining forms to load: {{ formsToLoad }}
+            {{ Math.floor((formsToLoad - formsToLoadRemaining) * 100 / formsToLoad) }}%
         </ProgressBar>
         <div v-else>
 
