@@ -4,7 +4,7 @@
     <div class="d-flex flex-column">
         <div class="d-flex justify-content-evenly">
             <div class="p-2">
-            <h1>Welcome</h1>
+            <h1>Welcome to Flexible Survival</h1>
             <p>This is a work-in-progress new site. At some point this whole welcome will be replaced.</p>
             </div>
         </div>
@@ -26,6 +26,18 @@
                 </a>
             </div>
         </div>
+    </div>
+    <hr class="mt-4 mb-4">
+    <div class="d-flex justify-content-evenly">
+        <div class="p-2 text-center">
+            <h2>Join the Discord!</h2>
+            <iframe src="https://discord.com/widget?id=333559467218173953&theme=dark" width="350" height="500" allowtransparency="true" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+        </div>
+        <div class="p-2 text-center">
+            <h2>Other links:</h2>
+            <a href="http://wiki.flexiblesurvival.com/w/">View the Wiki</a>
+        </div>
+
     </div>
 @endsection
 
