@@ -2,6 +2,7 @@
 
 @section('page-navigation')
     <a class="nav-link rounded" href="{{ route('account') }}">Account</a>
+    <a class="nav-link rounded" href="{{ route('settings') }}">Settings</a>
 
     <div class="mt-2 fw-bold"><i class="fas fa-fw fa-user me-1 mt-2"></i>Single Player</div>
     <a class="nav-link rounded" href="{{ route('singleplayer.home') }}">Introduction</a>

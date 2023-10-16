@@ -24,6 +24,24 @@ class AccountController extends Controller
 
     }
 
+    public function showSettings(): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        return view('settings', [
+        ]);
+
+    }
+
+    public function setSetting(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        abort(501);
+    }
+
     public function findIssuesWithPassword(string $password): array
     {
         $issues = [];

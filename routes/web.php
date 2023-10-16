@@ -88,6 +88,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('termsofservice', [TermsOfServiceController::class, 'acceptTermsOfService']);
     Route::get('account', [AccountController::class, 'showAccount'])
         ->name('account');
+    Route::get('settings', [AccountController::class, 'showSettings'])
+        ->name('settings');
+    Route::post('settings', [AccountController::class, 'setSetting'])
+        ->name('settings.api');
     Route::get('changepassword', [PasswordController::class, 'showChangePassword'])
         ->name('auth.password.change');
     Route::post('changepassword', [PasswordController::class, 'changePassword']);

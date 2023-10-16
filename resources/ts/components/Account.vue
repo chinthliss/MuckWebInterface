@@ -200,10 +200,6 @@ const cancelSubscription = (id) => {
             </div>
         </div>
 
-        <h2 class="mt-2">Preferences</h2>
-        <div>Pending</div>
-        <!-- TODO: Restore preferences on account screen -->
-
         <!-- Change primary email modal -->
         <modal-confirmation ref="confirmPrimaryEmailModal" @yes="makeEmailPrimary"
                             title="Change Primary Email?" yes-label="Change" no-label="Cancel">
