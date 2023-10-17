@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'tos.agreed' => \App\Http\Middleware\EnsureTermsOfServiceAgreed::class,
         'character' => \App\Http\Middleware\HasApprovedCharacterSet::class,
         'role' => \App\Http\Middleware\HasRole::class,
+        'character.load' => \App\Http\Middleware\LoadActiveCharacter::class,
     ];
 }

@@ -29,10 +29,8 @@ Route::get('accountlocked', [HomeController::class, 'showLocked'])
 Route::get('verifyemail/{id}/{hash}', [EmailController::class, 'verifyEmail'])
     ->name('auth.email.verification')->middleware('signed', 'throttle:8,1');
 
-//Character Avatar related images (Image resources that skip middleware)
+// Character Avatar related images - most skip all middleware since they're just image resources
 Route::withoutMiddleware('web')->group(function () {
-    Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
-        ->name('avatar.render');
     Route::get('avatar/gradient/{name}', [AvatarController::class, 'getGradient'])
         ->name('avatar.gradient.render');
     Route::get('avatar/gradient/preview/{code?}', [AvatarController::class, 'getGradientPreview'])
@@ -42,6 +40,12 @@ Route::withoutMiddleware('web')->group(function () {
     Route::get('avatar/itempreview/{id}', [AvatarController::class, 'getAvatarItemPreview'])
         ->name('avatar.item.preview');
 });
+// The main avatar requires the user loading present User to get their preferences, but we don't need their character
+Route::withoutMiddleware('character.load')->group(function () {
+    Route::get('a/{name}', [AvatarController::class, 'getAvatarFromCharacterName'])
+        ->name('avatar.render');
+});
+
 
 //Character Profiles - technically multiplayer but separate for easy linking purposes
 Route::get('c/{name}', [CharacterController::class, 'showCharacterProfile'])

@@ -487,7 +487,7 @@ class User implements Authenticatable, MustVerifyEmail
     {
         if ($this->avatarPreference === null) {
             $preference = $this->getAccountProperty('webAvatarPreference');
-            $this->avatarPreference = AvatarPreference::from($preference) ?: AvatarPreference::DEFAULT;
+            $this->avatarPreference = $preference ? AvatarPreference::from($preference) : AvatarPreference::DEFAULT;
         }
 
         return $this->avatarPreference;
