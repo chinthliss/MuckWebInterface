@@ -31,7 +31,8 @@ class AccountController extends Controller
 
         return view('settings', [
             'settings' => [
-                'avatarPreference' => $user->getAvatarPreference()
+                'avatarPreference' => $user->getAvatarPreference(),
+                'useFullWidth' => $user->getUseFullWidthPreference()
             ]
         ]);
 
@@ -54,6 +55,9 @@ class AccountController extends Controller
         switch ($setting) {
             case 'avatarPreference':
                 $user->setAvatarPreferenceFromString($value);
+                break;
+            case 'useFullWidth':
+                $user->setUseFullWidthPreference($value == 'true');
                 break;
             default:
                 abort(400, 'Unrecognized setting requested.');

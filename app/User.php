@@ -501,6 +501,28 @@ class User implements Authenticatable, MustVerifyEmail
 
     #endregion Avatar viewing preference
 
+    #region Full width preference
+
+    protected ?bool $useFullWidth = null; // Loaded on demand
+
+    public function getUseFullWidthPreference(): bool
+    {
+        if ($this->useFullWidth === null) {
+            $preference = $this->getAccountProperty('webUseFullWidth');
+            $this->useFullWidth = $preference ? true : false;
+        }
+
+        return $this->useFullWidth;
+    }
+
+    public function setUseFullWidthPreference(bool $value): void
+    {
+        $this->useFullWidth = $value;
+        $this->setAccountProperty( 'webUseFullWidth', $value ? 1 : 0);
+    }
+
+    #endregion Full width preference
+
     public function setIsLocked(bool $isLocked): void
     {
         $this->getProvider()->setIsLocked($this, $isLocked);
