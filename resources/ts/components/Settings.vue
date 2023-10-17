@@ -1,5 +1,30 @@
 <script setup lang="ts">
 
+import {ref, Ref} from "vue";
+
+const props = defineProps<{
+    apiUrl: string
+    initialSettings: {
+        useFullWidth: boolean,
+        avatarPreference: string
+    }
+}>();
+
+const settings: Ref<object> = ref(props.initialSettings);
+
+const saveSetting = (setting: string): void => {
+    const value = settings.value[setting];
+    console.log(`Saving ${setting}: ${value}`);
+    axios.post(props.apiUrl, {setting, value})
+        .then(() => {
+            console.log(`Saved ${setting}: ${value}`);
+        })
+        .catch((error) => {
+            console.log(`Failed to save ${setting}: ${value}`, error?.response?.data || error);
+        })
+
+};
+
 </script>
 
 <template>
@@ -26,17 +51,18 @@
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="fullWidth" value="no" id="fullWidthYes">
-                    <label class="form-check-label" for="fullWidthYes">
+                    <input class="form-check-input" type="radio" name="fullWidth" value="no" id="fullWidthNo">
+                    <label class="form-check-label" for="fullWidthNo">
                         No
                     </label>
                 </div>
             </div>
         </div>
 
-        <!-- Avatar Rendering-->
-        <!-- TODO - avatar rendering setting -->
-        <h2>Avatar Rendering</h2>
+        <hr>
+
+        <!-- Avatar Preference-->
+        <h2>Avatar Display Preference</h2>
         <div class="row">
             <div class="col-12 col-lg-6">
                 <p>Not yet implemented.</p>
@@ -45,34 +71,38 @@
 
             <div class="col-12 col-lg-6">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="avatarRendering" value="none"
-                           id="avatarRenderingNone"
+                    <input class="form-check-input" type="radio" name="avatarPreference" value="hidden"
+                           id="avatarPreferenceNone" v-model="settings.avatarPreference"
+                           @change="saveSetting('avatarPreference')"
                     >
-                    <label class="form-check-label" for="avatarRenderingNone">
-                        None (Avatars won't be rendered where possible)
+                    <label class="form-check-label" for="avatarPreferenceNone">
+                        Hidden (Avatars won't be displayed where possible)
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="avatarRendering" value="clean"
-                           id="avatarRenderingClean"
+                    <input class="form-check-input" type="radio" name="avatarPreference" value="clean"
+                           id="avatarPreferenceClean" v-model="settings.avatarPreference"
+                           @change="saveSetting('avatarPreference')"
                     >
-                    <label class="form-check-label" for="avatarRenderingClean">
+                    <label class="form-check-label" for="avatarPreferenceClean">
                         Clean (No naughty parts)
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="avatarRendering" value="default"
-                           id="avatarRenderingDefault"
+                    <input class="form-check-input" type="radio" name="avatarPreference" value="default"
+                           id="avatarPreferenceDefault" v-model="settings.avatarPreference"
+                           @change="saveSetting('avatarPreference')"
                     >
-                    <label class="form-check-label" for="avatarRenderingDefault">
+                    <label class="form-check-label" for="avatarPreferenceDefault">
                         Default (Female only)
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="avatarRendering" value="explicit"
-                           id="avatarRenderingExplicit"
+                    <input class="form-check-input" type="radio" name="avatarPreference" value="explicit"
+                           id="avatarPreferenceExplicit" v-model="settings.avatarPreference"
+                           @change="saveSetting('avatarPreference')"
                     >
-                    <label class="form-check-label" for="avatarRenderingExplicit">
+                    <label class="form-check-label" for="avatarPreferenceExplicit">
                         Explicit (Everything)
                     </label>
                 </div>

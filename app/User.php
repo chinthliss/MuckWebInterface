@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Avatar\AvatarPreference;
 use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use App\Payment\PatreonManager;
@@ -480,26 +481,21 @@ class User implements Authenticatable, MustVerifyEmail
 
     #region Avatar viewing preference
 
-    const AVATAR_PREFERENCE_HIDDEN   = 'hidden';   // Not used
-    const AVATAR_PREFERENCE_CLEAN    = 'clean';    // No naughty bits
-    const AVATAR_PREFERENCE_DEFAULT  = 'default';  // Female naughty bits
-    const AVATAR_PREFERENCE_EXPLICIT = 'explicit'; // All the naughty bits
+    protected ?AvatarPreference $avatarPreference = null; // Loaded on demand
 
-    protected ?string $avatarPreference = null; // Loaded on demand
-
-    public function getAvatarPreference(): string
+    public function getAvatarPreference(): AvatarPreference
     {
         if ($this->avatarPreference === null) {
             $preference = $this->getAccountProperty('webAvatarPreference');
-            $this->avatarPreference = $preference ?: self::AVATAR_PREFERENCE_DEFAULT;
+            $this->avatarPreference = AvatarPreference::from($preference) ?: AvatarPreference::DEFAULT;
         }
 
         return $this->avatarPreference;
     }
 
-    public function setAvatarPreference(string $value): void
+    public function setAvatarPreferenceFromString(string $value): void
     {
-        $this->avatarPreference = $value;
+        $this->avatarPreference = AvatarPreference::from($value);
         $this->setAccountProperty( 'webAvatarPreference', $value);
     }
 

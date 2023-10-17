@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Avatar\AvatarGradient;
 use App\Avatar\AvatarInstance;
+use App\Avatar\AvatarPreference;
 use App\Avatar\AvatarService;
 use App\Muck\MuckService;
 use App\Muck\MuckObjectService;
@@ -221,11 +222,11 @@ class AvatarController extends Controller
     {
         // Hidden is treated as clean for instances where it needs to be displayed, such as the editor
         switch ($user->getAvatarPreference()) {
-            case $user::AVATAR_PREFERENCE_HIDDEN:
-            case $user::AVATAR_PREFERENCE_CLEAN:
+            case AvatarPreference::HIDDEN:
+            case AvatarPreference::CLEAN:
                 $avatarInstance->mode = AvatarService::MODE_CLEAN;
                 break;
-            case $user::AVATAR_PREFERENCE_EXPLICIT:
+            case AvatarPreference::EXPLICIT:
                 $avatarInstance->mode = AvatarService::MODE_EXPLICIT;
         }
     }
@@ -310,7 +311,7 @@ class AvatarController extends Controller
         /** @var User $user Optional */
         $user = auth()->user();
 
-        if ($user && $user->getAvatarPreference() == User::AVATAR_PREFERENCE_HIDDEN) abort(204);
+        if ($user && $user->getAvatarPreference() == AvatarPreference::HIDDEN) abort(204);
 
         if (str_ends_with(strtolower($name), '.png')) $name = substr($name, 0, -4);
         //TODO: Investigate a muckservice function to do this in one muck call

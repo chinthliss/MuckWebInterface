@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Avatar\AvatarPreference;
 use App\Muck\MuckObjectService;
 use App\Muck\MuckService;
 use App\Notifications\MuckWebInterfaceNotification;
@@ -254,7 +255,7 @@ class CharacterController extends Controller
         if (!$character) abort(404);
 
         $avatarUrl = route('avatar.render', ['name' => $character->name]);
-        if ($user && $user->getAvatarPreference() === $user::AVATAR_PREFERENCE_HIDDEN) $avatarUrl = '';
+        if ($user && $user->getAvatarPreference() === AvatarPreference::HIDDEN) $avatarUrl = '';
 
         return view('multiplayer.character-profile')->with([
             'character' => $character,

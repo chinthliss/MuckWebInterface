@@ -30,16 +30,35 @@ class AccountController extends Controller
         $user = auth()->user();
 
         return view('settings', [
+            'settings' => [
+                'avatarPreference' => $user->getAvatarPreference()
+            ]
         ]);
 
     }
 
-    public function setSetting(Request $request): RedirectResponse
+    /**
+     * Returns the setting name that was changed if successful
+     */
+    public function setSetting(Request $request): string
     {
         /** @var User $user */
         $user = auth()->user();
 
-        abort(501);
+        if (!$request->has('setting')) abort(400);
+        $setting = $request->get('setting');
+
+        if (!$request->has('value')) abort(400);
+        $value = $request->get('value');
+
+        switch ($setting) {
+            case 'avatarPreference':
+                $user->setAvatarPreferenceFromString($value);
+                break;
+            default:
+                abort(400, 'Unrecognized setting requested.');
+        }
+        return $setting;
     }
 
     public function findIssuesWithPassword(string $password): array

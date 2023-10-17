@@ -12,5 +12,6 @@
 @section('content')
     <settings
         api-url="{{ route('settings.api') }}"
+        :initial-settings="{{ json_encode($settings) }}"
     ></settings>
 @endsection
