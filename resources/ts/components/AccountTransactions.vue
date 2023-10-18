@@ -1,15 +1,16 @@
 <script setup lang="ts">
 
 import {Ref, ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
 import {carbonToString, usdToString} from "../formatting";
 import {AccountTransaction} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
-    transactionsIn: AccountTransaction
+    transactionsIn: AccountTransaction[]
 }>();
 
-const transactions: Ref<AccountTransaction> = ref(props.transactionsIn);
+const transactions: Ref<AccountTransaction[]> = ref(props.transactionsIn);
 
 const renderResult = (result: string): string => {
     if (!result) return 'Open'
@@ -20,30 +21,6 @@ const renderResult = (result: string): string => {
     return result;
 }
 
-const renderIdWithLink = (data: any, type: string, row: any) => {
-    return `<a href="${row.url}">${data}</a>`;
-}
-
-const transactionsTableConfiguration = {
-    columns: [
-        {data: 'id', render: renderIdWithLink},
-        {data: 'created_at', render: carbonToString},
-        {data: 'completed_at', render: carbonToString},
-        {data: 'type'},
-        {data: 'total_usd', render: usdToString},
-        {data: 'account_currency_quoted'},
-        {data: 'items'},
-        {data: 'subscription_id'},
-        {data: 'result', render: renderResult}
-    ],
-    language: {
-        "emptyTable": "You have no transactions on file."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
 </script>
 
 <template>
@@ -51,23 +28,36 @@ const transactionsTableConfiguration = {
 
         <h1>Account Transactions</h1>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="transactionsTableConfiguration"
-                   :data="transactions"
-        >
-            <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Created</th>
-                <th scope="col">Completed</th>
-                <th scope="col">Type</th>
-                <th scope="col">USD</th>
-                <th scope="col">Account Currency</th>
-                <th scope="col">Items</th>
-                <th scope="col">Subscription?</th>
-                <th scope="col">Result</th>
-            </tr>
-            </thead>
+        <DataTable :value="transactions" stripedRows>
+            <Column field="id" header="Id">
+                <template #body="{ data  }">
+                    <a :href="(data as AccountTransaction).url">{{ (data as AccountTransaction).id }}</a>
+                </template>
+            </Column>
+            <Column field="created_at" header="Created">
+                <template #body="{ data }">
+                    {{ carbonToString((data as AccountTransaction).created_at) }}
+                </template>
+            </Column>
+            <Column field="completed_at" header="Completed">
+                <template #body="{ data }">
+                    {{ carbonToString((data as AccountTransaction).completed_at) }}
+                </template>
+            </Column>
+            <Column field="type" header="Type">Type</Column>
+            <Column field="total_usd" header="USD">
+                <template #body="{ data }">
+                    {{ usdToString((data as AccountTransaction).total_usd) }}
+                </template>
+            </Column>
+            <Column field="account_currency_quoted" header="Account Currency">Account Currency</Column>
+            <Column field="items" header="Items">Items</Column>
+            <Column field="subscription_id" header="Subscription"></Column>
+            <Column field="result" header="Result">
+                <template #body="{ data }">
+                    {{ renderResult((data as AccountTransaction).result) }}
+                </template>
+            </Column>
         </DataTable>
 
     </div>
