@@ -1,8 +1,9 @@
 <script setup lang="ts">
 
 import {Ref, ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
 import {AccountCard} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
     profileId: string,
@@ -22,45 +23,6 @@ const cardNumber: Ref<string> = ref('');
 const expiryDate: Ref<string> = ref('');
 const securityCode: Ref<string> = ref('');
 const pendingRequest: Ref<boolean> = ref(false);
-
-const renderControlsColumn = (data: any, type: string, row: any): string => {
-    let controls = ''
-    controls += `<button class="btn btn-secondary ms-2 card-delete-button" data-id="${row.id}"><i class="fas fa-trash btn-icon-left"></i>Delete</button>`;
-    if (!row.isDefault)
-        controls += `<button class="btn btn-secondary ms-2 card-set-default-button" data-id="${row.id}"><i class="fas fa-check btn-icon-left"></i>Make Default</button>`;
-
-    return controls;
-};
-
-const linkButtonsInTable = () => {
-    const deleteButtons = document.querySelectorAll('.card-delete-button') as NodeListOf<HTMLButtonElement>;
-    // TODO: Delete card should really have a confirmation
-    deleteButtons.forEach(el => {
-        el.addEventListener('click', deleteCard);
-    })
-
-    const makeDefaultButtons = document.querySelectorAll('.card-set-default-button') as NodeListOf<HTMLButtonElement>;
-    makeDefaultButtons.forEach(el => {
-        el.addEventListener('click', setCardAsDefault);
-    })
-};
-
-const cardTableConfiguration = {
-    columns: [
-        {data: 'cardType'},
-        {data: 'maskedCardNumber'},
-        {data: 'expiryDate'},
-        {render: renderControlsColumn, sortable: false, className: 'text-nowrap'}
-    ],
-    language: {
-        "emptyTable": "You have no cards registered."
-    },
-    paging: false,
-    info: false,
-    searching: false,
-    ordering: false,
-    drawCallback: linkButtonsInTable
-};
 
 const addCard = (event: Event) => {
     event.preventDefault();
@@ -88,14 +50,13 @@ const addCard = (event: Event) => {
     });
 };
 
-const deleteCard = (event: Event) => {
+const deleteCard = (card: AccountCard) => {
     if (pendingRequest.value) return;
     pendingRequest.value = true;
-    const id = (event.currentTarget as HTMLButtonElement).dataset.id;
     axios.delete(props.links.deleteCard, {
-        data: {'id': id}
+        data: {'id': card.id}
     }).then(_response => {
-        cards.value = cards.value.filter(card => card.id != id);
+        cards.value = cards.value.filter(existingCard => existingCard != card);
     }).catch(error => {
         if (error.response?.data?.errors)
             errors.value = error.response.data.errors;
@@ -105,15 +66,14 @@ const deleteCard = (event: Event) => {
     });
 }
 
-const setCardAsDefault = (event: Event) => {
+const setCardAsDefault = (card: AccountCard) => {
     if (pendingRequest.value) return;
     pendingRequest.value = true;
-    const id = (event.currentTarget as HTMLButtonElement).dataset.id;
     axios.patch(props.links.setDefaultCard, {
-        'id': id
+        'id': card.id
     }).then(_response => {
-        cards.value.forEach((card) => {
-            card.isDefault = card.id == id;
+        cards.value.forEach((existingCard) => {
+            existingCard.isDefault = existingCard.id == card.id;
         });
     }).catch(error => {
         if (error.response?.data?.errors)
@@ -131,20 +91,31 @@ const setCardAsDefault = (event: Event) => {
 
         <h1>Card Management</h1>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="cardTableConfiguration"
-                   :data="cards">
-            <thead>
-            <tr>
-                <th scope="col">Type</th>
-                <th scope="col">Ends With</th>
-                <th scope="col">Expiry</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
+        <DataTable :value="cards" stripedRows>
+            <template #empty>You have no cards registered.</template>
+            <Column header="Type" field="cardType"></Column>
+            <Column header="Ends With" field="maskedCardNumber"></Column>
+            <Column header="Expiry" field="expiryDate"></Column>
+            <Column>
+                <template #body="{ data }">
+                    <button class="btn btn-secondary ms-2"
+                            @click="deleteCard(data as AccountCard)">
+                        <i class="fas fa-trash btn-icon-left"></i>Delete
+                    </button>
+                    <button v-if="!(data as AccountCard).isDefault"
+                            class="btn btn-secondary ms-2"
+                            @click="setCardAsDefault(data as AccountCard)"
+                    >
+                        <i class="fas fa-check btn-icon-left"></i>Make Default
+                    </button>
+                </template>
+
+            </Column>
         </DataTable>
 
 
-        <div id="add-card" class="border border-primary rounded p-3">
+        <div id="add-card" class="border border-primary rounded p-3 mt-4">
+            <h2>Register New Card</h2>
             <form>
                 <div class="row">
                     <div class="col">

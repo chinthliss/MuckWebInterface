@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
 import {Ref, ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {usdToString, carbonToString, arrayToList} from "../formatting";
 import {csrf, lex} from "../siteutils";
-import {Account} from "../defs";
+import {Account, AccountEmail, AccountSubscription} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
     accountIn: Account
@@ -22,52 +23,14 @@ const account: Ref<Account> = ref(props.accountIn);
 const emailToMakePrimary: Ref<string> = ref('');
 const confirmPrimaryEmailModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 
-const confirmMakeEmailPrimary = (e: Event) => {
-    emailToMakePrimary.value = (e.currentTarget as HTMLButtonElement).dataset.email;
+const confirmMakeEmailPrimary = (email: AccountEmail) => {
+    emailToMakePrimary.value = email.email;
     confirmPrimaryEmailModal.value.show();
 }
 
 const makeEmailPrimary = () => {
     (document.getElementById('changeEmailForm') as HTMLFormElement).submit();
 }
-
-const displayEmailRowForControls = (data: any, type: string, row: any) => {
-    let controls = '';
-    if (!row.isPrimary) controls += `<button data-email="${row.email}" class="btn btn-secondary btn-make-primary">Make Primary</button>`;
-    return controls;
-};
-
-const displayEmailRowForIsPrimary = (data: any) => {
-    return data ? '<i class="fa-solid fa-check"></i>' : '';
-};
-
-const emailTableDrawCallback = () => {
-    const buttons = document.querySelectorAll('.btn-make-primary') as NodeListOf<HTMLButtonElement>;
-    buttons.forEach(el => {
-        el.addEventListener('click', confirmMakeEmailPrimary);
-    })
-};
-
-const emailTableConfiguration = {
-    columns: [
-        {data: 'email'},
-        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString},
-        {render: displayEmailRowForControls, sortable: false, className: 'dt-center'}
-    ],
-    paging: false,
-    info: false,
-    searching: false,
-    drawCallback: emailTableDrawCallback
-};
-
-const displaySubscriptionRowForControls = (data: any, type: string, row: any): string => {
-    return `
-    <a href="${row.url}"><i class="fas fa-search"></i></a>
-    <button class="btn btn-secondary ms-2" v-if="${row.status} === 'active'" @click="cancelSubscription(${row.id})">Cancel</button>
-    `;
-};
 
 const friendlySubscriptionStatus = (status: string): string => {
     switch (status) {
@@ -86,19 +49,7 @@ const friendlySubscriptionStatus = (status: string): string => {
     }
     return 'Unknown';
 }
-const subscriptionsTableConfiguration = {
-    columns: [
-        {data: 'type'},
-        {data: 'amount_usd', render: usdToString},
-        {data: 'recurring_interval'},
-        {data: 'next_charge_at', render: carbonToString},
-        {data: 'status', render: friendlySubscriptionStatus},
-        {render: displaySubscriptionRowForControls, sortable: false}
-    ],
-    paging: false,
-    info: false,
-    searching: false
-};
+
 
 const overallSubscriptionStatus = () => {
     if (!account.value.subscriptionActive) return 'No Active Subscription';
@@ -106,8 +57,9 @@ const overallSubscriptionStatus = () => {
     return 'Active, expires sometime before ' + account.value.subscriptionExpires;
 }
 
-const cancelSubscription = (id) => {
+const cancelSubscription = (subscription: AccountSubscription) => {
     // TODO - restore subscription cancelling
+    console.log("Should cancel subscription: ", subscription);
 }
 
 </script>
@@ -144,18 +96,35 @@ const cancelSubscription = (id) => {
 
             <h2 class="mt-2">Subscriptions</h2>
 
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="subscriptionsTableConfiguration" :data="account.subscriptions">
-                <thead>
-                <tr>
-                    <th scope="col">Type</th>
-                    <th scope="col">Amount (USD)</th>
-                    <th scope="col">Interval (days)</th>
-                    <th scope="col">Next (approx)</th>
-                    <th scope="col">Status</th>
-                    <th scope="col"></th>
-                </tr>
-                </thead>
+            <DataTable :value="account.subscriptions" stripedRows>
+                <Column header="Type" field="type"></Column>
+                <Column header="Amount (USD)" field="amount_usd">
+                    <template #body="{ data }">
+                        {{ usdToString((data as AccountSubscription).amount_usd) }}
+                    </template>
+                </Column>
+                <Column header="Interval (days)" field="recurring_interval"></Column>
+                <Column header="Next (approx)" field="next_charge_at">
+                    <template #body="{ data }">
+                        {{ carbonToString((data as AccountSubscription).next_charge_at) }}
+                    </template>
+                </Column>
+                <Column header="Status" field="status">
+                    <template #body="{ data }">
+                        {{ friendlySubscriptionStatus((data as AccountSubscription).status) }}
+                    </template>
+                </Column>
+                <Column>
+                    <template #body="{ data }">
+                        <a :href="(data as AccountSubscription).url"><i class="fas fa-search"></i></a>
+                        <button class="btn btn-secondary ms-2"
+                                v-if="(data as AccountSubscription).status === 'active'"
+                                @click="cancelSubscription(data as AccountSubscription)"
+                        >
+                            Cancel
+                        </button>
+                    </template>
+                </Column>
             </DataTable>
 
             <p>Payments made via subscriptions also show on the Account Transactions page.</p>
@@ -163,17 +132,34 @@ const cancelSubscription = (id) => {
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-dark table-hover table-striped table-bordered" :options="emailTableConfiguration"
-                   :data="account.emails">
-            <thead>
-            <tr>
-                <th scope="col">Email</th>
-                <th scope="col" class="text-center">Primary?</th>
-                <th scope="col">Registered</th>
-                <th scope="col">Verified</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
+        <DataTable :value="account.emails" stripedRows>
+            <Column header="Email" field="email"></Column>
+            <Column header="Primary?" field="isPrimary">
+                <template #body="{ data }">
+                    <i class="fa-solid fa-check w-100 text-center"
+                       v-if="(data as AccountEmail).isPrimary"
+                    ></i>
+                </template>
+            </Column>
+            <Column header="Registered" field="createdAt">
+                <template #body="{ data }">
+                    {{ carbonToString((data as AccountEmail).createdAt) }}
+                </template>
+            </Column>
+            <Column header="Verified" field="verifiedAt">
+                <template #body="{ data }">
+                    {{ carbonToString((data as AccountEmail).verifiedAt) }}
+                </template>
+            </Column>
+            <Column>
+                <template #body="{ data }">
+                    <button class="btn btn-secondary" v-if="!(data as AccountEmail).isPrimary"
+                            @click="confirmMakeEmailPrimary(data)"
+                    >
+                        Make Primary
+                    </button>
+                </template>
+            </Column>
         </DataTable>
 
         <h2 class="mt-2">Account Controls</h2>
