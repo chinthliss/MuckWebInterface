@@ -5,7 +5,6 @@ import {ref, Ref} from "vue";
 const props = defineProps<{
     apiUrl: string
     initialSettings: {
-        useFullWidth: boolean,
         avatarPreference: string
     }
 }>();
@@ -32,38 +31,7 @@ const saveSetting = (setting: string): void => {
 
         <h1>Settings</h1>
 
-        <p class="lead">Unless otherwise specified, these settings are account wide and will take effect on all
-            characters.</p>
-
-        <!-- Use full screen -->
-        <!-- TODO - full width setting -->
-        <h2>Use Full Width</h2>
-        <div class="row">
-            <div class="col-12 col-lg-6">
-                <p>By default the webpage will only use so much of the screen on larger displays (especially noticeable in 4k) to avoid being overwhelming. If enabled, this will allow the content part of the page to fill as much as the screen as possible.</p>
-            </div>
-
-            <div class="col-12 col-lg-6">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="fullWidth" value="true" id="fullWidthYes"
-                           v-model="settings.useFullWidth" @change="saveSetting('useFullWidth')"
-                    >
-                    <label class="form-check-label" for="fullWidthYes">
-                        Yes
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="fullWidth" value="false" id="fullWidthNo"
-                           v-model="settings.useFullWidth" @change="saveSetting('useFullWidth')"
-                    >
-                    <label class="form-check-label" for="fullWidthNo">
-                        No
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <hr>
+        <p class="lead">These settings are account wide and will take effect on all characters.</p>
 
         <!-- Avatar Preference-->
         <h2>Avatar Display Preference</h2>

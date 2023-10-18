@@ -21,27 +21,23 @@ class AccountController extends Controller
         return view('account', [
             'account' => $user->toArray('user')
         ]);
-
     }
 
     public function showSettings(): View
     {
         /** @var User $user */
         $user = auth()->user();
-
         return view('settings', [
             'settings' => [
                 'avatarPreference' => $user->getAvatarPreference(),
-                'useFullWidth' => $user->getUseFullWidthPreference()
             ]
         ]);
-
     }
 
     /**
      * Returns the setting name that was changed if successful
      */
-    public function setSetting(Request $request): string
+    public function setAccountSetting(Request $request): string
     {
         /** @var User $user */
         $user = auth()->user();
@@ -55,9 +51,6 @@ class AccountController extends Controller
         switch ($setting) {
             case 'avatarPreference':
                 $user->setAvatarPreferenceFromString($value);
-                break;
-            case 'useFullWidth':
-                $user->setUseFullWidthPreference($value == 'true');
                 break;
             default:
                 abort(400, 'Unrecognized setting requested.');
