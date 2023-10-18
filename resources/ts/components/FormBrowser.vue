@@ -337,7 +337,7 @@ if (props.startingPlayerName) {
                 >
                     <Column header="Name" field="name" class="fw-bold" frozen :sortable="true" style="min-width: 12rem">
                         <template #filter="{ filterModel, filterCallback }">
-                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by name"
                             />
                         </template>
@@ -366,7 +366,7 @@ if (props.startingPlayerName) {
                             {{ (data as Form).tags?.join(', ') }}
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
-                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by tag"
                             />
                         </template>
@@ -383,7 +383,7 @@ if (props.startingPlayerName) {
                             <template v-else>{{ outputNestedListItemsOnly((data as Form).flags) }}</template>
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
-                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by flag"
                             />
                         </template>
@@ -407,7 +407,7 @@ if (props.startingPlayerName) {
                             </template>
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
-                            <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by power"
                             />
                         </template>
