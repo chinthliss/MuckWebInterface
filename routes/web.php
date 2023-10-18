@@ -94,7 +94,7 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('account');
     Route::get('settings', [AccountController::class, 'showSettings'])
         ->name('settings');
-    Route::post('settings', [AccountController::class, 'setSetting'])
+    Route::post('settings', [AccountController::class, 'setAccountSetting'])
         ->name('settings.api');
     Route::get('changepassword', [PasswordController::class, 'showChangePassword'])
         ->name('auth.password.change');
