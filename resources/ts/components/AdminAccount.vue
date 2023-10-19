@@ -155,7 +155,7 @@ const overallSubscriptionStatus = (): string => {
                     <template #empty>No notes on this account.</template>
                     <Column header="When" field="whenAt">
                         <template #body="{ data }">
-                            {{ carbonToString((data as AccountEmail).createdAt) }}
+                            {{ carbonToString((data as AccountEmail).whenAt) }}
                         </template>
                     </Column>
                     <Column header="Staff Member" field="staffMember"></Column>
