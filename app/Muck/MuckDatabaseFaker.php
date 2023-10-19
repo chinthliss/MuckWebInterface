@@ -43,9 +43,9 @@ class MuckDatabaseFaker
                 ['name' => 'Test Equipment', 'description' => 'Test Equipment Description']
             ],
             'badges' => [
-                ['name' => 'Test Badge 1', 'description' => 'Test Badge Description', 'awarded' => '2023-06-12 08:49:35 CDT'],
-                ['name' => 'Test Badge 2', 'description' => 'Test Badge Description', 'awarded' => '2023-09-18 23:02:41 CDT'],
-                ['name' => 'Test Badge 3', 'description' => 'Test Badge Description', 'awarded' => '2021-08-04 00:00:00 CDT']
+                ['name' => 'Test Badge 1', 'description' => ['Test Badge Description'], 'awarded' => '2023-06-12 08:49:35 CDT'],
+                ['name' => 'Test Badge 2', 'description' => ['Test Badge Description'], 'awarded' => '2023-09-18 23:02:41 CDT'],
+                ['name' => 'Test Badge 3', 'description' => ['Test Badge Description'], 'awarded' => '2021-08-04 00:00:00 CDT']
             ]
         ]);
         self::$database[] = new MuckDbref(1235, 'TestAltCharacter', 'p', Carbon::now(), Carbon::now(), [

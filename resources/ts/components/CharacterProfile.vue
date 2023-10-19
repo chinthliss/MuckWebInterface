@@ -12,7 +12,7 @@ const props = defineProps<{
     avatarUrl: string
 }>();
 
-type Badge = { name: string, description: string, awarded: string }
+type Badge = { name: string, description: string[], awarded: string }
 
 type characterProfile = {
     name?: string
@@ -190,10 +190,14 @@ channel.on('characterProfileBadges', (data) => {
             <DataTable :value="profile.badges" stripedRows>
                 <template #empty>No badges.</template>
                 <Column header="Badge" field="name" sortable></Column>
-                <Column header="Description" field="description"></Column>
-                <Column header="Awarded" field="awarded" sortable>
+                <Column header="Description" field="description">
                     <template #body="{ data }">
                         {{ carbonToString((data as Badge).awarded) }}
+                    </template>
+                </Column>
+                <Column header="Awarded" field="awarded" sortable>
+                    <template #body="{ data }">
+                        {{ (data as Badge).description.join('\n') }}
                     </template>
                 </Column>
             </DataTable>
