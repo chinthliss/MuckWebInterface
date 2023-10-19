@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import {ref} from "vue";
-import type {Ref} from "vue";
+import {Ref, ref} from 'vue';
 import {carbonToString} from "../formatting";
-import DataTable from "datatables.net-vue3";
 import Spinner from "./Spinner.vue";
 import type {Character} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
     characterIn: Character,
     controls?: boolean,
     avatarUrl: string
 }>();
+
+type Badge = { name: string, description: string, awarded: string }
 
 type characterProfile = {
     name?: string
@@ -26,7 +28,7 @@ type characterProfile = {
     views?: any[] | null
     pinfo?: any[] | null
     equipment?: any[] | null
-    badges?: any[] | null
+    badges?: Badge[] | null
 }
 
 const profile: Ref<characterProfile> = ref({
@@ -48,60 +50,6 @@ const profile: Ref<characterProfile> = ref({
 
 const channel = mwiWebsocket.channel('character');
 const profileLoading: Ref<boolean> = ref(true);
-
-const viewsTableConfiguration = {
-    columns: [
-        {data: 'view'},
-        {data: 'content', sortable: false},
-    ],
-    language: {
-        "emptyTable": "No views configured."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const pinfoTableConfiguration = {
-    columns: [
-        {data: 'field'},
-        {data: 'value', sortable: false},
-    ],
-    language: {
-        "emptyTable": "No extra information configured."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const equipmentTableConfiguration = {
-    columns: [
-        {data: 'name'},
-        {data: 'description', sortable: false},
-    ],
-    language: {
-        "emptyTable": "No equipment."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const badgesTableConfiguration = {
-    columns: [
-        {data: 'name'},
-        {data: 'description', sortable: false},
-        {data: 'awarded', render: carbonToString},
-    ],
-    language: {
-        "emptyTable": "No badges."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
 
 channel.on('connected', () => {
     channel.send('getCharacterProfile', props.characterIn.dbref);
@@ -215,51 +163,39 @@ channel.on('characterProfileBadges', (data) => {
         <template v-if="!profileLoading">
             <!-- Views -->
             <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="viewsTableConfiguration" :data="profile.views">
-                <thead>
-                <tr>
-                    <th scope="col">View</th>
-                    <th scope="col">Content</th>
-                </tr>
-                </thead>
+            <DataTable :value="profile.views" stripedRows>
+                <template #empty>No views configured.</template>
+                <Column header="View" field="view" sortable></Column>
+                <Column header="Content" field="content"></Column>
             </DataTable>
 
             <!-- Pinfo -->
             <h3 class="mt-2">Custom Information <span class="text-muted">(+finger)</span></h3>
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="pinfoTableConfiguration" :data="profile.pinfo">
-                <thead>
-                <tr>
-                    <th scope="col">Field</th>
-                    <th scope="col">Value</th>
-                </tr>
-                </thead>
+            <DataTable :value="profile.pinfo" stripedRows>
+                <template #empty>No extra information configured.</template>
+                <Column header="Field" field="field" sortable></Column>
+                <Column header="Value" field="value"></Column>
             </DataTable>
 
             <!-- Equipment -->
             <h3 class="mt-2">Equipment <span class="text-muted">(+equip)</span></h3>
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="equipmentTableConfiguration" :data="profile.equipment">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Description</th>
-                </tr>
-                </thead>
+            <DataTable :value="profile.equipment" striedRows>
+                <template #empty>Nothing equipped.</template>
+                <Column header="Name" field="name" sortable></Column>
+                <Column header="Description" field="description"></Column>
             </DataTable>
 
             <!-- Badges -->
             <h3 class="mt-2">Badges <span class="text-muted">(+badge)</span></h3>
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="badgesTableConfiguration" :data="profile.badges">
-                <thead>
-                <tr>
-                    <th scope="col">Badge</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Awarded</th>
-                </tr>
-                </thead>
+            <DataTable :value="profile.badges" stripedRows>
+                <template #empty>No badges.</template>
+                <Column header="Badge" field="name" sortable></Column>
+                <Column header="Description" field="description"></Column>
+                <Column header="Awarded" field="awarded" sortable>
+                    <template #body="{ data }">
+                        {{ carbonToString((data as Badge).awarded) }}
+                    </template>
+                </Column>
             </DataTable>
         </template>
 
