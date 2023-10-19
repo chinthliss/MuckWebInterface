@@ -1,11 +1,12 @@
 <script setup lang="ts">
-
 import {ref, onMounted, Ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {AccountNotification} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
+
 
 const props = defineProps<{
     apiUrl: string
@@ -17,38 +18,6 @@ const initialLoading: Ref<boolean> = ref(true);
 const notifications: Ref<AccountNotification[]> = ref([]);
 
 const confirmationModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
-
-const renderControlsColumn = (data: any, type: string, row: any): string => {
-    let controls = ''
-    if (row.read_at)
-        controls += `<i class="fas fa-envelope-open text-muted"></i>`;
-    else
-        controls += `<i class="fas fa-envelope text-primary"></i>`;
-    controls += `<button class="btn btn-secondary ms-2 notification-delete-button" data-id="${row.id}"><i class="fas fa-trash btn-icon-left"></i>Delete</button>`;
-    return controls;
-};
-
-const linkButtonsInTable = () => {
-    const buttons = document.querySelectorAll(".notification-delete-button");
-    buttons.forEach(el => el.addEventListener("click", deleteNotification));
-};
-
-const notificationTableConfiguration = {
-    columns: [
-        {render: renderControlsColumn, sortable: false, className: 'text-nowrap'},
-        {data: 'character'},
-        {data: 'created_at', render: carbonToString},
-        {data: 'message'}
-    ],
-    order: [[2, 'asc']],
-    language: {
-        "emptyTable": "You have no notifications."
-    },
-    paging: false,
-    info: false,
-    searching: true,
-    drawCallback: linkButtonsInTable
-};
 
 const refreshNotifications = () => {
     loadingNotifications.value = true;
@@ -62,15 +31,13 @@ const refreshNotifications = () => {
         });
 };
 
-const deleteNotification = function () {
-    // const id = $(this).data('id');
-    const id = this.dataset.id;
+const deleteNotification = (notification: AccountNotification) => {
 
-    axios.delete(props.apiUrl + '/' + id)
+    axios.delete(props.apiUrl + '/' + notification.id)
         .then(_response => {
             //Find the actual entry with this ID to delete locally
             for (let i = 0; i < notifications.value.length; i++) {
-                if (notifications.value[i].id === id) notifications.value.splice(i, 1);
+                if (notifications.value[i].id === notification.id) notifications.value.splice(i, 1);
             }
         })
         .catch(error => {
@@ -121,17 +88,29 @@ onMounted(() => {
                 </button>
             </div>
 
-            <DataTable class="table table-dark table-hover table-striped table-bordered"
-                       :options="notificationTableConfiguration" :data="notifications"
-            >
-                <thead>
-                <tr>
-                    <th></th>
-                    <th scope="col">Character</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Message</th>
-                </tr>
-                </thead>
+            <DataTable :value="notifications" stripedRows>
+                <template #empty>
+                    <div class="text-center">You have no notifications.</div>
+                </template>
+                <Column>
+                    <template #body="{ data }">
+                        <div class="d-flex align-items-center">
+                            <i v-if="(data as AccountNotification).read_at" class="fas fa-envelope-open text-muted"></i>
+                            <i v-else class="fas fa-envelope text-primary"></i>
+                            <button class="btn btn-secondary ms-2"
+                                    @click="deleteNotification(data as AccountNotification)"
+                            ><i class="fas fa-trash btn-icon-left"></i>Delete
+                            </button>
+                        </div>
+                    </template>
+                </Column>
+                <Column header="Character" field="character" sortable></Column>
+                <Column header="Date" field="created_at" sortable>
+                    <template #body="{ data }">
+                        {{ carbonToString((data as AccountNotification).created_at) }}
+                    </template>
+                </Column>
+                <Column header="Message" field="message"></Column>
             </DataTable>
 
             <div class="d-flex justify-content-center mt-2">

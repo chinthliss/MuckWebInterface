@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, Ref} from 'vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {Account, Character} from "../defs";
-import {Ref} from "vue/dist/vue";
 import DataTable, {DataTableRowClickEvent} from 'primevue/datatable';
 import Column from "primevue/column";
 
