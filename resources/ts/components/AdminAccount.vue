@@ -4,8 +4,9 @@ import {Ref, ref} from 'vue';
 import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
-import DataTable from 'datatables.net-vue3';
-import {Account} from "../defs";
+import {Account, AccountEmail} from "../defs";
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
     account: Account,
@@ -14,40 +15,6 @@ const props = defineProps<{
 
 const account: Ref<Account> = ref(props.account);
 const newAccountNote: Ref<string> = ref('');
-
-const displayEmailRowForIsPrimary = (data: any): string => {
-    return data ? '<i class="fa-solid fa-check"></i>' : '';
-};
-
-const emailTableConfiguration = {
-    columns: [
-        {data: 'email'},
-        {data: 'isPrimary', render: displayEmailRowForIsPrimary, className: 'dt-center'},
-        {data: 'createdAt', render: carbonToString},
-        {data: 'verifiedAt', render: carbonToString}
-    ],
-    language: {
-        "emptyTable": "No emails associated with this account."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
-
-const accountNotesTableConfiguration = {
-    columns: [
-        {data: 'whenAt', render: carbonToString},
-        {data: 'staffMember'},
-        {data: 'game'},
-        {data: 'body'}
-    ],
-    language: {
-        "emptyTable": "No notes found on this account."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
 
 const addAccountNote = () => {
     axios
@@ -156,36 +123,43 @@ const overallSubscriptionStatus = (): string => {
                 ></character-card>
             </dd>
 
-
             <dt class="col-sm-2 text-primary">Emails</dt>
             <dd class="col-sm-10">
-                <DataTable class="table table-dark table-hover table-striped table-bordered"
-                           :options="emailTableConfiguration" :data="account.emails"
-                >
-                    <thead>
-                    <tr>
-                        <th scope="col">Email</th>
-                        <th scope="col" class="text-center">Primary?</th>
-                        <th scope="col">Registered</th>
-                        <th scope="col">Verified</th>
-                    </tr>
-                    </thead>
+                <DataTable :value="account.emails" stripedRows>
+                    <template #empty>No emails associated with this account.</template>
+                    <Column header="Email" field="email"></Column>
+                    <Column header="Primary?" field="isPrimary" headerClass="d-flex justify-content-center" class="text-center">
+                        <template #body="{ data }">
+                            <i class="fa-solid fa-check w-100 text-center"
+                               v-if="(data as AccountEmail).isPrimary"
+                            ></i>
+                        </template>
+                    </Column>
+                    <Column header="Registered" field="createdAt">
+                        <template #body="{ data }">
+                            {{ carbonToString((data as AccountEmail).createdAt) }}
+                        </template>
+
+                    </Column>
+                    <Column header="Verified" field="verifiedAt">
+                        <template #body="{ data }">
+                            {{ carbonToString((data as AccountEmail).verifiedAt) }}
+                        </template>
+                    </Column>
                 </DataTable>
             </dd>
 
             <dt class="col-sm-2 text-primary">Account Notes</dt>
             <dd class="col-sm-10">
-                <DataTable class="table table-dark table-hover table-striped table-bordered"
-                           :options="accountNotesTableConfiguration" :data="account.notes"
-                >
-                    <thead>
-                    <tr>
-                        <th scope="col">When</th>
-                        <th scope="col" class="text-center">Staff Member</th>
-                        <th scope="col">Game</th>
-                        <th scope="col">Note</th>
-                    </tr>
-                    </thead>
+                <DataTable :value="account.notes" stripedRows>
+                    <Column header="When" field="whenAt">
+                        <template #body="{ data }">
+                            {{ carbonToString((data as AccountEmail).createdAt) }}
+                        </template>
+                    </Column>
+                    <Column header="Staff Member" field="staffMember"></Column>
+                    <Column header="Game" field="game"></Column>
+                    <Column header="Note" field="body"></Column>
                 </DataTable>
                 <div class="row g-2 mt-2">
                     <div class="col-12 col-xl-3">

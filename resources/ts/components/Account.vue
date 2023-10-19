@@ -134,7 +134,7 @@ const cancelSubscription = (subscription: AccountSubscription) => {
 
         <DataTable :value="account.emails" stripedRows>
             <Column header="Email" field="email"></Column>
-            <Column header="Primary?" field="isPrimary">
+            <Column header="Primary?" field="isPrimary" headerClass="d-flex justify-content-center" class="text-center">
                 <template #body="{ data }">
                     <i class="fa-solid fa-check w-100 text-center"
                        v-if="(data as AccountEmail).isPrimary"
