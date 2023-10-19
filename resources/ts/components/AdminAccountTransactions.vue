@@ -59,7 +59,7 @@ onMounted(() => {
             <label class="btn btn-outline-primary" for="filterCard">Card</label>
 
             <input type="radio" class="btn-check" name="filter" id="filterPayPal" autocomplete="off"
-                   v-model="filters.global.value" value="PayPal">
+                   v-model="filters.global.value" value="Paypal">
             <label class="btn btn-outline-primary" for="filterPayPal">PayPal</label>
 
             <input type="radio" class="btn-check" name="filter" id="filterPatreon" autocomplete="off"
