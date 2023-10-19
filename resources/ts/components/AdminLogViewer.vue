@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import DataTable from 'datatables.net-vue3';
+import DataTable from 'primevue/datatable';
+import Column from "primevue/column";
 
 const logRegEx = /^\[\d{4}-\d\d-\d\d (\d\d:\d\d:\d\d)] (?:\S*)?\.(\S*): /mg;
 
@@ -9,7 +10,12 @@ const props = defineProps<{
     dates: string[]
 }>();
 
-const log = ref();
+type LogEntry = {
+    time: string,
+    level: string,
+    lines: string[]
+}
+const log: Ref<LogEntry[]> = ref([]);
 
 let loading = ref(false);
 
@@ -17,25 +23,12 @@ const renderLines = (lines: string[]): string => {
     return lines.join('\n');
 }
 
-const classForLevel = (cell: HTMLTableCellElement, data: any) => {
-    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) cell.classList.add('text-danger');
-    if (data.level === 'WARNING') cell.classList.add('text-warning');
+const classForLevel = (data: LogEntry):string => {
+    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) return 'text-danger';
+    if (data.level === 'WARNING') return 'text-warning';
+    return '';
 }
 
-const logTableConfiguration = {
-    columns: [
-        {data: 'time'},
-        {data: 'level', createdCell: classForLevel},
-        {data: 'lines', render: renderLines, className: 'text-break'},
-    ],
-    language: {
-        "emptyTable": "No lines in log file."
-    },
-    paging: false,
-    info: false,
-    searching: false,
-    ordering: false
-}
 
 const loadDate = (date: string, event: Event) => {
     event.preventDefault();
@@ -48,14 +41,15 @@ const loadDate = (date: string, event: Event) => {
 }
 
 const parseLog = (rawText: string) => {
-    log.value = [];
+    const newLog = [];
     let slicePoints = [];
     // Figure out where individual line entries start
     let token = logRegEx.exec(rawText);
     while (token) {
-        log.value.push({
+        newLog.push({
             time: token[1],
-            level: token[2]
+            level: token[2],
+            lines: []
         });
         slicePoints.push({
             token_starts: token.index,
@@ -67,10 +61,11 @@ const parseLog = (rawText: string) => {
     for (let i = slicePoints.length - 1; i >= 0; i--) {
         let logStart = slicePoints[i].log_starts;
         let logEnd = (i === slicePoints.length - 1 ? rawText.length : slicePoints[i + 1].token_starts);
-        log.value[i].lines = rawText
+        newLog[i].lines = rawText
             .slice(logStart, logEnd)
             .split('\n');
     }
+    log.value = newLog;
 }
 
 </script>
@@ -89,20 +84,22 @@ const parseLog = (rawText: string) => {
             <!-- View individual log -->
             <div class="flex-grow-1 ps-4">
                 <Spinner v-if="loading"/>
-                <div v-else-if="!log">
+                <div v-else-if="!log.length">
                     Select a date to view log entries.
                 </div>
-                <DataTable v-else class="table table-dark table-hover table-striped table-bordered"
-                           :options="logTableConfiguration"
-                           :data="log"
-                >
-                    <thead>
-                    <tr>
-                        <th scope="col">Time</th>
-                        <th scope="col">Level</th>
-                        <th scope="col">Log</th>
-                    </tr>
-                    </thead>
+                <DataTable v-else :value="log" stripedRows>
+                    <template #empty>No lines in log file.</template>
+                    <Column header="Time" field="time"></Column>
+                    <Column header="Level" field="level">
+                        <template #body="{ data }">
+                            <span :class="classForLevel(data)"> {{ (data as LogEntry).level }} </span>
+                        </template>
+                    </Column>
+                    <Column header="Log" field="lines">
+                        <template #body="{ data }">
+                            {{ renderLines((data as LogEntry).lines) }}
+                        </template>
+                    </Column>
                 </DataTable>
             </div>
 
