@@ -31,14 +31,6 @@ if (dbref) {
 }
 
 /**
- * DataTables
- */
-
-import DataTable from 'datatables.net-vue3';
-import DataTablesLib from 'datatables.net-bs5';
-DataTable.use(DataTablesLib);
-
-/**
  * Websocket
  */
 import MwiWebsocket from "muckwebinterface-websocket";
