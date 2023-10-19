@@ -192,12 +192,12 @@ channel.on('characterProfileBadges', (data) => {
                 <Column header="Badge" field="name" sortable></Column>
                 <Column header="Description" field="description">
                     <template #body="{ data }">
-                        {{ carbonToString((data as Badge).awarded) }}
+                        {{ (data as Badge).description.join('\n') }}
                     </template>
                 </Column>
                 <Column header="Awarded" field="awarded" sortable>
                     <template #body="{ data }">
-                        {{ (data as Badge).description.join('\n') }}
+                        {{ carbonToString((data as Badge).awarded) }}
                     </template>
                 </Column>
             </DataTable>
