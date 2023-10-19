@@ -152,6 +152,7 @@ const overallSubscriptionStatus = (): string => {
             <dt class="col-sm-2 text-primary">Account Notes</dt>
             <dd class="col-sm-10">
                 <DataTable :value="account.notes" stripedRows>
+                    <template #empty>No notes on this account.</template>
                     <Column header="When" field="whenAt">
                         <template #body="{ data }">
                             {{ carbonToString((data as AccountEmail).createdAt) }}
