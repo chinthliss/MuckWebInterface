@@ -1,18 +1,18 @@
 <script setup lang="ts">
 
 import {carbonToString, usdToString} from "../formatting";
-import {lex, accountId} from "../siteutils";
+import {accountId} from "../siteutils";
 import {Ref, ref} from "vue";
-import DataTable from "datatables.net-vue3";
 import {AccountSubscription, AccountTransaction} from "../defs";
+import AccountTransactions from "./AccountTransactions.vue";
 
 const props = defineProps<{
     subscriptionIn: AccountSubscription,
-    transactionsIn: AccountTransaction
+    transactionsIn: AccountTransaction[]
 }>();
 
 const subscription: Ref<AccountSubscription> = ref(props.subscriptionIn);
-const transactions: Ref<AccountTransaction> = ref(props.transactionsIn);
+const transactions: Ref<AccountTransaction[]> = ref(props.transactionsIn);
 
 const friendlyStatus = () => {
     switch (subscription.value.status) {
@@ -45,24 +45,6 @@ const renderResult = (result: string):string => {
 const renderIdWithLink = (data: any, type: string, row: any) => {
     return `<a href="${row.url}">${data}</a>`;
 }
-
-const transactionsTableConfiguration = {
-    columns: [
-        {data: 'id', render: renderIdWithLink},
-        {data: 'created_at', render: carbonToString},
-        {data: 'completed_at', render: carbonToString},
-        {data: 'total_usd', render: usdToString},
-        {data: 'account_currency_quoted'},
-        {data: 'items'},
-        {data: 'result', render: renderResult}
-    ],
-    language: {
-        "emptyTable": "No transactions associated with this subscription."
-    },
-    paging: false,
-    info: false,
-    searching: false
-};
 
 </script>
 
@@ -133,21 +115,7 @@ const transactionsTableConfiguration = {
         </dl>
 
         <h2>Transactions</h2>
-        <DataTable class="table table-dark table-hover table-striped table-bordered"
-                   :options="transactionsTableConfiguration"
-                   :data="transactions">
-            <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Created</th>
-                <th scope="col">Completed</th>
-                <th scope="col">USD</th>
-                <th scope="col">{{ lex('accountcurrency') }}</th>
-                <th scope="col">Items</th>
-                <th scope="col">Result</th>
-            </tr>
-            </thead>
-        </DataTable>
+        <AccountTransactions :transactions-in="transactions"></AccountTransactions>
     </div>
 </template>
 

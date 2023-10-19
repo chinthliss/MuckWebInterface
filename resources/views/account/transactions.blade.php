@@ -11,7 +11,10 @@
 @endsection
 
 @section('content')
-    <account-transactions
-        :transactions-in="{{json_encode($transactions)}}"
-    ></account-transactions>
+    <div class="container">
+        <h1>Account Transactions</h1>
+        <account-transactions
+            :transactions-in="{{json_encode($transactions)}}"
+        ></account-transactions>
+    </div>
 @endsection
