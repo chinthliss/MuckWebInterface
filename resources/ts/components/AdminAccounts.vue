@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {ref} from 'vue';
-import DataTable from 'datatables.net-vue3';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
-import {Character} from "../defs";
+import {Account, Character} from "../defs";
 import {Ref} from "vue/dist/vue";
+import DataTable, {DataTableRowClickEvent} from 'primevue/datatable';
+import Column from "primevue/column";
 
 const props = defineProps<{
     apiUrl: string,
@@ -17,7 +18,6 @@ const searchCharacter: Ref<string> = ref('');
 const searchCreatedBefore: Ref<string> = ref('');
 const searchCreatedAfter: Ref<string> = ref('');
 
-const table: Ref<any> = ref();
 const tableLoading: Ref<boolean> = ref(false);
 const tableData: Ref<any[] | null> = ref(null);
 
@@ -30,37 +30,13 @@ const listCharacters = (characters: Character[]): string => {
     return names.join(', ');
 };
 
-const rowClicked = (event: Event) => {
-    const data = table.value.dt.row(event.currentTarget).data();
-    if (data?.url)
-        window.open(data.url, '_blank');
+const rowClicked = (event: DataTableRowClickEvent) => {
+    const url = event.data?.url;
+    if (url)
+        window.open(url, '_blank');
     else
         console.log("Clicked row doesn't have an associated url with it!");
 }
-
-const tableDrawCallback = () => {
-    const elements = document.querySelectorAll('#AccountsTable tbody tr') as NodeListOf<HTMLTableRowElement>;
-    elements.forEach(el => {
-        el.addEventListener('click', rowClicked);
-    })
-};
-
-const tableConfiguration = {
-    columns: [
-        {data: 'id', title: 'ID'},
-        {data: 'primaryEmail', title: 'Primary Email'},
-        {data: 'characters', title: 'Characters', render: listCharacters},
-        {data: 'created', title: 'Created', render: carbonToString},
-        {data: 'lastConnected', title: 'Last Connected', render: carbonToString}
-    ],
-    language: {
-        "emptyTable": "No accounts found matching the present criteria."
-    },
-    paging: false,
-    info: false,
-    searching: false,
-    drawCallback: tableDrawCallback
-};
 
 type SearchCriteria = {
     character?: string
@@ -75,7 +51,6 @@ const doAccountSearch = () => {
     if (searchCreatedAfter.value) searchCriteria.createdAfter = searchCreatedAfter.value;
     if (searchCreatedBefore.value) searchCriteria.createdBefore = searchCreatedBefore.value;
 
-    console.log("Table is: ", table.value);
     tableLoading.value = true;
     tableData.value = [];
 
@@ -159,8 +134,25 @@ const jumpToAccount = () => {
         <Spinner v-if="tableLoading"/>
         <div v-else-if="!tableData" class="text-center">No data loaded yet...</div>
         <div v-else class="table-responsive-xl">
-            <DataTable ref="table" id="AccountsTable" class="table table-dark table-hover table-striped table-bordered w-100"
-                       :options="tableConfiguration" :data="tableData">
+            <DataTable :value="tableData" stripedRows @row-click="rowClicked">
+                <template #empty>No accounts found matching the present criteria.</template>
+                <Column header="ID" field="id"></Column>
+                <Column header="Primary Email" field="primaryEmail"></Column>
+                <Column header="Characters" field="characters">
+                    <template #body="{ data }">
+                        {{ listCharacters((data as Account).characters) }}
+                    </template>
+                </Column>
+                <Column header="Created" field="createdAt">
+                    <template #body="{ data }">
+                        {{ carbonToString((data as Account).createdAt) }}
+                    </template>
+                </Column>
+                <Column header="Last Connected" field="lastConnected">
+                    <template #body="{ data }">
+                        {{ carbonToString((data as Account).lastConnected) }}
+                    </template>
+                </Column>
             </DataTable>
         </div>
     </div>
