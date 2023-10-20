@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Password Reset')
 
@@ -25,7 +25,8 @@
                     <div class="col">
                         <input id="password" type="password" name="password"
                                @class(['form-control', 'is-invalid' => $errors->get('password')])
-                               placeholder="Enter new password">
+                               placeholder="Enter new password"
+                        >
                         @error('password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
@@ -37,7 +38,8 @@
                     <div class="col">
                         <input id="password_confirmation" type="password" name="password_confirmation"
                                @class(['form-control', 'is-invalid' => $errors->get('password_confirmation')])
-                               placeholder="Re-enter new password">
+                               placeholder="Re-enter new password"
+                        >
                         @error('password-confirmation')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror

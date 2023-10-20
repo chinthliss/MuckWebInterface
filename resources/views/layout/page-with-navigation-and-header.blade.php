@@ -26,5 +26,8 @@
     <a class="nav-link rounded" href="{{ route('admin.logs') }}">Site Logs</a>
     @endSiteAdmin
     @endStaff
+@endsection
 
+@section('page-body')
+    @include('layout.html-with-header')
 @endsection

@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Change to new Email')
 
@@ -18,7 +18,8 @@
         </div>
 
         <div class="row">
-            <p>Use this page to change your present email. You will also need to enter your password to authenticate this.</p>
+            <p>Use this page to change your present email. You will also need to enter your password to authenticate
+                this.</p>
             <p> Please note that after changing your email it will need
                 to be verified - a link will be sent to it in order to do this.</p>
         </div>
@@ -34,7 +35,8 @@
                     <div class="col">
                         <input id="email" type="email" name="email"
                                @class(['form-control', 'is-invalid' => $errors->get('email')])
-                               placeholder="Enter the new email address">
+                               placeholder="Enter the new email address"
+                        >
                         @error('email')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
@@ -46,7 +48,8 @@
                     <div class="col">
                         <input id="password" type="password" name="password"
                                @class(['form-control', 'is-invalid' => $errors->get('password')])
-                               placeholder="Enter new password">
+                               placeholder="Enter new password"
+                        >
                         @error('password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror

@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', "$character->name - Profile")
 
@@ -13,7 +13,6 @@
 @section('content')
     <character-profile
         :character-in="{{ json_encode($character->ToPlayerArray()) }}"
-        :controls="{{ $controls }}"
         avatar-url="{{ $avatarUrl }}"
     ></character-profile>
 @endsection

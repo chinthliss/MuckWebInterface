@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Password Reset Request')
 
@@ -32,7 +32,8 @@
             </div>
             <div class="col-12">
                 <input type="email" name="email" id="email"
-                       @class(['form-control', 'is-invalid' => $errors->get('email')]) placeholder="Enter email">
+                       @class(['form-control', 'is-invalid' => $errors->get('email')]) placeholder="Enter email"
+                >
             </div>
 
             <div class="col-12">

@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Change Character Password')
 
@@ -33,7 +33,8 @@
                     <div class="col">
                         <input id="account_password" type="password" name="account_password"
                                @class(['form-control', 'is-invalid' => $errors->get('account_password')])
-                               placeholder="Enter existing password">
+                               placeholder="Enter existing password"
+                        >
                         @error('account_password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
@@ -46,7 +47,7 @@
                     </div>
                     <div class="col">
                         <select name="character" id="character"
-                                @class(['form-select', 'is-invalid' => $errors->get('character')])>
+                            @class(['form-select', 'is-invalid' => $errors->get('character')])>
                             <option value="" selected>Select a character</option>
                             @foreach ($characters as $character)
                                 <option value="{{ $character['dbref'] }}">{{ $character['name'] }}</option>
@@ -65,7 +66,8 @@
                     <div class="col">
                         <input id="character_password" type="password" name="character_password"
                                @class(['form-control', 'is-invalid' => $errors->get('character_password')])
-                               placeholder="Enter character's new password">
+                               placeholder="Enter character's new password"
+                        >
                         @error('character_password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror

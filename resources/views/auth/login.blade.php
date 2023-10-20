@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Login')
 
@@ -20,7 +20,8 @@
                     <label for="email" class="form-label">Email</label>
                     <input @class(['form-control', 'is-invalid' => $errors->get('email')]) id="email" name="email"
                            autocomplete="email" autofocus
-                           placeholder="Enter a valid email address or the name of a character.">
+                           placeholder="Enter a valid email address or the name of a character."
+                    >
                     @error('email')
                     <div class="invalid-feedback" role="alert">{{ $message }}</div>
                     @enderror
@@ -31,7 +32,8 @@
                     <input @class(['form-control', 'is-invalid' => $errors->get('password')]) id="password"
                            name="password"
                            type="password" autocomplete="password"
-                           placeholder="Enter password.">
+                           placeholder="Enter password."
+                    >
                     @error('password')
                     <div class="invalid-feedback" role="alert">{{ $message }}</div>
                     @enderror
@@ -67,7 +69,8 @@
                     <div class="text-center">
                         <button class="btn btn-primary" type="submit" name="action" value="login">Login</button>
                         <button class="btn btn-primary ms-2" type="submit" name="action" value="create"
-                                formaction="{{ route('auth.create') }}">Create Account
+                                formaction="{{ route('auth.create') }}"
+                        >Create Account
                         </button>
                     </div>
                 </div>

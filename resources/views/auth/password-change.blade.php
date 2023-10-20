@@ -1,4 +1,4 @@
-@extends('layout.page-with-navigation')
+@extends('layout.page-with-navigation-and-header')
 
 @section('title', 'Change Password')
 
@@ -32,7 +32,8 @@
                     <div class="col">
                         <input id="oldpassword" type="password" name="oldpassword"
                                @class(['form-control', 'is-invalid' => $errors->get('oldpassword')])
-                               placeholder="Enter existing password">
+                               placeholder="Enter existing password"
+                        >
                         @error('oldpassword')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
@@ -44,7 +45,8 @@
                     <div class="col">
                         <input id="password" type="password" name="password"
                                @class(['form-control', 'is-invalid' => $errors->get('password')])
-                               placeholder="Enter new password">
+                               placeholder="Enter new password"
+                        >
                         @error('password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
@@ -58,7 +60,8 @@
                     <div class="col">
                         <input id="password_confirmation" type="password" name="password_confirmation"
                                @class(['form-control', 'is-invalid' => $errors->get('password_confirmation')])
-                               placeholder="Re-enter new password again">
+                               placeholder="Re-enter new password again"
+                        >
                         @error('password_confirmation')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
                         @enderror
