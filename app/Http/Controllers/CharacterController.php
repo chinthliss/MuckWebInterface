@@ -259,9 +259,27 @@ class CharacterController extends Controller
 
         return view('multiplayer.character-profile')->with([
             'character' => $character,
-            'avatarUrl' => $avatarUrl,
-            'controls' => $character->accountId() === $user?->id() ? 'true' : 'false'
+            'avatarUrl' => $avatarUrl
         ]);
 
     }
+
+    public function showCharacterProfileEmbedded(MuckService $muck, string $name): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $character = $muck->getByPlayerName($name);
+        if (!$character) abort(404);
+
+        $avatarUrl = route('avatar.render', ['name' => $character->name]);
+        if ($user && $user->getAvatarPreference() === AvatarPreference::HIDDEN) $avatarUrl = '';
+
+        return view('embedded.character-profile')->with([
+            'character' => $character,
+            'avatarUrl' => $avatarUrl
+        ]);
+
+    }
+
 }

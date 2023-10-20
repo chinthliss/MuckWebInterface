@@ -343,3 +343,15 @@ Route::prefix('/multiplayer/')->group(function () {
     });
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| Embedded Resources
+| Experiment to support parts of the webpage opening in webpanes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('/embedded/')->group(function () {
+    Route::get('c/{name}', [CharacterController::class, 'showCharacterProfileEmbedded'])
+        ->name('embedded.character.view');
+
+});

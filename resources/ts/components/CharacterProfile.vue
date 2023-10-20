@@ -8,7 +8,6 @@ import Column from "primevue/column";
 
 const props = defineProps<{
     characterIn: Character,
-    controls?: boolean,
     avatarUrl: string
 }>();
 
