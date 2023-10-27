@@ -294,12 +294,10 @@ Route::prefix('/multiplayer/')->group(function () {
         // Character Editing
         Route::get('character', [CharacterController::class, 'showCharacterHub'])
             ->name('multiplayer.character');
-        Route::get('perks', [HomeController::class, 'showPending'])
+        Route::get('perks', [CharacterController::class, 'showPerks'])
             ->name('multiplayer.perks');
         Route::get('quirks', [HomeController::class, 'showPending'])
             ->name('multiplayer.quirks');
-        Route::get('perknotes', [HomeController::class, 'showPending'])
-            ->name('multiplayer.perknotes');
         Route::get('classes', [HomeController::class, 'showPending'])
             ->name('multiplayer.classes');
         Route::get('professions', [HomeController::class, 'showPending'])

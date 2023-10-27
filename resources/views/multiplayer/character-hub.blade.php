@@ -33,7 +33,6 @@
     {{ PageLinks::render([
         ['title' => 'Perks', 'description' => 'Buy new perks that give (mostly) positive benefits.', 'url' => route('multiplayer.perks')],
         ['title' => 'Quirks', 'description' => 'Buy different things that are essentially a different type of perk?', 'url' => route('multiplayer.quirks')],
-        ['title' => 'Perk Notes', 'description' => 'Add optional information to your perks.', 'url' => route('multiplayer.perknotes')],
         ['title' => 'Classes', 'description' => 'Change your class. What does this do for you?', 'url' => route('multiplayer.classes')],
         ['title' => 'Professions', 'description' => 'Pick professions to get free initial proficiencies.', 'url' => route('multiplayer.professions')],
         ['title' => 'Training', 'description' => 'Purchase upgrades to mutant powers, proficiencies or resources.', 'url' => route('multiplayer.training')],

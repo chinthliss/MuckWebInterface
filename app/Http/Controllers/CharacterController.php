@@ -282,4 +282,9 @@ class CharacterController extends Controller
 
     }
 
+    public function showPerks(): View
+    {
+        return view('multiplayer.character-perks');
+    }
+
 }
