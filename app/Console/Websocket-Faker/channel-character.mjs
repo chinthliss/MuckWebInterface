@@ -1,5 +1,11 @@
 import Channel from './channel.mjs';
 
+const perksCatalogue = [
+    {name: 'Perk 1', description: 'Description.', tags: ['vanity']},
+    {name: 'Perk 2', description: 'Another description.', excludes: ['Perk 3']},
+    {name: 'Perk 3', description: 'Third description', excludes: ['Perk 2']}
+]
+
 export default class ChannelCharacter extends Channel {
 
     messageReceived = (connection, message, data) => {
@@ -35,6 +41,14 @@ export default class ChannelCharacter extends Channel {
 
 
                 break;
+
+            case 'getPerksCatalogue':
+                this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
+                for (let i = 0; i < perksCatalogue.length; i++) {
+                    this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
+                }
+                break;
+
             default:
                 console.log("Unhandled message: ", message);
         }
