@@ -44,7 +44,14 @@ export default class ChannelCharacter extends Channel {
 
                 break;
 
-            case 'getPerksCatalogue':
+            case 'bootPerks':
+                this.sendMessageToConnection(connection, 'perkStatus', {
+                    'perkTotal': 20,
+                    'perkSpent': 20,
+                    'vanityTotal': 20,
+                    'vanitySpent': 20,
+                    'owned': []
+                });
                 this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
                 for (let i = 0; i < perksCatalogue.length; i++) {
                     this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
