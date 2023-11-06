@@ -18,7 +18,9 @@
 
         <p>You can use this page to browse perks available, whether just to investigate them or to purchase a new one.</p>
 
-        <p>You can also use this page to set notes upon perks you already own.</p>
+        <p>For perks you own, you can also add/edit custom notes on them. These are used to detail anything you'd like,
+            such as how your character uses the perk, how they obtained it or any other limitations. These may be
+            referred to by scene-runners.</p>
 
         <character-perks
 

@@ -5,6 +5,7 @@ import {ref, Ref} from "vue";
 type Perk = {
     name: string,
     description: string,
+    notes: string,
     cost: number
     tags?: string[],
     excludes?: string[],
@@ -59,6 +60,36 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
     }
 });
 
+const presentCostsForPerk = (perk: Perk): [number, number] => {
+    let vanityCost = 0;
+    if (perk.tags && perk.tags.indexOf('vanity') !== -1) {
+        vanityCost = Math.min(perk.cost, vanityPointsAvailable.value);
+    }
+    return [vanityCost, perk.cost ? perk.cost - vanityCost : 0];
+};
+
+const presentCostForPerkAsString = (perk: Perk): string => {
+    const costs = presentCostsForPerk(perk);
+    const output = [];
+    if (costs[0]) {
+        output.push(costs[0] + " vanity points");
+    }
+    if (costs[1]) {
+        output.push(costs[1] + " perk points");
+    }
+    return output.join(', ');
+};
+
+const canPurchase = (perk: Perk): boolean => {
+    const costs = presentCostsForPerk(perk);
+    return costs[1] <= perkPointsAvailable.value;
+};
+const buyPerk = (perk: Perk): void => {
+    if (canPurchase(perk)) {
+        console.log("Buying: ", perk.name);
+    }
+};
+
 const recalculateExclusions = () => {
     const excluded = [];
     // Pass 1, calculation exclusions
@@ -92,27 +123,39 @@ channel.send('bootPerks');
             <div class="align-self-center">TAGS</div>
         </div>
 
-        <p>Perks that have the 'vanity' tag will deduct from your vanity points first, then use regular points to make
-            up the difference if required.</p>
+        <p>Perks that have the 'vanity' tag will use your vanity points first, then use regular points to make
+            up the difference if required. This is reflected in the costs listed.</p>
 
         <div v-for="perk in perks" class="card mt-2"
              v-bind:class="{ 'border-primary-subtle': !perk.owned, 'border-dark-subtle': perk.excluded }"
         >
+            <!-- Body -->
             <div class="card-body">
                 <div class="float-end">
-                    <span v-if="perk.cost">Cost: {{ perk.cost }}</span>
+                    <span v-if="perk.owned" class="text-primary">Owned</span>
+                    <span v-else-if="perk.excluded" class="text-warning">Excluded</span>
+                    <span v-else-if="perk.cost">Cost: {{ presentCostForPerkAsString(perk) }}</span>
                     <span v-else>Free</span>
-                    <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned">Buy</button>
+                    <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned"
+                            @click="buyPerk(perk)" :disabled="!canPurchase(perk)">
+                        Buy
+                    </button>
                 </div>
-                <h5 class="card-title" v-bind:class="{ 'text-primary': perk.owned, 'text-muted': perk.excluded }"
-                >{{ perk.name }}
-                    <span v-if="perk.owned" class="badge rounded-pill text-bg-primary">Owned</span>
-                    <span v-if="perk.excluded" class="badge rounded-pill text-bg-warning">Excluded</span>
+                <h5 class="card-title" v-bind:class="{ 'text-primary': perk.owned, 'text-muted': perk.excluded }">
+                    {{ perk.name }}
                 </h5>
 
                 <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.description }}</p>
+                <template v-if="perk.notes">
+                    <hr>
+                    <div class="float-end">
+                        <button class="btn btn-primary">Edit Custom Notes</button>
+                    </div>
+                    <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.notes }}</p>
+                </template>
             </div>
 
+            <!-- Footer -->
             <div class="card-footer text-body-secondary d-flex"
                  v-bind:class="{ 'border-primary-subtle': !perk.owned, 'border-dark-subtle': perk.excluded }"
             >
@@ -121,8 +164,7 @@ channel.send('bootPerks');
                 </div>
                 <div>
                     <template v-if="!perk.tags">No tags</template>
-                    <span v-for="tag in perk.tags" class="badge rounded-pill text-bg-secondary ms-1">{{ tag }}</span>
-
+                    <span v-for="tag in perk.tags" class="badge rounded-pill p-2 text-bg-info ms-1">{{ tag }}</span>
                 </div>
             </div>
         </div>
