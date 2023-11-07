@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import {ref, Ref} from "vue";
+import ModalConfirmation from "./ModalConfirmation.vue";
 
 type Perk = {
     name: string,
@@ -21,6 +22,10 @@ const perkPointsTotal: Ref<number> = ref(0);
 const perkPointsAvailable: Ref<number> = ref(0);
 const vanityPointsTotal: Ref<number> = ref(0);
 const vanityPointsAvailable: Ref<number> = ref(0);
+
+const updateNotesModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const perkBeingUpdated: Ref<Perk | null> = ref(null);
+const notesBeingUpdated: Ref<string> = ref('');
 
 const channel = mwiWebsocket.channel('character');
 
@@ -86,8 +91,21 @@ const canPurchase = (perk: Perk): boolean => {
 };
 const buyPerk = (perk: Perk): void => {
     if (canPurchase(perk)) {
-        console.log("Buying: ", perk.name);
+        channel.send('buyPerk', perk.name);
+        // Muck sends a 'perkStatus' response after the purchase
     }
+};
+
+const startUpdatingNotes = (perk: Perk): void => {
+    perkBeingUpdated.value = perk;
+    notesBeingUpdated.value = perk.notes;
+    updateNotesModal.value.show();
+};
+
+const saveUpdatedNotes = (): void => {
+    if (!perkBeingUpdated.value) return;
+    channel.send('updatePerkNotes', {perk: perkBeingUpdated.value?.name, notes: notesBeingUpdated.value});
+    perkBeingUpdated.value.notes = notesBeingUpdated.value;
 };
 
 const recalculateExclusions = () => {
@@ -137,7 +155,8 @@ channel.send('bootPerks');
                     <span v-else-if="perk.cost">Cost: {{ presentCostForPerkAsString(perk) }}</span>
                     <span v-else>Free</span>
                     <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned"
-                            @click="buyPerk(perk)" :disabled="!canPurchase(perk)">
+                            @click="buyPerk(perk)" :disabled="!canPurchase(perk)"
+                    >
                         Buy
                     </button>
                 </div>
@@ -149,7 +168,7 @@ channel.send('bootPerks');
                 <template v-if="perk.notes">
                     <hr>
                     <div class="float-end">
-                        <button class="btn btn-primary">Edit Custom Notes</button>
+                        <button class="btn btn-primary" @click="startUpdatingNotes(perk)">Edit Custom Notes</button>
                     </div>
                     <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.notes }}</p>
                 </template>
@@ -169,6 +188,15 @@ channel.send('bootPerks');
             </div>
         </div>
     </div>
+    <ModalConfirmation ref="updateNotesModal" @yes="saveUpdatedNotes"
+                       title="Update Perk Notes" yes-label="Save Changes" no-label="Cancel"
+    >
+        <p>Editing the notes for the perk '{{ perkBeingUpdated?.name }}'.</p>
+        <form>
+            <textarea class="w-100" v-model="notesBeingUpdated"></textarea>
+        </form>
+    </ModalConfirmation>
+
 </template>
 
 <style scoped>
