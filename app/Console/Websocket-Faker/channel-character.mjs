@@ -4,7 +4,7 @@ const perksCatalogue = [
     {name: 'Perk 1', description: 'Description.', tags: ['vanity'], cost: 3},
     {name: 'Perk 2', description: 'Another description.', excludes: ['Perk 3'], cost: 1},
     {name: 'Perk 3', description: 'Third description', excludes: ['Perk 2'], tags: ['vanity', 'waffle'], cost: 2},
-    {name: 'Perk 4', description: 'An owned perk with a slightly longer description', owned: true, excludes: ['Perk 5']},
+    {name: 'Perk 4', description: 'An owned perk with a slightly longer description', excludes: ['Perk 5']},
     {name: 'Perk 5', description: 'Perk excluded by owned perk'},
     {name: 'Perk 6', description: 'Second owned perk with notes.', cost: 2, notes: 'Test notes!'}
 ]
@@ -46,17 +46,19 @@ export default class ChannelCharacter extends Channel {
                 break;
 
             case 'bootPerks':
+                // Send perk list first
+                this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
+                for (let i = 0; i < perksCatalogue.length; i++) {
+                    this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
+                }
+                // Then send status
                 this.sendMessageToConnection(connection, 'perkStatus', {
                     'perkTotal': 20,
                     'perkSpent': 19,
                     'vanityTotal': 20,
                     'vanitySpent': 19,
-                    'owned': []
+                    'owned': ['Perk 4', 'Perk 6']
                 });
-                this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
-                for (let i = 0; i < perksCatalogue.length; i++) {
-                    this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
-                }
                 break;
 
             default:

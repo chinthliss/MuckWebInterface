@@ -44,7 +44,6 @@ channel.on('perk', (data: Perk) => {
             if (tags.value.indexOf(tag) !== -1) tags.value.push(tag)
         }
     }
-    if (data.owned) recalculateExclusions();
 });
 
 type PerkStatusUpdate = {
@@ -63,6 +62,7 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
     for (const perk of perks.value) {
         perk.owned = (update.owned.indexOf(perk.name) !== -1)
     }
+    recalculateExclusions();
 });
 
 const presentCostsForPerk = (perk: Perk): [number, number] => {
@@ -109,11 +109,14 @@ const saveUpdatedNotes = (): void => {
 };
 
 const recalculateExclusions = () => {
-    const excluded = [];
+    let excluded = [];
     // Pass 1, calculation exclusions
     for (const perk of perks.value) {
-        if (perk.owned && perk.excludes) excluded.concat(perk.excludes);
+        if (perk.owned && perk.excludes) {
+            excluded = excluded.concat(perk.excludes);
+        }
     }
+    console.log("Perks excluded: ", excluded);
     // Pass 2, flag excluded
     for (const perk of perks.value) {
         perk.excluded = (excluded.indexOf(perk.name) !== -1);
