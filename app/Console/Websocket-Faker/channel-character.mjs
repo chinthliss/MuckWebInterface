@@ -6,10 +6,25 @@ const perksCatalogue = [
     {name: 'Perk 3', description: 'Third description', excludes: ['Perk 2'], tags: ['vanity', 'waffle'], cost: 2},
     {name: 'Perk 4', description: 'An owned perk with a slightly longer description', excludes: ['Perk 5']},
     {name: 'Perk 5', description: 'Perk excluded by owned perk'},
-    {name: 'Perk 6', description: 'Second owned perk with notes.', cost: 2, notes: 'Test notes!'}
+    {name: 'Perk 6', description: 'Second owned perk with notes.', cost: 2}
+];
+
+const perksOwned = [
+    {name: 'Perk 4', notes: ''},
+    {name: 'Perk 6', notes: 'Test notes!'}
 ]
 
 export default class ChannelCharacter extends Channel {
+
+    sendPerkStatus = (connection) => {
+        this.sendMessageToConnection(connection, 'perkStatus', {
+            'perkTotal': 20,
+            'perkSpent': 19,
+            'vanityTotal': 20,
+            'vanitySpent': 19,
+            'owned': perksOwned
+        });
+    }
 
     messageReceived = (connection, message, data) => {
         switch (message) {
@@ -52,13 +67,24 @@ export default class ChannelCharacter extends Channel {
                     this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
                 }
                 // Then send status
-                this.sendMessageToConnection(connection, 'perkStatus', {
-                    'perkTotal': 20,
-                    'perkSpent': 19,
-                    'vanityTotal': 20,
-                    'vanitySpent': 19,
-                    'owned': ['Perk 4', 'Perk 6']
+                this.sendPerkStatus(connection);
+                break;
+
+            case 'buyPerk':
+                perksOwned.push({
+                    name: data,
+                    notes: ''
                 });
+                this.sendPerkStatus(connection);
+                break;
+
+            case 'updatePerkNotes':
+                console.log(data);
+                const perk = perksOwned.find(item => item?.name === data?.perk);
+                if (perk) {
+                    perk.notes = data.notes;
+                    this.sendPerkStatus(connection);
+                }
                 break;
 
             default:
