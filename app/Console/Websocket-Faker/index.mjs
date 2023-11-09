@@ -17,6 +17,15 @@ const channelOverrides = {
     'forms': ChannelForms
 }
 
+/**
+ * Message in the form MSG<Channel>,<Message>,<Data>
+ */
+const msgRegExp = /MSG(.*?),(.*?),(.*)/;
+
+/**
+ * System message in the form SYS<Message>,<Data>
+ */
+const sysRegExp = /SYS(.*?),(.*)/;
 console.log("Creating the server.");
 const server = new WebSocketServer({port: 8001});
 
@@ -42,16 +51,28 @@ const tryToParseJson = (json) => {
 }
 
 const processIncomingMessage = (connection, unprocessedMessage) => {
-    const [channelName, message, dataAsJson] = unprocessedMessage.split(',', 3);
-    let data = tryToParseJson(dataAsJson);
+    let channelName, message, data, dataAsJson;
+    try {
+        [, channelName, message, dataAsJson] = unprocessedMessage.match(msgRegExp) || [null, '', '', null];
+        data = tryToParseJson(dataAsJson);
+    } catch (e) {
+        console.log(e);
+        return;
+    }
     console.log(" << " + channelName + "." + message + ": " + dataAsJson);
     const channel = channels[channelName];
     channel.messageReceived(connection, message, data);
 }
 
 const processIncomingSystemMessage = (connection, unprocessedMessage) => {
-    let [message, dataAsJson] = unprocessedMessage.split(',', 2);
-    let data = tryToParseJson(dataAsJson);
+    let message, data, dataAsJson;
+    try {
+        [, message, dataAsJson] = unprocessedMessage.match(sysRegExp) || [null, '', null];
+        data = tryToParseJson(dataAsJson);
+    } catch (e) {
+        console.log(e);
+        return;
+    }
     console.log(" << SYS." + message + ": " + dataAsJson);
     switch (message) {
         case 'joinChannels':
@@ -96,8 +117,8 @@ server.on('connection', (connection, request) => {
             data.characterName = characterName;
         }
 
-        if (message.startsWith('MSG')) processIncomingMessage(connection, message.slice(3));
-        if (message.startsWith('SYS')) processIncomingSystemMessage(connection, message.slice(3));
+        if (message.startsWith('MSG')) processIncomingMessage(connection, message);
+        if (message.startsWith('SYS')) processIncomingSystemMessage(connection, message);
 
 
     });
