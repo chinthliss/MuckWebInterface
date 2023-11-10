@@ -2,11 +2,11 @@ import Channel from './channel.mjs';
 
 const perksCatalogue = [
     {name: 'Perk 1', description: 'Description.', tags: ['vanity'], cost: 3},
-    {name: 'Perk 2', description: 'Another description.', excludes: ['Perk 3'], cost: 1},
+    {name: 'Perk 2', description: 'Another description.', excludes: ['Perk 3'], cost: 1, tags: []},
     {name: 'Perk 3', description: 'Third description', excludes: ['Perk 2'], tags: ['vanity', 'waffle'], cost: 2},
-    {name: 'Perk 4', description: 'An owned perk with a slightly longer description', excludes: ['Perk 5']},
-    {name: 'Perk 5', description: 'Perk excluded by owned perk'},
-    {name: 'Perk 6', description: 'Second owned perk with notes.', cost: 2}
+    {name: 'Perk 4', description: 'An owned perk with a slightly longer description',  tags: [], excludes: ['Perk 5']},
+    {name: 'Perk 5', description: 'Perk excluded by owned perk', tags: ['vanilla', 'vanity']},
+    {name: 'Perk 6', description: 'Second owned perk with notes.',  tags: [], cost: 2}
 ];
 
 const perksOwned = [

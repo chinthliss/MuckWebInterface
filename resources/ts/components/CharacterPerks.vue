@@ -2,13 +2,14 @@
 
 import {ref, Ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import {capital} from "../formatting";
 
 type Perk = {
     name: string,
     description: string,
     notes: string,
     cost: number
-    tags?: string[],
+    tags: string[],
     excludes?: string[],
     excluded?: boolean,
     owned?: boolean
@@ -18,6 +19,7 @@ const perks: Ref<Perk[]> = ref([]);
 const perksToLoad: Ref<number | null> = ref(null);
 const perksToLoadRemaining: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const tags: Ref<string[]> = ref([]);
+const tagFilter: Ref<{ [tag: string]: boolean }> = ref({});
 const perkPointsTotal: Ref<number> = ref(0);
 const perkPointsAvailable: Ref<number> = ref(0);
 const vanityPointsTotal: Ref<number> = ref(0);
@@ -38,13 +40,20 @@ channel.on('perksCatalogue', (data: number) => {
 
 channel.on('perk', (data: Perk) => {
     data.excluded = false;
+    if (data.tags) {
+        const lowerCaseTags = [];
+        for (let tag of data.tags) {
+            tag = tag.toLowerCase();
+            lowerCaseTags.push(tag);
+            if (tags.value.indexOf(tag) === -1) {
+                tags.value.push(tag)
+                tagFilter.value[tag] = false;
+            }
+        }
+        data.tags = lowerCaseTags;
+    } else data.tags = []; // Now mandatory
     perks.value.push(data);
     perksToLoadRemaining.value--;
-    if (data.tags) {
-        for (const tag of data.tags) {
-            if (tags.value.indexOf(tag) !== -1) tags.value.push(tag)
-        }
-    }
 });
 
 type PerkStatusUpdate = {
@@ -122,6 +131,14 @@ const saveUpdatedNotes = (): void => {
     perkBeingUpdated.value.notes = notesBeingUpdated.value;
 };
 
+const shallWeShow = (perk: Perk): boolean => {
+    let show = false;
+    if (perk.owned || showAll.value) show = true;
+    for (const filter in tagFilter.value) {
+        if (tagFilter.value[filter] && perk.tags.indexOf(filter) === -1) show = false;
+    }
+    return show;
+}
 const recalculateExclusions = () => {
     let excluded = [];
     // Pass 1, calculation exclusions
@@ -151,12 +168,12 @@ channel.send('bootPerks');
                 <input type="radio" class="btn-check" id="show_all" autocomplete="off"
                        v-model="showAll" :value="true"
                 >
-                <label class="btn btn-secondary" for="show_all">Show All</label>
+                <label class="btn btn-outline-secondary" for="show_all">Show All</label>
 
                 <input type="radio" class="btn-check" id="show_owned" autocomplete="off"
                        v-model="showAll" :value="false"
                 >
-                <label class="btn btn-secondary" for="show_owned">Show Owned Only</label>
+                <label class="btn btn-outline-secondary" for="show_owned">Show Owned Only</label>
 
             </div>
         </div>
@@ -171,15 +188,24 @@ channel.send('bootPerks');
                 <div>Points: {{ perkPointsAvailable }} free of {{ perkPointsTotal }} total</div>
                 <div>Vanity Points: {{ vanityPointsAvailable }} free of {{ vanityPointsTotal }} total</div>
             </div>
-            <div class="align-self-center">TAGS</div>
+            <div class="align-self-center">
+                <span class="me-2">Filter Tags:</span>
+                <template v-for="tag in tags">
+                    <input type="checkbox" class="btn-check" autocomplete="off"
+                           :id="'btn-check-' + tag" v-model="tagFilter[tag]"
+                    >
+                    <label class="btn btn-outline-info text-dark me-2" :for="'btn-check-' + tag">{{ capital(tag) }}</label>
+                </template>
+
+            </div>
         </div>
 
         <p>Perks that have the 'vanity' tag will use your vanity points first, then use regular points to make
             up the difference if required. This is reflected in the costs listed.</p>
 
         <template v-for="perk in perks">
-            <div v-if="perk.owned || showAll" class="card mt-2"
-                 v-bind:class="{ 'border-primary-subtle': !perk.owned, 'border-dark-subtle': perk.excluded }"
+            <div v-if="shallWeShow(perk)" class="card mt-2"
+                 v-bind:class="{ 'border-primary-subtle': !perk.owned, 'border-dark-subtle': perk.excluded, 'ms-4': !perk.owned }"
             >
                 <!-- Body -->
                 <div class="card-body">
@@ -216,8 +242,8 @@ channel.send('bootPerks');
                         <template v-if="perk.excludes">Excludes: {{ perk.excludes.join(', ') }}</template>
                     </div>
                     <div>
-                        <template v-if="!perk.tags">No tags</template>
-                        <span v-for="tag in perk.tags" class="badge rounded-pill p-2 text-bg-info ms-1">{{ tag }}</span>
+                        Tags: <template v-if="!perk.tags.length">No tags</template>
+                        <span v-for="tag in perk.tags" class="badge rounded-pill p-2 text-bg-info ms-1">{{ capital(tag) }}</span>
                     </div>
                 </div>
             </div>
