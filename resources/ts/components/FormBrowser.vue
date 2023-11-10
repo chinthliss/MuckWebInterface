@@ -259,37 +259,37 @@ if (props.startingPlayerName) {
         <div v-else>
 
             <!-- Mode and detail selector -->
-            <div class="d-lg-flex align-items-center justify-content-center mb-2">
-                <div class="me-1 text-primary">Mode:</div>
+            <div class="d-lg-flex align-items-center justify-content-center mb-4">
+                <div class="me-2 text-primary">Mode:</div>
                 <div class="me-4 btn-group" role="group" aria-label="Filter mode">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
                            v-model="filters.global.value" value="mastered"
                     >
-                    <label class="btn btn-secondary" for="filter_mastered">Mastered Forms</label>
+                    <label class="btn btn-outline-secondary" for="filter_mastered">Mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
                            v-model="filters.global.value" value="unmastered"
                     >
-                    <label class="btn btn-secondary" for="filter_unmastered">Un-mastered Forms</label>
+                    <label class="btn btn-outline-secondary" for="filter_unmastered">Un-mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
                            v-model="filters.global.value" value="none"
                     >
-                    <label class="btn btn-secondary" for="filter_none">All Forms</label>
+                    <label class="btn btn-outline-secondary" for="filter_none">All Forms</label>
 
                 </div>
 
-                <div class="me-1 text-primary">Detail:</div>
+                <div class="me-2 text-primary">Detail:</div>
                 <div class="btn-group" role="group" aria-label="Detail mode">
                     <input type="radio" class="btn-check" name="detail" id="detail_off" autocomplete="off"
                            v-model="detailedOutput" :value="false"
                     >
-                    <label class="btn btn-secondary" for="detail_off">Simplify Lists</label>
+                    <label class="btn btn-outline-secondary" for="detail_off">Simplify Lists</label>
 
                     <input type="radio" class="btn-check" name="detail" id="detail_on" autocomplete="off"
                            v-model="detailedOutput" :value="true"
                     >
-                    <label class="btn btn-secondary" for="detail_on">Detail by part</label>
+                    <label class="btn btn-outline-secondary" for="detail_on">Detail by part</label>
                 </div>
             </div>
             <!-- Target rows -->
