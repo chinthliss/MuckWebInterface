@@ -2,9 +2,10 @@
 
 import {ref, Ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
-import {capital} from "../formatting";
+import {ansiToHtml, capital} from "../formatting";
 
 type Perk = {
+    id: string,
     name: string,
     description: string,
     notes: string,
@@ -195,7 +196,9 @@ channel.send('bootPerks');
                     <input type="checkbox" class="btn-check" autocomplete="off"
                            :id="'btn-check-' + tag" v-model="tagFilter[tag]"
                     >
-                    <label class="btn btn-outline-info text-dark me-2" :for="'btn-check-' + tag">{{ capital(tag) }}</label>
+                    <label class="btn btn-outline-info text-dark me-2" :for="'btn-check-' + tag">{{
+                            capital(tag)
+                        }}</label>
                 </template>
 
             </div>
@@ -225,7 +228,9 @@ channel.send('bootPerks');
                         {{ perk.name }}
                     </h5>
 
-                    <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.description }}</p>
+                    <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }"
+                       v-html="ansiToHtml(perk.description)"></p>
+
                     <template v-if="perk.owned">
                         <hr>
                         <div class="float-end">
@@ -243,8 +248,11 @@ channel.send('bootPerks');
                         <template v-if="perk.excludes">Excludes: {{ perk.excludes.join(', ') }}</template>
                     </div>
                     <div>
-                        Tags: <template v-if="!perk.tags.length">No tags</template>
-                        <span v-for="tag in perk.tags" class="badge rounded-pill p-2 text-bg-info ms-1">{{ capital(tag) }}</span>
+                        Tags:
+                        <template v-if="!perk.tags.length">No tags</template>
+                        <span v-for="tag in perk.tags" class="badge rounded-pill p-2 text-bg-info ms-1">{{
+                                capital(tag)
+                            }}</span>
                     </div>
                 </div>
             </div>
