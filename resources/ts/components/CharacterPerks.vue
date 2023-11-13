@@ -10,6 +10,7 @@ type Perk = {
     notes: string,
     cost: number
     tags: string[],
+    vanity?: boolean,
     excludes?: string[],
     excluded?: boolean,
     owned?: boolean
@@ -90,7 +91,7 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
 
 const presentCostsForPerk = (perk: Perk): [number, number] => {
     let vanityCost = 0;
-    if (perk.tags && perk.tags.indexOf('vanity') !== -1) {
+    if (perk.vanity) {
         vanityCost = Math.min(perk.cost, vanityPointsAvailable.value);
     }
     return [vanityCost, perk.cost ? perk.cost - vanityCost : 0];
