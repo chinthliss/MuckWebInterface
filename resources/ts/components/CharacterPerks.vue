@@ -107,13 +107,12 @@ const presentCostForPerkAsString = (perk: Perk): string => {
     return output.join(', ');
 };
 
-const canPurchase = (perk: Perk): boolean => {
-    if (!perk.cost) return false; // Free perks are chargen only
+const canAfford = (perk: Perk): boolean => {
     const costs = presentCostsForPerk(perk);
     return costs[1] <= perkPoints.value;
 };
 const buyPerk = (perk: Perk): void => {
-    if (canPurchase(perk)) {
+    if (canAfford(perk)) {
         channel.send('buyPerk', perk.name);
         // Muck sends a 'perkStatus' response after the purchase
     }
@@ -216,8 +215,8 @@ channel.send('bootPerks');
                         <span v-else-if="perk.excluded" class="text-warning">Excluded</span>
                         <span v-else-if="perk.cost">Cost: {{ presentCostForPerkAsString(perk) }}</span>
                         <span v-else>Chargen Only</span>
-                        <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned"
-                                @click="buyPerk(perk)" :disabled="!canPurchase(perk)"
+                        <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned && perk.cost"
+                                @click="buyPerk(perk)" :disabled="!canAfford(perk)"
                         >
                             Buy
                         </button>
