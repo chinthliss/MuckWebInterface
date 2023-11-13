@@ -108,6 +108,7 @@ const presentCostForPerkAsString = (perk: Perk): string => {
 };
 
 const canPurchase = (perk: Perk): boolean => {
+    if (!perk.cost) return false; // Free perks are chargen only
     const costs = presentCostsForPerk(perk);
     return costs[1] <= perkPoints.value;
 };
@@ -214,7 +215,7 @@ channel.send('bootPerks');
                         <span v-if="perk.owned" class="text-primary">Owned</span>
                         <span v-else-if="perk.excluded" class="text-warning">Excluded</span>
                         <span v-else-if="perk.cost">Cost: {{ presentCostForPerkAsString(perk) }}</span>
-                        <span v-else>Free</span>
+                        <span v-else>Chargen Only</span>
                         <button class="btn btn-primary ms-2" v-if="!perk.excluded && !perk.owned"
                                 @click="buyPerk(perk)" :disabled="!canPurchase(perk)"
                         >
