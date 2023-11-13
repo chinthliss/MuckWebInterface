@@ -233,7 +233,7 @@ channel.send('bootPerks');
                         <div class="float-end">
                             <button class="btn btn-primary" @click="startUpdatingNotes(perk)">Edit Custom Notes</button>
                         </div>
-                        <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.notes }}</p>
+                        <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.notes }}</p>
                     </template>
                 </div>
 
