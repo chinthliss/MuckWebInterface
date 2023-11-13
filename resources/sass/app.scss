@@ -20,6 +20,11 @@ h1, h2, h3, h4, h5, h6 {
     color: $primary
 }
 
+.muck-whitespace {
+    // Preserves multiple spaces and newlines but still wraps.
+    white-space: pre-wrap;
+}
+
 .site-navigation {
     background-color: $site-navigation-background;
 }

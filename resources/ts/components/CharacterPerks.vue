@@ -42,6 +42,7 @@ channel.on('perksCatalogue', (data: number) => {
 
 channel.on('perk', (data: Perk) => {
     data.excluded = false;
+    // Tag processing - force lowercase and add to global list if not seen before
     if (data.tags) {
         const lowerCaseTags = [];
         for (let tag of data.tags) {
@@ -54,6 +55,8 @@ channel.on('perk', (data: Perk) => {
         }
         data.tags = lowerCaseTags;
     } else data.tags = []; // Now mandatory
+    // Description processing - replace \n with actual newline character
+    data.description = data.description.replace('\\n', '\n');
     perks.value.push(data);
     perksToLoadRemaining.value--;
 });
@@ -228,7 +231,7 @@ channel.send('bootPerks');
                         {{ perk.name }}
                     </h5>
 
-                    <p class="card-text" v-bind:class="{ 'text-muted': perk.excluded }"
+                    <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }"
                        v-html="ansiToHtml(perk.description)"></p>
 
                     <template v-if="perk.owned">
