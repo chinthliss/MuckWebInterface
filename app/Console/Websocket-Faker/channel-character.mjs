@@ -18,10 +18,8 @@ export default class ChannelCharacter extends Channel {
 
     sendPerkStatus = (connection) => {
         this.sendMessageToConnection(connection, 'perkStatus', {
-            'perkTotal': 20,
-            'perkSpent': 19,
-            'vanityTotal': 20,
-            'vanitySpent': 19,
+            'perkPoints': 2,
+            'vanityPoints': 1,
             'owned': perksOwned
         });
     }

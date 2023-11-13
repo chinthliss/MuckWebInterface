@@ -22,10 +22,8 @@ const perksToLoad: Ref<number | null> = ref(null);
 const perksToLoadRemaining: Ref<number> = ref(1); // Starting at 1 to cover initial loading
 const tags: Ref<string[]> = ref([]);
 const tagFilter: Ref<{ [tag: string]: boolean }> = ref({});
-const perkPointsTotal: Ref<number> = ref(0);
-const perkPointsAvailable: Ref<number> = ref(0);
-const vanityPointsTotal: Ref<number> = ref(0);
-const vanityPointsAvailable: Ref<number> = ref(0);
+const perkPoints: Ref<number> = ref(0);
+const vanityPoints: Ref<number> = ref(0);
 const showAll: Ref<boolean> = ref(true);
 
 const updateNotesModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
@@ -62,10 +60,8 @@ channel.on('perk', (data: Perk) => {
 });
 
 type PerkStatusUpdate = {
-    perkTotal: number,
-    perkSpent: number,
-    vanityTotal: number,
-    vanitySpent: number,
+    perkPoints: number,
+    vanityPoints: number,
     owned: {
         name: string,
         notes: string
@@ -73,10 +69,8 @@ type PerkStatusUpdate = {
 };
 
 channel.on('perkStatus', (update: PerkStatusUpdate) => {
-    perkPointsTotal.value = update.perkTotal;
-    perkPointsAvailable.value = update.perkTotal - update.perkSpent;
-    vanityPointsTotal.value = update.vanityTotal;
-    vanityPointsAvailable.value = update.vanityTotal - update.vanitySpent;
+    perkPoints.value = update.perkPoints;
+    vanityPoints.value = update.vanityPoints;
     // Clear existing values
     for (const perk of perks.value) {
         perk.owned = false;
@@ -96,7 +90,7 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
 const presentCostsForPerk = (perk: Perk): [number, number] => {
     let vanityCost = 0;
     if (perk.vanity) {
-        vanityCost = Math.min(perk.cost, vanityPointsAvailable.value);
+        vanityCost = Math.min(perk.cost, vanityPoints.value);
     }
     return [vanityCost, perk.cost ? perk.cost - vanityCost : 0];
 };
@@ -115,7 +109,7 @@ const presentCostForPerkAsString = (perk: Perk): string => {
 
 const canPurchase = (perk: Perk): boolean => {
     const costs = presentCostsForPerk(perk);
-    return costs[1] <= perkPointsAvailable.value;
+    return costs[1] <= perkPoints.value;
 };
 const buyPerk = (perk: Perk): void => {
     if (canPurchase(perk)) {
@@ -190,8 +184,8 @@ channel.send('bootPerks');
         <!-- Floating info bar -->
         <div class="position-sticky top-0 bg-primary text-dark p-1 m-1 rounded-1 z-1 d-flex">
             <div class="flex-grow-1">
-                <div>Points: {{ perkPointsAvailable }} free of {{ perkPointsTotal }} total</div>
-                <div>Vanity Points: {{ vanityPointsAvailable }} free of {{ vanityPointsTotal }} total</div>
+                <div>Perk Points: {{ perkPoints }}</div>
+                <div>Vanity Points: {{ vanityPoints }}</div>
             </div>
             <div class="align-self-center">
                 <span class="me-2">Filter Tags:</span>
