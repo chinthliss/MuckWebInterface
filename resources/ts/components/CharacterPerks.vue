@@ -81,7 +81,7 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
         const perk = perks.value.find((possiblePerk) => possiblePerk.name == ownedPerk.name);
         if (perk) {
             perk.owned = true;
-            perk.notes = ownedPerk.notes;
+            perk.notes = ownedPerk.notes.replace(/\\n/g, '\n');
         } else console.log("Couldn't find owned perk in catalog: ", ownedPerk);
     }
     recalculateExclusions();
