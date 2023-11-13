@@ -56,7 +56,7 @@ channel.on('perk', (data: Perk) => {
         data.tags = lowerCaseTags;
     } else data.tags = []; // Now mandatory
     // Description processing - replace \n with actual newline character
-    data.description = data.description.replace('\\n', '\n');
+    data.description = data.description.replace(/\\n/g, '\n');
     perks.value.push(data);
     perksToLoadRemaining.value--;
 });
