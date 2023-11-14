@@ -182,8 +182,8 @@ channel.send('bootPerks');
     <div v-if="perksToLoadRemaining">Loading..</div>
     <div v-else>
         <!-- Floating info bar -->
-        <div class="position-sticky top-0 bg-primary text-dark p-1 m-1 rounded-1 z-1 d-flex">
-            <div class="flex-grow-1">
+        <div class="position-sticky top-0 bg-primary text-dark p-1 m-1 rounded-1 z-1 d-flex flex-column flex-lg-row">
+            <div class="flex-grow-1 d-flex flex-row flex-lg-column justify-content-evenly">
                 <div>Perk Points: {{ perkPoints }}</div>
                 <div>Vanity Points: {{ vanityPoints }}</div>
             </div>
