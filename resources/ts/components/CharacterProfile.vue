@@ -14,19 +14,19 @@ const props = defineProps<{
 type Badge = { name: string, description: string[], awarded: string }
 
 type characterProfile = {
-    name?: string
-    level?: number
-    sex?: string
-    species?: string
-    height?: string
-    shortDescription?: string
-    faction?: string
-    group?: string
-    role?: string
-    whatIs?: string
-    views?: any[] | null
-    pinfo?: any[] | null
-    equipment?: any[] | null
+    name?: string,
+    level?: number,
+    sex?: string,
+    species?: string,
+    height?: string,
+    shortDescription?: string,
+    faction?: string,
+    group?: string,
+    role?: string,
+    whatIs?: string,
+    views?: any[] | null,
+    pinfo?: any[] | null,
+    equipment?: any[] | null,
     badges?: Badge[] | null
 }
 
@@ -78,11 +78,13 @@ channel.on('characterProfileEquipment', (data) => {
     profile.value.equipment = data;
 });
 
-
-channel.on('characterProfileBadges', (data) => {
-    profile.value.badges = data;
+channel.on('characterProfileBadges', (_data) => {
+    profile.value.badges = [];
 });
 
+channel.on('characterProfileBadge', (data) => {
+    if (profile.value.badges) profile.value.badges.push(data)
+});
 
 </script>
 

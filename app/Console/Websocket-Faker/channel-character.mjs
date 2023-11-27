@@ -53,8 +53,11 @@ export default class ChannelCharacter extends Channel {
                 this.sendMessageToConnection(connection, 'characterProfileEquipment', equipment);
 
                 const badges = character.properties?.badges || [];
-                this.sendMessageToConnection(connection, 'characterProfileBadges', badges);
+                this.sendMessageToConnection(connection, 'characterProfileBadges', badges.count);
 
+                for (const badge of badges) {
+                    this.sendMessageToConnection(connection, 'characterProfileBadge', badge);
+                }
 
                 break;
 
