@@ -22,6 +22,8 @@
             such as how your character uses the perk, how they obtained it or any other limitations. These may be
             referred to by scene-runners.</p>
 
+        <!-- TODO: Investigate removal of perks, including free removals during first week -->
+
         <character-perks
 
         ></character-perks>
