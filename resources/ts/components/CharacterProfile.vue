@@ -27,7 +27,10 @@ type characterProfile = {
     views?: any[] | null,
     pinfo?: any[] | null,
     equipment?: any[] | null,
-    badges?: Badge[] | null
+    badges?: Badge[] | null,
+    birthday: string,
+    mail?: number
+    mailUnread?: number
 }
 
 const profile: Ref<characterProfile> = ref({
@@ -63,6 +66,9 @@ channel.on('characterProfileCore', (data) => {
     profile.value.group = data.group;
     profile.value.role = data.role;
     profile.value.whatIs = data.whatIs;
+    profile.value.birthday = data.birthday;
+    profile.value.mail = data.mail_total;
+    profile.value.mailUnread = data.mail_unread;
     profileLoading.value = false;
 });
 
@@ -106,6 +112,7 @@ channel.on('characterProfileBadge', (data) => {
             <div id="ProfileContainer" class="flex-grow-1 mt-2 mt-xl-0 ms-xl-4">
                 <Spinner v-if="profileLoading"/>
                 <div v-else>
+
                     <!-- Gender, Species and Height -->
                     <div class="d-flex">
                         <div>
@@ -119,6 +126,18 @@ channel.on('characterProfileBadge', (data) => {
                         <div class="flex-grow-1 ms-4">
                             <div class="label">Species</div>
                             <div class="value">{{ profile.species || '--' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Mail unread and total -->
+                    <div class="mt-2 d-flex">
+                        <div>
+                            <div class="label">Mail</div>
+                            <div class="value">{{ profile.mail || '--' }}</div>
+                        </div>
+                        <div class="flex-grow-1 ms-4">
+                            <div class="label">Unread Mail</div>
+                            <div class="value">{{ profile.mailUnread || '--' }}</div>
                         </div>
                     </div>
 
@@ -144,6 +163,12 @@ channel.on('characterProfileBadge', (data) => {
                             <div class="label">Group</div>
                             <div class="value">{{ profile.group || '--' }}</div>
                         </div>
+                    </div>
+
+                    <!-- Birthday -->
+                    <div class="mt-2">
+                        <div class="label">Birthday <span class="text-muted">(+birthday)</span></div>
+                        <div class="value">{{ profile.birthday || '--' }}</div>
                     </div>
 
                     <!-- Short Description -->

@@ -40,6 +40,7 @@ export default class ChannelCharacter extends Channel {
                     height: character.properties?.height || '',
                     role: character.properties?.role || '',
                     whatIs: character.properties?.whatIs || '',
+                    birthday: character.properties?.birthday || ''
                 };
                 this.sendMessageToConnection(connection, 'characterProfileCore', profile);
 
