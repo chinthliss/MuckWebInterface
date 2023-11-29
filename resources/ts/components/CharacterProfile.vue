@@ -22,8 +22,8 @@ type characterProfile = {
     shortDescription?: string,
     faction?: string,
     group?: string,
-    role?: string,
     class?: string,
+    role?: string,
     whatIs?: string,
     views?: any[] | null,
     pinfo?: any[] | null,
@@ -44,6 +44,7 @@ const profile: Ref<characterProfile> = ref({
     shortDescription: null,
     faction: null,
     group: null,
+    class: null,
     role: null,
     whatIs: null,
     views: null,
@@ -66,11 +67,13 @@ channel.on('characterProfileCore', (data) => {
     profile.value.shortDescription = data.shortDescription;
     profile.value.faction = data.faction;
     profile.value.group = data.group;
-    profile.value.role = data.role;
+    profile.value.class = data?.class;
+    profile.value.role = data?.role;
     profile.value.whatIs = data.whatIs;
     profile.value.birthday = data.birthday;
-    profile.value.mail = data.mail_total;
-    profile.value.mailUnread = data.mail_unread;
+    profile.value.mail = data?.mail_total;
+    profile.value.mailUnread = data?.mail_unread;
+    profile.value.laston = data?.laston;
     profileLoading.value = false;
 });
 
