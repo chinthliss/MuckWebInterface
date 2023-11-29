@@ -23,6 +23,7 @@ type characterProfile = {
     faction?: string,
     group?: string,
     role?: string,
+    class?: string,
     whatIs?: string,
     views?: any[] | null,
     pinfo?: any[] | null,
@@ -30,7 +31,8 @@ type characterProfile = {
     badges?: Badge[] | null,
     birthday: string,
     mail?: number
-    mailUnread?: number
+    mailUnread?: number,
+    laston?: string
 }
 
 const profile: Ref<characterProfile> = ref({
@@ -129,25 +131,33 @@ channel.on('characterProfileBadge', (data) => {
                         </div>
                     </div>
 
-                    <!-- Mail unread and total -->
-                    <div class="mt-2 d-flex">
+                    <!-- Mail unread, total and laston-->
+                    <div class="d-flex">
                         <div>
                             <div class="label">Mail</div>
                             <div class="value">{{ profile.mail || '--' }}</div>
                         </div>
-                        <div class="flex-grow-1 ms-4">
+                        <div class="ms-4">
                             <div class="label">Unread Mail</div>
                             <div class="value">{{ profile.mailUnread || '--' }}</div>
                         </div>
+                        <div class="flex-grow-1 ms-4">
+                            <div class="label">Last Online</div>
+                            <div class="value">{{ profile.laston || '--' }}</div>
+                        </div>
                     </div>
 
-                    <!-- Level and Role -->
-                    <div class="mt-2 d-flex">
+                    <!-- Level, Class and Role -->
+                    <div class="d-flex">
                         <div>
                             <div class="label">Level</div>
                             <div class="value">{{ profile.level || '--' }}</div>
                         </div>
-                        <div class="flex-grow-1 ms-4">
+                        <div class="ms-4 flex-grow-1">
+                            <div class="label">Class</div>
+                            <div class="value">{{ profile.class || '--' }}</div>
+                        </div>
+                        <div class="ms-4 flex-grow-1">
                             <div class="label">Role</div>
                             <div class="value">{{ profile.role || '--' }}</div>
                         </div>
