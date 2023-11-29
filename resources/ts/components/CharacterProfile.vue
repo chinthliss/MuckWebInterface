@@ -187,7 +187,7 @@ channel.on('characterProfileBadge', (data) => {
                     <!-- Short Description -->
                     <div class="mt-2">
                         <div class="label">Short Description <span class="text-muted">(+glance)</span></div>
-                        <div class="value">{{ ansiToHtml(profile.shortDescription) || '--' }}</div>
+                        <div class="value" v-html="profile.shortDescription ? ansiToHtml(profile.shortDescription) : '--'"></div>
                     </div>
 
                     <!-- WhatIs -->
