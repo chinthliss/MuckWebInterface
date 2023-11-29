@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {Ref, ref} from 'vue';
-import {carbonToString} from "../formatting";
+import {ansiToHtml, carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import type {Character} from "../defs";
 import DataTable from 'primevue/datatable';
@@ -187,7 +187,7 @@ channel.on('characterProfileBadge', (data) => {
                     <!-- Short Description -->
                     <div class="mt-2">
                         <div class="label">Short Description <span class="text-muted">(+glance)</span></div>
-                        <div class="value">{{ profile.shortDescription || '--' }}</div>
+                        <div class="value">{{ ansiToHtml(profile.shortDescription) || '--' }}</div>
                     </div>
 
                     <!-- WhatIs -->
