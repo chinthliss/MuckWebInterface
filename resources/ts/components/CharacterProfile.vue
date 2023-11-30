@@ -169,8 +169,8 @@ channel.on('characterProfileBadge', (data) => {
                     <!-- Mail status and Laston  -->
                     <div class="mt-2 d-flex">
                         <div>
-                            <div class="label">Mail</div>
-                            <div class="value">{{ profile.mailTotal ? profile.mailTotal + '(' + profile.mailUnread + ')' : '--' }}</div>
+                            <div class="label">Mail (Unread)</div>
+                            <div class="value">{{ profile.mailTotal ? profile.mailTotal + ' (' + profile.mailUnread + ')' : '--' }}</div>
                         </div>
                         <div class="ms-4">
                             <div class="label">Laston</div>
