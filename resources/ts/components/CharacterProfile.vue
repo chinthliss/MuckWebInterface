@@ -13,7 +13,7 @@ const props = defineProps<{
 
 type Badge = { name: string, description: string[], awarded: string }
 
-type characterProfile = {
+type CharacterProfile = {
     name?: string,
     level?: number,
     sex?: string,
@@ -30,12 +30,12 @@ type characterProfile = {
     equipment?: any[] | null,
     badges?: Badge[] | null,
     birthday: string,
-    mail?: number
+    mailTotal?: number
     mailUnread?: number,
     laston?: string
 }
 
-const profile: Ref<characterProfile> = ref({
+const profile: Ref<CharacterProfile> = ref({
     name: props.characterIn?.name,
     level: props.characterIn?.level,
     sex: null,
@@ -51,7 +51,7 @@ const profile: Ref<characterProfile> = ref({
     pinfo: null,
     equipment: null,
     badges: null
-} as characterProfile);
+} as CharacterProfile);
 
 const channel = mwiWebsocket.channel('character');
 const profileLoading: Ref<boolean> = ref(true);
@@ -60,7 +60,7 @@ channel.on('connected', () => {
     channel.send('getCharacterProfile', props.characterIn.dbref);
 });
 
-channel.on('characterProfileCore', (data) => {
+channel.on('characterProfileCore', (data: CharacterProfile) => {
     profile.value.sex = data.sex;
     profile.value.species = data.species;
     profile.value.height = data.height;
@@ -71,8 +71,8 @@ channel.on('characterProfileCore', (data) => {
     profile.value.role = data?.role;
     profile.value.whatIs = data.whatIs;
     profile.value.birthday = data.birthday;
-    profile.value.mail = data?.mail_total;
-    profile.value.mailUnread = data?.mail_unread;
+    profile.value.mailTotal = data?.mailTotal;
+    profile.value.mailUnread = data?.mailUnread;
     profile.value.laston = data?.laston;
     profileLoading.value = false;
 });
@@ -116,53 +116,41 @@ channel.on('characterProfileBadge', (data) => {
 
             <div id="ProfileContainer" class="flex-grow-1 mt-2 mt-xl-0 ms-xl-4">
                 <Spinner v-if="profileLoading"/>
-                <div v-else>
+                <template v-else>
 
-                    <!-- Gender, Species and Height -->
+                    <!-- Gender and Species  -->
                     <div class="d-flex">
                         <div>
-                            <div class="label">Height</div>
-                            <div class="value">{{ profile.height || '--' }}</div>
-                        </div>
-                        <div class="ms-4">
                             <div class="label">Gender</div>
                             <div class="value">{{ profile.sex || '--' }}</div>
                         </div>
-                        <div class="flex-grow-1 ms-4">
+                        <div class="ms-4">
                             <div class="label">Species</div>
                             <div class="value">{{ profile.species || '--' }}</div>
                         </div>
                     </div>
 
-                    <!-- Mail unread, total and laston-->
-                    <div class="d-flex">
+                    <!-- Class and Role -->
+                    <div class="mt-2 d-flex">
                         <div>
-                            <div class="label">Mail</div>
-                            <div class="value">{{ profile.mail || '--' }}</div>
+                            <div class="label">Class</div>
+                            <div class="value">{{ profile.class || '--' }}</div>
                         </div>
                         <div class="ms-4">
-                            <div class="label">Unread Mail</div>
-                            <div class="value">{{ profile.mailUnread || '--' }}</div>
-                        </div>
-                        <div class="flex-grow-1 ms-4">
-                            <div class="label">Last Online</div>
-                            <div class="value">{{ profile.laston || '--' }}</div>
+                            <div class="label">Role</div>
+                            <div class="value">{{ profile.role || '--' }}</div>
                         </div>
                     </div>
 
-                    <!-- Level, Class and Role -->
-                    <div class="d-flex">
+                    <!-- Level and Height -->
+                    <div class="mt-2 d-flex">
                         <div>
                             <div class="label">Level</div>
                             <div class="value">{{ profile.level || '--' }}</div>
                         </div>
-                        <div class="ms-4 flex-grow-1">
-                            <div class="label">Class</div>
-                            <div class="value">{{ profile.class || '--' }}</div>
-                        </div>
-                        <div class="ms-4 flex-grow-1">
-                            <div class="label">Role</div>
-                            <div class="value">{{ profile.role || '--' }}</div>
+                        <div class="ms-4">
+                            <div class="label">Height</div>
+                            <div class="value">{{ profile.height || '--' }}</div>
                         </div>
                     </div>
 
@@ -172,9 +160,21 @@ channel.on('characterProfileBadge', (data) => {
                             <div class="label">Faction</div>
                             <div class="value">{{ profile.faction || '--' }}</div>
                         </div>
-                        <div class="flex-grow-1 ms-4">
+                        <div class="ms-4">
                             <div class="label">Group</div>
                             <div class="value">{{ profile.group || '--' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Mail status and Laston  -->
+                    <div class="mt-2 d-flex">
+                        <div>
+                            <div class="label">Mail</div>
+                            <div class="value">{{ profile.mailTotal ? profile.mailTotal + '(' + profile.mailUnread + ')' : '--' }}</div>
+                        </div>
+                        <div class="ms-4">
+                            <div class="label">Laston</div>
+                            <div class="value">{{ profile.laston || '--' }}</div>
                         </div>
                     </div>
 
@@ -195,7 +195,7 @@ channel.on('characterProfileBadge', (data) => {
                         <div class="label">What Is <span class="text-muted">(wi)</span></div>
                         <div v-html="profile.whatIs || '--'" class="value"></div>
                     </div>
-                </div>
+                </template>
             </div>
         </div>
 
