@@ -15,6 +15,7 @@ type Badge = { name: string, description: string[], awarded: string }
 
 type CharacterProfile = {
     name?: string,
+    alias?: string,
     level?: number,
     sex?: string,
     species?: string,
@@ -102,7 +103,7 @@ channel.on('characterProfileBadge', (data) => {
 <template>
     <div class="container">
 
-        <h1>{{ profile.name }}</h1>
+        <h1>{{ profile.name }} <span v-if="profile.alias">, aka {{profile.alias}}</span></h1>
 
         <div class="d-flex flex-column flex-xl-row">
             <div class="mx-auto">
@@ -173,7 +174,7 @@ channel.on('characterProfileBadge', (data) => {
                             <div class="value">{{ profile.mailTotal ? profile.mailTotal + ' (' + profile.mailUnread + ')' : '--' }}</div>
                         </div>
                         <div class="ms-4">
-                            <div class="label">Laston</div>
+                            <div class="label">Last On</div>
                             <div class="value">{{ profile.laston || '--' }}</div>
                         </div>
                     </div>
