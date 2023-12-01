@@ -62,19 +62,7 @@ channel.on('connected', () => {
 });
 
 channel.on('characterProfileCore', (data: CharacterProfile) => {
-    profile.value.sex = data.sex;
-    profile.value.species = data.species;
-    profile.value.height = data.height;
-    profile.value.shortDescription = data.shortDescription;
-    profile.value.faction = data.faction;
-    profile.value.group = data.group;
-    profile.value.class = data?.class;
-    profile.value.role = data?.role;
-    profile.value.whatIs = data.whatIs;
-    profile.value.birthday = data.birthday;
-    profile.value.mailTotal = data?.mailTotal;
-    profile.value.mailUnread = data?.mailUnread;
-    profile.value.laston = data?.laston;
+    profile.value = data;
     profileLoading.value = false;
 });
 
