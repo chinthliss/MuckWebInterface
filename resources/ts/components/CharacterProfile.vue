@@ -27,7 +27,7 @@ type CharacterProfile = {
     role?: string,
     whatIs?: string,
     views?: any[] | null,
-    pinfo?: any[] | null,
+    custom?: any[] | null,
     equipment?: any[] | null,
     badges?: Badge[] | null,
     birthday: string,
@@ -49,7 +49,7 @@ const profile: Ref<CharacterProfile> = ref({
     role: null,
     whatIs: null,
     views: null,
-    pinfo: null,
+    custom: null,
     equipment: null,
     badges: null
 } as CharacterProfile);
@@ -70,8 +70,8 @@ channel.on('characterProfileViews', (data) => {
     profile.value.views = data;
 });
 
-channel.on('characterProfilePinfo', (data) => {
-    profile.value.pinfo = data;
+channel.on('characterProfileCustom', (data) => {
+    profile.value.custom = data;
 });
 
 channel.on('characterProfileEquipment', (data) => {
@@ -189,20 +189,20 @@ channel.on('characterProfileBadge', (data) => {
         </div>
 
         <template v-if="!profileLoading">
+            <!-- Custom -->
+            <h3 class="mt-2">Custom Information <span class="text-muted">(profile)</span></h3>
+            <DataTable :value="profile.custom" stripedRows>
+                <template #empty>No extra information configured.</template>
+                <Column header="Field" field="field" sortable></Column>
+                <Column header="Value" field="value"></Column>
+            </DataTable>
+
             <!-- Views -->
             <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
             <DataTable :value="profile.views" stripedRows>
                 <template #empty>No views configured.</template>
                 <Column header="View" field="view" sortable></Column>
                 <Column header="Content" field="content"></Column>
-            </DataTable>
-
-            <!-- Pinfo -->
-            <h3 class="mt-2">Custom Information <span class="text-muted">(+finger)</span></h3>
-            <DataTable :value="profile.pinfo" stripedRows>
-                <template #empty>No extra information configured.</template>
-                <Column header="Field" field="field" sortable></Column>
-                <Column header="Value" field="value"></Column>
             </DataTable>
 
             <!-- Equipment -->

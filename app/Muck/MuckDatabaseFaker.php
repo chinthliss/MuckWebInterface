@@ -36,8 +36,8 @@ class MuckDatabaseFaker
             'views' => [
                 ['view' => 'Test View', 'content' => 'Test View Content']
             ],
-            'pinfo' => [
-                ['field' => 'Test Field', 'value' => 'Test Pinfo Content']
+            'custom' => [
+                ['field' => 'Test Field', 'value' => 'Test Custom Content']
             ],
             'equipment' => [
                 ['name' => 'Test Equipment', 'description' => 'Test Equipment Description']

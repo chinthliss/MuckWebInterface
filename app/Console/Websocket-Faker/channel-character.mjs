@@ -47,8 +47,8 @@ export default class ChannelCharacter extends Channel {
                 const views = character.properties?.views || [];
                 this.sendMessageToConnection(connection, 'characterProfileViews', views);
 
-                const pinfo = character.properties?.pinfo || [];
-                this.sendMessageToConnection(connection, 'characterProfilePinfo', pinfo);
+                const custom = character.properties?.custom || [];
+                this.sendMessageToConnection(connection, 'characterProfileCustom', custom);
 
                 const equipment = character.properties?.equipment || [];
                 this.sendMessageToConnection(connection, 'characterProfileEquipment', equipment);
