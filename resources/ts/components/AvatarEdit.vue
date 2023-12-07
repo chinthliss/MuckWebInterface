@@ -395,7 +395,7 @@ const purchaseGradient = (gradientId: string, slot: string) => {
                 console.log("Purchasing gradient refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                if (messageDialog) messageDialog.value.show();
+                if (messageDialog.value) messageDialog.value.show();
             }
         })
         .catch((error) => {
@@ -427,7 +427,7 @@ const purchaseItem = (itemId: string) => {
                 console.log("Purchasing item refused: " + response.data);
                 messageDialogHeader.value = "Purchase failed";
                 messageDialogContent.value = "Something went wrong with the purchase:\n" + response.data;
-                if (messageDialog) messageDialog.value.show();
+                if (messageDialog.value) messageDialog.value.show();
             }
         })
         .catch((error) => {

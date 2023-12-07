@@ -121,7 +121,7 @@ const buyPerk = (perk: Perk): void => {
 const startUpdatingNotes = (perk: Perk): void => {
     perkBeingUpdated.value = perk;
     notesBeingUpdated.value = perk.notes;
-    updateNotesModal.value.show();
+    if (updateNotesModal.value) updateNotesModal.value.show();
 };
 
 const saveUpdatedNotes = (): void => {

@@ -25,7 +25,7 @@ const confirmPrimaryEmailModal: Ref<InstanceType<typeof ModalConfirmation> | nul
 
 const confirmMakeEmailPrimary = (email: AccountEmail) => {
     emailToMakePrimary.value = email.email;
-    confirmPrimaryEmailModal.value.show();
+    if (confirmPrimaryEmailModal.value) confirmPrimaryEmailModal.value.show();
 }
 
 const makeEmailPrimary = () => {

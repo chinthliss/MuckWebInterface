@@ -78,7 +78,7 @@ onMounted(() => {
         })
     }
     if (props.old?.flaws) {
-        Object.values(props.old?.flaws).forEach(item => {
+        Object.values(props.old.flaws).forEach(item => {
             character.value.flaws.push(item);
         });
     }

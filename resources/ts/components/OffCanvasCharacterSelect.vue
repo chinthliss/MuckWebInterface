@@ -73,7 +73,7 @@ const selectCharacter = (character: Character) => {
 };
 
 const verifyBuyCharacterSlot = () => {
-    if (confirmationModal) confirmationModal.value.show();
+    if (confirmationModal.value) confirmationModal.value.show();
 }
 
 const buyCharacterSlot = () => {

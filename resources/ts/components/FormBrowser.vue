@@ -130,7 +130,7 @@ const changeTarget = (): void => {
 
 const launchChangeTarget = (index: number): void => {
     changeTargetIndex.value = index;
-    changeTargetModal.value.show();
+    if (changeTargetModal.value) changeTargetModal.value.show();
 }
 
 const clearTarget = (index: number) => {
