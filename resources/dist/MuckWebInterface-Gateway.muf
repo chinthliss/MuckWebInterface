@@ -80,7 +80,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     strcat ",\"" strcat
     (Name)
     object @ name "\\\"" "\"" subst strcat "\"," strcat
-
+ 
     (Meta properties)
     { }list
     object @ player? if
@@ -137,7 +137,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         pop (Not Implemented Yet)
     else response400 then
 ; selfcall handleRequest_getByApiToken
-
+ 
 (Expects 'aid' set, returns objectToString separated by lines)
 : handleRequest_getCharacters[ arr:webcall -- ]
     webcall @ "aid" array_getitem ?dup if
@@ -148,7 +148,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         repeat
     else response400 then
 ; selfcall handleRequest_getCharacters
-
+ 
 (Expects 'name' set, returns account list)
 : handleRequest_findAccountsByCharacterName[ arr:webcall -- ]
     webcall @ "name" array_getitem ?dup if
@@ -166,7 +166,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
 ( --------------------------------------------------
   Handlers - Authentication
   -------------------------------------------------- )
-
+ 
 (Expects 'dbref' and 'password' set, returns either 'true' or 'false')
 : handleRequest_validateCredentials[ arr:webcall -- ]
     webcall @ "dbref" array_getitem ?dup if atoi dbref else #-1 then var! dbref
@@ -180,7 +180,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         descr swap descrnotify 
     else response400 then
 ; selfcall handleRequest_validateCredentials
-
+ 
 (Expects 'aid' and maybe 'dbref' set)
 (Retrns a string with the token in)
 : handleRequest_getWebsocketAuthTokenFor[ arr:webcall -- ]
@@ -197,7 +197,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     aid @ character @ websocketIssueAuthenticationToken 
     descr swap descrnotify
 ; selfcall handleRequest_getWebsocketAuthTokenFor  
-
+ 
 (Expects an array containing aid,dbref,password )
 (Returns 'OK' if successful)
 : handleRequest_changeCharacterPassword[ arr:webcall -- ]
@@ -251,7 +251,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     aid @ character @ message @ deliverNotificationOnMuck
     intostr descr swap descrnotify
 ; selfcall handleRequest_externalNotification
-
+ 
 ( --------------------------------------------------
   Handlers - Character Selection and Chargen
   -------------------------------------------------- )
@@ -266,7 +266,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         descr swap descrnotify
     else response400 then
 ; selfcall handleRequest_getCharacterSlotState
-
+ 
 (Expects 'name' set, returns a blank string if okay or a string containing an issue)
 : handleRequest_findProblemsWithCharacterName[ arr:webcall -- ]
     webcall @ "name" array_getitem ?dup if var! newName
@@ -287,7 +287,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         descr swap descrnotify
     else response400 then
 ; selfcall handleRequest_findProblemsWithCharacterPassword
-
+ 
 : handleRequest_buyCharacterSlot[ arr:webcall -- ]
     webcall @ "aid" array_getitem ?dup if
         startAcceptedResponse
@@ -314,7 +314,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         descr swap descrnotify
     else response400 then
 ; selfcall handleRequest_buyCharacterSlot
-
+ 
 (Expects 'name' and 'aid' set, returns OK|<characterDbref>|<InitialPassword> if successful or ERROR|<error> if there was an issue. )
 : handleRequest_createCharacter[ arr:webcall -- ]
     webcall @ "aid" array_getitem ?dup if acct_any2aid else response400 exit then var! account
@@ -419,12 +419,12 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
         }dict
         {
             "category" "gender"
-            "label" "Infection Resistance"
+            "label" "Gender"
             "description" "There are many more preference related perks but these are the critical ones controlling your gender preferences."
         }dict
         {
             "category" "appearance"
-            "label" "Gender"
+            "label" "Appearance"
             "description" "Following on from gender perks, these perks control how you appear to others."
         }dict
         {
@@ -441,7 +441,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
 ( --------------------------------------------------
   Handlers - Avatars
   -------------------------------------------------- )
-
+ 
 (Expects 'character' set, returns a coded string representing an avatar state)
 : handleRequest_getAvatarInstanceStringFor[ arr:webcall -- ]
     #-1 var! character
@@ -454,7 +454,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     startAcceptedResponse
     descr swap descrnotify
 ; selfcall handleRequest_getAvatarInstanceStringFor
-
+ 
 (Returns a list of what a given character owns and can access for Avatars. Because avatar items are external now, this gets passed items and their requirements so that the muck can validate them. )
 (Expects 'character' and 'items' set, with items being an object of {itemId: requirementString} )
 (Returns {gradients: [gradientName:[part..]..], items: {itemId: itemStatus }} with itemStatus being 1 for met requirements, 2 for owned and 3 for both)
@@ -596,7 +596,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
  
     "OK" descr swap descrnotify
 ; selfcall handleRequest_buyAvatarItem
-
+ 
 ( --------------------------------------------------
   Handlers - Payment related                          
   -------------------------------------------------- )
@@ -771,5 +771,6 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
 .
 c
 q
+
 
 !! @qmuf $include $www/mwi "test" #21 { }dict sendRequestToWebpage
