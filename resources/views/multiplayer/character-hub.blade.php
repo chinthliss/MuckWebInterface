@@ -15,13 +15,21 @@
         <div class="row">
             <h1>Character</h1>
         </div>
+
         <div class="row">
-            <p>This page acts as a hub for all the things you can view or edit on your character.</p>
-            <p>TODO: Description and short description</p>
+            <p class="lead">This page acts as a hub for all the things you can view or edit on your character.</p>
+        </div>
+
+        <div class="row">
+            <h2>Edit Core Details</h2>
+            <character-edit></character-edit>
         </div>
 
         <div class="row">
             <h2>Preferences</h2>
+            <p>There are a lot of preferences not presently accounted for on the webpage.</p>
+            <p>And enough in editplayer to potentially make this a separate page by itself.</p>
+            <p>TODO: Figure out all the preferences</p>
             <p>TODO: Control email preferences for this character.</p>
             <p>TODO: Training tax.</p>
         </div>

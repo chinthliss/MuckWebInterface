@@ -25,11 +25,11 @@ export default class ChannelCharacter extends Channel {
     }
 
     messageReceived = (connection, message, data) => {
+        const character = this.getDbrefFromDatabase(data);
         switch (message) {
             case 'getCharacterProfile':
-                const character = this.getDbrefFromDatabase(data);
-                if (!character) throw "No character found. This should have already been blocked by a 404.";
-                const profile = {
+                if (!character) throw "No character specified?";
+                const profile= {
                     name: character.name,
                     level: character.properties.level,
                     sex: character.properties?.sex || 'Unknown',
@@ -87,6 +87,15 @@ export default class ChannelCharacter extends Channel {
                     perk.notes = data.notes;
                     this.sendPerkStatus(connection);
                 }
+                break;
+
+            case 'bootCharacterEdit':
+                if (!character) throw "No character specified?";
+                // Send short description
+                this.sendMessageToConnection(connection, 'shortDescription', "");
+                // Then send custom fields
+                const customFields = character.properties?.custom || [];
+                this.sendMessageToConnection(connection, 'custom', customFields);
                 break;
 
             default:
