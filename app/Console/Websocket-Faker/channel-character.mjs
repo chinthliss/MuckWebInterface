@@ -4,9 +4,9 @@ const perksCatalogue = [
     {name: 'Perk 1', description: 'Description.', tags: ['vanity'], cost: 3},
     {name: 'Perk 2', description: 'Another description.', excludes: ['Perk 3'], cost: 1, tags: []},
     {name: 'Perk 3', description: 'Third description', excludes: ['Perk 2'], tags: ['vanity', 'waffle'], cost: 2},
-    {name: 'Perk 4', description: 'An owned perk with a slightly longer description',  tags: [], excludes: ['Perk 5']},
+    {name: 'Perk 4', description: 'An owned perk with a slightly longer description', tags: [], excludes: ['Perk 5']},
     {name: 'Perk 5', description: 'Perk excluded by owned perk', tags: ['vanilla', 'vanity']},
-    {name: 'Perk 6', description: 'Second owned perk with notes.',  tags: [], cost: 2}
+    {name: 'Perk 6', description: 'Second owned perk with notes.', tags: [], cost: 2}
 ];
 
 const perksOwned = [
@@ -29,7 +29,7 @@ export default class ChannelCharacter extends Channel {
         switch (message) {
             case 'getCharacterProfile':
                 if (!character) throw "No character specified?";
-                const profile= {
+                const profile = {
                     name: character.name,
                     level: character.properties.level,
                     sex: character.properties?.sex || 'Unknown',
@@ -81,7 +81,6 @@ export default class ChannelCharacter extends Channel {
                 break;
 
             case 'updatePerkNotes':
-                console.log(data);
                 const perk = perksOwned.find(item => item?.name === data?.perk);
                 if (perk) {
                     perk.notes = data.notes;
@@ -96,6 +95,12 @@ export default class ChannelCharacter extends Channel {
                 // Then send custom fields
                 const customFields = character.properties?.custom || [];
                 this.sendMessageToConnection(connection, 'custom', customFields);
+                break;
+
+            case 'updateShortDescription':
+                setTimeout(() => {
+                    this.sendMessageToConnection(connection, 'shortDescription', data)
+                }, 1000);
                 break;
 
             default:
