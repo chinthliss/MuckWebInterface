@@ -24,6 +24,11 @@ export default class ChannelCharacter extends Channel {
         });
     }
 
+    sendCustomFields = (connection, character) => {
+        const customFields = character.properties?.custom || [];
+        this.sendMessageToConnection(connection, 'customFields', customFields);
+    }
+
     messageReceived = (connection, message, data) => {
         const character = this.getDbrefFromDatabase(data);
         switch (message) {
@@ -93,8 +98,7 @@ export default class ChannelCharacter extends Channel {
                 // Send short description
                 this.sendMessageToConnection(connection, 'shortDescription', "");
                 // Then send custom fields
-                const customFields = character.properties?.custom || [];
-                this.sendMessageToConnection(connection, 'custom', customFields);
+                this.sendCustomFields(connection, character);
                 break;
 
             case 'updateShortDescription':
@@ -102,6 +106,16 @@ export default class ChannelCharacter extends Channel {
                     this.sendMessageToConnection(connection, 'shortDescription', data)
                 }, 1000);
                 break;
+
+            case 'addCustomField':
+                throw 'Not implemented yet';
+
+            case 'deleteCustomField':
+                throw 'Not implemented yet';
+
+            case 'editCustomField':
+                throw 'Not implemented yet';
+
 
             default:
                 console.log("Unhandled message: ", message);
