@@ -35,14 +35,10 @@ export default class ChannelHelp extends Channel {
 
     }
 
-    messageReceived = (connection, message, data) => {
-        switch (message) {
-            case 'getHelp':
-                console.log("Help request received for: " + data);
-                this.sendMessageToConnection(connection, 'help', this.getHelpResponse(data));
-                break;
-            default:
-                console.log("Unhandled message: ", message);
+    handlers = {
+        'getHelp': (connection, data) => {
+            console.log("Help request received for: " + data);
+            this.sendMessageToConnection(connection, 'help', this.getHelpResponse(data));
         }
     }
 

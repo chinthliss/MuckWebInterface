@@ -17,6 +17,12 @@ export default class Channel {
      */
     #database
 
+    /**
+     * The message this channel will handle
+     * @type {Object.<string, function>}
+     */
+    handlers = {}
+
     constructor(channelName, database) {
         if (typeof channelName !== 'string' || channelName === '') throw "Attempt to create channel with no channelName specified.";
         this.#name = channelName;
@@ -81,7 +87,8 @@ export default class Channel {
     }
 
     messageReceived(connection, message, data) {
-
+        if (this.handlers[message]) this.handlers[message](connection, data);
+        else console.log("Unhandled message: ", message);
     }
 
     getDbrefFromDatabase(dbref) {

@@ -130,16 +130,13 @@ export default class ChannelForms extends Channel {
         this.sendMessageToConnection(connection, 'mastery', response);
     }
 
-    messageReceived = (connection, message, data) => {
-        switch (message) {
-            case 'getFormDatabase':
-                this.sendFormDatabase(connection);
-                break;
-            case 'getFormMasteryOf':
-                this.sendFormMastery(connection, data);
-                break;
-            default:
-                console.log("Unhandled message: ", message);
+    handlers = {
+        'getFormDatabase': (connection, _data) => {
+            this.sendFormDatabase(connection);
+        },
+
+        'getFormMasteryOf': (connection, data) => {
+            this.sendFormMastery(connection, data);
         }
     }
 

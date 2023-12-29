@@ -29,97 +29,87 @@ export default class ChannelCharacter extends Channel {
         this.sendMessageToConnection(connection, 'customFields', customFields);
     }
 
-    messageReceived = (connection, message, data) => {
-        const character = this.getDbrefFromDatabase(data);
-        switch (message) {
-            case 'getCharacterProfile':
-                if (!character) throw "No character specified?";
-                const profile = {
-                    name: character.name,
-                    level: character.properties.level,
-                    sex: character.properties?.sex || 'Unknown',
-                    species: character.properties?.species || 'Unknown',
-                    shortDescription: character.properties?.shortDescription || '',
-                    faction: character.properties?.faction || '',
-                    group: character.properties?.group || '',
-                    height: character.properties?.height || '',
-                    role: character.properties?.role || '',
-                    whatIs: character.properties?.whatIs || '',
-                    birthday: character.properties?.birthday || ''
-                };
-                this.sendMessageToConnection(connection, 'characterProfileCore', profile);
+    handlers = {
+        'getCharacterProfile': (connection, data) => {
+            const character = this.getDbrefFromDatabase(data);
+            if (!character) throw "No character specified?";
+            const profile = {
+                name: character.name,
+                level: character.properties.level,
+                sex: character.properties?.sex || 'Unknown',
+                species: character.properties?.species || 'Unknown',
+                shortDescription: character.properties?.shortDescription || '',
+                faction: character.properties?.faction || '',
+                group: character.properties?.group || '',
+                height: character.properties?.height || '',
+                role: character.properties?.role || '',
+                whatIs: character.properties?.whatIs || '',
+                birthday: character.properties?.birthday || ''
+            };
+            this.sendMessageToConnection(connection, 'characterProfileCore', profile);
 
-                const views = character.properties?.views || [];
-                this.sendMessageToConnection(connection, 'characterProfileViews', views);
+            const views = character.properties?.views || [];
+            this.sendMessageToConnection(connection, 'characterProfileViews', views);
 
-                const custom = character.properties?.custom || [];
-                this.sendMessageToConnection(connection, 'characterProfileCustom', custom);
+            const custom = character.properties?.custom || [];
+            this.sendMessageToConnection(connection, 'characterProfileCustom', custom);
 
-                const equipment = character.properties?.equipment || [];
-                this.sendMessageToConnection(connection, 'characterProfileEquipment', equipment);
+            const equipment = character.properties?.equipment || [];
+            this.sendMessageToConnection(connection, 'characterProfileEquipment', equipment);
 
-                const badges = character.properties?.badges || [];
-                this.sendMessageToConnection(connection, 'characterProfileBadges', badges.count);
+            const badges = character.properties?.badges || [];
+            this.sendMessageToConnection(connection, 'characterProfileBadges', badges.count);
 
-                for (const badge of badges) {
-                    this.sendMessageToConnection(connection, 'characterProfileBadge', badge);
-                }
+            for (const badge of badges) {
+                this.sendMessageToConnection(connection, 'characterProfileBadge', badge);
+            }
+        },
 
-                break;
+        'bootPerks': (connection, _data) => {
+            // Send perk list first
+            this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
+            for (let i = 0; i < perksCatalogue.length; i++) {
+                this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
+            }
+            // Then send status
+            this.sendPerkStatus(connection);
+        },
 
-            case 'bootPerks':
-                // Send perk list first
-                this.sendMessageToConnection(connection, 'perksCatalogue', perksCatalogue.length);
-                for (let i = 0; i < perksCatalogue.length; i++) {
-                    this.sendMessageToConnection(connection, 'perk', perksCatalogue[i]);
-                }
-                // Then send status
+        'buyPerk': (connection, data) => {
+            perksOwned.push({
+                name: data,
+                notes: ''
+            });
+            this.sendPerkStatus(connection);
+        },
+
+        'updatePerkNotes': (connection, data) => {
+            const perk = perksOwned.find(item => item?.name === data?.perk);
+            if (perk) {
+                perk.notes = data.notes;
                 this.sendPerkStatus(connection);
-                break;
+            }
+        },
 
-            case 'buyPerk':
-                perksOwned.push({
-                    name: data,
-                    notes: ''
-                });
-                this.sendPerkStatus(connection);
-                break;
+        'bootCharacterEdit': (connection, data) => {
+            const character = this.getDbrefFromDatabase(data);
+            if (!character) throw "No character specified?";
+            // Send short description
+            this.sendMessageToConnection(connection, 'shortDescription', "");
+            // Then send custom fields
+            this.sendCustomFields(connection, character);
+        },
 
-            case 'updatePerkNotes':
-                const perk = perksOwned.find(item => item?.name === data?.perk);
-                if (perk) {
-                    perk.notes = data.notes;
-                    this.sendPerkStatus(connection);
-                }
-                break;
+        'updateShortDescription': (connection, data) => {
+            setTimeout(() => {
+                this.sendMessageToConnection(connection, 'shortDescription', data)
+            }, 1000);
+        },
 
-            case 'bootCharacterEdit':
-                if (!character) throw "No character specified?";
-                // Send short description
-                this.sendMessageToConnection(connection, 'shortDescription', "");
-                // Then send custom fields
-                this.sendCustomFields(connection, character);
-                break;
-
-            case 'updateShortDescription':
-                setTimeout(() => {
-                    this.sendMessageToConnection(connection, 'shortDescription', data)
-                }, 1000);
-                break;
-
-            case 'addCustomField':
-                throw 'Not implemented yet';
-
-            case 'deleteCustomField':
-                throw 'Not implemented yet';
-
-            case 'editCustomField':
-                throw 'Not implemented yet';
-
-
-            default:
-                console.log("Unhandled message: ", message);
+        'addCustomField': (connection, _data) => {
+            console.log(connection);
+            const character = this.getDbrefFromDatabase(connection)
+            throw 'Not implemented yet';
         }
     }
-
 }
