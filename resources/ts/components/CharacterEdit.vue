@@ -42,15 +42,28 @@ const startAddingCustomField = () => {
 }
 
 const saveCustomFieldEdit = () => {
+    if (!fieldEditName.value || !fieldEditValue.value) return;
     if (fieldEditOriginalName.value) {
-        channel.send('editCustomField', '?');
+        channel.send('editCustomField', {
+            dbref: dbref,
+            originalName: fieldEditOriginalName.value,
+            name: fieldEditName.value,
+            value: fieldEditValue.value
+        });
     } else {
-        channel.send('addCustomField', '?');
+        channel.send('addCustomField', {
+            dbref: dbref,
+            name: fieldEditName.value,
+            value: fieldEditValue.value
+        });
     }
 }
 
 const deleteCustomField = (field: CustomField) => {
-    channel.send('deleteCustomField', field.field);
+    channel.send('deleteCustomField', {
+        dbref: dbref,
+        name: field.field
+    });
 }
 
 channel.on('customFields', (data) => {

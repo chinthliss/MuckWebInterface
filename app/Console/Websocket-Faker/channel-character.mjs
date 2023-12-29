@@ -32,7 +32,7 @@ export default class ChannelCharacter extends Channel {
     handlers = {
         'getCharacterProfile': (connection, data) => {
             const character = this.getDbrefFromDatabase(data);
-            if (!character) throw "No character specified?";
+            if (!character) console.log("No character specified?");
             const profile = {
                 name: character.name,
                 level: character.properties.level,
@@ -93,7 +93,7 @@ export default class ChannelCharacter extends Channel {
 
         'bootCharacterEdit': (connection, data) => {
             const character = this.getDbrefFromDatabase(data);
-            if (!character) throw "No character specified?";
+            if (!character) throw("No character specified?");
             // Send short description
             this.sendMessageToConnection(connection, 'shortDescription', "");
             // Then send custom fields
@@ -106,10 +106,40 @@ export default class ChannelCharacter extends Channel {
             }, 1000);
         },
 
-        'addCustomField': (connection, _data) => {
-            console.log(connection);
-            const character = this.getDbrefFromDatabase(connection)
-            throw 'Not implemented yet';
+        'addCustomField': (connection, data) => {
+            const character = data.dbref ? this.getDbrefFromDatabase(data.dbref) : null;
+            if (!character) console.log("No character specified?");
+            if (!character.properties) character.properties = [];
+            if (!character.properties.custom) character.properties.custom = [];
+            character.properties.custom.push({'field': data.name, 'value': data.value});
+            this.sendCustomFields(connection, character);
+        },
+
+        'editCustomField': (connection, data) => {
+            const character = data.dbref ? this.getDbrefFromDatabase(data.dbref) : null;
+            if (!character) throw("No character specified?");
+            let customToEdit = null;
+            if (character?.properties?.custom) {
+                for (const customField of character.properties.custom) {
+                    if (customField.field === data.originalName) customToEdit = customField;
+                }
+            }
+            if (customToEdit) {
+                customToEdit.field = data.name;
+                customToEdit.value = data.value;
+            } else console.log("Couldn't find custom to change!");
+            this.sendCustomFields(connection, character);
+        },
+
+        'deleteCustomField': (connection, data) => {
+            const character = data.dbref ? this.getDbrefFromDatabase(data.dbref) : null;
+            if (!character) throw("No character specified?");
+            if (character?.properties?.custom) {
+                for (let i = 0; i < character.properties.custom.length; i++) {
+                    if (character.properties.custom[i].field === data.name) character.properties.custom.splice(i, 1);
+                }
+            }
+            this.sendCustomFields(connection, character);
         }
     }
 }
