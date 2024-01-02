@@ -46,22 +46,21 @@ export default class ChannelCharacter extends Channel {
                 whatIs: character.properties?.whatIs || '',
                 birthday: character.properties?.birthday || ''
             };
-            this.sendMessageToConnection(connection, 'characterProfileCore', profile);
+            this.sendMessageToConnection(connection, 'profile', profile);
 
             const views = character.properties?.views || [];
-            this.sendMessageToConnection(connection, 'characterProfileViews', views);
+            this.sendMessageToConnection(connection, 'views', views);
 
-            const custom = character.properties?.custom || [];
-            this.sendMessageToConnection(connection, 'characterProfileCustom', custom);
+            this.sendCustomFields(connection, character);
 
             const equipment = character.properties?.equipment || [];
-            this.sendMessageToConnection(connection, 'characterProfileEquipment', equipment);
+            this.sendMessageToConnection(connection, 'equipment', equipment);
 
             const badges = character.properties?.badges || [];
-            this.sendMessageToConnection(connection, 'characterProfileBadges', badges.count);
+            this.sendMessageToConnection(connection, 'badges', badges.count);
 
             for (const badge of badges) {
-                this.sendMessageToConnection(connection, 'characterProfileBadge', badge);
+                this.sendMessageToConnection(connection, 'badge', badge);
             }
         },
 

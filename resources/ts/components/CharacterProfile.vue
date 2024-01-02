@@ -61,28 +61,28 @@ channel.on('connected', () => {
     channel.send('getCharacterProfile', props.characterIn.dbref);
 });
 
-channel.on('characterProfileCore', (data: CharacterProfile) => {
+channel.on('profile', (data: CharacterProfile) => {
     profile.value = data;
     profileLoading.value = false;
 });
 
-channel.on('characterProfileViews', (data) => {
+channel.on('views', (data) => {
     profile.value.views = data;
 });
 
-channel.on('characterProfileCustom', (data) => {
+channel.on('customFields', (data) => {
     profile.value.custom = data;
 });
 
-channel.on('characterProfileEquipment', (data) => {
+channel.on('equipment', (data) => {
     profile.value.equipment = data;
 });
 
-channel.on('characterProfileBadges', (_data) => {
+channel.on('badges', (_data) => {
     profile.value.badges = [];
 });
 
-channel.on('characterProfileBadge', (data) => {
+channel.on('badge', (data) => {
     if (profile.value.badges) profile.value.badges.push(data)
 });
 
