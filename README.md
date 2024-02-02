@@ -36,6 +36,8 @@ sail artisan view:clear
 ```
 Then use the following to watch during development: `sail npm run dev`
 
+(Optional) The websocket emulator can be run with: `sail artisan websocket:serve` 
+
 ## Updating
 
 ### Production Updating
