@@ -20,6 +20,7 @@ export default class ChannelCharacter extends Channel {
         this.sendMessageToConnection(connection, 'perkStatus', {
             'perkPoints': 2,
             'vanityPoints': 1,
+            'perkPointCost': 10,
             'owned': perksOwned
         });
     }
@@ -139,6 +140,10 @@ export default class ChannelCharacter extends Channel {
                 }
             }
             this.sendCustomFields(connection, character);
+        },
+
+        'buyPerkPoint': (connection, _data) => {
+            this.sendPerkStatus(connection);
         }
     }
 }

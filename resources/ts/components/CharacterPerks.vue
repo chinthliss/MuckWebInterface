@@ -3,6 +3,7 @@
 import {ref, Ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import {ansiToHtml, capital} from "../formatting";
+import {lex} from "../siteutils";
 
 type Perk = {
     id: string,
@@ -29,6 +30,9 @@ const showAll: Ref<boolean> = ref(true);
 const updateNotesModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const perkBeingUpdated: Ref<Perk | null> = ref(null);
 const notesBeingUpdated: Ref<string> = ref('');
+
+const confirmPurchaseModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const perkPointCost: Ref<number | null> = ref(null);
 
 const channel = mwiWebsocket.channel('character');
 
@@ -62,6 +66,7 @@ channel.on('perk', (data: Perk) => {
 type PerkStatusUpdate = {
     perkPoints: number,
     vanityPoints: number,
+    perkPointCost?: number,
     owned: {
         name: string,
         notes: string
@@ -72,6 +77,7 @@ channel.on('perkStatus', (update: PerkStatusUpdate) => {
     perkPoints.value = update.perkPoints;
     vanityPoints.value = update.vanityPoints;
     // Clear existing values
+    if (update.perkPointCost) perkPointCost.value = update.perkPointCost;
     for (const perk of perks.value) {
         perk.owned = false;
         delete perk.notes;
@@ -153,14 +159,24 @@ const recalculateExclusions = () => {
     }
 }
 
+const confirmPurchasingPerkPoint = () => {
+    if (confirmPurchaseModal.value) confirmPurchaseModal.value.show();
+}
+
+const purchasePerkPoint = () => {
+    channel.send('buyPerkPoint');
+    // Muck sends a 'perkStatus' response after the purchase
+}
+
 // Send requests for data
 channel.send('bootPerks');
 
 </script>
 
 <template>
-    <!-- Filter controls -->
-    <div class="d-flex justify-content-center mb-2">
+    <!-- Filter controls and the purchase button -->
+    <div class="d-flex justify-content-between mb-4">
+
         <div class="d-flex align-items-center">
             <div class="me-1 text-primary">Display:</div>
             <div class="me-4 btn-group" role="group" aria-label="Show All?">
@@ -176,6 +192,16 @@ channel.send('bootPerks');
 
             </div>
         </div>
+
+        <button v-if="perkPointCost"
+                class="mt-2 ms-2 btn btn-primary btn-with-img-icon"
+                @click="confirmPurchasingPerkPoint"
+        >
+            <span class="btn-icon-accountcurrency btn-icon-left"></span>
+            Purchase an extra perk point
+            <span class="btn-second-line">{{ perkPointCost }} {{ lex('accountcurrency') }}</span>
+        </button>
+
     </div>
 
     <!-- Perk list -->
@@ -201,8 +227,9 @@ channel.send('bootPerks');
             </div>
         </div>
 
-        <p>Perks that have the 'vanity' tag will use your vanity points first, then use regular points to make
-            up the difference if required. This is reflected in the costs listed.</p>
+        <div>Perks that have the 'vanity' tag will use your vanity points first, then use regular points to make
+            up the difference if required. This is reflected in the costs listed.
+        </div>
 
         <template v-for="perk in perks">
             <div v-if="shallWeShow(perk)" class="card mt-2"
@@ -226,14 +253,16 @@ channel.send('bootPerks');
                     </h5>
 
                     <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }"
-                       v-html="ansiToHtml(perk.description)"></p>
+                       v-html="ansiToHtml(perk.description)"
+                    ></p>
 
                     <template v-if="perk.owned">
                         <hr>
                         <div class="float-end">
                             <button class="btn btn-primary" @click="startUpdatingNotes(perk)">Edit Custom Notes</button>
                         </div>
-                        <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }">{{ perk.notes }}</p>
+                        <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }">
+                            {{ perk.notes }}</p>
                     </template>
                 </div>
 
@@ -263,6 +292,12 @@ channel.send('bootPerks');
         <form>
             <textarea class="w-100" v-model="notesBeingUpdated"></textarea>
         </form>
+    </ModalConfirmation>
+
+    <ModalConfirmation ref="confirmPurchaseModal" @yes="purchasePerkPoint"
+                       title="Purchase Perk Point" yes-label="Buy" no-label="Cancel"
+    >
+        <p>Please confirm purchasing a perk point for {{ perkPointCost }} {{ lex('accountcurrency') }}</p>
     </ModalConfirmation>
 
 </template>
