@@ -57,6 +57,12 @@ export default class Channel {
         }
     }
 
+    sendNotificationToConnection(connection, notice) {
+        for (const connection of this.#connections) {
+            this.#transmitSystemMessageToConnection(connection, 'notice', notice);
+        }
+    }
+
     disconnect(connection) {
         this.#connections.filter((value) => {
             return (value !== connection);

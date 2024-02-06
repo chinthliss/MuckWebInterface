@@ -26,8 +26,6 @@ const msgRegExp = /MSG(.*?),(.*?),(.*)/;
  * System message in the form SYS<Message>,<Data>
  */
 const sysRegExp = /SYS(.*?),(.*)/;
-console.log("Creating the server.");
-const server = new WebSocketServer({port: 8001});
 
 /**
  * @type {Map<WebSocket, Array>}
@@ -39,6 +37,12 @@ const connections = new Map();
  */
 const channels = new Map();
 
+/**
+ * Callback handlers for system notifications
+ * @type {function[]}
+ */
+const notificationCallbacks = [];
+
 const tryToParseJson = (json) => {
     if (!json) return null;
     let parsedJson = null;
@@ -48,6 +52,10 @@ const tryToParseJson = (json) => {
         console.log("Couldn't parse the following JSON: ", json);
     }
     return parsedJson;
+}
+
+const onNotification = (notificationCallback) => {
+    notificationCallbacks.push(notificationCallback);
 }
 
 const processIncomingMessage = (connection, unprocessedMessage) => {
@@ -91,6 +99,14 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
                 console.log(`Connection joined channel '${channel}'`);
             }
             break;
+        case 'notice':
+            for (const callback of notificationCallbacks) {
+                try {
+                    callback(data);
+                } catch (e) {
+                }
+            }
+            break;
         case 'test':
             console.log("Mwi-Websocket Test message received. Data=", data);
             break;
@@ -98,6 +114,9 @@ const processIncomingSystemMessage = (connection, unprocessedMessage) => {
             console.error("Unrecognized system message received: " + message);
     }
 }
+
+console.log("Creating the server.");
+const server = new WebSocketServer({port: 8001});
 
 server.on('connection', (connection, request) => {
     console.log("Connection - new from: ", request.socket.remoteAddress);

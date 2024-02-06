@@ -143,7 +143,8 @@ export default class ChannelCharacter extends Channel {
         },
 
         'buyPerkPoint': (connection, _data) => {
-            this.sendPerkStatus(connection);
+            this.sendNotificationToConnection(connection, "Test fault!");
+            // this.sendPerkStatus(connection);
         }
     }
 }
