@@ -43,6 +43,16 @@ else {
         'authenticationUrl': mwiWebsocketAuthUrl,
         'websocketUrl': mwiWebsocketUrl
     })
+
+    MwiWebsocket.onSystemNotification((message: string) => {
+        const content = document.getElementById('modal-site-notice-content');
+        const element = document.getElementById('modal-site-notice');
+        if (element && content) {
+            content.innerText = message;
+            const modal = new bootstrap.Modal(element);
+            modal.show();
+        }
+    });
 }
 /**
  * Vue

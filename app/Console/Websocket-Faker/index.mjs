@@ -54,7 +54,7 @@ const tryToParseJson = (json) => {
     return parsedJson;
 }
 
-const onNotification = (notificationCallback) => {
+const onSystemNotification = (notificationCallback) => {
     notificationCallbacks.push(notificationCallback);
 }
 

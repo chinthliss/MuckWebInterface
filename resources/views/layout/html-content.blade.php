@@ -80,6 +80,9 @@
     ></off-canvas-character-select>
 
     <modal-request-error id="modal-site-error" error=""
-
     ></modal-request-error>
+
+    <modal-message id="modal-site-notice" title="Notification">
+        <div id="modal-site-notice-content"></div>
+    </modal-message>
 </main>
