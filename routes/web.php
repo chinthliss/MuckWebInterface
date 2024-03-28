@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
 use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\ContributeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\Payment\CardManagementController;
@@ -318,6 +319,12 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::get('help/{startingPage?}', [MultiplayerController::class, 'showHelp'])
             ->name('multiplayer.help')
             ->where('startingPage', '(.*)'); // To allow nested values
+
+        // Contributing
+        Route::get('contribute', [ContributeController::class, 'showContributeHub'])
+            ->name('multiplayer.contribute');
+        Route::get('stringparsingscratchpad', [ContributeController::class, 'showStringparsingScratchpad'])
+            ->name('multiplayer.contribute.stringparsingscratchpad');
 
         // Avatar functionality
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])

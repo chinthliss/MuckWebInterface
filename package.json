@@ -28,6 +28,8 @@
         "bootstrap": "^5.2.1",
         "codemirror": "^6.0.1",
         "muckwebinterface-websocket": "github:chinthliss/MuckWebInterface-Websocket",
+        "codemirror-lang-stringparsing":"github:chinthliss/codemirror-lang-stringparsing",
+
         "primevue": "^3.35.0",
         "vue": "^3.2.37"
     }
