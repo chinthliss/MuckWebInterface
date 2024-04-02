@@ -19,7 +19,7 @@
 
         <div class="lead">The editor below isn't linked to anything and is just to test parsing.</div>
 
-        <contribute-string-parsing-scratchpad></contribute-string-parsing-scratchpad>
+        <editor-string-parsing></editor-string-parsing>
 
     </div>
 @endsection
