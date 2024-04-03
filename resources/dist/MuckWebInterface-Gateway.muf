@@ -335,6 +335,7 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     endcatch
     
     (Initial properties)
+    newCharacter @ account @ acct_setAid
     newCharacter @ "player account" account @ intostr setstat
     newCharacter @ "Resources" 10 setstat
     newCharacter @ "@/initial_password" newPassword @ setprop
