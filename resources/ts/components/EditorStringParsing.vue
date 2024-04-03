@@ -78,6 +78,12 @@ onMounted(() => {
     <div id="stringparsing-scratchpad"></div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import 'resources/sass/variables';
+
+#stringparsing-scratchpad {
+    border: 1px solid $primary;
+    // box-shadow: 0 0 2px 2px $primary;
+}
 
 </style>
