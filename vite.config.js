@@ -28,20 +28,6 @@ export default defineConfig({
             vue: 'vue/dist/vue.esm-bundler.js'
         }
     },
-    build: {
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('primevue')) {
-                        return 'primevue';
-                    }
-                    if (id.includes('@codemirror')) {
-                        return 'codemirror';
-                    }
-                }
-            }
-        }
-    },
     server: {
         watch: {
             usePolling: true
