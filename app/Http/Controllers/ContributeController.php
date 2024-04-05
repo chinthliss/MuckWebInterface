@@ -18,4 +18,8 @@ class ContributeController extends Controller
         return view('multiplayer.contribute-stringparsing-scratchpad');
     }
 
+    public function showFormEditor(): View
+    {
+        return view('multiplayer.contribute-forms');
+    }
 }

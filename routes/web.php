@@ -323,6 +323,8 @@ Route::prefix('/multiplayer/')->group(function () {
         // Contributing
         Route::get('contribute', [ContributeController::class, 'showContributeHub'])
             ->name('multiplayer.contribute');
+        Route::get('formeditor', [ContributeController::class, 'showFormEditor'])
+            ->name('multiplayer.contribute.forms');
         Route::get('stringparsingscratchpad', [ContributeController::class, 'showStringparsingScratchpad'])
             ->name('multiplayer.contribute.stringparsingscratchpad');
 

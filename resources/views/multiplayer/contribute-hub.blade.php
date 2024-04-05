@@ -27,5 +27,6 @@
     <!-- TODO: Investigate and scaffold out the contribute pages properly -->
     {{ PageLinks::render([
         ['title' => 'StringParsing Scratchpad', 'description' => 'Just a scratchpad to tinker with StringParsing', 'url' => route('multiplayer.contribute.stringparsingscratchpad')],
+        ['title' => 'Forms', 'description' => 'Editor for monsters / forms / mutations', 'url' => route('multiplayer.contribute.forms')],
     ]) }}
 @endsection
