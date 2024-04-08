@@ -9,7 +9,7 @@ const formListLoading: Ref<boolean> = ref(false);
 const formList: Ref<any[] | null> = ref(null);
 
 // Send requests for data unless we opened on a particular form
-if (!presentFormId) channel.send('getFormList');
+if (!presentFormId.value) channel.send('getFormList');
 
 </script>
 

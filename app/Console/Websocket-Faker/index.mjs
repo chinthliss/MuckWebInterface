@@ -6,6 +6,7 @@ import Channel from "./channel.mjs";
 import ChannelCharacter from "./channel-character.mjs";
 import ChannelHelp from "./channel-help.mjs";
 import ChannelForms from "./channel-forms.mjs";
+import ChannelContribute from "./channel-contribute.mjs";
 
 // A fake database to use for queries
 const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABASE) : null;
@@ -14,7 +15,8 @@ const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABA
 const channelOverrides = {
     'character': ChannelCharacter,
     'help': ChannelHelp,
-    'forms': ChannelForms
+    'forms': ChannelForms,
+    'contribute': ChannelContribute
 }
 
 /**
