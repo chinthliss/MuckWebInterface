@@ -6,15 +6,10 @@ export default class ChannelCharacter extends Channel {
      * @type object[]
      */
     formsCatalogue = [
-        {
-            name: 'test form',
-            owner: 1234,
-            approved: false,
-            // Ready for review
-            review: false,
-            // Marked as revised after review
-            revise: false
-        }
+        { name: 'Form in progress',  owner: 1234,  approved: false, review: false, revise: false },
+        { name: 'Approved Form',  owner: 1234,  approved: true, review: false, revise: false },
+        { name: 'Form ready to review',  owner: 1234,  approved: false, review: true, revise: false },
+        { name: 'Form in need of revision',  owner: 1234,  approved: false, review: false, revise: true },
     ]
 
     sendFormList = (connection) => {
@@ -26,7 +21,7 @@ export default class ChannelCharacter extends Channel {
 
 
     handlers = {
-        'getFormList': (connection, data) => {
+        'getFormList': (connection, _data) => {
                 this.sendFormList(connection);
         }
     }
