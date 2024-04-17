@@ -4,7 +4,7 @@ import {ref, Ref} from "vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
 import ProgressBar from "primevue/progressbar";
-import {FilterMatchMode} from "primevue/api";
+import {FilterMatchMode, FilterService} from "primevue/api";
 
 type FormListing = {
     name: string,
@@ -30,7 +30,16 @@ const formList: Ref<FormListing[]> = ref([]);
 const selected: Ref<FormListing | undefined> = ref();
 
 const filters = ref({
-    name: {value: null, matchMode: FilterMatchMode.CONTAINS}
+    name: {value: null, matchMode: FilterMatchMode.CONTAINS},
+    global: {value: 'all', matchMode: 'filteredFormList'}
+});
+
+FilterService.register('filteredFormList', (name: string, mode: string) => {
+    const form: FormListing | undefined = formList.value.find((form) => form.name == name);
+    if (!form) return false;
+    if (mode === 'review' && !form.review) return false;
+    if (mode === 'revise' && !form.revise) return false;
+    return true;
 });
 
 const getFormList = () => {
@@ -70,42 +79,70 @@ if (props.startExpanded) getFormList()
 </script>
 
 <template>
-    <!-- Form Selection (or nothing)-->
-    <div v-if="!expanded"></div>
-    <ProgressBar v-else-if="formListLoadLeft" :indeterminate="!formListLoadTotal"
-                 :value="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
-    >
-        {{ Math.floor((formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal) }}%
-    </ProgressBar>
-    <div v-else>
-        <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
-                   scrollHeight="flex" @row-select="rowSelected" selectionMode="single"
-                   v-model:selection="selected" v-model:filters="filters" filterDisplay="row"
+    <template v-if="expanded">
+        <div class="row my-4">
+            <div class="col-6">
+                <h4>Form Selection</h4>
+            </div>
+            <div class="col-6">
+                <div class="d-lg-flex align-items-center justify-content-center">
+                    <div class="me-2 text-primary">Filter:</div>
+                    <div class="me-4 btn-group" role="group" aria-label="Filter mode">
+                        <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
+                               v-model="filters.global.value" value="all"
+                        >
+                        <label class="btn btn-outline-secondary" for="filter_none">All Forms</label>
+
+                        <input type="radio" class="btn-check" name="filter" id="filter_review" autocomplete="off"
+                               v-model="filters.global.value" value="review"
+                        >
+                        <label class="btn btn-outline-secondary" for="filter_review">Waiting for Review</label>
+
+                        <input type="radio" class="btn-check" name="filter" id="filter_revise" autocomplete="off"
+                               v-model="filters.global.value" value="revise"
+                        >
+                        <label class="btn btn-outline-secondary" for="filter_revise">Revision Required </label>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ProgressBar v-if="formListLoadLeft" :indeterminate="!formListLoadTotal"
+                     :value="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
         >
-        <template #empty>There are no forms that you can view. Maybe you should create a new one?</template>
-        <Column header="Name" field="name" :sortable="true">
-            <template #filter="{ filterModel, filterCallback }">
-                <input v-model="filterModel.value" type="text" @input="filterCallback()"
-                       class="p-column-filter" placeholder="Search by name"
-                />
-            </template>
-        </Column>
-        <Column header="Owner" field="owner" :sortable="true"></Column>
-        <Column field="approved" :sortable="true">
-            <template #header>
-                <div class="flex-grow-1 text-center">Approved?</div>
-            </template>
-            <template #body="{ data }">
-                <i class="fa-solid fa-check w-100 text-center"
-                   v-if="(data as FormListing).approved"
-                ></i>
-            </template>
-        </Column>
-        <Column header="Status" :sortable="true">
-            <template #body="{ data }">{{ statusForFormListing(data) }}</template>
-        </Column>
-        </DataTable>
-    </div>
+            {{ Math.floor((formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal) }}%
+        </ProgressBar>
+        <div v-else>
+            <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
+                       scrollHeight="flex" @row-select="rowSelected" selectionMode="single"
+                       v-model:selection="selected" v-model:filters="filters" filterDisplay="row"
+            >
+                <template #empty>There are no forms that you can view. Maybe you should create a new one?</template>
+                <Column header="Name" field="name" :sortable="true">
+                    <template #filter="{ filterModel, filterCallback }">
+                        <input v-model="filterModel.value" type="text" @input="filterCallback()"
+                               class="p-column-filter" placeholder="Search by name"
+                        />
+                    </template>
+                </Column>
+                <Column header="Owner" field="owner" :sortable="true"></Column>
+                <Column field="approved" :sortable="true">
+                    <template #header>
+                        <div class="flex-grow-1 text-center">Approved?</div>
+                    </template>
+                    <template #body="{ data }">
+                        <i class="fa-solid fa-check w-100 text-center"
+                           v-if="(data as FormListing).approved"
+                        ></i>
+                    </template>
+                </Column>
+                <Column header="Status" :sortable="true">
+                    <template #body="{ data }">{{ statusForFormListing(data) }}</template>
+                </Column>
+            </DataTable>
+        </div>
+    </template>
     <!-- Expand or shrink buttons -->
     <div class="d-flex justify-content-end">
         <button class="btn btn-secondary" @click="toggleExpanded">

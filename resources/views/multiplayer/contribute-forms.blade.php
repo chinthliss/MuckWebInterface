@@ -17,7 +17,7 @@
             <h1>Form Editor</h1>
         </div>
 
-        <div class="lead">Interchangeably known as monsters, infections or mutations.</div>
+        <div class="lead">Interchangeably known as monsters, infections or mutations. Probably need text here about how forms are integral to the game.</div>
 
         <form-editor></form-editor>
     </div>
