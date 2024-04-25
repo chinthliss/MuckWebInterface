@@ -5,13 +5,15 @@ import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
 import ProgressBar from "primevue/progressbar";
 import {FilterMatchMode, FilterService} from "primevue/api";
+import {timestampToString} from "../formatting";
 
 type FormListing = {
     name: string,
     owner?: number,
     approved: boolean,
     review: boolean,
-    revise: boolean
+    revise: boolean,
+    lastEdit: number // Timestamp
 }
 
 const props = defineProps<{
@@ -127,6 +129,11 @@ if (props.startExpanded) getFormList()
                     </template>
                 </Column>
                 <Column header="Owner" field="owner" :sortable="true"></Column>
+                <Column header="Last Edit" field="lastEdit" :sortable="true">
+                    <template #body="{ data }">
+                        {{ timestampToString(data.lastEdit) }}
+                    </template>
+                </Column>
                 <Column field="approved" :sortable="true">
                     <template #header>
                         <div class="flex-grow-1 text-center">Approved?</div>
