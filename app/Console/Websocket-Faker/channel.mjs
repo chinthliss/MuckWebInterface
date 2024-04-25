@@ -71,7 +71,7 @@ export default class Channel {
 
     connect(connection, accountId = null, dbref = null) {
         this.#connections.push(connection);
-        this.sendSystemMessageToConnection(connection,'joinedChannel', this.#name);
+        this.sendSystemMessageToConnection(connection, 'joinedChannel', this.#name);
         this.sendMessageToConnection(connection, 'connected', 1)
         this.sendMessageToConnection(connection, 'playerConnected', 1)
         this.sendMessageToConnection(connection, 'accountConnected', 1)
