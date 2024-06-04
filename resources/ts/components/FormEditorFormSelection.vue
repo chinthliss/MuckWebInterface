@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 import {ref, Ref} from "vue";
+import ModalConfirmation from "./ModalConfirmation.vue";
+import ModalMessage from "./ModalMessage.vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
 import ProgressBar from "primevue/progressbar";
@@ -30,6 +32,12 @@ const formListLoadTotal: Ref<number> = ref(1); // May be set to 0 if the viewer 
 const formListLoadLeft: Ref<number> = ref(1);
 const formList: Ref<FormListing[]> = ref([]);
 const selected: Ref<FormListing | undefined> = ref();
+const newFormName: Ref<string> = ref('');
+
+const createNewFormModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+
+const error: Ref<string> = ref('');
+const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const filters = ref({
     name: {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -60,6 +68,16 @@ const statusForFormListing = (form: FormListing) => {
 const toggleExpanded = () => {
     expanded.value = !expanded.value;
     if (!formListLoaded.value) getFormList();
+}
+
+const startCreateNewForm = () => {
+    if (createNewFormModal.value) createNewFormModal.value.show();
+}
+
+const createNewForm = () => {
+    //Todo: Implement CreateNewForm process
+    error.value = "Not Implemented Yet.";
+    if (errorModal.value) errorModal.value.show();
 }
 
 const rowSelected = () => {
@@ -151,13 +169,33 @@ if (props.startExpanded) getFormList()
         </div>
     </template>
     <!-- Expand or shrink buttons -->
-    <div class="d-flex justify-content-end">
+    <div class="mt-2 d-flex justify-content-end">
+        <button class="btn btn-secondary me-2" @click="startCreateNewForm">
+            <i class="fas fa-file btn-icon-left"></i>New Form
+        </button>
+
         <button class="btn btn-secondary" @click="toggleExpanded">
             <i v-if="expanded" class="fas fa-minus btn-icon-left"></i>
             <i v-else class="fas fa-plus btn-icon-left"></i>
             {{ expanded ? 'Hide' : 'Show' }} Form Selection
         </button>
     </div>
+
+    <!-- Modal to create a new form -->
+    <modal-confirmation ref="createNewFormModal" @yes="createNewForm"
+                        title="Create New Form" yes-label="Create" no-label="Cancel">
+
+        <label for="newFormName" class="form-label">Enter the name of the form:</label>
+        <input type="text" class="form-control" id="newFormName" v-model="newFormName">
+
+        <p>WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional races made in the last century ARE copyrighted, don't use them.</p>
+        <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC). Please review the Terms of Service.</p>
+    </modal-confirmation>
+
+    <modal-message ref="errorModal">
+        {{ error }}
+    </modal-message>
+
 </template>
 
 <style scoped>
