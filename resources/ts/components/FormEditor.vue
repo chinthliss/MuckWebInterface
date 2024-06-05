@@ -2,6 +2,7 @@
 
 import {ref, Ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -9,23 +10,46 @@ const channel = mwiWebsocket.channel('contribute');
 
 const confirmDeleteModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const formToDelete: Ref<string> = ref('');
+
+const createFormModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const newFormName: Ref<string> = ref('');
+
+const error: Ref<string> = ref('');
+const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+
 const onFormSelected = (selected: string) => {
     presentFormId.value = selected;
 }
 
 const deleteForm = () => {
     if (formToDelete.value == presentFormId.value) {
-        console.log("Deleting form: " + formToDelete.value);
+        //TODO: Implement DeleteForm process
+        error.value = "Not Implemented Yet.";
+        if (errorModal.value) errorModal.value.show();
+    } else {
+        error.value = "Cancelled - The name you enter must match the form name.";
+        if (errorModal.value) errorModal.value.show();
     }
 }
 const startDeleteForm = () => {
     if (confirmDeleteModal.value) confirmDeleteModal.value.show();
 }
 
+const createForm = () => {
+    //TODO: Implement CreateForm process
+    error.value = "Not Implemented Yet.";
+    if (errorModal.value) errorModal.value.show();
+}
+
+const startCreateForm = () => {
+    if (createFormModal.value) createFormModal.value.show();
+}
+
 </script>
 
 <template>
-    <FormEditorFormSelection :start-expanded="presentFormId == null" @update="onFormSelected"></FormEditorFormSelection>
+    <FormEditorFormSelection :start-expanded="presentFormId == null" @update="onFormSelected" @new="startCreateForm">
+    </FormEditorFormSelection>
 
     <div>
     </div>
@@ -97,6 +121,23 @@ const startDeleteForm = () => {
         <input type="text" class="form-control" id="formToDelete" v-model="formToDelete">
 
     </modal-confirmation>
+
+    <!-- Modal to create a new form -->
+    <modal-confirmation ref="createFormModal" @yes="createForm"
+                        title="Create New Form" yes-label="Create" no-label="Cancel">
+
+        <label for="newFormName" class="form-label">Enter the name of the form:</label>
+        <input type="text" class="form-control" id="newFormName" v-model="newFormName">
+
+        <p>WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional races made in the last century ARE copyrighted, don't use them.</p>
+        <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC). Please review the Terms of Service.</p>
+    </modal-confirmation>
+
+    <!-- Modal for error messages -->
+    <modal-message ref="errorModal">
+        {{ error }}
+    </modal-message>
+
 </template>
 
 <style scoped>
