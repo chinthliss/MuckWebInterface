@@ -6,10 +6,37 @@ export default class ChannelCharacter extends Channel {
      * @type object[]
      */
     formsCatalogue = [
-        {name: 'Form in progress', owner: 1234, approved: false, review: false, revise: false, lastEdit: Math.floor(Date.now() / 1000)},
-        {name: 'Approved Form', owner: 1234, approved: true, review: false, revise: false},
-        {name: 'Form ready to review', owner: 1234, approved: false, review: true, revise: false},
-        {name: 'Form in need of revision', owner: 1234, approved: false, review: false, revise: true, lastEdit: Math.floor(Date.now() / 1000) - 1},
+        {
+            name: 'Form in progress',
+            owner: 1234,
+            approved: false,
+            review: false,
+            revise: false,
+        },
+        {
+            name: 'Approved Form',
+            owner: 1234,
+            approved: true,
+            review: false,
+            revise: false,
+            lastEdit: Math.floor(Date.now() / 1000) - 1
+        },
+        {
+            name: 'Form ready to review',
+            owner: 1234,
+            approved: false,
+            review: true,
+            revise: false,
+            lastEdit: Math.floor(Date.now() / 1000) - 1
+        },
+        {
+            name: 'Form in need of revision',
+            owner: 1234,
+            approved: false,
+            review: false,
+            revise: true,
+            lastEdit: Math.floor(Date.now() / 1000) - 1
+        }
     ]
 
     sendFormList = (connection) => {
@@ -19,9 +46,24 @@ export default class ChannelCharacter extends Channel {
         }
     };
 
+    sendForm = (connection, data) => {
+        for (const form of this.formsCatalogue) {
+            if (form.name === data) {
+                this.sendMessageToConnection(connection, 'form', {
+                    form: form, canEdit: !form.approved
+                });
+                return;
+            }
+        }
+        this.sendMessageToConnection(connection, 'form', {error: 'No such form exists'});
+    }
+
     handlers = {
         'getFormList': (connection, _data) => {
             this.sendFormList(connection);
+        },
+        'getForm': (connection, data) => {
+            this.sendForm(connection, data)
         }
     }
 }

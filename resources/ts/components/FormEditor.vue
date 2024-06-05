@@ -5,8 +5,15 @@ import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 
+type Form = {
+    name: string,
+    mass: number,
+    height: number
+}
+
 const presentFormId: Ref<string | null> = ref(null);
-const channel = mwiWebsocket.channel('contribute');
+const presentForm: Ref<Form | null> = ref(null);
+const viewOnly: Ref<boolean> = ref(false);
 
 const confirmDeleteModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const formToDelete: Ref<string> = ref('');
@@ -17,8 +24,17 @@ const newFormName: Ref<string> = ref('');
 const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
+const channel = mwiWebsocket.channel('contribute');
+
 const onFormSelected = (selected: string) => {
     presentFormId.value = selected;
+    presentForm.value = null;
+    channel.send('getForm', presentFormId.value);
+}
+
+const unselectForm = () => {
+    presentFormId.value = null;
+    presentForm.value = null;
 }
 
 const deleteForm = () => {
@@ -45,16 +61,34 @@ const startCreateForm = () => {
     if (createFormModal.value) createFormModal.value.show();
 }
 
+type GetFormResponse = {
+    error?: string,
+    form?: Form,
+    canEdit?: boolean
+}
+channel.on('form', (response: GetFormResponse) => {
+    if (response.error) {
+        error.value = response.error;
+        if (errorModal.value) errorModal.value.show();
+        return;
+    }
+    viewOnly.value = !(response.canEdit == true);
+    presentForm.value = response.form ?? null;
+
+
+})
+
 </script>
 
 <template>
     <FormEditorFormSelection :start-expanded="presentFormId == null" @update="onFormSelected" @new="startCreateForm">
     </FormEditorFormSelection>
 
-    <div>
-    </div>
     <div v-if="!presentFormId">
         No form selected. <br/>Select a form above to begin editing.
+    </div>
+    <div v-else-if="!presentForm">
+        Loading form..
     </div>
     <div v-else>
         <div>Editing form: {{ presentFormId }}</div>
@@ -83,12 +117,33 @@ const startCreateForm = () => {
         </ul>
         <div class="tab-content border p-4" id="nav-tabContent">
 
-            <!-- Overview -->
+            <!-- Overview & Status -->
             <div class="tab-pane show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
-                Overview
-
                 Status of the form (approved/review/etc)
 
+                <div class="d-flex align-items-center mt-2">
+                    <div class="sliderLabel">Mass</div>
+                    <div class="ms-1 flex-fill">
+                        <input type="range" v-model.number="presentForm.mass" :disabled="viewOnly"
+                               class="form-control-range w-100" min="-100" max="300">
+                    </div>
+                    <div class="ms-1 sliderValue">{{ presentForm.mass }}</div>
+                </div>
+                <div class="text-muted">This is a percentage-modifier. 0 is average weight, -50 would be half average weight and 100 would be twice average weight.</div>
+
+                <div class="d-flex align-items-center mt-2">
+                    <div class="sliderLabel">Height</div>
+                    <div class="ms-1 flex-fill">
+                        <input type="range" v-model.number="presentForm.height" :disabled="viewOnly"
+                               class="form-control-range w-100" min="1" max="30">
+                    </div>
+                    <div class="ms-1 sliderValue">{{ presentForm.height }}</div>
+                </div>
+                <div class="text-muted">5 is average human height.</div>
+
+                <div class="text-center">
+                    Changes are saved automatically as you make them.
+                </div>
                 <div>
                     <button class="btn btn-secondary me-2" @click="startDeleteForm">
                         <i class="fas fa-trash btn-icon-left"></i>Delete Form
@@ -96,12 +151,12 @@ const startCreateForm = () => {
                 </div>
             </div>
 
-            <!-- Bodyparts -->
+            <!-- Descriptions & Transformations -->
             <div class="tab-pane show" id="nav-bodyparts" role="tabpanel" aria-labelledby="nav-bodyparts-tab">
                 Descriptions & Transformations
             </div>
 
-            <!-- Victory/Defeat -->
+            <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
                 Victory & Defeat Messages
             </div>
@@ -141,5 +196,11 @@ const startCreateForm = () => {
 </template>
 
 <style scoped>
+.sliderLabel {
+    min-width: 80px;
+}
 
+.sliderValue {
+    min-width: 32px;
+}
 </style>
