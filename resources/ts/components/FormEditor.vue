@@ -92,7 +92,7 @@ channel.on('deleteForm', (response:DeleteFormResponse) => {
         return;
     }
 
-    if (response.formId == presentFormId) {
+    if (response.formId == presentFormId.value) {
         if (formSelector.value) formSelector.value.refresh();
         unloadForm();
     }
