@@ -58,12 +58,27 @@ export default class ChannelCharacter extends Channel {
         this.sendMessageToConnection(connection, 'form', {error: 'No such form exists'});
     }
 
+    createForm = (connection, formId) => {
+        this.sendMessageToConnection(connection, 'createForm', {error: 'Not implemented yet'});
+    }
+
+    deleteForm = (connection, formId) => {
+        this.sendMessageToConnection(connection, 'deleteForm', {error: 'Not implemented yet'});
+    }
+
     handlers = {
         'getFormList': (connection, _data) => {
             this.sendFormList(connection);
         },
         'getForm': (connection, data) => {
-            this.sendForm(connection, data)
+            this.sendForm(connection, data);
+        },
+        'createForm': (connection, data) => {
+            this.createForm(connection, data);
+        },
+        'deleteForm': (connection, data) => {
+            this.deleteForm(connection, data);
         }
+
     }
 }

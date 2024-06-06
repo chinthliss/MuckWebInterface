@@ -67,6 +67,12 @@ const refreshForms = () => {
     getFormList();
 }
 
+// Allow external refresh
+const refresh = () => {
+    refreshForms();
+}
+defineExpose({refresh});
+
 const rowSelected = () => {
     emit('update', selected.value?.name);
     expanded.value = false;
