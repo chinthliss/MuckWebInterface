@@ -85,7 +85,7 @@ type DeleteFormResponse = {
     formId?: string
 }
 
-channel.on('deleteForm', (response:DeleteFormResponse) => {
+channel.on('deleteForm', (response: DeleteFormResponse) => {
     if (response.error) {
         error.value = response.error;
         if (errorModal.value) errorModal.value.show();
@@ -103,7 +103,7 @@ type CreateFormResponse = {
     formId?: string
 }
 
-channel.on('createForm', (response:CreateFormResponse) => {
+channel.on('createForm', (response: CreateFormResponse) => {
     if (response.error) {
         error.value = response.error;
         if (errorModal.value) errorModal.value.show();
@@ -120,7 +120,8 @@ channel.on('createForm', (response:CreateFormResponse) => {
 
 <template>
     <FormEditorFormSelection ref="formSelector" :start-expanded="presentFormId == null"
-                             @update="loadForm" @new="startCreateForm">
+                             @update="loadForm" @new="startCreateForm"
+    >
     </FormEditorFormSelection>
 
     <div v-if="!presentFormId">
@@ -158,7 +159,7 @@ channel.on('createForm', (response:CreateFormResponse) => {
 
             <!-- Overview & Status -->
             <div class="tab-pane show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
-                Status of the form (approved/review/etc)
+                Status of the form goes here (approved/review/etc)
 
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Mass</div>
@@ -184,10 +185,32 @@ channel.on('createForm', (response:CreateFormResponse) => {
                 </div>
                 <div class="text-muted">5 is average human height.</div>
 
-                <div class="text-center">
-                    Changes are saved automatically as you make them.
+                <div class="row">
+                    <div class="mt-2 col-12 col-xl-6">
+                        <label id="2nd-person-say-label" for="2nd-person-say" class="form-label">
+                            2nd person say(say, purr, bark)
+                        </label>
+                        <div class="input-group">
+                            <input id="2nd-person-say" type="text" class="form-control" :disabled="viewOnly"
+                                   placeholder="2nd Person" aria-describedby="2nd-person-say-label"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mt-2 col-12 col-xl-6">
+                        <label id="3rd-person-say-label" for="3rd-person-say" class="form-label">
+                            3rd person say(says, purrs, barks)
+                        </label>
+                        <div class="input-group">
+                            <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
+                                   placeholder="3rd Person" aria-describedby="3rd-person-say-label"
+                            >
+                        </div>
+                    </div>
+
                 </div>
-                <div>
+
+                <div class="mt-2">
                     <button class="btn btn-secondary me-2" @click="startDeleteForm">
                         <i class="fas fa-trash btn-icon-left"></i>Delete Form
                     </button>
@@ -203,9 +226,11 @@ channel.on('createForm', (response:CreateFormResponse) => {
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
                 Victory & Defeat Messages
             </div>
-
-
         </div>
+        <div class="text-center">
+            Changes are saved automatically as you make them.
+        </div>
+
     </div>
 
     <!-- Modal to delete a form -->
