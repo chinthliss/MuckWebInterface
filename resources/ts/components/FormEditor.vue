@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, Ref} from "vue";
+import {ref, Ref, computed} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
@@ -8,7 +8,12 @@ import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 type Form = {
     name: string,
     mass: number,
-    height: number
+    height: number,
+    owner?: number,
+    approved: boolean,
+    review: boolean,
+    revise: boolean,
+    lastEdit: number // Timestamp
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -19,6 +24,8 @@ const formSelector: Ref<InstanceType<typeof FormEditorFormSelection> | null> = r
 const confirmDeleteModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const formToDelete: Ref<string> = ref('');
 
+const confirmSubmitModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+
 const createFormModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const newFormName: Ref<string> = ref('');
 
@@ -26,6 +33,21 @@ const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const channel = mwiWebsocket.channel('contribute');
+
+const oneWordStatus = computed((): string => {
+    if (!presentForm.value) return '';
+    if (presentForm.value.revise) return 'Revision Needed';
+    if (presentForm.value.review) return 'Awaiting Review';
+    return presentForm.value.approved ? 'Finished' : 'Under Construction';
+});
+
+const statusDescription = computed((): string => {
+    if (!presentForm.value) return '';
+    if (presentForm.value.revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
+    if (presentForm.value.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
+    if (presentForm.value.approved) return 'This has been finalized. You can view it but not make any changes.';
+    return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
+});
 
 const loadForm = (selected: string) => {
     presentFormId.value = selected;
@@ -38,6 +60,10 @@ const unloadForm = () => {
     presentForm.value = null;
 }
 
+const startDeleteForm = () => {
+    if (confirmDeleteModal.value) confirmDeleteModal.value.show();
+}
+
 const deleteForm = () => {
     if (formToDelete.value == presentFormId.value) {
         channel.send('deleteForm', presentFormId.value);
@@ -47,8 +73,18 @@ const deleteForm = () => {
     }
 }
 
-const startDeleteForm = () => {
-    if (confirmDeleteModal.value) confirmDeleteModal.value.show();
+const startSubmitForm = () => {
+    if (confirmSubmitModal.value) confirmSubmitModal.value.show();
+}
+
+const submitForm = () => {
+    error.value = "Not implemented yet";
+    if (errorModal.value) errorModal.value.show();
+    //TODO: Form submission
+}
+
+const startCreateForm = () => {
+    if (createFormModal.value) createFormModal.value.show();
 }
 
 const createForm = () => {
@@ -58,10 +94,6 @@ const createForm = () => {
         error.value = "Cancelled - No name was given for the new form..";
         if (errorModal.value) errorModal.value.show();
     }
-}
-
-const startCreateForm = () => {
-    if (createFormModal.value) createFormModal.value.show();
 }
 
 type GetFormResponse = {
@@ -115,7 +147,6 @@ channel.on('createForm', (response: CreateFormResponse) => {
     }
 })
 
-
 </script>
 
 <template>
@@ -131,7 +162,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
         Loading form..
     </div>
     <div v-else>
-        <div>Editing form: {{ presentFormId }}</div>
+        <h3>{{ presentFormId }}</h3>
+
         <ul class="nav nav-tabs nav-fill mt-2" id="form-editor-tabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="nav-overview-tab"
@@ -210,11 +242,6 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 </div>
 
-                <div class="mt-2">
-                    <button class="btn btn-secondary me-2" @click="startDeleteForm">
-                        <i class="fas fa-trash btn-icon-left"></i>Delete Form
-                    </button>
-                </div>
             </div>
 
             <!-- Descriptions & Transformations -->
@@ -231,6 +258,19 @@ channel.on('createForm', (response: CreateFormResponse) => {
             Changes are saved automatically as you make them.
         </div>
 
+        <div>Status: {{ oneWordStatus }}</div>
+        <div class="text-muted">{{ statusDescription }}</div>
+
+        <div class="mt-2">
+            <button class="btn btn-primary me-2" @click="startSubmitForm">
+                <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form
+            </button>
+
+            <button class="btn btn-secondary me-2" @click="startDeleteForm">
+                <i class="fas fa-trash btn-icon-left"></i>Delete Form
+            </button>
+        </div>
+
     </div>
 
     <!-- Modal to delete a form -->
@@ -244,6 +284,13 @@ channel.on('createForm', (response: CreateFormResponse) => {
         <label for="formToDelete" class="form-label">Enter the name of the form:</label>
         <input type="text" class="form-control" id="formToDelete" v-model="formToDelete">
 
+    </modal-confirmation>
+
+    <!-- Modal to submit a form -->
+    <modal-confirmation ref="confirmSubmitModal" @yes="submitForm"
+                        title="Submit Form" yes-label="Submit" no-label="Cancel"
+    >
+        <p>Are you sure you're finished with this form? You won't be able to make any changes after submitting it.</p>
     </modal-confirmation>
 
     <!-- Modal to create a new form -->

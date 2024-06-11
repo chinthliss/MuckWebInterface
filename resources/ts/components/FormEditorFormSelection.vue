@@ -167,8 +167,8 @@ if (props.startExpanded) getFormList()
     </template>
     <!-- Expand or shrink buttons -->
     <div class="mt-2 d-flex justify-content-end">
-        <button class="btn btn-secondary me-2" @click="refreshForms">
-            <i class="fas fa-refresh btn-icon-left"></i>Refresh
+        <button v-if="expanded" class="btn btn-secondary me-2" @click="refreshForms">
+            <i class="fas fa-refresh btn-icon-left"></i>Refresh Forms
         </button>
 
         <button class="btn btn-secondary me-2" @click="newForm">
