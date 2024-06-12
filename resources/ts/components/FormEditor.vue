@@ -4,6 +4,7 @@ import {ref, Ref, computed} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
+import {timestampToString} from "../formatting";
 
 type Form = {
     name: string,
@@ -13,7 +14,8 @@ type Form = {
     approved: boolean,
     review: boolean,
     revise: boolean,
-    lastEdit: number // Timestamp
+    createdAt: number // Timestamp
+    editedAt: number // Timestamp
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -45,7 +47,7 @@ const statusDescription = computed((): string => {
     if (!presentForm.value) return '';
     if (presentForm.value.revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
     if (presentForm.value.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
-    if (presentForm.value.approved) return 'This has been finalized. You can view it but not make any changes.';
+    if (presentForm.value.approved) return 'This form has been finalized. You can view it but not make any changes.';
     return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
 });
 
@@ -164,35 +166,65 @@ channel.on('createForm', (response: CreateFormResponse) => {
     <div v-else>
         <h3>{{ presentFormId }}</h3>
 
-        <ul class="nav nav-tabs nav-fill mt-2" id="form-editor-tabs" role="tablist">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs nav-fill mt-2 sticky-top" id="form-editor-tabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="nav-overview-tab"
-                        data-bs-toggle="tab" data-bs-target="#nav-overview"
-                        type="button" role="tab" aria-controls="nav-overview" aria-selected="true"
-                >Overview & Status
+                <button class="nav-link active" id="nav-status-tab"
+                        data-bs-toggle="tab" data-bs-target="#nav-status"
+                        type="button" role="tab" aria-controls="nav-status" aria-selected="true"
+                >Status
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="nav-properties-tab"
+                        data-bs-toggle="tab" data-bs-target="#nav-properties"
+                        type="button" role="tab" aria-controls="nav-properties" aria-selected="false"
+                >Properties
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="nav-bodyparts-tab"
                         data-bs-toggle="tab" data-bs-target="#nav-bodyparts"
                         type="button" role="tab" aria-controls="nav-bodyparts" aria-selected="false"
-                >Descriptions & Transformations
+                >Descriptions
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="nav-victorydefeat-tab"
                         data-bs-toggle="tab" data-bs-target="#nav-victorydefeat"
                         type="button" role="tab" aria-controls="nav-victorydefeat" aria-selected="false"
-                >Victory & Defeat Messages
+                >Victory & Defeat
                 </button>
             </li>
         </ul>
+
+        <!-- Tab Content -->
         <div class="tab-content border p-4" id="nav-tabContent">
 
-            <!-- Overview & Status -->
-            <div class="tab-pane show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
-                Status of the form goes here (approved/review/etc)
+            <!-- Status -->
+            <div class="tab-pane show active" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
 
+                <div>Status: {{ oneWordStatus }}</div>
+                <div class="text-muted">{{ statusDescription }}</div>
+
+                <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }} </div>
+
+                <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }} </div>
+
+                <div class="mt-2">
+                    <button class="btn btn-primary me-2" @click="startSubmitForm">
+                        <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form
+                    </button>
+
+                    <button class="btn btn-secondary me-2" @click="startDeleteForm">
+                        <i class="fas fa-trash btn-icon-left"></i>Delete Form
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Properties -->
+            <div class="tab-pane show" id="nav-properties" role="tabpanel" aria-labelledby="nav-properties-tab">
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Mass</div>
                     <div class="ms-1 flex-fill">
@@ -217,27 +249,38 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 </div>
                 <div class="text-muted">5 is average human height.</div>
 
+                <h4 class="mt-2">Say Verbs</h4>
                 <div class="row">
                     <div class="mt-2 col-12 col-xl-6">
                         <label id="2nd-person-say-label" for="2nd-person-say" class="form-label">
-                            2nd person say(say, purr, bark)
+                            2nd person (say, purr, bark)
                         </label>
-                        <div class="input-group">
-                            <input id="2nd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                                   placeholder="2nd Person" aria-describedby="2nd-person-say-label"
-                            >
-                        </div>
+                        <input id="2nd-person-say" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="2nd Person" v-model="presentForm.say"
+                        >
                     </div>
 
                     <div class="mt-2 col-12 col-xl-6">
                         <label id="3rd-person-say-label" for="3rd-person-say" class="form-label">
-                            3rd person say(says, purrs, barks)
+                            3rd person (says, purrs, barks)
                         </label>
-                        <div class="input-group">
-                            <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                                   placeholder="3rd Person" aria-describedby="3rd-person-say-label"
-                            >
-                        </div>
+                        <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="3rd Person" v-model="presentForm.osay"
+                        >
+                    </div>
+                </div>
+
+                <h4 class="mt-2">Bodypart counts and sizes</h4>
+                <div class="row">
+                    <div class="mt-2 col-12 col-xl-3">
+                        <label for="cock-count" class="form-label">C Count</label>
+                        <input id="cock-count" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.cockCount"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-xl-9">
+                        <div>C Length</div>
                     </div>
 
                 </div>
@@ -256,19 +299,6 @@ channel.on('createForm', (response: CreateFormResponse) => {
         </div>
         <div class="text-center">
             Changes are saved automatically as you make them.
-        </div>
-
-        <div>Status: {{ oneWordStatus }}</div>
-        <div class="text-muted">{{ statusDescription }}</div>
-
-        <div class="mt-2">
-            <button class="btn btn-primary me-2" @click="startSubmitForm">
-                <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form
-            </button>
-
-            <button class="btn btn-secondary me-2" @click="startDeleteForm">
-                <i class="fas fa-trash btn-icon-left"></i>Delete Form
-            </button>
         </div>
 
     </div>
