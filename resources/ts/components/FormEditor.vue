@@ -6,16 +6,25 @@ import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 import {timestampToString} from "../formatting";
 
+type FormLog = {
+    when: number // Timestamp
+    who: string
+    what: string
+}
+
 type Form = {
-    name: string,
-    mass: number,
-    height: number,
-    owner?: number,
-    approved: boolean,
-    review: boolean,
-    revise: boolean,
+    name: string
+    mass: number
+    height: number
+    owner?: number
+    approved: boolean
+    review: boolean
+    revise: boolean
     createdAt: number // Timestamp
     editedAt: number // Timestamp
+    log: FormLog[]
+    say: string
+    oSay: string
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -163,7 +172,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
     <div v-else-if="!presentForm">
         Loading form..
     </div>
-    <div v-else>
+    <div v-if="presentForm">
         <h3>{{ presentFormId }}</h3>
 
         <!-- Tabs -->
@@ -210,6 +219,25 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }} </div>
 
                 <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }} </div>
+
+                <div class="mt-2">
+                    <h4>History</h4>
+                    <div v-if="!presentForm?.log.length">No history recorded.</div>
+                    <table v-else class="table table-dark table-hover table-striped table-responsive small">
+                        <thead>
+                        <tr>
+                            <th scope="col">When</th>
+                            <th scope="col">Who</th>
+                            <th scope="col">What</th>
+                        </tr>
+                        </thead>
+                        <tr v-for="entry in presentForm?.log">
+                            <td>{{ timestampToString(entry.when) }}</td>
+                            <td>{{ entry.who }}</td>
+                            <td>{{ entry.what }}</td>
+                        </tr>
+                    </table>
+                </div>
 
                 <div class="mt-2">
                     <button class="btn btn-primary me-2" @click="startSubmitForm">
@@ -265,7 +293,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                             3rd person (says, purrs, barks)
                         </label>
                         <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="3rd Person" v-model="presentForm.osay"
+                               placeholder="3rd Person" v-model="presentForm.oSay"
                         >
                     </div>
                 </div>

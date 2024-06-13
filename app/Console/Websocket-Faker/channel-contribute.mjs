@@ -12,6 +12,14 @@ export default class ChannelCharacter extends Channel {
             approved: false,
             review: false,
             revise: false,
+            lastEdit: Math.floor(Date.now() / 1000) - 1,
+            mass: 5,
+            height: 5,
+            say: 'wibble',
+            oSay: 'wibbles',
+            log: [
+                {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
+            ]
         },
         {
             name: 'Approved Form',
@@ -19,7 +27,7 @@ export default class ChannelCharacter extends Channel {
             approved: true,
             review: false,
             revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 1
+            lastEdit: Math.floor(Date.now() / 1000) - 10
         },
         {
             name: 'Form ready to review',
@@ -27,7 +35,7 @@ export default class ChannelCharacter extends Channel {
             approved: false,
             review: true,
             revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 1
+            lastEdit: Math.floor(Date.now() / 1000) - 100
         },
         {
             name: 'Form in need of revision',
@@ -35,7 +43,7 @@ export default class ChannelCharacter extends Channel {
             approved: false,
             review: false,
             revise: true,
-            lastEdit: Math.floor(Date.now() / 1000) - 1
+            lastEdit: Math.floor(Date.now() / 1000) - 1000
         }
     ]
 
