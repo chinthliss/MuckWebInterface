@@ -14,8 +14,8 @@ type FormLog = {
 
 type Form = {
     name: string
-    mass: number
     height: number
+    mass: number
     owner?: number
     approved: boolean
     review: boolean
@@ -25,6 +25,17 @@ type Form = {
     log: FormLog[]
     say: string
     oSay: string
+    breastCount: number
+    breastSize: number
+    cuntCount: number
+    cuntSize: number
+    clitCount: number
+    clitSize: number
+    cockCount: number
+    cockSize: number
+    ballCount: number // This is offset with the value 0 representing 2
+    ballSize: number
+
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -253,18 +264,6 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
             <!-- Properties -->
             <div class="tab-pane show" id="nav-properties" role="tabpanel" aria-labelledby="nav-properties-tab">
-                <div class="d-flex align-items-center mt-2">
-                    <div class="sliderLabel">Mass</div>
-                    <div class="ms-1 flex-fill">
-                        <input type="range" v-model.number="presentForm.mass" :disabled="viewOnly"
-                               class="form-control-range w-100" min="-100" max="300"
-                        >
-                    </div>
-                    <div class="ms-1 sliderValue">{{ presentForm.mass }}</div>
-                </div>
-                <div class="text-muted">This is a percentage-modifier. 0 is average weight, -50 would be half average
-                    weight and 100 would be twice average weight.
-                </div>
 
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Height</div>
@@ -277,9 +276,23 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 </div>
                 <div class="text-muted">5 is average human height.</div>
 
+                <div class="d-flex align-items-center mt-2">
+                    <div class="sliderLabel">Mass</div>
+                    <div class="ms-1 flex-fill">
+                        <input type="range" v-model.number="presentForm.mass" :disabled="viewOnly"
+                               class="form-control-range w-100" min="-100" max="300"
+                        >
+                    </div>
+                    <div class="ms-1 sliderValue">{{ presentForm.mass }}%</div>
+                </div>
+                <div class="text-muted">This is a percentage-modifier after size. 0 is average for the given size, -50 would be half average
+                    weight and 100 would be twice average weight.
+                </div>
+
+
                 <h4 class="mt-2">Say Verbs</h4>
                 <div class="row">
-                    <div class="mt-2 col-12 col-xl-6">
+                    <div class="mt-2 col-12 col-lg-6">
                         <label id="2nd-person-say-label" for="2nd-person-say" class="form-label">
                             2nd person (say, purr, bark)
                         </label>
@@ -288,7 +301,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                         >
                     </div>
 
-                    <div class="mt-2 col-12 col-xl-6">
+                    <div class="mt-2 col-12 col-lg-6">
                         <label id="3rd-person-say-label" for="3rd-person-say" class="form-label">
                             3rd person (says, purrs, barks)
                         </label>
@@ -299,17 +312,84 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 </div>
 
                 <h4 class="mt-2">Bodypart counts and sizes</h4>
+                <div class="text-muted">For all size/length values, 5 is average.</div>
+                <div class="text-muted">These are also only the defaults for the form and other circumstances can change these values.</div>
+
                 <div class="row">
-                    <div class="mt-2 col-12 col-xl-3">
-                        <label for="cock-count" class="form-label">C Count</label>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="breast-count" class="form-label">Breast Count</label>
+                        <input id="breast-count" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.breastCount"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="breast-size" class="form-label">Breast Size</label>
+                        <input id="breast-size" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.breastSize"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="cunt-count" class="form-label">Cunt Count</label>
+                        <input id="cunt-count" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.cuntCount"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="cunt-size" class="form-label">Cunt Depth</label>
+                        <input id="cunt-size" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.cuntSize"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="clit-count" class="form-label">Clit Count</label>
+                        <input id="clit-count" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.clitCount"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="clit-size" class="form-label">Clit Length</label>
+                        <input id="clit-size" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.clitSize"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="cock-count" class="form-label">Cock Count</label>
                         <input id="cock-count" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#"  v-model="presentForm.cockCount"
                         >
                     </div>
 
-                    <div class="mt-2 col-12 col-xl-9">
-                        <div>C Length</div>
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="cock-size" class="form-label">Cock Length</label>
+                        <input id="cock-size" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.cockSize"
+                        >
                     </div>
+
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="ball-count" class="form-label">Ball Count</label>
+                        <input id="ball-count" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.ballCount"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="ball-size" class="form-label">Ball Size</label>
+                        <input id="ball-size" type="number" class="form-control" :disabled="viewOnly"
+                               placeholder="#"  v-model="presentForm.ballSize"
+                        >
+                    </div>
+
+
+
 
                 </div>
 
@@ -356,10 +436,10 @@ channel.on('createForm', (response: CreateFormResponse) => {
                         title="Create New Form" yes-label="Create" no-label="Cancel"
     >
 
-        <label for="newFormName" class="form-label">Enter the name of the form:</label>
+        <label for="newFormName" class="form-label">Enter the name of the form (avoid gender specific names):</label>
         <input type="text" class="form-control" id="newFormName" v-model="newFormName">
 
-        <p>WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional races made in
+        <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional races made in
             the last century ARE copyrighted, don't use them.</p>
         <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC). Please review the
             Terms of Service.</p>

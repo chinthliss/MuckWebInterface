@@ -19,7 +19,17 @@ export default class ChannelCharacter extends Channel {
             oSay: 'wibbles',
             log: [
                 {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
-            ]
+            ],
+            breastCount:1,
+            breastSize:2,
+            ballCount:3,
+            ballSize:4,
+            cockCount:5,
+            cockSize:6,
+            cuntCount:7,
+            cuntSize:8,
+            clitCount:9,
+            clitSize:10
         },
         {
             name: 'Approved Form',
