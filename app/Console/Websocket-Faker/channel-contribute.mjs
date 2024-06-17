@@ -31,7 +31,13 @@ export default class ChannelCharacter extends Channel {
             cuntSize:8,
             clitCount:9,
             clitSize:10,
-            skin: {}
+            skin: {},
+            head: {},
+            torso: {},
+            arms: {},
+            legs: {},
+            groin: {},
+            ass: {}
         },
         {
             name: 'Approved Form',
@@ -40,7 +46,13 @@ export default class ChannelCharacter extends Channel {
             review: false,
             revise: false,
             lastEdit: Math.floor(Date.now() / 1000) - 10,
-            skin: {}
+            skin: {},
+            head: {},
+            torso: {},
+            arms: {},
+            legs: {},
+            groin: {},
+            ass: {}
         },
         {
             name: 'Form ready to review',
@@ -49,7 +61,13 @@ export default class ChannelCharacter extends Channel {
             review: true,
             revise: false,
             lastEdit: Math.floor(Date.now() / 1000) - 100,
-            skin: {}
+            skin: {},
+            head: {},
+            torso: {},
+            arms: {},
+            legs: {},
+            groin: {},
+            ass: {}
         },
         {
             name: 'Form in need of revision',
@@ -58,7 +76,14 @@ export default class ChannelCharacter extends Channel {
             review: false,
             revise: true,
             lastEdit: Math.floor(Date.now() / 1000) - 1000,
-            skin: {}
+            skin: {},
+            head: {},
+            torso: {},
+            arms: {},
+            legs: {},
+            groin: {},
+            ass: {}
+
         }
     ]
 

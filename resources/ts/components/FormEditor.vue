@@ -5,6 +5,7 @@ import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 import {timestampToString} from "../formatting";
+import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
 type FormLog = {
     when: number // Timestamp
@@ -36,9 +37,50 @@ type Form = {
     cockSize: number
     ballCount: number
     ballSize: number
-
+    scent: string
+    heat: boolean
     skin: {
+        flags: string
+        transformation: string
         shortDescription: string
+        description: string
+        kemoDescription: string
+    }
+    head: {
+        flags: string
+        transformation: string
+        description: string
+        kemoDescription: string
+    }
+    torso: {
+        flags: string
+        transformation: string
+        description: string
+        kemoDescription: string
+    }
+    arms: {
+        flags: string
+        transformation: string
+        description: string
+        kemoDescription: string
+    }
+    legs: {
+        flags: string
+        transformation: string
+        description: string
+        kemoDescription: string
+    }
+    groin: {
+        flags: string
+        transformation: string
+        cockDescription: string
+        cuntDescription: string
+        clitDescription: string
+    }
+    ass: {
+        flags: string
+        transformation: string
+        description: string
     }
 
 }
@@ -200,7 +242,9 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 </div>
             </div>
-            <div class="card-footer text-muted text-center">The preview can be slow to load, especially on larger forms. </div>
+            <div class="card-footer text-muted text-center">The preview can be slow to load, especially on larger
+                forms.
+            </div>
         </div>
 
         <!-- Tabs -->
@@ -327,8 +371,16 @@ channel.on('createForm', (response: CreateFormResponse) => {
                            placeholder="List of tags" v-model="presentForm.scent"
                     >
                 </div>
-                <div class="text-muted">Short description that follows the word 'smells like..'.
+                <div class="text-muted">Scent description that will follow phrasing like 'smells like ...'.</div>
+
+                <!-- Heat -->
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="heat"
+                           v-model="presentForm.heat" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="heat">Heat?</label>
                 </div>
+                <div class="text-muted">Whether this form goes into heat</div>
 
                 <!-- Say Verbs -->
                 <h4 class="mt-2">Say Verbs</h4>
@@ -438,29 +490,187 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
             <!-- Descriptions & Transformations -->
             <div class="tab-pane show" id="nav-bodyparts" role="tabpanel" aria-labelledby="nav-bodyparts-tab">
+                <h5>Common notes:</h5>
                 <div>Transformation messages are for the player and should be 2nd person (You, your, etc).</div>
-                <div>Descriptions are for anyone looking and should be 3rd person, using 'their' - the appropriate pronouns will be substituted in.</div>
+                <div>Descriptions are for anyone looking and should be 3rd person, using the pronouns 'they/their/them'
+                    - the appropriate pronouns will be substituted in. They should also start with a lower case letter
+                    since they're combined elsewhere.
+                </div>
+                <div>Kemonomimi descriptions are an optional variant of the description for supporting that mode. It
+                    uses the same rules as descriptions.
+                </div>
+                <div>Flags are a space separated list of attributes the part has.
+                    The list is available with 'list flags' on the muck.
+                </div>
 
                 <!-- Skin -->
                 <h4 class="mt-2">Skin</h4>
-                <div class="row">
-
-                    <div class="mt-2 col-12 col-lg-6">
-                        <label for="skin-transformation" class="form-label">Transformation</label>
-                        <input id="skin-transformation" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.skin.transformation"
-                        >
-                    </div>
-
-                    <div class="mt-2 col-12 col-lg-6">
-                        <label for="skin-short-description" class="form-label">Short Description</label>
-                        <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.skin.shortDescription"
-                        >
-                        <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
-                    </div>
-
+                <div class="mt-2">
+                    <label for="skin-flags" class="form-label">Flags</label>
+                    <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.skin.flags"
+                    >
                 </div>
+                <div class="mt-2">
+                    <label for="skin-transformation" class="form-label">Transformation</label>
+                    <input id="skin-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.skin.transformation"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="skin-short-description" class="form-label">Short Description</label>
+                    <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.skin.shortDescription"
+                    >
+                    <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="skin-description" label="Description"
+                                      :prop-value="presentForm.skin.description"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="skin-kemo-description" label="Kemo Description"
+                                      :prop-value="presentForm.skin.kemoDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Head -->
+                <h4 class="mt-2">Head</h4>
+                <div class="mt-2">
+                    <label for="head-flags" class="form-label">Flags</label>
+                    <input id="head-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.head.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="head-transformation" class="form-label">Transformation</label>
+                    <input id="head-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.head.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="head-description" label="Description"
+                                      :prop-value="presentForm.head.description"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="head-kemo-description" label="Kemo Description"
+                                      :prop-value="presentForm.head.kemoDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Torso -->
+                <h4 class="mt-2">Torso</h4>
+                <div class="mt-2">
+                    <label for="torso-flags" class="form-label">Flags</label>
+                    <input id="torso-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.torso.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="torso-transformation" class="form-label">Transformation</label>
+                    <input id="torso-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.torso.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="torso-description" label="Description"
+                                      :prop-value="presentForm.torso.description"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="torso-kemo-description" label="Kemo Description"
+                                      :prop-value="presentForm.torso.kemoDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Arms -->
+                <h4 class="mt-2">Arms</h4>
+                <div class="mt-2">
+                    <label for="arms-flags" class="form-label">Flags</label>
+                    <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.arms.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="arms-transformation" class="form-label">Transformation</label>
+                    <input id="arms-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.arms.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="arms-description" label="Description"
+                                      :prop-value="presentForm.arms.description"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="head-arms-description" label="Kemo Description"
+                                      :prop-value="presentForm.arms.kemoDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Legs -->
+                <h4 class="mt-2">Legs</h4>
+                <div class="mt-2">
+                    <label for="legs-flags" class="form-label">Flags</label>
+                    <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.legs.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="legs-transformation" class="form-label">Transformation</label>
+                    <input id="legs-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.legs.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="legs-description" label="Description"
+                                      :prop-value="presentForm.legs.description"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="legs-kemo-description" label="Kemo Description"
+                                      :prop-value="presentForm.legs.kemoDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Groin -->
+                <h4 class="mt-2">Groin</h4>
+                <div class="mt-2">
+                    <label for="groin-flags" class="form-label">Flags</label>
+                    <input id="groin-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.groin.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="groin-transformation" class="form-label">Transformation</label>
+                    <input id="groin-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.groin.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="cock-description" label="Cock Description"
+                                      :prop-value="presentForm.groin.cockDescription"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="cunt-description" label="Cunt Description"
+                                      :prop-value="presentForm.groin.cuntDescription"
+                ></FormEditorCodeEditor>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="clit-description" label="Clit Description"
+                                      :prop-value="presentForm.groin.clitDescription"
+                ></FormEditorCodeEditor>
+
+                <!-- Ass or Tail -->
+                <h4 class="mt-2">Ass or Tail</h4>
+                <div class="mt-2">
+                    <label for="ass-flags" class="form-label">Flags</label>
+                    <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.ass.flags"
+                    >
+                </div>
+                <div class="mt-2">
+                    <label for="ass-transformation" class="form-label">Transformation</label>
+                    <input id="ass-transformation" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="#" v-model="presentForm.ass.transformation"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="ass-description" label="Description"
+                                      :prop-value="presentForm.ass.description"
+                ></FormEditorCodeEditor>
+
             </div>
 
             <!-- Victory & Defeat Messages -->

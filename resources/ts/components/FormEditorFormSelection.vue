@@ -135,7 +135,7 @@ if (props.startExpanded) getFormList()
                        scrollHeight="flex" @row-select="rowSelected" selectionMode="single"
                        v-model:selection="selected" v-model:filters="filters" filterDisplay="row"
             >
-                <template #empty>There are no forms that you can view. Maybe you should create a new one?</template>
+                <template #empty>There are no forms that you can view. Perhaps you should create a new one?</template>
                 <Column header="Name" field="name" :sortable="true">
                     <template #filter="{ filterModel, filterCallback }">
                         <input v-model="filterModel.value" type="text" @input="filterCallback()"
