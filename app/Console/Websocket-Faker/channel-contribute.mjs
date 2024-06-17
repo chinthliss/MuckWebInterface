@@ -20,6 +20,7 @@ export default class ChannelCharacter extends Channel {
             log: [
                 {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
             ],
+            tags: 'tag anothertag',
             breastCount:1,
             breastSize:2,
             ballCount:3,
@@ -29,7 +30,8 @@ export default class ChannelCharacter extends Channel {
             cuntCount:7,
             cuntSize:8,
             clitCount:9,
-            clitSize:10
+            clitSize:10,
+            skin: {}
         },
         {
             name: 'Approved Form',
@@ -37,7 +39,8 @@ export default class ChannelCharacter extends Channel {
             approved: true,
             review: false,
             revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 10
+            lastEdit: Math.floor(Date.now() / 1000) - 10,
+            skin: {}
         },
         {
             name: 'Form ready to review',
@@ -45,7 +48,8 @@ export default class ChannelCharacter extends Channel {
             approved: false,
             review: true,
             revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 100
+            lastEdit: Math.floor(Date.now() / 1000) - 100,
+            skin: {}
         },
         {
             name: 'Form in need of revision',
@@ -53,14 +57,22 @@ export default class ChannelCharacter extends Channel {
             approved: false,
             review: false,
             revise: true,
-            lastEdit: Math.floor(Date.now() / 1000) - 1000
+            lastEdit: Math.floor(Date.now() / 1000) - 1000,
+            skin: {}
         }
     ]
 
     sendFormList = (connection) => {
         this.sendMessageToConnection(connection, 'formList', this.formsCatalogue.length);
-        for (let i = 0; i < this.formsCatalogue.length; i++) {
-            this.sendMessageToConnection(connection, 'formListing', this.formsCatalogue[i]);
+        for (const form of this.formsCatalogue) {
+            this.sendMessageToConnection(connection, 'formListing', {
+                name: form.name,
+                owner: form.owner,
+                approved: form.approved,
+                review: form.review,
+                revise: form.revise,
+                lastEdit: form.lastEdit
+            });
         }
     };
 

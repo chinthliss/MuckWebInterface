@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, Ref, computed} from "vue";
+import {computed, Ref, ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
@@ -23,6 +23,7 @@ type Form = {
     createdAt: number // Timestamp
     editedAt: number // Timestamp
     log: FormLog[]
+    tags: string
     say: string
     oSay: string
     breastCount: number
@@ -33,8 +34,12 @@ type Form = {
     clitSize: number
     cockCount: number
     cockSize: number
-    ballCount: number // This is offset with the value 0 representing 2
+    ballCount: number
     ballSize: number
+
+    skin: {
+        shortDescription: string
+    }
 
 }
 
@@ -186,6 +191,18 @@ channel.on('createForm', (response: CreateFormResponse) => {
     <div v-if="presentForm">
         <h3>{{ presentFormId }}</h3>
 
+        <!-- Preview -->
+
+        <div class="card">
+            <div class="card-header">Preview</div>
+            <div class="card-body">
+                <div class="card-text" id="formPreview">
+
+                </div>
+            </div>
+            <div class="card-footer text-muted text-center">The preview can be slow to load, especially on larger forms. </div>
+        </div>
+
         <!-- Tabs -->
         <ul class="nav nav-tabs nav-fill mt-2 sticky-top" id="form-editor-tabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -206,7 +223,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <button class="nav-link" id="nav-bodyparts-tab"
                         data-bs-toggle="tab" data-bs-target="#nav-bodyparts"
                         type="button" role="tab" aria-controls="nav-bodyparts" aria-selected="false"
-                >Descriptions
+                >Parts & Descriptions
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -227,9 +244,9 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div>Status: {{ oneWordStatus }}</div>
                 <div class="text-muted">{{ statusDescription }}</div>
 
-                <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }} </div>
+                <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }}</div>
 
-                <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }} </div>
+                <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }}</div>
 
                 <div class="mt-2">
                     <h4>History</h4>
@@ -265,6 +282,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
             <!-- Properties -->
             <div class="tab-pane show" id="nav-properties" role="tabpanel" aria-labelledby="nav-properties-tab">
 
+                <!-- Height -->
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Height</div>
                     <div class="ms-1 flex-fill">
@@ -276,6 +294,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 </div>
                 <div class="text-muted">5 is average human height.</div>
 
+                <!-- Mass -->
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Mass</div>
                     <div class="ms-1 flex-fill">
@@ -285,11 +304,33 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
                     <div class="ms-1 sliderValue">{{ presentForm.mass }}%</div>
                 </div>
-                <div class="text-muted">This is a percentage-modifier after size. 0 is average for the given size, -50 would be half average
+                <div class="text-muted">This is a percentage-modifier after size.
+                    0 is average for the given size, -50 would be half average
                     weight and 100 would be twice average weight.
                 </div>
 
+                <!-- Tags -->
+                <div class="d-flex mt-2">
+                    <label for="tags" class="col-form-label me-2">Tags</label>
+                    <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
+                           placeholder="List of tags" v-model="presentForm.tags"
+                    >
+                </div>
+                <div class="text-muted">Space separated list of tags to help categorize the form. A list is available
+                    from the muck with 'list tags'.
+                </div>
 
+                <!-- Scent -->
+                <div class="d-flex mt-2">
+                    <label for="tags" class="col-form-label me-2">Scent</label>
+                    <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
+                           placeholder="List of tags" v-model="presentForm.scent"
+                    >
+                </div>
+                <div class="text-muted">Short description that follows the word 'smells like..'.
+                </div>
+
+                <!-- Say Verbs -->
                 <h4 class="mt-2">Say Verbs</h4>
                 <div class="row">
                     <div class="mt-2 col-12 col-lg-6">
@@ -313,63 +354,65 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <h4 class="mt-2">Bodypart counts and sizes</h4>
                 <div class="text-muted">For all size/length values, 5 is average.</div>
-                <div class="text-muted">These are also only the defaults for the form and other circumstances can change these values.</div>
+                <div class="text-muted">These are also only the defaults for the form and other circumstances can change
+                    these values.
+                </div>
 
                 <div class="row">
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breast-count" class="form-label">Breast Count</label>
                         <input id="breast-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.breastCount"
+                               placeholder="#" v-model="presentForm.breastCount"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breast-size" class="form-label">Breast Size</label>
                         <input id="breast-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.breastSize"
+                               placeholder="#" v-model="presentForm.breastSize"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cunt-count" class="form-label">Cunt Count</label>
                         <input id="cunt-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.cuntCount"
+                               placeholder="#" v-model="presentForm.cuntCount"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cunt-size" class="form-label">Cunt Depth</label>
                         <input id="cunt-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.cuntSize"
+                               placeholder="#" v-model="presentForm.cuntSize"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="clit-count" class="form-label">Clit Count</label>
                         <input id="clit-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.clitCount"
+                               placeholder="#" v-model="presentForm.clitCount"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="clit-size" class="form-label">Clit Length</label>
                         <input id="clit-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.clitSize"
+                               placeholder="#" v-model="presentForm.clitSize"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cock-count" class="form-label">Cock Count</label>
                         <input id="cock-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.cockCount"
+                               placeholder="#" v-model="presentForm.cockCount"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cock-size" class="form-label">Cock Length</label>
                         <input id="cock-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.cockSize"
+                               placeholder="#" v-model="presentForm.cockSize"
                         >
                     </div>
 
@@ -377,18 +420,16 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="ball-count" class="form-label">Ball Count</label>
                         <input id="ball-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.ballCount"
+                               placeholder="#" v-model="presentForm.ballCount"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="ball-size" class="form-label">Ball Size</label>
                         <input id="ball-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#"  v-model="presentForm.ballSize"
+                               placeholder="#" v-model="presentForm.ballSize"
                         >
                     </div>
-
-
 
 
                 </div>
@@ -397,7 +438,29 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
             <!-- Descriptions & Transformations -->
             <div class="tab-pane show" id="nav-bodyparts" role="tabpanel" aria-labelledby="nav-bodyparts-tab">
-                Descriptions & Transformations
+                <div>Transformation messages are for the player and should be 2nd person (You, your, etc).</div>
+                <div>Descriptions are for anyone looking and should be 3rd person, using 'their' - the appropriate pronouns will be substituted in.</div>
+
+                <!-- Skin -->
+                <h4 class="mt-2">Skin</h4>
+                <div class="row">
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="skin-transformation" class="form-label">Transformation</label>
+                        <input id="skin-transformation" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="#" v-model="presentForm.skin.transformation"
+                        >
+                    </div>
+
+                    <div class="mt-2 col-12 col-lg-6">
+                        <label for="skin-short-description" class="form-label">Short Description</label>
+                        <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="#" v-model="presentForm.skin.shortDescription"
+                        >
+                        <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
+                    </div>
+
+                </div>
             </div>
 
             <!-- Victory & Defeat Messages -->
@@ -439,7 +502,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
         <label for="newFormName" class="form-label">Enter the name of the form (avoid gender specific names):</label>
         <input type="text" class="form-control" id="newFormName" v-model="newFormName">
 
-        <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional races made in
+        <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional
+            races made in
             the last century ARE copyrighted, don't use them.</p>
         <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC). Please review the
             Terms of Service.</p>
