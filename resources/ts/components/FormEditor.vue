@@ -294,7 +294,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <div class="mt-2">
                     <h4>History</h4>
-                    <div v-if="!presentForm?.log.length">No history recorded.</div>
+                    <div v-if="!presentForm || !presentForm.log ||  presentForm.log.length">No history recorded.</div>
                     <table v-else class="table table-dark table-hover table-striped table-responsive small">
                         <thead>
                         <tr>
