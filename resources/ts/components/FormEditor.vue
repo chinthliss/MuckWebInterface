@@ -38,7 +38,11 @@ type Form = {
     ballCount: number
     ballSize: number
     scent: string
-    heat: boolean
+    heat: boolean,
+    victory: string,
+    oVictory: string,
+    defeat: string,
+    viewers: string,
     skin: {
         flags: string
         transformation: string
@@ -239,7 +243,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
             <div class="card-header">Preview</div>
             <div class="card-body">
                 <div class="card-text" id="formPreview">
-
+                    TODO: Request preview after pending saves are complete.
+                    <br/>TODO: Don't request preview until all (or at least 1?) descriptions are set.
                 </div>
             </div>
             <div class="card-footer text-muted text-center">The preview can be slow to load, especially on larger
@@ -291,6 +296,17 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }}</div>
 
                 <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }}</div>
+
+                <!-- Allowed Viewers -->
+                <div class="d-flex mt-2">
+                    <label for="viewers" class="col-form-label">Allowed Viewers</label>
+                    <input id="viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
+                           placeholder="List of Viewers" v-model="presentForm.viewers"
+                    >
+                </div>
+                <div class="text-muted">Space separated list of other people who are allowed to view this form,
+                    in case you want to seek assistance or review.
+                </div>
 
                 <div class="mt-2">
                     <h4>History</h4>
@@ -675,7 +691,34 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
             <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
-                Victory & Defeat Messages
+
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
+                                      prop-name="defeat" label="Monster defeats Player"
+                                      :prop-value="presentForm.defeat"
+                ></FormEditorCodeEditor>
+                <div class="text-muted">
+                    2nd person from the defeated player's perspective,
+                    e.g. 'You are defeated by a mutant!'
+                </div>
+
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
+                                      prop-name="victory" label="Player defeats Monster"
+                                      :prop-value="presentForm.victory"
+                ></FormEditorCodeEditor>
+                <div class="text-muted">
+                    2nd person from the victorious player's perspective,
+                    e.g. 'You beat a mutant, using your mutant ways!'
+                </div>
+
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
+                                      prop-name="ovictory" label="Player seen defeating Monster"
+                                      :prop-value="presentForm.oVictory"
+                ></FormEditorCodeEditor>
+                <div class="text-muted">
+                    3rd person from an observer's perspective,
+                    e.g. 'Bob defeats a mutant in a weird mutant way!'
+                </div>
+
             </div>
         </div>
         <div class="text-center">
