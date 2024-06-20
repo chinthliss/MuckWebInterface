@@ -3,7 +3,7 @@
 import {EditorView, highlightActiveLineGutter, lineNumbers, ViewUpdate} from "@codemirror/view"
 import {Compartment, EditorState} from "@codemirror/state"
 import {stringParsingDefaultExtensions} from "../stringparsing";
-import {onMounted} from "vue";
+import {onMounted, watch} from "vue";
 
 const emit = defineEmits(['update'])
 
@@ -17,20 +17,23 @@ const props = defineProps<{
 
 let view: EditorView;
 
-// This needs a compartment as we'll be toggling it when we change form
-const readOnly = new Compartment;
+// This needs a compartment as we'll be toggling it externally via watching when we change form
+const readOnlySetting = new Compartment;
 
 const setReadOnly = (newValue) => {
     view.dispatch({
-        effects: readOnly.reconfigure(EditorState.readOnly.of(newValue))
+        effects: readOnlySetting.reconfigure(EditorState.readOnly.of(newValue))
     });
 }
 
-onMounted(() => {
+watch(() => props.viewOnly, (newValue, oldValue) => {
+    setReadOnly(newValue);
+});
 
+onMounted(() => {
     const extensions = [
         ...stringParsingDefaultExtensions,
-        readOnly.of(EditorState.readOnly.of(props.viewOnly)),
+        readOnlySetting.of(EditorState.readOnly.of(props.viewOnly)),
         EditorView.updateListener.of((v: ViewUpdate) => {
             if (v.docChanged) {
                 emit('update', v.state.doc.toString());
@@ -54,7 +57,6 @@ onMounted(() => {
         extensions: extensions,
         parent: document.getElementById(props.propName)
     });
-
 });
 
 </script>
