@@ -39,9 +39,9 @@ type Form = {
     ballSize: number
     scent: string
     heat: boolean,
-    victory: string,
-    oVictory: string,
-    defeat: string,
+    victory: string[],
+    oVictory: string[],
+    defeat: string[],
     viewers: string,
     skin: {
         flags: string
@@ -696,7 +696,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Monster defeats Player"
-                                      :prop-value="presentForm.defeat"
+                                      :prop-value="presentForm.defeat.join('\n')"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     2nd person from the defeated player's perspective,
@@ -705,10 +705,10 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div>TODO: Preview</div>
 
                 <hr/>
-                
+
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player defeats Monster"
-                                      :prop-value="presentForm.victory"
+                                      :prop-value="presentForm.victory.join('\n')"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     2nd person from the victorious player's perspective,
@@ -720,7 +720,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="ovictory" label="Player seen defeating Monster"
-                                      :prop-value="presentForm.oVictory"
+                                      :prop-value="presentForm.oVictory.join('\n')"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     3rd person from an observer's perspective,

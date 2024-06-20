@@ -31,9 +31,9 @@ export default class ChannelCharacter extends Channel {
             cuntSize:8,
             clitCount:9,
             clitSize:10,
-            victory: 'This is a victory description.\nWith multiple lines!',
-            oVictory: 'This is a 3rd party victory description.',
-            defeat: 'This is a defeat description.',
+            victory: ['This is a victory description.', 'With multiple lines!'],
+            oVictory: ['This is a 3rd party victory description.'],
+            defeat: ['This is a defeat description.'],
             skin: {
                 transformation: 'This is a test transformation',
                 description: 'This is a test description.'
