@@ -1,22 +1,8 @@
 <script setup lang="ts">
 
-import {
-    drawSelection,
-    EditorView,
-    highlightActiveLineGutter,
-    highlightSpecialChars,
-    keymap,
-    lineNumbers,
-    ViewUpdate
-} from "@codemirror/view"
-import {EditorState, Compartment} from "@codemirror/state"
-import {bracketMatching, defaultHighlightStyle, syntaxHighlighting} from "@codemirror/language"
-import {defaultKeymap, history, historyKeymap} from "@codemirror/commands"
-import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
-import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
-import {highlightStyle, theme} from "../stringparsing";
-
-import {stringParsing} from "codemirror-lang-stringparsing";
+import {EditorView, highlightActiveLineGutter, lineNumbers, ViewUpdate} from "@codemirror/view"
+import {Compartment, EditorState} from "@codemirror/state"
+import {stringParsingDefaultExtensions} from "../stringparsing";
 import {onMounted} from "vue";
 
 const emit = defineEmits(['update'])
@@ -31,6 +17,7 @@ const props = defineProps<{
 
 let view: EditorView;
 
+// This needs a compartment as we'll be toggling it when we change form
 const readOnly = new Compartment;
 
 const setReadOnly = (newValue) => {
@@ -42,29 +29,13 @@ const setReadOnly = (newValue) => {
 onMounted(() => {
 
     const extensions = [
-        keymap.of([
-            ...defaultKeymap,
-            ...searchKeymap,
-            ...historyKeymap,
-            ...completionKeymap
-        ]),
+        ...stringParsingDefaultExtensions,
+        readOnly.of(EditorState.readOnly.of(props.viewOnly)),
         EditorView.updateListener.of((v: ViewUpdate) => {
             if (v.docChanged) {
                 emit('update', v.state.doc.toString());
             }
-        }),
-        highlightSpecialChars(),
-        history(),
-        drawSelection(),
-        syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
-        syntaxHighlighting(highlightStyle),
-        EditorView.lineWrapping,
-        bracketMatching(),
-        autocompletion(),
-        highlightSelectionMatches(),
-        stringParsing(),
-        theme,
-        readOnly.of(EditorState.readOnly.of(props.viewOnly))
+        })
     ];
 
     if (props.multiline) {

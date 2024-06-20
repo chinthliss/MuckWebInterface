@@ -1,10 +1,17 @@
-// Some shared values used by stringparsing.
+// Some shared default values used by stringParsing components.
 
-import {HighlightStyle} from "@codemirror/language";
+import {bracketMatching, defaultHighlightStyle, HighlightStyle, syntaxHighlighting} from "@codemirror/language";
 import {tags as t} from "@lezer/highlight";
-import {EditorView} from "@codemirror/view";
+import {drawSelection, EditorView, highlightSpecialChars, keymap} from "@codemirror/view";
+import {defaultKeymap, history, historyKeymap} from "@codemirror/commands";
+import {highlightSelectionMatches, searchKeymap} from "@codemirror/search";
+import {autocompletion, completionKeymap} from "@codemirror/autocomplete";
+import {stringParsing} from "codemirror-lang-stringparsing";
 
-export const highlightStyle = HighlightStyle.define(
+const caret = '#ffffff';
+const lineHighlight = '#ccccff';
+
+export const stringParsingHighlightStyle = HighlightStyle.define(
     [
         { tag: t.keyword, color: "#7b87b8" },
         { tag: t.controlKeyword, color: "#f8835c" },
@@ -18,10 +25,7 @@ export const highlightStyle = HighlightStyle.define(
     {all: {color: "#989898"}}
 );
 
-const caret = '#ffffff';
-const lineHighlight = '#ccccff';
-
-export const theme = EditorView.theme({
+export const stringParsingTheme = EditorView.theme({
     '.cm-content': {
         caretColor: caret,
     },
@@ -32,3 +36,25 @@ export const theme = EditorView.theme({
         backgroundColor: lineHighlight,
     },
 });
+
+export const stringParsingKeymap= keymap.of([
+    ...defaultKeymap,
+    ...searchKeymap,
+    ...historyKeymap,
+    ...completionKeymap
+]);
+
+export const stringParsingDefaultExtensions = [
+    stringParsingKeymap,
+    highlightSpecialChars(),
+    history(),
+    drawSelection(),
+    EditorView.lineWrapping,
+    bracketMatching(),
+    autocompletion(),
+    highlightSelectionMatches(),
+    syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+    syntaxHighlighting(stringParsingHighlightStyle),
+    stringParsing(),
+    stringParsingTheme
+    ];
