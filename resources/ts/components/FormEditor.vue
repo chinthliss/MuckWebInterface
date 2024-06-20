@@ -21,9 +21,9 @@ type Form = {
     approved: boolean
     review: boolean
     revise: boolean
-    createdAt: number // Timestamp
-    editedAt: number // Timestamp
-    log: FormLog[]
+    createdAt?: number // Timestamp
+    editedAt?: number // Timestamp
+    log?: FormLog[]
     tags: string
     say: string
     oSay: string
@@ -692,6 +692,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
             <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
 
+                <div>TODO: Preview configuration.</div>
+
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Monster defeats Player"
                                       :prop-value="presentForm.defeat"
@@ -700,7 +702,10 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     2nd person from the defeated player's perspective,
                     e.g. 'You are defeated by a mutant!'
                 </div>
+                <div>TODO: Preview</div>
 
+                <hr/>
+                
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player defeats Monster"
                                       :prop-value="presentForm.victory"
@@ -709,6 +714,9 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     2nd person from the victorious player's perspective,
                     e.g. 'You beat a mutant, using your mutant ways!'
                 </div>
+                <div>TODO: Preview</div>
+
+                <hr/>
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="ovictory" label="Player seen defeating Monster"
@@ -718,6 +726,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     3rd person from an observer's perspective,
                     e.g. 'Bob defeats a mutant in a weird mutant way!'
                 </div>
+                <div>TODO: Preview</div>
 
             </div>
         </div>
