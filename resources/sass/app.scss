@@ -108,6 +108,10 @@ main {
 }
 
 // Overrides for nav-tabs
+.nav-tabs {
+    background-color: $content-background;
+}
+
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link{
     background-color: $primary;

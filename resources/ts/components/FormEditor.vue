@@ -755,11 +755,11 @@ channel.on('createForm', (response: CreateFormResponse) => {
         <label for="newFormName" class="form-label">Enter the name of the form (avoid gender specific names):</label>
         <input type="text" class="form-control" id="newFormName" v-model="newFormName">
 
-        <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material. Fictional
-            races made in
-            the last century ARE copyrighted, don't use them.</p>
-        <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC). Please review the
-            Terms of Service.</p>
+        <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material.
+            Fictional races made in the last century ARE copyrighted, don't use them.</p>
+        <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC).
+            Please review the Terms of Service.</p>
+        TODO: Terms of Service link
     </modal-confirmation>
 
     <!-- Modal for error messages -->
