@@ -6,6 +6,7 @@ import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
+import templates from "rollup-plugin-visualizer/dist/plugin/template-types";
 
 type FormLog = {
     when: number // Timestamp
@@ -38,41 +39,48 @@ type Form = {
     ballCount: number
     ballSize: number
     scent: string
-    heat: boolean,
-    victory: string[],
-    oVictory: string[],
-    defeat: string[],
-    viewers: string,
+    heat: boolean
+    // template: boolean -- Computed and auto-controlled muck side.
+    victory: string[]
+    oVictory: string[]
+    defeat: string[]
+    viewers: string
+    sexless: boolean
     skin: {
         flags: string
         transformation: string
         shortDescription: string
         description: string
         kemoDescription: string
+        template: boolean
     }
     head: {
         flags: string
         transformation: string
         description: string
         kemoDescription: string
+        template: boolean
     }
     torso: {
         flags: string
         transformation: string
         description: string
         kemoDescription: string
+        template: boolean
     }
     arms: {
         flags: string
         transformation: string
         description: string
         kemoDescription: string
+        template: boolean
     }
     legs: {
         flags: string
         transformation: string
         description: string
         kemoDescription: string
+        template: boolean
     }
     groin: {
         flags: string
@@ -80,11 +88,13 @@ type Form = {
         cockDescription: string
         cuntDescription: string
         clitDescription: string
+        template: boolean
     }
     ass: {
         flags: string
         transformation: string
         description: string
+        template: boolean
     }
 
 }
@@ -120,6 +130,17 @@ const statusDescription = computed((): string => {
     if (presentForm.value.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
     if (presentForm.value.approved) return 'This form has been finalized. You can view it but not make any changes.';
     return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
+});
+
+const hasTemplatedParts = computed((): boolean => {
+    if (!presentForm.value) return false;
+    return presentForm.value.skin.template ||
+        presentForm.value.head.template ||
+        presentForm.value.torso.template ||
+        presentForm.value.arms.template ||
+        presentForm.value.legs.template ||
+        presentForm.value.groin.template ||
+        presentForm.value.ass.template;
 });
 
 const loadForm = (selected: string) => {
@@ -308,6 +329,11 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     in case you want to seek assistance or review.
                 </div>
 
+                <!-- Template status -->
+                <div v-if="hasTemplatedParts" class="mt-2 p-2 rounded text-bg-info">
+                    This form has at least one part with template flagged, so will be considered as a template form.
+                </div>
+
                 <div class="mt-2">
                     <h4>History</h4>
                     <div v-if="!presentForm || !presentForm.log ||  presentForm.log.length">No history recorded.</div>
@@ -420,13 +446,24 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
                 </div>
 
+                <!-- Bodypart counts and sizes (including sexless) -->
                 <h4 class="mt-2">Bodypart counts and sizes</h4>
-                <div class="text-muted">For all size/length values, 5 is average.</div>
-                <div class="text-muted">These are also only the defaults for the form and other circumstances can change
-                    these values.
+
+                <div class="text-muted">Values specified here are changes that the form will try to apply,
+                    e.g. if something is set to 0 the form will try to remove it on infection.
+                    <br/>These changes are not guaranteed and can be resisted/blocked.
                 </div>
 
-                <div class="row">
+                <!-- Heat -->
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="sexless"
+                           v-model="presentForm.sexless" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="heat">Sexless?</label>
+                </div>
+                <div class="text-muted">If this is set, the form will not attempt to change any sexual attributes.</div>
+
+                <div class="row" v-if="!presentForm.sexless">
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breast-count" class="form-label">Breast Count</label>
@@ -436,7 +473,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="breast-size" class="form-label">Breast Size</label>
+                        <label for="breast-size" class="form-label">Breast Size (5 is average)</label>
                         <input id="breast-size" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.breastSize"
                         >
@@ -450,7 +487,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cunt-size" class="form-label">Cunt Depth</label>
+                        <label for="cunt-size" class="form-label">Cunt Depth (5 is average)</label>
                         <input id="cunt-size" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cuntSize"
                         >
@@ -464,7 +501,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="clit-size" class="form-label">Clit Length</label>
+                        <label for="clit-size" class="form-label">Clit Length (5 is average)</label>
                         <input id="clit-size" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.clitSize"
                         >
@@ -478,7 +515,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cock-size" class="form-label">Cock Length</label>
+                        <label for="cock-size" class="form-label">Cock Length (5 is average)</label>
                         <input id="cock-size" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cockSize"
                         >
@@ -493,7 +530,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="ball-size" class="form-label">Ball Size</label>
+                        <label for="ball-size" class="form-label">Ball Size (5 is average)</label>
                         <input id="ball-size" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.ballSize"
                         >
@@ -506,31 +543,38 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
             <!-- Descriptions & Transformations -->
             <div class="tab-pane show" id="nav-bodyparts" role="tabpanel" aria-labelledby="nav-bodyparts-tab">
-                <h5>Common notes:</h5>
-                <div>Transformation messages are for the player and should be 2nd person (You, your, etc).</div>
-                <div>Descriptions are for anyone looking and should be 3rd person, using the pronouns 'they/their/them'
-                    - the appropriate pronouns will be substituted in. They should also start with a lower case letter
-                    since they're combined elsewhere.
-                </div>
-                <div>Kemonomimi descriptions are an optional variant of the description for supporting that mode. It
-                    uses the same rules as descriptions.
-                </div>
-                <div>Flags are a space separated list of attributes the part has.
-                    The list is available with 'list flags' on the muck.
-                </div>
+                <h5>Notes:</h5>
+                <ul>
+                    <li>Transformation messages are for the player and should be 2nd person (You, your, etc).</li>
+                    <li>Descriptions are for anyone looking and should be 3rd person, using the pronouns
+                        'they/their/them'
+                        - the appropriate pronouns will be substituted in. They should also start with a lower case
+                        letter
+                        since they're combined elsewhere.
+                    </li>
+                    <li>Kemonomimi descriptions are an optional variant of the description for supporting that mode. It
+                        uses the same rules as descriptions.
+                    </li>
+                    <li>Flags are a space separated list of attributes the part has.
+                        The list is available with 'list flags' on the muck.
+                    </li>
+                    <li>If a part is set as template, then it will attempt to supplement
+                        the present part rather than replacing it. See '+help String Parsing/template Forms'
+                    </li>
+                </ul>
 
                 <!-- Skin -->
                 <h4 class="mt-2">Skin</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="skin-template"
+                           v-model="presentForm.skin.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="skin-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="skin-flags" class="form-label">Flags</label>
                     <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.skin.flags"
-                    >
-                </div>
-                <div class="mt-2">
-                    <label for="skin-transformation" class="form-label">Transformation</label>
-                    <input id="skin-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.skin.transformation"
                     >
                 </div>
                 <div class="mt-2">
@@ -540,6 +584,10 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     >
                     <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="skin-transformation" label="Transformation"
+                                      :prop-value="presentForm.skin.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skin-description" label="Description"
                                       :prop-value="presentForm.skin.description"
@@ -551,18 +599,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Head -->
                 <h4 class="mt-2">Head</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="head-template"
+                           v-model="presentForm.head.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="head-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="head-flags" class="form-label">Flags</label>
                     <input id="head-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.head.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="head-transformation" class="form-label">Transformation</label>
-                    <input id="head-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.head.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="head-transformation" label="Transformation"
+                                      :prop-value="presentForm.head.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-description" label="Description"
                                       :prop-value="presentForm.head.description"
@@ -574,18 +626,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Torso -->
                 <h4 class="mt-2">Torso</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="torso-template"
+                           v-model="presentForm.torso.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="torso-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="torso-flags" class="form-label">Flags</label>
                     <input id="torso-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.torso.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="torso-transformation" class="form-label">Transformation</label>
-                    <input id="torso-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.torso.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="torso-transformation" label="Transformation"
+                                      :prop-value="presentForm.torso.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torso-description" label="Description"
                                       :prop-value="presentForm.torso.description"
@@ -597,18 +653,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Arms -->
                 <h4 class="mt-2">Arms</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="arms-template"
+                           v-model="presentForm.arms.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="arms-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="arms-flags" class="form-label">Flags</label>
                     <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.arms.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="arms-transformation" class="form-label">Transformation</label>
-                    <input id="arms-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.arms.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="arms-transformation" label="Transformation"
+                                      :prop-value="presentForm.arms.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="arms-description" label="Description"
                                       :prop-value="presentForm.arms.description"
@@ -620,18 +680,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Legs -->
                 <h4 class="mt-2">Legs</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="legs-template"
+                           v-model="presentForm.legs.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="legs-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="legs-flags" class="form-label">Flags</label>
                     <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.legs.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="legs-transformation" class="form-label">Transformation</label>
-                    <input id="legs-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.legs.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="legs-transformation" label="Transformation"
+                                      :prop-value="presentForm.legs.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-description" label="Description"
                                       :prop-value="presentForm.legs.description"
@@ -643,18 +707,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Groin -->
                 <h4 class="mt-2">Groin</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="groin-template"
+                           v-model="presentForm.groin.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="groin-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="groin-flags" class="form-label">Flags</label>
                     <input id="groin-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.groin.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="groin-transformation" class="form-label">Transformation</label>
-                    <input id="groin-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.groin.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="groin-transformation" label="Transformation"
+                                      :prop-value="presentForm.groin.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="cock-description" label="Cock Description"
                                       :prop-value="presentForm.groin.cockDescription"
@@ -670,18 +738,22 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <!-- Ass or Tail -->
                 <h4 class="mt-2">Ass or Tail</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="ass-template"
+                           v-model="presentForm.ass.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="ass-template">Template?</label>
+                </div>
                 <div class="mt-2">
                     <label for="ass-flags" class="form-label">Flags</label>
                     <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="#" v-model="presentForm.ass.flags"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="ass-transformation" class="form-label">Transformation</label>
-                    <input id="ass-transformation" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.ass.transformation"
-                    >
-                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="ass-transformation" label="Transformation"
+                                      :prop-value="presentForm.ass.transformation"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="ass-description" label="Description"
                                       :prop-value="presentForm.ass.description"
