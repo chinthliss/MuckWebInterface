@@ -6,7 +6,6 @@ import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
-import templates from "rollup-plugin-visualizer/dist/plugin/template-types";
 
 type FormLog = {
     when: number // Timestamp
@@ -40,12 +39,28 @@ type Form = {
     ballSize: number
     scent: string
     heat: boolean
-    // template: boolean -- Computed and auto-controlled muck side.
+    template: boolean // This is set but actually computed and auto-controlled muck side.
+    viewers: string
+    sexless: boolean
+    notes?: string[]
+
+    noExtract: boolean
+    noReward: boolean
+    noFunnel: boolean
+    noZap: boolean
+    noMastering: boolean
+    noNative: boolean
+    bypassImmune: boolean
+    private: boolean
+    hidden: boolean
+    special?: string
+    powerset?: string
+    placement?: string
+
     victory: string[]
     oVictory: string[]
     defeat: string[]
-    viewers: string
-    sexless: boolean
+
     skin: {
         flags: string
         transformation: string
@@ -102,6 +117,7 @@ type Form = {
 const presentFormId: Ref<string | null> = ref(null);
 const presentForm: Ref<Form | null> = ref(null);
 const viewOnly: Ref<boolean> = ref(false);
+const staff: Ref<boolean> = ref(false);
 const formSelector: Ref<InstanceType<typeof FormEditorFormSelection> | null> = ref(null);
 
 const confirmDeleteModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
@@ -114,6 +130,9 @@ const newFormName: Ref<string> = ref('');
 
 const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+
+// Notes gets a special separate entry because the muck treats it as an array and html as a \n separated string
+const notes: Ref<string> = ref('');
 
 const channel = mwiWebsocket.channel('contribute');
 
@@ -143,15 +162,16 @@ const hasTemplatedParts = computed((): boolean => {
         presentForm.value.ass.template;
 });
 
-const loadForm = (selected: string) => {
-    presentFormId.value = selected;
-    presentForm.value = null;
-    channel.send('getForm', presentFormId.value);
-}
-
 const unloadForm = () => {
     presentFormId.value = null;
     presentForm.value = null;
+    notes.value = '';
+}
+
+const loadForm = (selected: string) => {
+    unloadForm();
+    presentFormId.value = selected;
+    channel.send('getForm', presentFormId.value);
 }
 
 const startDeleteForm = () => {
@@ -191,9 +211,10 @@ const createForm = () => {
 }
 
 type GetFormResponse = {
-    error?: string,
-    form?: Form,
+    error?: string
+    form?: Form
     canEdit?: boolean
+    staff?: boolean
 }
 
 channel.on('form', (response: GetFormResponse) => {
@@ -203,7 +224,18 @@ channel.on('form', (response: GetFormResponse) => {
         return;
     }
     viewOnly.value = !(response.canEdit == true);
-    presentForm.value = response.form ?? null;
+    staff.value = response.staff ?? false;
+    const form = response.form;
+    if (!form) {
+        presentForm.value = null;
+    } else {
+        // Handle some fixes and translations
+        if (form.notes) notes.value = form.notes.join('\n');
+        if (!form.oVictory) form.oVictory = [];
+        if (!form.victory) form.victory = [];
+        if (!form.defeat) form.defeat = [];
+        presentForm.value = form;
+    }
 })
 
 type DeleteFormResponse = {
@@ -334,9 +366,25 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     This form has at least one part with template flagged, so will be considered as a template form.
                 </div>
 
+                <!-- Notes -->
+                <div class="mt-2">
+                    <h4>Notes</h4>
+                    <label for="notes" class="form-label visually-hidden">Notes</label>
+                    <textarea class="form-control" id="notes" rows="3" v-model="notes"></textarea>
+                    <div class="text-muted">These notes can be used to record things of interest, such as:
+                        <ul>
+                            <li>Overall vision for the form.</li>
+                            <li>Power suggestions for each bodypart.</li>
+                            <li>Placement suggestions.</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- History -->
                 <div class="mt-2">
                     <h4>History</h4>
-                    <div v-if="!presentForm || !presentForm.log ||  presentForm.log.length">No history recorded.</div>
+                    <div v-if="!presentForm.log || presentForm.log.length">No history recorded.</div>
                     <table v-else class="table table-dark table-hover table-striped table-responsive small">
                         <thead>
                         <tr>
@@ -351,6 +399,128 @@ channel.on('createForm', (response: CreateFormResponse) => {
                             <td>{{ entry.what }}</td>
                         </tr>
                     </table>
+                </div>
+
+                <div v-if="staff" class="mt-2">
+                    <h4>Staff Controls</h4>
+
+                    <!-- No Reward -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="noreward"
+                               v-model="presentForm.noReward" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="noreward">No Reward</label>
+                    </div>
+                    <div class="text-muted">Prevents rewards from containing nanites of this form.</div>
+
+                    <!-- No Extract -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="noextract"
+                               v-model="presentForm.noExtract" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="noextract">No Extract</label>
+                    </div>
+                    <div class="text-muted">Prevents nanites of this form from being extracted from another source.</div>
+
+                    <!-- No Funnel -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="nofunnel"
+                               v-model="presentForm.noFunnel" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="nofunnel">No Funnel</label>
+                    </div>
+                    <div class="text-muted">
+                        Prevents this form from being pushed onto somebody else by a funnel.
+                    </div>
+
+                    <!-- No Zap -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="nozap"
+                               v-model="presentForm.noZap" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="nozap">No Zap</label>
+                    </div>
+                    <div class="text-muted">Prevents this form from being pushed to somebody else by coyotes.</div>
+
+                    <!-- No Mastering -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="nomastering"
+                               v-model="presentForm.noMastering" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="nomastering">No Mastering</label>
+                    </div>
+                    <div class="text-muted">Prevents this form from being mastered.</div>
+
+                    <!-- No Native -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="nonative"
+                               v-model="presentForm.noNative" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="nonative">No Native</label>
+                    </div>
+                    <div class="text-muted">Prevents this form from being part of someone's native build</div>
+
+                    <!-- Bypass Immune -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="bypassimmune"
+                               v-model="presentForm.bypassImmune" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="bypassimmune">Bypass Immunity</label>
+                    </div>
+                    <div class="text-muted">Allows this form to ignore immunities</div>
+
+                    <!-- Private -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="private"
+                               v-model="presentForm.private" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="private">Private</label>
+                    </div>
+                    <div class="text-muted">Mark the form as private. NOTE: This is for future use,
+                        for now private forms MUST also have the word 'private' in the special setting.
+                    </div>
+
+                    <!-- Hidden -->
+                    <div class="mt-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="hidden"
+                               v-model="presentForm.hidden" :disabled="viewOnly"
+                        >
+                        <label class="form-check-label" for="hidden">Hidden</label>
+                    </div>
+                    <div class="text-muted">Hidden forms won't show in form listings.</div>
+
+                    <!-- Special -->
+                    <div class="d-flex mt-2">
+                        <label for="special" class="col-form-label">Special</label>
+                        <input id="special" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
+                               placeholder="Special Notes" v-model="presentForm.special"
+                        >
+                    </div>
+                    <div class="text-muted">Any special flags, such as Private, Holiday or Dedication.</div>
+
+                    <!-- Powerset -->
+                    <div class="d-flex mt-2">
+                        <label for="powerset" class="col-form-label">Powerset</label>
+                        <input id="powerset" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
+                               v-model="presentForm.powerset"
+                        >
+                    </div>
+                    <div class="text-muted">Any outstanding power tasks.
+                        NOTE: If this isn't blank a form is considered unreleased and won't be visible.
+                    </div>
+
+                    <!-- Placement -->
+                    <div class="d-flex mt-2">
+                        <label for="placement" class="col-form-label">Placement</label>
+                        <input id="placement" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
+                               v-model="presentForm.placement"
+                        >
+                    </div>
+                    <div class="text-muted">Any outstanding placement tasks.
+                        NOTE: If this isn't blank a form is considered unreleased and won't be visible.
+                    </div>
+
+
                 </div>
 
                 <div class="mt-2">

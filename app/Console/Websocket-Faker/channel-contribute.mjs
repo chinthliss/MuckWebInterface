@@ -21,16 +21,16 @@ export default class ChannelCharacter extends Channel {
                 {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
             ],
             tags: 'tag anothertag',
-            breastCount:1,
-            breastSize:2,
-            ballCount:3,
-            ballSize:4,
-            cockCount:5,
-            cockSize:6,
-            cuntCount:7,
-            cuntSize:8,
-            clitCount:9,
-            clitSize:10,
+            breastCount: 1,
+            breastSize: 2,
+            ballCount: 3,
+            ballSize: 4,
+            cockCount: 5,
+            cockSize: 6,
+            cuntCount: 7,
+            cuntSize: 8,
+            clitCount: 9,
+            clitSize: 10,
             victory: ['This is a victory description.', 'With multiple lines!'],
             oVictory: ['This is a 3rd party victory description.'],
             defeat: ['This is a defeat description.'],
@@ -43,7 +43,8 @@ export default class ChannelCharacter extends Channel {
             arms: {},
             legs: {},
             groin: {},
-            ass: {}
+            ass: {},
+            notes: ['test', 'test2']
         },
         {
             name: 'Approved Form',
@@ -111,7 +112,9 @@ export default class ChannelCharacter extends Channel {
         for (const form of this.formsCatalogue) {
             if (form.name === data) {
                 this.sendMessageToConnection(connection, 'form', {
-                    form: form, canEdit: !form.approved
+                    form: form,
+                    canEdit: !form.approved,
+                    staff: 1
                 });
                 return;
             }
