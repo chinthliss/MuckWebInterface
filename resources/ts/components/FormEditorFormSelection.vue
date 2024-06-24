@@ -39,9 +39,14 @@ const filters = ref({
 FilterService.register('filteredFormList', (name: string, mode: string) => {
     const form: FormListing | undefined = formList.value.find((form) => form.name == name);
     if (!form) return false;
-    if (mode === 'review' && !form.review) return false;
-    if (mode === 'revise' && !form.revise) return false;
-    return true;
+    switch (mode) {
+        case 'review':
+            return form.review;
+        case 'revise':
+            return form.revise;
+        default:
+            return true;
+    }
 });
 
 const getFormList = () => {
@@ -146,7 +151,7 @@ if (props.startExpanded) getFormList()
                 <Column header="Owner" field="owner" :sortable="true"></Column>
                 <Column header="Last Edit" field="lastEdit" :sortable="true">
                     <template #body="{ data }">
-                        {{ timestampToString(data.lastEdit) }}
+                        {{ timestampToString((data as FormListing).lastEdit) }}
                     </template>
                 </Column>
                 <Column field="approved" :sortable="true">
