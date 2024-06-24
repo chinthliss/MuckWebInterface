@@ -136,6 +136,9 @@ const notes: Ref<string> = ref('');
 
 const channel = mwiWebsocket.channel('contribute');
 
+let pendingSaves: string[] = [];
+let pendingSaveId: number | null = null;
+
 const oneWordStatus = computed((): string => {
     if (!presentForm.value) return '';
     if (presentForm.value.revise) return 'Revision Needed';
@@ -207,6 +210,48 @@ const createForm = () => {
     } else {
         error.value = "Cancelled - No name was given for the new form..";
         if (errorModal.value) errorModal.value.show();
+    }
+}
+
+const saveValues = () => {
+    pendingSaveId = null;
+    for (const id of pendingSaves) {
+        console.log("Saving: ", id);
+        const value = 'test';
+        channel.send('updateForm', {
+            form: presentFormId.value,
+            propName: id,
+            propValue: value
+        });
+    }
+    pendingSaves.length = 0;
+}
+
+const queueSaveIfRequired = () => {
+    if (!pendingSaveId) pendingSaveId = setTimeout(saveValues, 1000);
+}
+
+const queueSave = (e: InputEvent) => {
+    const element = e.target as HTMLInputElement;
+    if (!element?.id) {
+        console.log("Couldn't queue save value as the element triggering it has no id: ", e);
+        return;
+    }
+    if (!pendingSaves.includes(element.id)) {
+        pendingSaves.push(element.id);
+        queueSaveIfRequired();
+    }
+}
+
+// The code editors don't return an InputEvent unfortunately, so need their own mechanism
+const queueSaveFromEditor = (e: { id: string, value; string }) => {
+    if (!e?.id) {
+        console.log("Couldn't queue save editor value as the element triggering it has no id: ", e);
+        return;
+    }
+    if (!pendingSaves.includes(e.id)) {
+        pendingSaves.push(e.id);
+        queueSaveIfRequired();
     }
 }
 
@@ -354,7 +399,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="d-flex mt-2">
                     <label for="viewers" class="col-form-label">Allowed Viewers</label>
                     <input id="viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of Viewers" v-model="presentForm.viewers"
+                           placeholder="List of Viewers" v-model="presentForm.viewers" @input="queueSave"
                     >
                 </div>
                 <div class="text-muted">Space separated list of other people who are allowed to view this form,
@@ -370,7 +415,9 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">
                     <h4>Notes</h4>
                     <label for="notes" class="form-label visually-hidden">Notes</label>
-                    <textarea class="form-control" id="notes" rows="3" v-model="notes"></textarea>
+                    <textarea class="form-control" id="notes" rows="3"
+                              v-model="notes" @input="queueSave" :disabled="viewOnly"
+                    ></textarea>
                     <div class="text-muted">These notes can be used to record things of interest, such as:
                         <ul>
                             <li>Overall vision for the form.</li>
@@ -407,7 +454,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- No Reward -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="noreward"
-                               v-model="presentForm.noReward" :disabled="viewOnly"
+                               v-model="presentForm.noReward" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="noreward">No Reward</label>
                     </div>
@@ -416,16 +463,17 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- No Extract -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="noextract"
-                               v-model="presentForm.noExtract" :disabled="viewOnly"
+                               v-model="presentForm.noExtract" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="noextract">No Extract</label>
                     </div>
-                    <div class="text-muted">Prevents nanites of this form from being extracted from another source.</div>
+                    <div class="text-muted">Prevents nanites of this form from being extracted from another source.
+                    </div>
 
                     <!-- No Funnel -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="nofunnel"
-                               v-model="presentForm.noFunnel" :disabled="viewOnly"
+                               v-model="presentForm.noFunnel" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="nofunnel">No Funnel</label>
                     </div>
@@ -436,7 +484,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- No Zap -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="nozap"
-                               v-model="presentForm.noZap" :disabled="viewOnly"
+                               v-model="presentForm.noZap" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="nozap">No Zap</label>
                     </div>
@@ -445,7 +493,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- No Mastering -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="nomastering"
-                               v-model="presentForm.noMastering" :disabled="viewOnly"
+                               v-model="presentForm.noMastering" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="nomastering">No Mastering</label>
                     </div>
@@ -454,7 +502,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- No Native -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="nonative"
-                               v-model="presentForm.noNative" :disabled="viewOnly"
+                               v-model="presentForm.noNative" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="nonative">No Native</label>
                     </div>
@@ -463,7 +511,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- Bypass Immune -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="bypassimmune"
-                               v-model="presentForm.bypassImmune" :disabled="viewOnly"
+                               v-model="presentForm.bypassImmune" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="bypassimmune">Bypass Immunity</label>
                     </div>
@@ -472,7 +520,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- Private -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="private"
-                               v-model="presentForm.private" :disabled="viewOnly"
+                               v-model="presentForm.private" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="private">Private</label>
                     </div>
@@ -483,7 +531,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <!-- Hidden -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" value="" id="hidden"
-                               v-model="presentForm.hidden" :disabled="viewOnly"
+                               v-model="presentForm.hidden" :disabled="viewOnly" @input="queueSave"
                         >
                         <label class="form-check-label" for="hidden">Hidden</label>
                     </div>
@@ -493,7 +541,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="d-flex mt-2">
                         <label for="special" class="col-form-label">Special</label>
                         <input id="special" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                               placeholder="Special Notes" v-model="presentForm.special"
+                               placeholder="Special Notes" v-model="presentForm.special" @input="queueSave"
                         >
                     </div>
                     <div class="text-muted">Any special flags, such as Private, Holiday or Dedication.</div>
@@ -502,7 +550,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="d-flex mt-2">
                         <label for="powerset" class="col-form-label">Powerset</label>
                         <input id="powerset" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                               v-model="presentForm.powerset"
+                               v-model="presentForm.powerset" @input="queueSave"
                         >
                     </div>
                     <div class="text-muted">Any outstanding power tasks.
@@ -513,7 +561,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="d-flex mt-2">
                         <label for="placement" class="col-form-label">Placement</label>
                         <input id="placement" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                               v-model="presentForm.placement"
+                               v-model="presentForm.placement" @input="queueSave"
                         >
                     </div>
                     <div class="text-muted">Any outstanding placement tasks.
@@ -542,8 +590,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Height</div>
                     <div class="ms-1 flex-fill">
-                        <input type="range" v-model.number="presentForm.height" :disabled="viewOnly"
-                               class="form-control-range w-100" min="1" max="30"
+                        <input id="height" type="range" v-model.number="presentForm.height" :disabled="viewOnly"
+                               class="form-control-range w-100" min="1" max="30" @input="queueSave"
                         >
                     </div>
                     <div class="ms-1 sliderValue">{{ presentForm.height }}</div>
@@ -554,8 +602,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Mass</div>
                     <div class="ms-1 flex-fill">
-                        <input type="range" v-model.number="presentForm.mass" :disabled="viewOnly"
-                               class="form-control-range w-100" min="-100" max="300"
+                        <input id="mass" type="range" v-model.number="presentForm.mass" :disabled="viewOnly"
+                               class="form-control-range w-100" min="-100" max="300" @input="queueSave"
                         >
                     </div>
                     <div class="ms-1 sliderValue">{{ presentForm.mass }}%</div>
@@ -569,7 +617,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="d-flex mt-2">
                     <label for="tags" class="col-form-label me-2">Tags</label>
                     <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of tags" v-model="presentForm.tags"
+                           placeholder="List of tags" v-model="presentForm.tags" @input="queueSave"
                     >
                 </div>
                 <div class="text-muted">Space separated list of tags to help categorize the form. A list is available
@@ -580,7 +628,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="d-flex mt-2">
                     <label for="tags" class="col-form-label me-2">Scent</label>
                     <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of tags" v-model="presentForm.scent"
+                           placeholder="List of tags" v-model="presentForm.scent" @input="queueSave"
                     >
                 </div>
                 <div class="text-muted">Scent description that will follow phrasing like 'smells like ...'.</div>
@@ -588,7 +636,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <!-- Heat -->
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" value="" id="heat"
-                           v-model="presentForm.heat" :disabled="viewOnly"
+                           v-model="presentForm.heat" :disabled="viewOnly" @input="queueSave"
                     >
                     <label class="form-check-label" for="heat">Heat?</label>
                 </div>
@@ -602,7 +650,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                             2nd person (say, purr, bark)
                         </label>
                         <input id="2nd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="2nd Person" v-model="presentForm.say"
+                               placeholder="2nd Person" v-model="presentForm.say" @input="queueSave"
                         >
                     </div>
 
@@ -611,7 +659,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                             3rd person (says, purrs, barks)
                         </label>
                         <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="3rd Person" v-model="presentForm.oSay"
+                               placeholder="3rd Person" v-model="presentForm.oSay" @input="queueSave"
                         >
                     </div>
                 </div>
@@ -627,7 +675,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <!-- Heat -->
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" value="" id="sexless"
-                           v-model="presentForm.sexless" :disabled="viewOnly"
+                           v-model="presentForm.sexless" :disabled="viewOnly" @input="queueSave"
                     >
                     <label class="form-check-label" for="heat">Sexless?</label>
                 </div>
@@ -638,56 +686,56 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breast-count" class="form-label">Breast Count</label>
                         <input id="breast-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.breastCount"
+                               placeholder="#" v-model="presentForm.breastCount" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breast-size" class="form-label">Breast Size (5 is average)</label>
                         <input id="breast-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.breastSize"
+                               placeholder="#" v-model="presentForm.breastSize" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cunt-count" class="form-label">Cunt Count</label>
                         <input id="cunt-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.cuntCount"
+                               placeholder="#" v-model="presentForm.cuntCount" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cunt-size" class="form-label">Cunt Depth (5 is average)</label>
                         <input id="cunt-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.cuntSize"
+                               placeholder="#" v-model="presentForm.cuntSize" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="clit-count" class="form-label">Clit Count</label>
                         <input id="clit-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.clitCount"
+                               placeholder="#" v-model="presentForm.clitCount" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="clit-size" class="form-label">Clit Length (5 is average)</label>
                         <input id="clit-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.clitSize"
+                               placeholder="#" v-model="presentForm.clitSize" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cock-count" class="form-label">Cock Count</label>
                         <input id="cock-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.cockCount"
+                               placeholder="#" v-model="presentForm.cockCount" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cock-size" class="form-label">Cock Length (5 is average)</label>
                         <input id="cock-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.cockSize"
+                               placeholder="#" v-model="presentForm.cockSize" @input="queueSave"
                         >
                     </div>
 
@@ -695,14 +743,14 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="ball-count" class="form-label">Ball Count</label>
                         <input id="ball-count" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.ballCount"
+                               placeholder="#" v-model="presentForm.ballCount" @input="queueSave"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="ball-size" class="form-label">Ball Size (5 is average)</label>
                         <input id="ball-size" type="number" class="form-control" :disabled="viewOnly"
-                               placeholder="#" v-model="presentForm.ballSize"
+                               placeholder="#" v-model="presentForm.ballSize" @input="queueSave"
                         >
                     </div>
 
@@ -737,67 +785,67 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <h4 class="mt-2">Skin</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" value="" id="skin-template"
-                           v-model="presentForm.skin.template" :disabled="viewOnly"
+                           v-model="presentForm.skin.template" :disabled="viewOnly" @input="queueSave"
                     >
                     <label class="form-check-label" for="skin-template">Template?</label>
                 </div>
                 <div class="mt-2">
                     <label for="skin-flags" class="form-label">Flags</label>
                     <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.skin.flags"
+                           placeholder="#" v-model="presentForm.skin.flags" @input="queueSave"
                     >
                 </div>
                 <div class="mt-2">
                     <label for="skin-short-description" class="form-label">Short Description</label>
                     <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.skin.shortDescription"
+                           placeholder="#" v-model="presentForm.skin.shortDescription" @input="queueSave"
                     >
                     <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skin-transformation" label="Transformation"
-                                      :prop-value="presentForm.skin.transformation"
+                                      :prop-value="presentForm.skin.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skin-description" label="Description"
-                                      :prop-value="presentForm.skin.description"
+                                      :prop-value="presentForm.skin.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skin-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.skin.kemoDescription"
+                                      :prop-value="presentForm.skin.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Head -->
                 <h4 class="mt-2">Head</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" value="" id="head-template"
-                           v-model="presentForm.head.template" :disabled="viewOnly"
+                           v-model="presentForm.head.template" :disabled="viewOnly" @input="queueSave"
                     >
                     <label class="form-check-label" for="head-template">Template?</label>
                 </div>
                 <div class="mt-2">
                     <label for="head-flags" class="form-label">Flags</label>
-                    <input id="head-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <input id="head-flags" type="text" class="form-control" :disabled="viewOnly" @input="queueSave"
                            placeholder="#" v-model="presentForm.head.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-transformation" label="Transformation"
-                                      :prop-value="presentForm.head.transformation"
+                                      :prop-value="presentForm.head.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-description" label="Description"
-                                      :prop-value="presentForm.head.description"
+                                      :prop-value="presentForm.head.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.head.kemoDescription"
+                                      :prop-value="presentForm.head.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Torso -->
                 <h4 class="mt-2">Torso</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="torso-template"
+                    <input class="form-check-input" type="checkbox" value="" id="torso-template" @input="queueSave"
                            v-model="presentForm.torso.template" :disabled="viewOnly"
                     >
                     <label class="form-check-label" for="torso-template">Template?</label>
@@ -805,80 +853,81 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">
                     <label for="torso-flags" class="form-label">Flags</label>
                     <input id="torso-flags" type="text" class="form-control" :disabled="viewOnly"
+                           @input="queueSave"
                            placeholder="#" v-model="presentForm.torso.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torso-transformation" label="Transformation"
-                                      :prop-value="presentForm.torso.transformation"
+                                      :prop-value="presentForm.torso.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torso-description" label="Description"
-                                      :prop-value="presentForm.torso.description"
+                                      :prop-value="presentForm.torso.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torso-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.torso.kemoDescription"
+                                      :prop-value="presentForm.torso.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Arms -->
                 <h4 class="mt-2">Arms</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="arms-template"
+                    <input class="form-check-input" type="checkbox" value="" id="arms-template" @input="queueSave"
                            v-model="presentForm.arms.template" :disabled="viewOnly"
                     >
                     <label class="form-check-label" for="arms-template">Template?</label>
                 </div>
                 <div class="mt-2">
                     <label for="arms-flags" class="form-label">Flags</label>
-                    <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly" @input="queueSave"
                            placeholder="#" v-model="presentForm.arms.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="arms-transformation" label="Transformation"
-                                      :prop-value="presentForm.arms.transformation"
+                                      :prop-value="presentForm.arms.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="arms-description" label="Description"
-                                      :prop-value="presentForm.arms.description"
+                                      :prop-value="presentForm.arms.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-arms-description" label="Kemo Description"
-                                      :prop-value="presentForm.arms.kemoDescription"
+                                      :prop-value="presentForm.arms.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Legs -->
                 <h4 class="mt-2">Legs</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="legs-template"
+                    <input class="form-check-input" type="checkbox" value="" id="legs-template" @input="queueSave"
                            v-model="presentForm.legs.template" :disabled="viewOnly"
                     >
                     <label class="form-check-label" for="legs-template">Template?</label>
                 </div>
                 <div class="mt-2">
                     <label for="legs-flags" class="form-label">Flags</label>
-                    <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly" @input="queueSave"
                            placeholder="#" v-model="presentForm.legs.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-transformation" label="Transformation"
-                                      :prop-value="presentForm.legs.transformation"
+                                      :prop-value="presentForm.legs.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-description" label="Description"
-                                      :prop-value="presentForm.legs.description"
+                                      :prop-value="presentForm.legs.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.legs.kemoDescription"
+                                      :prop-value="presentForm.legs.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Groin -->
                 <h4 class="mt-2">Groin</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="groin-template"
+                    <input class="form-check-input" type="checkbox" value="" id="groin-template" @input="queueSave"
                            v-model="presentForm.groin.template" :disabled="viewOnly"
                     >
                     <label class="form-check-label" for="groin-template">Template?</label>
@@ -886,24 +935,25 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">
                     <label for="groin-flags" class="form-label">Flags</label>
                     <input id="groin-flags" type="text" class="form-control" :disabled="viewOnly"
+                           @input="queueSave"
                            placeholder="#" v-model="presentForm.groin.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="groin-transformation" label="Transformation"
-                                      :prop-value="presentForm.groin.transformation"
+                                      :prop-value="presentForm.groin.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="cock-description" label="Cock Description"
-                                      :prop-value="presentForm.groin.cockDescription"
+                                      :prop-value="presentForm.groin.cockDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="cunt-description" label="Cunt Description"
-                                      :prop-value="presentForm.groin.cuntDescription"
+                                      :prop-value="presentForm.groin.cuntDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="clit-description" label="Clit Description"
-                                      :prop-value="presentForm.groin.clitDescription"
+                                      :prop-value="presentForm.groin.clitDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Ass or Tail -->
@@ -922,11 +972,11 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="ass-transformation" label="Transformation"
-                                      :prop-value="presentForm.ass.transformation"
+                                      :prop-value="presentForm.ass.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="ass-description" label="Description"
-                                      :prop-value="presentForm.ass.description"
+                                      :prop-value="presentForm.ass.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
             </div>
@@ -938,7 +988,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Monster defeats Player"
-                                      :prop-value="presentForm.defeat.join('\n')"
+                                      :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     2nd person from the defeated player's perspective,
@@ -950,7 +1000,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player defeats Monster"
-                                      :prop-value="presentForm.victory.join('\n')"
+                                      :prop-value="presentForm.victory.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     2nd person from the victorious player's perspective,
@@ -962,7 +1012,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="ovictory" label="Player seen defeating Monster"
-                                      :prop-value="presentForm.oVictory.join('\n')"
+                                      :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
                     3rd person from an observer's perspective,

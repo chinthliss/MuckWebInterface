@@ -5,7 +5,7 @@ import {Compartment, EditorState} from "@codemirror/state"
 import {stringParsingDefaultExtensions} from "../stringparsing";
 import {onMounted, watch} from "vue";
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['input'])
 
 const props = defineProps<{
     viewOnly: boolean,
@@ -26,7 +26,7 @@ const setReadOnly = (newValue) => {
     });
 }
 
-watch(() => props.viewOnly, (newValue, oldValue) => {
+watch(() => props.viewOnly, (newValue, _oldValue) => {
     setReadOnly(newValue);
 });
 
@@ -36,7 +36,10 @@ onMounted(() => {
         readOnlySetting.of(EditorState.readOnly.of(props.viewOnly)),
         EditorView.updateListener.of((v: ViewUpdate) => {
             if (v.docChanged) {
-                emit('update', v.state.doc.toString());
+                emit('input', {
+                    id: props.propName,
+                    value: v.state.doc.toString()
+                });
             }
         })
     ];
