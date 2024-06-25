@@ -217,7 +217,6 @@ const saveValues = () => {
     pendingSaveId = null;
     for (const id in pendingSaves) {
         const value = pendingSaves[id];
-        console.log("Saving: ", id, ": ", value);
         delete pendingSaves[id];
         channel.send('updateForm', {
             form: presentFormId.value,
@@ -233,7 +232,6 @@ const queueSave = (propName: string, propValue: string) => {
 }
 
 const queueSaveFromElement = (e: InputEvent) => {
-    console.log(e.target);
     const element = e.target as HTMLInputElement;
     if (!element?.id) {
         console.log("Couldn't queue save value as the element triggering it has no id: ", e);
