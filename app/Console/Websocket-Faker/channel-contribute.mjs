@@ -142,6 +142,9 @@ export default class ChannelCharacter extends Channel {
         },
         'deleteForm': (connection, data) => {
             this.deleteForm(connection, data);
+        },
+        'updateForm': (_connection, _data) => {
+            // We don't do anything with this in dev.
         }
 
     }
