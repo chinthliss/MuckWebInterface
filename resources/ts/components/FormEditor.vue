@@ -297,7 +297,7 @@ channel.on('deleteForm', (response: DeleteFormResponse) => {
         if (formSelector.value) formSelector.value.refresh();
         unloadForm();
     }
-})
+});
 
 type CreateFormResponse = {
     error?: string,
@@ -314,7 +314,13 @@ channel.on('createForm', (response: CreateFormResponse) => {
         if (formSelector.value) formSelector.value.refresh();
         loadForm(response.formId);
     }
-})
+});
+
+channel.on('updateFormFailed', (response) => {
+    error.value = `Update failed or rejected by the muck when setting '${response.propName}' to '${response.propValue}.'`;
+    error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere."
+    if (errorModal.value) errorModal.value.show();
+});
 
 </script>
 

@@ -143,8 +143,11 @@ export default class ChannelCharacter extends Channel {
         'deleteForm': (connection, data) => {
             this.deleteForm(connection, data);
         },
-        'updateForm': (_connection, _data) => {
+        'updateForm': (connection, data) => {
             // We don't do anything with this in dev.
+            // .. Unless it's one we're using to test rejections
+            if (data?.propName === 'skin-transformation')
+                this.sendMessageToConnection(connection, 'updateFormFailed', data);
         }
 
     }
