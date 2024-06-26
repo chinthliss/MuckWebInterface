@@ -348,6 +348,11 @@ channel.on('createForm', (response: CreateFormResponse) => {
             </div>
         </div>
 
+        <!-- Read-Only mode warning -->
+        <div v-if="viewOnly" class="mt-2 p-2 rounded text-bg-warning">
+            View only mode - you are unable to make edits to this form.
+        </div>
+
         <!-- Tabs -->
         <ul class="nav nav-tabs nav-fill mt-2 sticky-top" id="form-editor-tabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -790,13 +795,13 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">
                     <label for="skin-flags" class="form-label">Flags</label>
                     <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.skin.flags" @input="queueSaveFromElement"
+                           placeholder="Enter a space separated list" v-model="presentForm.skin.flags" @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="mt-2">
                     <label for="skin-short-description" class="form-label">Short Description</label>
                     <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.skin.shortDescription" @input="queueSaveFromElement"
+                           placeholder="Enter a phrase for an adjective (e.g. dry and scaly) " v-model="presentForm.skin.shortDescription" @input="queueSaveFromElement"
                     >
                     <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 </div>
@@ -825,7 +830,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <label for="head-flags" class="form-label">Flags</label>
                     <input id="head-flags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="#" v-model="presentForm.head.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.head.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
@@ -853,7 +858,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <label for="torso-flags" class="form-label">Flags</label>
                     <input id="torso-flags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="#" v-model="presentForm.torso.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.torso.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
@@ -881,7 +886,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <label for="arms-flags" class="form-label">Flags</label>
                     <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="#" v-model="presentForm.arms.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.arms.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
@@ -909,7 +914,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <label for="legs-flags" class="form-label">Flags</label>
                     <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="#" v-model="presentForm.legs.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.legs.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
@@ -937,7 +942,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                     <label for="groin-flags" class="form-label">Flags</label>
                     <input id="groin-flags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="#" v-model="presentForm.groin.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.groin.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
@@ -968,7 +973,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
                 <div class="mt-2">
                     <label for="ass-flags" class="form-label">Flags</label>
                     <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="#" v-model="presentForm.ass.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.ass.flags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
