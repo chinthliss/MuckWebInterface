@@ -318,7 +318,8 @@ channel.on('createForm', (response: CreateFormResponse) => {
 
 channel.on('updateFormFailed', (response) => {
     error.value = `Update failed or rejected by the muck when setting '${response.propName}' to '${response.propValue}.'`;
-    error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere."
+    error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere.";
+    if (response.error) error.value += "\n\nActual error returned: " + response.error;
     if (errorModal.value) errorModal.value.show();
 });
 
@@ -801,13 +802,15 @@ channel.on('updateFormFailed', (response) => {
                 <div class="mt-2">
                     <label for="skin-flags" class="form-label">Flags</label>
                     <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a space separated list" v-model="presentForm.skin.flags" @input="queueSaveFromElement"
+                           placeholder="Enter a space separated list" v-model="presentForm.skin.flags"
+                           @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="mt-2">
                     <label for="skin-short-description" class="form-label">Short Description</label>
                     <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a phrase for an adjective (e.g. dry and scaly) " v-model="presentForm.skin.shortDescription" @input="queueSaveFromElement"
+                           placeholder="Enter a phrase for an adjective (e.g. dry and scaly) "
+                           v-model="presentForm.skin.shortDescription" @input="queueSaveFromElement"
                     >
                     <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 </div>
