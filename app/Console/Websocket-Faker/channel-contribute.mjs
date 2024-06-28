@@ -7,19 +7,23 @@ export default class ChannelCharacter extends Channel {
      */
     formsCatalogue = [
         {
+            _: {
+                owner: 1234,
+                approved: false,
+                review: false,
+                revise: false,
+                lastEdit: Math.floor(Date.now() / 1000) - 1,
+                notes: ['test', 'test2'],
+                log: [
+                    {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
+                ]
+            },
             name: 'Form in progress',
-            owner: 1234,
-            approved: false,
-            review: false,
-            revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 1,
             mass: 5,
             height: 5,
             say: 'wibble',
             oSay: 'wibbles',
-            log: [
-                {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
-            ],
+
             tags: 'tag anothertag',
             breastCount: 1,
             breastSize: 2,
@@ -43,16 +47,17 @@ export default class ChannelCharacter extends Channel {
             arms: {},
             legs: {},
             groin: {},
-            ass: {},
-            notes: ['test', 'test2']
+            ass: {}
         },
         {
+            _: {
+                owner: 1234,
+                approved: true,
+                review: false,
+                revise: false,
+                lastEdit: Math.floor(Date.now() / 1000) - 1,
+            },
             name: 'Approved Form',
-            owner: 1234,
-            approved: true,
-            review: false,
-            revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 10,
             skin: {},
             head: {},
             torso: {},
@@ -62,12 +67,14 @@ export default class ChannelCharacter extends Channel {
             ass: {}
         },
         {
+            _: {
+                owner: 1234,
+                approved: false,
+                review: true,
+                revise: false,
+                lastEdit: Math.floor(Date.now() / 1000) - 1,
+            },
             name: 'Form ready to review',
-            owner: 1234,
-            approved: false,
-            review: true,
-            revise: false,
-            lastEdit: Math.floor(Date.now() / 1000) - 100,
             skin: {},
             head: {},
             torso: {},
@@ -77,12 +84,14 @@ export default class ChannelCharacter extends Channel {
             ass: {}
         },
         {
+            _: {
+                owner: 1234,
+                approved: false,
+                review: false,
+                revise: true,
+                lastEdit: Math.floor(Date.now() / 1000) - 1,
+            },
             name: 'Form in need of revision',
-            owner: 1234,
-            approved: false,
-            review: false,
-            revise: true,
-            lastEdit: Math.floor(Date.now() / 1000) - 1000,
             skin: {},
             head: {},
             torso: {},
@@ -90,7 +99,6 @@ export default class ChannelCharacter extends Channel {
             legs: {},
             groin: {},
             ass: {}
-
         }
     ]
 
@@ -99,11 +107,11 @@ export default class ChannelCharacter extends Channel {
         for (const form of this.formsCatalogue) {
             this.sendMessageToConnection(connection, 'formListing', {
                 name: form.name,
-                owner: form.owner,
-                approved: form.approved,
-                review: form.review,
-                revise: form.revise,
-                lastEdit: form.lastEdit
+                owner: form._.owner,
+                approved: form._.approved,
+                review: form._.review,
+                revise: form._.revise,
+                lastEdit: form._.lastEdit
             });
         }
     };
@@ -113,7 +121,7 @@ export default class ChannelCharacter extends Channel {
             if (form.name === data) {
                 this.sendMessageToConnection(connection, 'form', {
                     form: form,
-                    canEdit: !form.approved,
+                    canEdit: !form._.approved,
                     staff: 1
                 });
                 return;

@@ -18,12 +18,6 @@ type Form = {
     height: number
     mass: number
     owner?: number
-    approved: boolean
-    review: boolean
-    revise: boolean
-    createdAt?: number // Timestamp
-    editedAt?: number // Timestamp
-    log?: FormLog[]
     tags: string
     say: string
     oSay: string
@@ -42,7 +36,6 @@ type Form = {
     template: boolean // This is set but actually computed and auto-controlled muck side.
     viewers: string
     sexless: boolean
-    notes?: string[]
 
     noExtract: boolean
     noReward: boolean
@@ -112,6 +105,16 @@ type Form = {
         template: boolean
     }
 
+    _: {
+        approved: boolean
+        review: boolean
+        revise: boolean
+        createdAt?: number // Timestamp
+        editedAt?: number // Timestamp
+        log?: FormLog[]
+        notes?: string[]
+    }
+
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -141,16 +144,16 @@ let pendingSaveId: number | null = null;
 
 const oneWordStatus = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value.revise) return 'Revision Needed';
-    if (presentForm.value.review) return 'Awaiting Review';
-    return presentForm.value.approved ? 'Finished' : 'Under Construction';
+    if (presentForm.value._.revise) return 'Revision Needed';
+    if (presentForm.value._.review) return 'Awaiting Review';
+    return presentForm.value._.approved ? 'Finished' : 'Under Construction';
 });
 
 const statusDescription = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value.revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
-    if (presentForm.value.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
-    if (presentForm.value.approved) return 'This form has been finalized. You can view it but not make any changes.';
+    if (presentForm.value._.revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
+    if (presentForm.value._.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
+    if (presentForm.value._.approved) return 'This form has been finalized. You can view it but not make any changes.';
     return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
 });
 
@@ -273,7 +276,7 @@ channel.on('form', (response: GetFormResponse) => {
         presentForm.value = null;
     } else {
         // Handle some fixes and translations
-        if (form.notes) notes.value = form.notes.join('\n');
+        if (form._.notes) notes.value = form._.notes.join('\n');
         if (!form.oVictory) form.oVictory = [];
         if (!form.victory) form.victory = [];
         if (!form.defeat) form.defeat = [];
@@ -401,9 +404,9 @@ channel.on('updateFormFailed', (response) => {
                 <div>Status: {{ oneWordStatus }}</div>
                 <div class="text-muted">{{ statusDescription }}</div>
 
-                <div class="mt-2">Created: {{ timestampToString(presentForm.createdAt) }}</div>
+                <div class="mt-2">Created: {{ timestampToString(presentForm._.createdAt) }}</div>
 
-                <div class="mt-2">Last edited: {{ timestampToString(presentForm.editedAt) }}</div>
+                <div class="mt-2">Last edited: {{ timestampToString(presentForm._.editedAt) }}</div>
 
                 <!-- Allowed Viewers -->
                 <div class="d-flex mt-2">
@@ -441,7 +444,7 @@ channel.on('updateFormFailed', (response) => {
                 <!-- History -->
                 <div class="mt-2">
                     <h4>History</h4>
-                    <div v-if="!presentForm.log || presentForm.log.length">No history recorded.</div>
+                    <div v-if="!presentForm._.log || presentForm._.log.length">No history recorded.</div>
                     <table v-else class="table table-dark table-hover table-striped table-responsive small">
                         <thead>
                         <tr>
@@ -450,7 +453,7 @@ channel.on('updateFormFailed', (response) => {
                             <th scope="col">What</th>
                         </tr>
                         </thead>
-                        <tr v-for="entry in presentForm?.log">
+                        <tr v-for="entry in presentForm?._.log">
                             <td>{{ timestampToString(entry.when) }}</td>
                             <td>{{ entry.who }}</td>
                             <td>{{ entry.what }}</td>
