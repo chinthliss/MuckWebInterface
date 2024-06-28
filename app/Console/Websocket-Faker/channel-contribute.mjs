@@ -18,7 +18,8 @@ export default class ChannelCharacter extends Channel {
                 notes: ['test', 'test2'],
                 log: [
                     {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
-                ]
+                ],
+                viewers: 'Test viewers entry'
             },
             mass: 5,
             height: 5,

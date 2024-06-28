@@ -24,6 +24,7 @@ type Form = {
         editedAt?: number // Timestamp
         log?: FormLog[]
         notes?: string[]
+        viewers: string
     }
 
     height: number
@@ -44,7 +45,6 @@ type Form = {
     scent: string
     heat: boolean
     template: boolean // This is set but actually computed and auto-controlled muck side.
-    viewers: string
     sexless: boolean
 
     noExtract: boolean
@@ -411,7 +411,7 @@ channel.on('updateFormFailed', (response) => {
                 <div class="d-flex mt-2">
                     <label for="viewers" class="col-form-label">Allowed Viewers</label>
                     <input id="viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of Viewers" v-model="presentForm.viewers" @input="queueSaveFromElement"
+                           placeholder="List of Viewers" v-model="presentForm._.viewers" @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="text-muted">Space separated list of other people who are allowed to view this form,
