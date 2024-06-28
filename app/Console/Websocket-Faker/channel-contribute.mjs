@@ -7,8 +7,10 @@ export default class ChannelCharacter extends Channel {
      */
     formsCatalogue = [
         {
+            name: 'Form in progress',
+            owner: 1234,
             _: {
-                owner: 1234,
+
                 approved: false,
                 review: false,
                 revise: false,
@@ -18,7 +20,6 @@ export default class ChannelCharacter extends Channel {
                     {who: 'person', what: 'test', when: Math.floor(Date.now() / 1000) - 1}
                 ]
             },
-            name: 'Form in progress',
             mass: 5,
             height: 5,
             say: 'wibble',
@@ -50,14 +51,15 @@ export default class ChannelCharacter extends Channel {
             ass: {}
         },
         {
+            name: 'Approved Form',
+            owner: 1234,
             _: {
-                owner: 1234,
+
                 approved: true,
                 review: false,
                 revise: false,
                 lastEdit: Math.floor(Date.now() / 1000) - 1,
             },
-            name: 'Approved Form',
             skin: {},
             head: {},
             torso: {},
@@ -67,14 +69,15 @@ export default class ChannelCharacter extends Channel {
             ass: {}
         },
         {
+            name: 'Form ready to review',
+            owner: 1234,
             _: {
-                owner: 1234,
+
                 approved: false,
                 review: true,
                 revise: false,
                 lastEdit: Math.floor(Date.now() / 1000) - 1,
             },
-            name: 'Form ready to review',
             skin: {},
             head: {},
             torso: {},
@@ -84,14 +87,15 @@ export default class ChannelCharacter extends Channel {
             ass: {}
         },
         {
+            name: 'Form in need of revision',
+            owner: 1234,
             _: {
-                owner: 1234,
+
                 approved: false,
                 review: false,
                 revise: true,
                 lastEdit: Math.floor(Date.now() / 1000) - 1,
             },
-            name: 'Form in need of revision',
             skin: {},
             head: {},
             torso: {},
@@ -107,7 +111,7 @@ export default class ChannelCharacter extends Channel {
         for (const form of this.formsCatalogue) {
             this.sendMessageToConnection(connection, 'formListing', {
                 name: form.name,
-                owner: form._.owner,
+                owner: form.owner,
                 approved: form._.approved,
                 review: form._.review,
                 revise: form._.revise,

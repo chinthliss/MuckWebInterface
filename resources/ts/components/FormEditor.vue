@@ -15,9 +15,19 @@ type FormLog = {
 
 type Form = {
     name: string
+    owner?: number
+    _: {
+        approved: boolean
+        review: boolean
+        revise: boolean
+        createdAt?: number // Timestamp
+        editedAt?: number // Timestamp
+        log?: FormLog[]
+        notes?: string[]
+    }
+
     height: number
     mass: number
-    owner?: number
     tags: string
     say: string
     oSay: string
@@ -104,17 +114,6 @@ type Form = {
         description: string
         template: boolean
     }
-
-    _: {
-        approved: boolean
-        review: boolean
-        revise: boolean
-        createdAt?: number // Timestamp
-        editedAt?: number // Timestamp
-        log?: FormLog[]
-        notes?: string[]
-    }
-
 }
 
 const presentFormId: Ref<string | null> = ref(null);
