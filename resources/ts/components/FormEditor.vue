@@ -9,8 +9,10 @@ import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
 type FormLog = {
     when: number // Timestamp
-    who: string
-    what: string
+    name: string
+    account?: number // Only transmitted if we're staff
+    what: string // Fixed list of events, such as 'Submitted for Review'
+    message: string
 }
 
 type Form = {
@@ -443,20 +445,24 @@ channel.on('updateFormFailed', (response) => {
                 <!-- History -->
                 <div class="mt-2">
                     <h4>History</h4>
-                    <div v-if="!presentForm._.log || presentForm._.log.length">No history recorded.</div>
+                    <div v-if="!presentForm._.log || !presentForm._.log.length">No history recorded.</div>
                     <table v-else class="table table-dark table-hover table-striped table-responsive small">
                         <thead>
                         <tr>
                             <th scope="col">When</th>
                             <th scope="col">Who</th>
                             <th scope="col">What</th>
+                            <th scope="col">Message</th>
                         </tr>
                         </thead>
+                        <tbody>
                         <tr v-for="entry in presentForm?._.log">
                             <td>{{ timestampToString(entry.when) }}</td>
-                            <td>{{ entry.who }}</td>
+                            <td>{{ entry.name }}</td>
                             <td>{{ entry.what }}</td>
+                            <td>{{ entry.message }}</td>
                         </tr>
+                        </tbody>
                     </table>
                 </div>
 
