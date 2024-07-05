@@ -132,7 +132,7 @@ const jumpToAccount = () => {
 
         <Spinner v-if="tableLoading"/>
         <div v-else-if="!tableData" class="text-center">No data loaded yet...</div>
-        <div v-else class="table-responsive-xl">
+        <div v-else>
             <DataTable :value="tableData" stripedRows @row-click="rowClicked">
                 <template #empty>No accounts found matching the present criteria.</template>
                 <Column header="ID" field="id"></Column>
