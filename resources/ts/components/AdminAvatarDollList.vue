@@ -50,19 +50,21 @@ const props = defineProps<{
         </div>
 
         <h3>Usage Breakdown</h3>
-        <table class="table">
+        <table class="table table-dark table-hover table-striped table-responsive small">
             <thead>
             <tr>
                 <th>Doll</th>
                 <th>Used by</th>
             </tr>
             </thead>
+            <tbody>
             <template v-for="doll in dolls">
                 <tr v-if="doll.usage.length > 0">
                     <td>{{ doll.name }}</td>
                     <td>{{ doll.usage.join(', ') }}</td>
                 </tr>
             </template>
+            </tbody>
         </table>
     </div>
 </template>

@@ -17,7 +17,7 @@ const admin = props.adminMode ?? false;
         <h2>Avatar Gradients</h2>
         <div v-if="!admin">To purchase a gradient, simply use them in the avatar editor.</div>
         <div>
-            <table class="table table-responsive">
+            <table class="table table-dark table-hover table-striped table-responsive small">
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -28,6 +28,7 @@ const admin = props.adminMode ?? false;
                     <th scope="col">Preview</th>
                 </tr>
                 </thead>
+                <tbody>
                 <tr v-for="gradient in gradients">
                     <td class="text-wrap">{{ gradient.name }}</td>
                     <td>{{ gradient.desc }}</td>
@@ -41,6 +42,7 @@ const admin = props.adminMode ?? false;
                     <td>{{ gradient.free ? 'Free' : '' }}</td>
                     <td><img class="gradient-preview" :src="gradient.url" alt="Gradient Preview"></td>
                 </tr>
+                </tbody>
             </table>
         </div>
     </div>

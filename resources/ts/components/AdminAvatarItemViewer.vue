@@ -46,6 +46,7 @@ props.fileUsage.forEach((file: FileUsage) => {
                     <th scope="col">Scale</th>
                 </tr>
                 </thead>
+                <tbody>
                 <template v-for="item in items">
                     <tr v-if="item.type === category.type">
                         <td><img :src="item.url" alt="Image for an avatar item"></td>
@@ -62,6 +63,7 @@ props.fileUsage.forEach((file: FileUsage) => {
                         <td>{{ item.scale }}</td>
                     </tr>
                 </template>
+                </tbody>
             </table>
         </div>
 
