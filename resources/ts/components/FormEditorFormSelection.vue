@@ -9,7 +9,8 @@ import {timestampToString} from "../formatting";
 
 type FormListing = {
     name: string,
-    owner?: number,
+    account?: number, // Only transmitted if we're staff
+    credit?: string,
     approved: boolean,
     review: boolean,
     revise: boolean,
@@ -17,7 +18,8 @@ type FormListing = {
 }
 
 const props = defineProps<{
-    startExpanded: boolean,
+    startExpanded: boolean
+    showAccountColumn: boolean
 }>();
 
 const emit = defineEmits(['update', 'new'])
@@ -148,7 +150,8 @@ if (props.startExpanded) getFormList()
                         />
                     </template>
                 </Column>
-                <Column header="Owner" field="owner" :sortable="true"></Column>
+                <Column v-if="showAccountColumn" header="Account" field="account" :sortable="true"></Column>
+                <Column header="Credit" field="credit" :sortable="true"></Column>
                 <Column header="Last Edit" field="lastEdit" :sortable="true">
                     <template #body="{ data }">
                         {{ timestampToString((data as FormListing).lastEdit) }}

@@ -113,7 +113,8 @@ export default class ChannelCharacter extends Channel {
         for (const form of this.formsCatalogue) {
             this.sendMessageToConnection(connection, 'formListing', {
                 name: form.name,
-                owner: form.owner,
+                account: form.owner,
+                credit: 'name',
                 approved: form._.approved,
                 review: form._.review,
                 revise: form._.revise,
