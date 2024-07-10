@@ -826,6 +826,8 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="skin-transformation" label="Transformation"
                                       :prop-value="presentForm.skin.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">Skin descriptions are prefixed by the text 'Their body is covered in..'
+                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skin-description" label="Description"
                                       :prop-value="presentForm.skin.description" @input="queueSaveFromEditor"
@@ -854,6 +856,7 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="head-transformation" label="Transformation"
                                       :prop-value="presentForm.head.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their head is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="head-description" label="Description"
                                       :prop-value="presentForm.head.description" @input="queueSaveFromEditor"
@@ -882,6 +885,7 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="torso-transformation" label="Transformation"
                                       :prop-value="presentForm.torso.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their torso is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torso-description" label="Description"
                                       :prop-value="presentForm.torso.description" @input="queueSaveFromEditor"
@@ -910,6 +914,7 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="arms-transformation" label="Transformation"
                                       :prop-value="presentForm.arms.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their arms are..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="arms-description" label="Description"
                                       :prop-value="presentForm.arms.description" @input="queueSaveFromEditor"
@@ -938,6 +943,10 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="legs-transformation" label="Transformation"
                                       :prop-value="presentForm.legs.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">
+                    Leg descriptions are prefixed by the text 'Their legs are..'.
+                    They immediately follow with the ass description.
+                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-description" label="Description"
                                       :prop-value="presentForm.legs.description" @input="queueSaveFromEditor"
@@ -945,6 +954,30 @@ channel.on('updateFormFailed', (response) => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legs-kemo-description" label="Kemo Description"
                                       :prop-value="presentForm.legs.kemoDescription" @input="queueSaveFromEditor"
+                ></FormEditorCodeEditor>
+
+                <!-- Ass or Tail -->
+                <h4 class="mt-2">Ass or Tail</h4>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="ass-template"
+                           v-model="presentForm.ass.template" :disabled="viewOnly"
+                    >
+                    <label class="form-check-label" for="ass-template">Template?</label>
+                </div>
+                <div class="mt-2">
+                    <label for="ass-flags" class="form-label">Flags</label>
+                    <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="Enter a space separated list" v-model="presentForm.ass.flags"
+                    >
+                </div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="ass-transformation" label="Transformation"
+                                      :prop-value="presentForm.ass.transformation" @input="queueSaveFromEditor"
+                ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">Ass descriptions immediately follow the leg description'</div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="ass-description" label="Description"
+                                      :prop-value="presentForm.ass.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Groin -->
@@ -966,6 +999,10 @@ channel.on('updateFormFailed', (response) => {
                                       prop-name="groin-transformation" label="Transformation"
                                       :prop-value="presentForm.groin.transformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
+                <div class="mt-2 text-muted">
+                    Groin descriptions are more complicated and will be prefixed with a count and size adjective,
+                    and follow with what's being described. E.g. 'they have one huge ... cock'
+                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="cock-description" label="Cock Description"
                                       :prop-value="presentForm.groin.cockDescription" @input="queueSaveFromEditor"
@@ -977,29 +1014,6 @@ channel.on('updateFormFailed', (response) => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="clit-description" label="Clit Description"
                                       :prop-value="presentForm.groin.clitDescription" @input="queueSaveFromEditor"
-                ></FormEditorCodeEditor>
-
-                <!-- Ass or Tail -->
-                <h4 class="mt-2">Ass or Tail</h4>
-                <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="ass-template"
-                           v-model="presentForm.ass.template" :disabled="viewOnly"
-                    >
-                    <label class="form-check-label" for="ass-template">Template?</label>
-                </div>
-                <div class="mt-2">
-                    <label for="ass-flags" class="form-label">Flags</label>
-                    <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a space separated list" v-model="presentForm.ass.flags"
-                    >
-                </div>
-                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="ass-transformation" label="Transformation"
-                                      :prop-value="presentForm.ass.transformation" @input="queueSaveFromEditor"
-                ></FormEditorCodeEditor>
-                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="ass-description" label="Description"
-                                      :prop-value="presentForm.ass.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
             </div>
