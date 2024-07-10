@@ -920,7 +920,7 @@ channel.on('updateFormFailed', (response) => {
                                       :prop-value="presentForm.arms.description" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="head-kemo-description" label="Kemo Description"
+                                      prop-name="arms-kemo-description" label="Kemo Description"
                                       :prop-value="presentForm.arms.kemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
