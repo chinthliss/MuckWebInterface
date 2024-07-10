@@ -19,7 +19,6 @@ type FormListing = {
 
 const props = defineProps<{
     startExpanded: boolean
-    showAccountColumn: boolean
 }>();
 
 const emit = defineEmits(['update', 'new'])
@@ -32,6 +31,8 @@ const formListLoadTotal: Ref<number> = ref(1); // May be set to 0 if the viewer 
 const formListLoadLeft: Ref<number> = ref(1);
 const formList: Ref<FormListing[]> = ref([]);
 const selected: Ref<FormListing | undefined> = ref();
+// We don't start showing accounts until we see we're being sent them (we don't get sent them if not staff)
+const seeingAccounts: Ref<boolean> = ref(false);
 
 const filters = ref({
     name: {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -97,6 +98,7 @@ channel.on('formList', (data: number) => {
 channel.on('formListing', (data: FormListing) => {
     formListLoadLeft.value--;
     formList.value.push(data);
+    if (data.account) seeingAccounts.value = true;
 });
 
 if (props.startExpanded) getFormList()
@@ -150,7 +152,7 @@ if (props.startExpanded) getFormList()
                         />
                     </template>
                 </Column>
-                <Column v-if="showAccountColumn" header="Account" field="account" :sortable="true"></Column>
+                <Column v-if="seeingAccounts" header="Account" field="account" :sortable="true"></Column>
                 <Column header="Credit" field="credit" :sortable="true"></Column>
                 <Column header="Last Edit" field="lastEdit" :sortable="true">
                     <template #body="{ data }">

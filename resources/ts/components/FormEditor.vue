@@ -330,7 +330,7 @@ channel.on('updateFormFailed', (response) => {
 </script>
 
 <template>
-    <FormEditorFormSelection ref="formSelector" :start-expanded="presentFormId == null" :show-account-column="staff"
+    <FormEditorFormSelection ref="formSelector" :start-expanded="presentFormId == null"
                              @update="loadForm" @new="startCreateForm"
     >
     </FormEditorFormSelection>
