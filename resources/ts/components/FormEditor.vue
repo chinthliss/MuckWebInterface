@@ -4,7 +4,7 @@ import {computed, Ref, ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
-import {timestampToString} from "../formatting";
+import {ansiToHtml, timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
 type FormLog = {
@@ -48,6 +48,8 @@ type Form = {
     heat: boolean
     template: boolean // This is set but actually computed and auto-controlled muck side.
     sexless: boolean
+
+    preview?: string // Not sent by the muck, we'll update this when we get it separately
 
     noExtract: boolean
     noReward: boolean
@@ -167,6 +169,12 @@ const hasTemplatedParts = computed((): boolean => {
         presentForm.value.legs.template ||
         presentForm.value.groin.template ||
         presentForm.value.ass.template;
+});
+
+const previewHtml = computed(() => {
+    if (!presentForm.value) return 'No form loaded.';
+    if (!presentForm.value.preview) return 'Preview not available yet.';
+    return ansiToHtml(presentForm.value.preview);
 });
 
 const unloadForm = () => {
@@ -320,12 +328,19 @@ channel.on('createForm', (response: CreateFormResponse) => {
     }
 });
 
+channel.on('formPreview', (response: {form: string, content: string}) => {
+    if (!response.form || response.form != presentFormId.value) return;
+    if (presentForm.value) presentForm.value.preview = response.content;
+});
+
+
 channel.on('updateFormFailed', (response) => {
     error.value = `Update failed or rejected by the muck when setting '${response.propName}' to '${response.propValue}.'`;
     error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere.";
     if (response.error) error.value += "\n\nActual error returned: " + response.error;
     if (errorModal.value) errorModal.value.show();
 });
+
 
 </script>
 
@@ -349,12 +364,9 @@ channel.on('updateFormFailed', (response) => {
         <div class="card">
             <div class="card-header">Preview</div>
             <div class="card-body">
-                <div class="card-text" id="formPreview">
-                    TODO: Request preview after pending saves are complete.
-                    <br/>TODO: Don't request preview until all (or at least 1?) descriptions are set.
-                </div>
+                <div class="card-text" id="formPreview" v-html="previewHtml"></div>
             </div>
-            <div class="card-footer text-muted text-center">The preview can be slow to load, especially on larger
+            <div class="card-footer text-muted text-center">Please note - the preview can be slow to load or update, especially on larger
                 forms.
             </div>
         </div>

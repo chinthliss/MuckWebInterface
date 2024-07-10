@@ -151,6 +151,11 @@ export default class ChannelCharacter extends Channel {
         },
         'getForm': (connection, data) => {
             this.sendForm(connection, data);
+            // Send a preview
+            this.sendMessageToConnection(connection, 'formPreview', {
+                form: data,
+                content: 'PREVIEW'
+            });
         },
         'createForm': (connection, data) => {
             this.createForm(connection, data);
