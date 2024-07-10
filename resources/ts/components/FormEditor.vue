@@ -226,6 +226,7 @@ const createForm = () => {
 }
 
 const saveValues = () => {
+    let updatePreview: boolean = false;
     pendingSaveId = null;
     for (const id in pendingSaves) {
         const value = pendingSaves[id];
@@ -235,7 +236,10 @@ const saveValues = () => {
             propName: id,
             propValue: value
         });
+        // Could improve on this
+        if (id.includes('size') || id.includes('count') || id.includes('desc')) updatePreview = true;
     }
+    if (updatePreview) requestPreview();
 }
 
 const queueSave = (propName: string, propValue: string) => {
@@ -265,6 +269,10 @@ const queueSaveFromEditor = (e: { id: string, value; string }) => {
     queueSave(e.id, e.value);
 }
 
+const requestPreview = () => {
+    channel.send('previewForm', {form: presentFormId.value, config: {}});
+}
+
 type GetFormResponse = {
     error?: string
     form?: Form
@@ -278,27 +286,29 @@ channel.on('form', (response: GetFormResponse) => {
         if (errorModal.value) errorModal.value.show();
         return;
     }
+    if (!response.form) {
+        presentForm.value = null;
+        return;
+    }
+    const form: Form = response.form;
+    if (form.name !== presentFormId.value) {
+        console.log("Received form data but we're not editing this form?", form);
+        return;
+    }
     viewOnly.value = !(response.canEdit == true);
     staff.value = response.staff ?? false;
-    const form = response.form;
-    if (!form) {
-        presentForm.value = null;
-    } else {
-        // Handle some fixes and translations
-        if (form._.notes) notes.value = form._.notes.join('\n');
-        if (!form.oVictory) form.oVictory = [];
-        if (!form.victory) form.victory = [];
-        if (!form.defeat) form.defeat = [];
-        presentForm.value = form;
-    }
+
+    // Handle some fixes and translations
+    if (form._.notes) notes.value = form._.notes.join('\n');
+    if (!form.oVictory) form.oVictory = [];
+    if (!form.victory) form.victory = [];
+    if (!form.defeat) form.defeat = [];
+    presentForm.value = form;
+    // Now request an initial preview
+    requestPreview();
 })
 
-type DeleteFormResponse = {
-    error?: string,
-    formId?: string
-}
-
-channel.on('deleteForm', (response: DeleteFormResponse) => {
+channel.on('deleteForm', (response: { error?: string, formId?: string }) => {
     if (response.error) {
         error.value = response.error;
         if (errorModal.value) errorModal.value.show();
@@ -311,12 +321,7 @@ channel.on('deleteForm', (response: DeleteFormResponse) => {
     }
 });
 
-type CreateFormResponse = {
-    error?: string,
-    formId?: string
-}
-
-channel.on('createForm', (response: CreateFormResponse) => {
+channel.on('createForm', (response: { error?: string, formId?: string }) => {
     if (response.error) {
         error.value = response.error;
         if (errorModal.value) errorModal.value.show();
@@ -328,7 +333,7 @@ channel.on('createForm', (response: CreateFormResponse) => {
     }
 });
 
-channel.on('formPreview', (response: {form: string, content: string}) => {
+channel.on('formPreview', (response: { form: string, content: string }) => {
     if (!response.form || response.form != presentFormId.value) return;
     if (presentForm.value) presentForm.value.preview = response.content;
 });
@@ -366,7 +371,8 @@ channel.on('updateFormFailed', (response) => {
             <div class="card-body">
                 <div class="card-text" id="formPreview" v-html="previewHtml"></div>
             </div>
-            <div class="card-footer text-muted text-center">Please note - the preview can be slow to load or update, especially on larger
+            <div class="card-footer text-muted text-center">Please note - the preview can be slow to load or update,
+                especially on larger
                 forms.
             </div>
         </div>

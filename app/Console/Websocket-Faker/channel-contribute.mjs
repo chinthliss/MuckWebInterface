@@ -151,11 +151,6 @@ export default class ChannelCharacter extends Channel {
         },
         'getForm': (connection, data) => {
             this.sendForm(connection, data);
-            // Send a preview
-            this.sendMessageToConnection(connection, 'formPreview', {
-                form: data,
-                content: 'PREVIEW'
-            });
         },
         'createForm': (connection, data) => {
             this.createForm(connection, data);
@@ -168,7 +163,12 @@ export default class ChannelCharacter extends Channel {
             // .. Unless it's one we're using to test rejections
             if (data?.propName === 'skin-transformation')
                 this.sendMessageToConnection(connection, 'updateFormFailed', data);
+        },
+        'previewForm': (connection, data) => {
+            this.sendMessageToConnection(connection, 'formPreview', {
+                form: data.form,
+                content: 'PREVIEW'
+            });
         }
-
     }
 }
