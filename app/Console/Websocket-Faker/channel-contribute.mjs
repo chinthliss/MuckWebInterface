@@ -167,7 +167,17 @@ export default class ChannelCharacter extends Channel {
         'previewForm': (connection, data) => {
             this.sendMessageToConnection(connection, 'formPreview', {
                 form: data.form,
-                content: 'PREVIEW'
+                content: 'FORM-PREVIEW'
+            });
+        },
+        'previewFormMessage': (connection, data) => {
+            this.sendMessageToConnection(connection, 'formMessagePreview', {
+                form: data.form,
+                message: data.message,
+                content: [
+                    data.message.toUpperCase() + '-PREVIEW-FIRST-LINE',
+                    data.message.toUpperCase() + '-PREVIEW-SECOND-LINE',
+                ]
             });
         }
     }

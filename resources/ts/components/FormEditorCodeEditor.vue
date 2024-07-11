@@ -66,7 +66,7 @@ onMounted(() => {
 
 <template>
     <div>
-        <label :for="propName" class="form-label">{{ label }}</label>
+        <label :for="propName" class="form-label fw-bold text-primary">{{ label }}</label>
         <div :id="propName" class="editor"></div>
     </div>
 </template>

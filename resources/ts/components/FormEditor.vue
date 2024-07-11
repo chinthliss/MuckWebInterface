@@ -4,7 +4,7 @@ import {computed, Ref, ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
-import {ansiToHtml, timestampToString} from "../formatting";
+import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
 type FormLog = {
@@ -48,8 +48,6 @@ type Form = {
     heat: boolean
     template: boolean // This is set but actually computed and auto-controlled muck side.
     sexless: boolean
-
-    preview?: string // Not sent by the muck, we'll update this when we get it separately
 
     noExtract: boolean
     noReward: boolean
@@ -122,6 +120,12 @@ type Form = {
 
 const presentFormId: Ref<string | null> = ref(null);
 const presentForm: Ref<Form | null> = ref(null);
+const previews: Ref<{
+    form?: string
+    defeat?: string
+    victory?: string
+    oVictory?: string
+}> = ref({});
 const viewOnly: Ref<boolean> = ref(false);
 const staff: Ref<boolean> = ref(false);
 const formSelector: Ref<InstanceType<typeof FormEditorFormSelection> | null> = ref(null);
@@ -171,16 +175,16 @@ const hasTemplatedParts = computed((): boolean => {
         presentForm.value.ass.template;
 });
 
-const previewHtml = computed(() => {
+const friendlyFormPreview = computed(() => {
     if (!presentForm.value) return 'No form loaded.';
-    if (!presentForm.value.preview) return 'Preview not available yet.';
-    return ansiToHtml(presentForm.value.preview);
+    return previews.value.form ?? 'Preview not available yet.';
 });
 
 const unloadForm = () => {
     presentFormId.value = null;
     presentForm.value = null;
     notes.value = '';
+    previews.value = {};
 }
 
 const loadForm = (selected: string) => {
@@ -238,8 +242,9 @@ const saveValues = () => {
         });
         // Could improve on this
         if (id.includes('size') || id.includes('count') || id.includes('desc')) updatePreview = true;
+        if (id === 'defeat' || id === 'victory' || id === 'ovictory') requestFormMessagePreview(id);
     }
-    if (updatePreview) requestPreview();
+    if (updatePreview) requestFormPreview();
 }
 
 const queueSave = (propName: string, propValue: string) => {
@@ -269,8 +274,16 @@ const queueSaveFromEditor = (e: { id: string, value; string }) => {
     queueSave(e.id, e.value);
 }
 
-const requestPreview = () => {
+const requestFormPreview = () => {
     channel.send('previewForm', {form: presentFormId.value, config: {}});
+}
+
+const requestFormMessagePreview = (messageId: string) => {
+    channel.send('previewFormMessage', {
+        form: presentFormId.value,
+        message: messageId,
+        config: {}
+    });
 }
 
 type GetFormResponse = {
@@ -304,8 +317,11 @@ channel.on('form', (response: GetFormResponse) => {
     if (!form.victory) form.victory = [];
     if (!form.defeat) form.defeat = [];
     presentForm.value = form;
-    // Now request an initial preview
-    requestPreview();
+    // Now request the initial previews
+    requestFormPreview();
+    requestFormMessagePreview('victory');
+    requestFormMessagePreview('ovictory');
+    requestFormMessagePreview('defeat');
 })
 
 channel.on('deleteForm', (response: { error?: string, formId?: string }) => {
@@ -335,7 +351,20 @@ channel.on('createForm', (response: { error?: string, formId?: string }) => {
 
 channel.on('formPreview', (response: { form: string, content: string }) => {
     if (!response.form || response.form != presentFormId.value) return;
-    if (presentForm.value) presentForm.value.preview = response.content;
+    if (presentForm.value) previews.value.form = response.content;
+});
+
+channel.on('formMessagePreview', (response: { form: string, message: string, content: string[] }) => {
+    if (!response.form || response.form != presentFormId.value || !response.message) return;
+    let parsedContent = response.content.join('<br/>');
+    switch (response.message) {
+        case 'defeat': previews.value.defeat = parsedContent; break;
+        case 'victory': previews.value.victory = parsedContent; break;
+        case 'ovictory': previews.value.oVictory = parsedContent; break;
+        default:
+            console.log("Unrecognized form message received: " + response.message);
+        break;
+    }
 });
 
 
@@ -367,9 +396,9 @@ channel.on('updateFormFailed', (response) => {
         <!-- Preview -->
 
         <div class="card">
-            <div class="card-header">Preview</div>
+            <div class="card-header text-secondary">Preview</div>
             <div class="card-body">
-                <div class="card-text" id="formPreview" v-html="previewHtml"></div>
+                <div class="card-text" v-html="friendlyFormPreview"></div>
             </div>
             <div class="card-footer text-muted text-center">Please note - the preview can be slow to load or update,
                 especially on larger
@@ -1049,7 +1078,8 @@ channel.on('updateFormFailed', (response) => {
                     2nd person from the defeated player's perspective,
                     e.g. 'You are defeated by a mutant!'
                 </div>
-                <div>TODO: Preview</div>
+                <div class="mt-2 text-secondary">Preview</div>
+                <p v-html="previews.defeat"></p>
 
                 <hr/>
 
@@ -1061,7 +1091,8 @@ channel.on('updateFormFailed', (response) => {
                     2nd person from the victorious player's perspective,
                     e.g. 'You beat a mutant, using your mutant ways!'
                 </div>
-                <div>TODO: Preview</div>
+                <div class="mt-2 text-secondary">Preview</div>
+                <p v-html="previews.victory"></p>
 
                 <hr/>
 
@@ -1073,7 +1104,8 @@ channel.on('updateFormFailed', (response) => {
                     3rd person from an observer's perspective,
                     e.g. 'Bob defeats a mutant in a weird mutant way!'
                 </div>
-                <div>TODO: Preview</div>
+                <div class="mt-2 text-secondary">Preview</div>
+                <p v-html="previews.oVictory"></p>
 
             </div>
         </div>
