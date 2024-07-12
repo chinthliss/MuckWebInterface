@@ -744,7 +744,10 @@ channel.on('updateFormFailed', (response) => {
                     >
                     <label class="form-check-label" for="heat">Sexless?</label>
                 </div>
-                <div class="text-muted">If this is set, the form will not attempt to change any sexual attributes.</div>
+                <div class="text-muted">
+                    If this is set, the form will not attempt to change any sexual attributes.
+                    This doesn't mean the form is neuter, merely that it won't try to assert a gender.
+                </div>
 
                 <div class="row" v-if="!presentForm.sexless">
 
