@@ -4,6 +4,7 @@ import {computed, Ref, ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
+import FormEditorTestConfigurator from "./FormEditorTestConfigurator.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
@@ -141,6 +142,8 @@ const newFormName: Ref<string> = ref('');
 const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
+const previewConfigurationModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+
 // Notes gets a special separate entry because the muck treats it as an array and html as a \n separated string
 const notes: Ref<string> = ref('');
 
@@ -227,6 +230,10 @@ const createForm = () => {
         error.value = "Cancelled - No name was given for the new form..";
         if (errorModal.value) errorModal.value.show();
     }
+}
+
+const showPreviewConfiguration = () => {
+    if (previewConfigurationModal.value) previewConfigurationModal.value.show();
 }
 
 const saveValues = () => {
@@ -358,12 +365,18 @@ channel.on('formMessagePreview', (response: { form: string, message: string, con
     if (!response.form || response.form != presentFormId.value || !response.message) return;
     let parsedContent = response.content.join('<br/>');
     switch (response.message) {
-        case 'defeat': previews.value.defeat = parsedContent; break;
-        case 'victory': previews.value.victory = parsedContent; break;
-        case 'ovictory': previews.value.oVictory = parsedContent; break;
+        case 'defeat':
+            previews.value.defeat = parsedContent;
+            break;
+        case 'victory':
+            previews.value.victory = parsedContent;
+            break;
+        case 'ovictory':
+            previews.value.oVictory = parsedContent;
+            break;
         default:
             console.log("Unrecognized form message received: " + response.message);
-        break;
+            break;
     }
 });
 
@@ -394,17 +407,23 @@ channel.on('updateFormFailed', (response) => {
         <h3>{{ presentFormId }}</h3>
 
         <!-- Preview -->
-
         <div class="card">
             <div class="card-header text-secondary">Preview</div>
             <div class="card-body">
                 <div class="card-text" v-html="friendlyFormPreview"></div>
             </div>
-            <div class="card-footer text-muted text-center">Please note - the preview can be slow to load or update,
-                especially on larger
-                forms.
+            <div class="card-footer text-muted text-center">
+                Please note - the preview can be slow to load or update, especially on larger forms.
             </div>
         </div>
+
+        <!-- Preview Configuration -->
+        <div class="mt-2 text-center">
+            <button class="btn btn-primary me-2" @click="showPreviewConfiguration">
+                <i class="fas fa-cog btn-icon-left"></i>Preview Configuration (This will effect all previews)
+            </button>
+        </div>
+
 
         <!-- Read-Only mode warning -->
         <div v-if="viewOnly" class="mt-2 p-2 rounded text-bg-warning">
@@ -742,7 +761,7 @@ channel.on('updateFormFailed', (response) => {
                     <input class="form-check-input" type="checkbox" id="sexless"
                            v-model="presentForm.sexless" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
-                    <label class="form-check-label" for="heat">Sexless?</label>
+                    <label class="form-check-label" for="heat">Sexually Fluid?</label>
                 </div>
                 <div class="text-muted">
                     If this is set, the form will not attempt to change any sexual attributes.
@@ -1070,9 +1089,6 @@ channel.on('updateFormFailed', (response) => {
 
             <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
-
-                <div>TODO: Preview configuration.</div>
-
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Monster defeats Player"
                                       :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
@@ -1117,6 +1133,37 @@ channel.on('updateFormFailed', (response) => {
         </div>
 
     </div>
+
+    <!-- Modal for changing the test configuration -->
+    <modal-message class="modal-xl" ref="previewConfigurationModal" title="Test Configuration">
+        <div class="row">
+            <div class="col-12 col-xl-6">
+                <div class="border border-primary rounded-2 p-2">
+                    <h4>The Subject</h4>
+                    <p>This configuration is used for the 'wearer' of the form:</p>
+                    <ul>
+                        <li>In descriptions, they're the person being looked at.</li>
+                        <li>In defeat messages, they're the victor.</li>
+                        <li>In victory messages, they're the loser.</li>
+                    </ul>
+                    <form-editor-test-configurator></form-editor-test-configurator>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="border border-secondary rounded-2 p-2">
+                    <h4>The Other</h4>
+                    <p>This configuration is used for the other party:</p>
+                    <ul>
+                        <li>In descriptions, they're the person doing the looking.</li>
+                        <li>In defeat messages, they're the loser.</li>
+                        <li>In victory messages, they're the victor.</li>
+                    </ul>
+                    <form-editor-test-configurator></form-editor-test-configurator>
+                </div>
+            </div>
+        </div>
+
+    </modal-message>
 
     <!-- Modal to delete a form -->
     <modal-confirmation ref="confirmDeleteModal" @yes="deleteForm"
