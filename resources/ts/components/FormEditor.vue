@@ -869,6 +869,7 @@ channel.on('updateFormFailed', (response) => {
                 </ul>
 
                 <!-- Skin -->
+                <hr/>
                 <h4 class="mt-2">Skin</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="skin-template"
@@ -907,6 +908,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Head -->
+                <hr/>
                 <h4 class="mt-2">Head</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="head-template"
@@ -936,6 +938,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Torso -->
+                <hr/>
                 <h4 class="mt-2">Torso</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="torso-template" @input="queueSaveFromElement"
@@ -965,6 +968,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Arms -->
+                <hr/>
                 <h4 class="mt-2">Arms</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="arms-template" @input="queueSaveFromElement"
@@ -994,6 +998,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Legs -->
+                <hr/>
                 <h4 class="mt-2">Legs</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="legs-template" @input="queueSaveFromElement"
@@ -1026,6 +1031,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Ass or Tail -->
+                <hr/>
                 <h4 class="mt-2">Ass or Tail</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="ass-template"
@@ -1050,6 +1056,7 @@ channel.on('updateFormFailed', (response) => {
                 ></FormEditorCodeEditor>
 
                 <!-- Groin -->
+                <hr/>
                 <h4 class="mt-2">Groin</h4>
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="groin-template" @input="queueSaveFromElement"
@@ -1089,6 +1096,7 @@ channel.on('updateFormFailed', (response) => {
 
             <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
+                <h4>Victory</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Monster defeats Player"
                                       :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
@@ -1101,7 +1109,7 @@ channel.on('updateFormFailed', (response) => {
                 <p v-html="previews.defeat"></p>
 
                 <hr/>
-
+                <h4>Defeat</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player defeats Monster"
                                       :prop-value="presentForm.victory.join('\n')" @input="queueSaveFromEditor"
@@ -1114,7 +1122,7 @@ channel.on('updateFormFailed', (response) => {
                 <p v-html="previews.victory"></p>
 
                 <hr/>
-
+                <h4>3rd Party Defeat</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="ovictory" label="Player seen defeating Monster"
                                       :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"
@@ -1135,9 +1143,9 @@ channel.on('updateFormFailed', (response) => {
     </div>
 
     <!-- Modal for changing the test configuration -->
-    <modal-message class="modal-xl" ref="previewConfigurationModal" title="Test Configuration">
+    <modal-message class="modal-xl" ref="previewConfigurationModal" title="Preview Configuration">
         <div class="row">
-            <div class="col-12 col-xl-6">
+            <div class="col-12 col-xl-6 mt-2">
                 <div class="border border-primary rounded-2 p-2">
                     <h4>The Subject</h4>
                     <p>This configuration is used for the 'wearer' of the form:</p>
@@ -1150,7 +1158,7 @@ channel.on('updateFormFailed', (response) => {
                     <form-editor-test-configurator ref="subject-configuration" role="subject"/>
                 </div>
             </div>
-            <div class="col-12 col-xl-6">
+            <div class="col-12 col-xl-6 mt-2">
                 <div class="border border-secondary rounded-2 p-2">
                     <h4>The Other</h4>
                     <p>This configuration is used for the other party:</p>

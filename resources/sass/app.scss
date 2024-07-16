@@ -123,7 +123,17 @@ main {
     color: $black;
 }
 
-// Override for place holder text
+// Override for place holder text color
 ::placeHolder {
     color: #888 !important;
+}
+
+// Override for switch colors
+// These are done via SVG so need to replace the whole thing
+// And even this is done horribly as we have to convert $secondary to a string and slice off its '#' to replace with the encoded %23
+.form-switch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23" + str-slice("#{$secondary}", 2) + "'/%3e%3c/svg%3e");
+}
+.form-switch .form-check-input:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23" + str-slice("#{$secondary}", 2) + "'/%3e%3c/svg%3e");
 }
