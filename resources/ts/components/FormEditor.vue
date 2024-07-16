@@ -1146,7 +1146,8 @@ channel.on('updateFormFailed', (response) => {
                         <li>In defeat messages, they're the victor.</li>
                         <li>In victory messages, they're the loser.</li>
                     </ul>
-                    <form-editor-test-configurator></form-editor-test-configurator>
+                    <hr/>
+                    <form-editor-test-configurator ref="subject-configuration" role="subject"/>
                 </div>
             </div>
             <div class="col-12 col-xl-6">
@@ -1158,7 +1159,8 @@ channel.on('updateFormFailed', (response) => {
                         <li>In defeat messages, they're the loser.</li>
                         <li>In victory messages, they're the victor.</li>
                     </ul>
-                    <form-editor-test-configurator></form-editor-test-configurator>
+                    <hr/>
+                    <form-editor-test-configurator ref="other-configuration" role="other"/>
                 </div>
             </div>
         </div>
