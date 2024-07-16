@@ -143,6 +143,8 @@ const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const previewConfigurationModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+const subjectConfiguration: Ref<InstanceType<typeof FormEditorTestConfigurator> | null> = ref(null);
+const otherConfiguration: Ref<InstanceType<typeof FormEditorTestConfigurator> | null> = ref(null);
 
 // Notes gets a special separate entry because the muck treats it as an array and html as a \n separated string
 const notes: Ref<string> = ref('');
@@ -281,6 +283,12 @@ const queueSaveFromEditor = (e: { id: string, value; string }) => {
     queueSave(e.id, e.value);
 }
 
+const getPreviewConfig = (): {subject: object, other: object} => {
+    const subjectConfig = subjectConfiguration.value ? subjectConfiguration.value.getConfig() : {};
+    const otherConfig = otherConfiguration.value ? otherConfiguration.value.getConfig() : {};
+    return {subject: subjectConfig, other: otherConfig};
+}
+
 const requestFormPreview = () => {
     channel.send('previewForm', {form: presentFormId.value, config: {}});
 }
@@ -289,7 +297,7 @@ const requestFormMessagePreview = (messageId: string) => {
     channel.send('previewFormMessage', {
         form: presentFormId.value,
         message: messageId,
-        config: {}
+        config: getPreviewConfig()
     });
 }
 
@@ -1155,7 +1163,7 @@ channel.on('updateFormFailed', (response) => {
                         <li>In victory messages, they're the loser.</li>
                     </ul>
                     <hr/>
-                    <form-editor-test-configurator ref="subject-configuration" role="subject"/>
+                    <form-editor-test-configurator ref="subjectConfiguration" role="subject"/>
                 </div>
             </div>
             <div class="col-12 col-xl-6 mt-2">
@@ -1168,7 +1176,7 @@ channel.on('updateFormFailed', (response) => {
                         <li>In victory messages, they're the victor.</li>
                     </ul>
                     <hr/>
-                    <form-editor-test-configurator ref="other-configuration" role="other"/>
+                    <form-editor-test-configurator ref="otherConfiguration" role="other"/>
                 </div>
             </div>
         </div>

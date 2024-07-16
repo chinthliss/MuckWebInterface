@@ -21,9 +21,35 @@ const nameOptions = [
     'Jesse'
 ]
 
-const sex: Ref<string> = ref(props.role == 'subject' ? 'form' : 'male');
 const name: Ref<string> = ref(props.role == 'subject' ? 'Subject' : 'Other');
+const sex: Ref<string> = ref(props.role == 'subject' ? 'form' : 'male');
+const kemo: Ref<boolean> = ref(false);
+const satyr: Ref<boolean> = ref(false);
+const armsDivider: Ref<boolean> = ref(false);
+const legsDivider: Ref<boolean> = ref(false);
 
+type PreviewConfig = {
+    name?: string
+    sex?: string
+    kemo?: boolean
+    satyr?: boolean
+    armsDivider?: boolean
+    legsDivider?: boolean
+}
+
+const getConfig = (): PreviewConfig => {
+    const config: PreviewConfig = {};
+    // Goal here is to return nothing for defaults
+    if (name.value !== 'Subject' && name.value !== 'Other') config.name = name.value;
+    if (sex.value !== 'form') config.sex = sex.value;
+    if (kemo.value) config.kemo = true;
+    if (satyr.value) config.satyr = true;
+    if (armsDivider.value) config.armsDivider = true;
+    if (legsDivider.value) config.legsDivider = true;
+    return config;
+}
+
+defineExpose({getConfig});
 </script>
 
 <template>
@@ -60,22 +86,26 @@ const name: Ref<string> = ref(props.role == 'subject' ? 'Subject' : 'Other');
         <div>
             <!-- Kemo -->
             <div class="form-check form-switch mt-2">
-                <input class="form-check-input" type="checkbox" role="switch" :id="role + '_kemo'">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_kemo'" v-model="kemo">
                 <label class="form-check-label" for="role + '_kemo'">Has 'Kemonomimi' perk?</label>
             </div>
             <!-- Satyr -->
             <div class="form-check form-switch mt-2">
-                <input class="form-check-input" type="checkbox" role="switch" :id="role + '_satyr'">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_satyr'" v-model="satyr">
                 <label class="form-check-label" for="role + '_satyr'">Has 'Satyric' perk?</label>
             </div>
             <!-- Arm Divider -->
             <div class="form-check form-switch mt-2">
-                <input class="form-check-input" type="checkbox" role="switch" :id="role + '_armdivider'">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_armdivider'" v-model="armsDivider">
                 <label class="form-check-label" for="role + '_armdivider'">Has 'Arm Divider' toy?</label>
             </div>
             <!-- Leg Divider -->
             <div class="form-check form-switch mt-2">
-                <input class="form-check-input" type="checkbox" role="switch" :id="role + '_legdivider'">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_legdivider'" v-model="legsDivider">
                 <label class="form-check-label" for="role + '_legdivider'">Has 'Leg Divider' toy?</label>
             </div>
         </div>
