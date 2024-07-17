@@ -412,7 +412,7 @@ channel.on('updateFormFailed', (response) => {
         Loading form..
     </div>
     <div v-if="presentForm">
-        <h3>{{ presentFormId }}</h3>
+        <h3>Editing - {{ presentFormId }}</h3>
 
         <!-- Preview -->
         <div class="card">
@@ -422,16 +422,14 @@ channel.on('updateFormFailed', (response) => {
             </div>
             <div class="card-footer text-muted text-center">
                 Please note - the preview can be slow to load or update, especially on larger forms.
+
+                <div class="mt-2 text-center">
+                    <button class="btn btn-primary" @click="showPreviewConfiguration">
+                        <i class="fas fa-cog btn-icon-left"></i>Preview Configuration
+                    </button>
+                </div>
             </div>
         </div>
-
-        <!-- Preview Configuration -->
-        <div class="mt-2 text-center">
-            <button class="btn btn-primary me-2" @click="showPreviewConfiguration">
-                <i class="fas fa-cog btn-icon-left"></i>Preview Configuration (This will effect all previews)
-            </button>
-        </div>
-
 
         <!-- Read-Only mode warning -->
         <div v-if="viewOnly" class="mt-2 p-2 rounded text-bg-warning">
@@ -1115,6 +1113,11 @@ channel.on('updateFormFailed', (response) => {
                 </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.defeat"></p>
+                <div class="mt-2 text-center">
+                    <button class="btn btn-primary" @click="showPreviewConfiguration">
+                        <i class="fas fa-cog btn-icon-left"></i>Preview Configuration
+                    </button>
+                </div>
 
                 <hr/>
                 <h4>Defeat</h4>
@@ -1128,6 +1131,11 @@ channel.on('updateFormFailed', (response) => {
                 </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.victory"></p>
+                <div class="mt-2 text-center">
+                    <button class="btn btn-primary" @click="showPreviewConfiguration">
+                        <i class="fas fa-cog btn-icon-left"></i>Preview Configuration
+                    </button>
+                </div>
 
                 <hr/>
                 <h4>3rd Party Defeat</h4>
@@ -1141,6 +1149,11 @@ channel.on('updateFormFailed', (response) => {
                 </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.oVictory"></p>
+                <div class="mt-2 text-center">
+                    <button class="btn btn-primary" @click="showPreviewConfiguration">
+                        <i class="fas fa-cog btn-icon-left"></i>Preview Configuration
+                    </button>
+                </div>
 
             </div>
         </div>

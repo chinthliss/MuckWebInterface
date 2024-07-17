@@ -10,7 +10,7 @@ const sexOptions = [ // Each entry is the value and a label
     ["male", "Male"],
     ["female", "Female"],
     ["herm", "Herm"],
-    ["neuter", "Neuter"],
+    ["neuter", "Neuter"]
 ]
 if (props.role == 'subject') sexOptions.unshift(["form", "Form's Default"]);
 
@@ -21,8 +21,16 @@ const nameOptions = [
     'Jesse'
 ]
 
+const genderOptions = [ // Each entry is the value and a label
+    ["", "Default"],
+    ["masculine", "Masculine"],
+    ["feminine", "Feminine"],
+    ["uncertain", "Uncertain"]
+]
+
 const name: Ref<string> = ref(props.role == 'subject' ? 'Subject' : 'Other');
 const sex: Ref<string> = ref(props.role == 'subject' ? 'form' : 'male');
+const gender: Ref<string> = ref('');
 const kemo: Ref<boolean> = ref(false);
 const satyr: Ref<boolean> = ref(false);
 const armsDivider: Ref<boolean> = ref(false);
@@ -31,6 +39,7 @@ const legsDivider: Ref<boolean> = ref(false);
 type PreviewConfig = {
     name?: string
     sex?: string
+    gender?: string
     kemo?: boolean
     satyr?: boolean
     armsDivider?: boolean
@@ -42,6 +51,7 @@ const getConfig = (): PreviewConfig => {
     // Goal here is to return nothing for defaults
     if (name.value !== 'Subject' && name.value !== 'Other') config.name = name.value;
     if (sex.value !== 'form') config.sex = sex.value;
+    if (gender.value) config.gender = gender.value;
     if (kemo.value) config.kemo = true;
     if (satyr.value) config.satyr = true;
     if (armsDivider.value) config.armsDivider = true;
@@ -76,6 +86,20 @@ defineExpose({getConfig});
                        :name="role + '_sex'" :id="role + '_sex_' + item[0]" v-model="sex" :value="item[0]"
                 >
                 <label class="btn btn-outline-secondary" :for="role + '_sex_' + item[0]">{{ item[1] }}</label>
+            </template>
+
+        </div>
+    </div>
+
+    <!-- Gender -->
+    <div class="d-lg-flex align-items-center justify-content-center mt-2">
+        <div class="me-2 text-primary">Gender Identity:</div>
+        <div class="me-4 btn-group" role="group" aria-label="Gender Identity">
+            <template v-for="item in genderOptions">
+                <input type="radio" class="btn-check" autocomplete="off"
+                       :name="role + '_gender'" :id="role + '_gender_' + item[0]" v-model="gender" :value="item[0]"
+                >
+                <label class="btn btn-outline-secondary" :for="role + '_gender_' + item[0]">{{ item[1] }}</label>
             </template>
 
         </div>
