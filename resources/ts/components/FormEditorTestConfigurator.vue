@@ -93,7 +93,7 @@ defineExpose({getConfig});
 
     <!-- Gender -->
     <div class="d-lg-flex align-items-center justify-content-center mt-2">
-        <div class="me-2 text-primary">Gender Identity:</div>
+        <div class="me-2 text-primary">Appears:</div>
         <div class="me-4 btn-group" role="group" aria-label="Gender Identity">
             <template v-for="item in genderOptions">
                 <input type="radio" class="btn-check" autocomplete="off"
