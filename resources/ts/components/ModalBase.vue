@@ -1,5 +1,6 @@
 <!--
 Base modal, intended to be used for more specific ones.
+Emits a 'close' event.
 -->
 
 <script setup lang="ts">
@@ -21,7 +22,7 @@ defineExpose({show});
             <div class="modal-content">
                 <div class="modal-header">
                     <slot name="title"></slot>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="$emit('no')"
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="$emit('close')"
                             aria-label="Close"
                     ></button>
                 </div>

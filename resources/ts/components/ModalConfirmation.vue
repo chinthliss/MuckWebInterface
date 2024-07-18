@@ -1,7 +1,7 @@
 <!--
 Modal dialog that seeks to confirm something.
 By default will have a 'yes' and 'no' button but they can be relabelled.
-Will emit 'yes' or 'no' depending on choice
+Replaces the base 'close' emit and will instead emit 'yes' or 'no' depending on choice
 -->
 
 <script setup lang="ts">
@@ -26,7 +26,7 @@ defineExpose({show});
 </script>
 
 <template>
-    <modal-base ref="self">
+    <modal-base ref="self" @close="$emit('no')">
         <template v-slot:title>
             <h5 class="modal-title">{{ title ?? 'Confirm?' }}</h5>
         </template>
