@@ -301,6 +301,16 @@ const requestFormMessagePreview = (messageId: string) => {
     });
 }
 
+const previewConfigurationChanged = () => {
+    // Let the server know we changed config and it should then respond with updated previews.
+    // It doesn't save the config on the muck side, we're only passing it here so it can build the new previews.
+    const message = {
+        form: presentFormId.value,
+        ...getPreviewConfig()
+    }
+    channel.send('formPreviewConfigChanged', message);
+}
+
 type GetFormResponse = {
     error?: string
     form?: Form
@@ -1164,7 +1174,8 @@ channel.on('updateFormFailed', (response) => {
     </div>
 
     <!-- Modal for changing the test configuration -->
-    <modal-message class="modal-xl" ref="previewConfigurationModal" title="Preview Configuration">
+    <modal-message class="modal-xl" ref="previewConfigurationModal" title="Preview Configuration"
+                   @close="previewConfigurationChanged">
         <div class="row">
             <div class="col-12 col-xl-6 mt-2">
                 <div class="border border-primary rounded-2 p-2">
