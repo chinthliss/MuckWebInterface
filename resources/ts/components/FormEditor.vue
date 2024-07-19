@@ -290,7 +290,7 @@ const getPreviewConfig = (): {subject: object, other: object} => {
 }
 
 const requestFormPreview = () => {
-    channel.send('previewForm', {form: presentFormId.value, config: {}});
+    channel.send('previewForm', {form: presentFormId.value, config: getPreviewConfig()});
 }
 
 const requestFormMessagePreview = (messageId: string) => {
@@ -301,14 +301,12 @@ const requestFormMessagePreview = (messageId: string) => {
     });
 }
 
-const previewConfigurationChanged = () => {
-    // Let the server know we changed config and it should then respond with updated previews.
-    // It doesn't save the config on the muck side, we're only passing it here so it can build the new previews.
-    const message = {
-        form: presentFormId.value,
-        ...getPreviewConfig()
-    }
-    channel.send('formPreviewConfigChanged', message);
+const requestFullPreviewUpdate = () => {
+    requestFormPreview();
+    requestFormMessagePreview('victory');
+    requestFormMessagePreview('ovictory');
+    requestFormMessagePreview('defeat');
+
 }
 
 type GetFormResponse = {
@@ -343,10 +341,7 @@ channel.on('form', (response: GetFormResponse) => {
     if (!form.defeat) form.defeat = [];
     presentForm.value = form;
     // Now request the initial previews
-    requestFormPreview();
-    requestFormMessagePreview('victory');
-    requestFormMessagePreview('ovictory');
-    requestFormMessagePreview('defeat');
+    requestFullPreviewUpdate();
 })
 
 channel.on('deleteForm', (response: { error?: string, formId?: string }) => {
@@ -1175,7 +1170,7 @@ channel.on('updateFormFailed', (response) => {
 
     <!-- Modal for changing the test configuration -->
     <modal-message class="modal-xl" ref="previewConfigurationModal" title="Preview Configuration"
-                   @close="previewConfigurationChanged">
+                   @close="requestFullPreviewUpdate">
         <div class="row">
             <div class="col-12 col-xl-6 mt-2">
                 <div class="border border-primary rounded-2 p-2">
