@@ -29,7 +29,7 @@ defineExpose({show});
             <slot></slot>
         </template>
         <template v-slot:footer>
-            <button type="button" class="btn btn-primary" @click="$emit('close')" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
         </template>
     </modal-base>
 </template>
