@@ -33,6 +33,7 @@ const sex: Ref<string> = ref(props.role == 'subject' ? 'form' : 'male');
 const gender: Ref<string> = ref('');
 const kemo: Ref<boolean> = ref(false);
 const satyr: Ref<boolean> = ref(false);
+const chubby: Ref<boolean> = ref(false);
 const armsDivider: Ref<boolean> = ref(false);
 const legsDivider: Ref<boolean> = ref(false);
 
@@ -42,6 +43,7 @@ type PreviewConfig = {
     gender?: string
     kemo?: boolean
     satyr?: boolean
+    chubby?: boolean
     armsDivider?: boolean
     legsDivider?: boolean
 }
@@ -54,6 +56,7 @@ const getConfig = (): PreviewConfig => {
     if (gender.value) config.gender = gender.value;
     if (kemo.value) config.kemo = true;
     if (satyr.value) config.satyr = true;
+    if (chubby.value) config.chubby = true;
     if (armsDivider.value) config.armsDivider = true;
     if (legsDivider.value) config.legsDivider = true;
     return config;
@@ -119,6 +122,12 @@ defineExpose({getConfig});
                 <input class="form-check-input" type="checkbox" role="switch"
                        :id="role + '_satyr'" v-model="satyr">
                 <label class="form-check-label" for="role + '_satyr'">Has 'Satyric' perk?</label>
+            </div>
+            <!-- Chubby -->
+            <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_chubby'" v-model="chubby">
+                <label class="form-check-label" for="role + '_chubby'">Has 'Chubby' perk?</label>
             </div>
             <!-- Arm Divider -->
             <div class="form-check form-switch mt-2">
