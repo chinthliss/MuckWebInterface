@@ -5,14 +5,22 @@ Emits a 'close' event.
 
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const self = ref<Element | null>(null);
+const emit = defineEmits(['close'])
 
 const show = () => {
     if (self.value) bootstrap.Modal.getOrCreateInstance(self.value as Element).show();
 }
 defineExpose({show});
+
+onMounted(() => {
+    // Hook into Bootstrap's event
+    if (self.value) self.value.addEventListener('hide.bs.modal', () => {
+        emit('close');
+    });
+})
 
 </script>
 
@@ -22,7 +30,7 @@ defineExpose({show});
             <div class="modal-content">
                 <div class="modal-header">
                     <slot name="title"></slot>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="$emit('close')"
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"
                     ></button>
                 </div>

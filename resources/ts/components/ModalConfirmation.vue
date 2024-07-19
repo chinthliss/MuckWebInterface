@@ -1,7 +1,7 @@
 <!--
 Modal dialog that seeks to confirm something.
 By default will have a 'yes' and 'no' button but they can be relabelled.
-Replaces the base 'close' emit and will instead emit 'yes' or 'no' depending on choice
+Extends the base 'close' emit and will also  emit 'yes' or 'no' depending on choice
 -->
 
 <script setup lang="ts">
