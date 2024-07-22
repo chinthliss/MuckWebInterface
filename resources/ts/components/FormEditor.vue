@@ -1109,7 +1109,7 @@ channel.on('updateFormFailed', (response) => {
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
                 <h4>Victory</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
-                                      prop-name="defeat" label="Monster defeats Player"
+                                      prop-name="defeat" label="Player defeated by Form"
                                       :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
@@ -1127,11 +1127,11 @@ channel.on('updateFormFailed', (response) => {
                 <hr/>
                 <h4>Defeat</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
-                                      prop-name="victory" label="Player defeats Monster"
+                                      prop-name="victory" label="Player (as form) defeats Monster"
                                       :prop-value="presentForm.victory.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
-                    2nd person from the victorious player's perspective,
+                    2nd person from the victorious player's perspective when they're in this form,
                     e.g. 'You beat a mutant, using your mutant ways!'
                 </div>
                 <div class="mt-2 text-secondary">Preview</div>
@@ -1143,13 +1143,13 @@ channel.on('updateFormFailed', (response) => {
                 </div>
 
                 <hr/>
-                <h4>3rd Party Defeat</h4>
+                <h4>Observed Defeat</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
-                                      prop-name="ovictory" label="Player seen defeating Monster"
+                                      prop-name="ovictory" label="Form seen defeating Monster"
                                       :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
-                    3rd person from an observer's perspective,
+                    3rd person from somebody else observing this form's victory,
                     e.g. 'Bob defeats a mutant in a weird mutant way!'
                 </div>
                 <div class="mt-2 text-secondary">Preview</div>
