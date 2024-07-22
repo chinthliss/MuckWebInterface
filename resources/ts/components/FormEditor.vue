@@ -240,6 +240,7 @@ const showPreviewConfiguration = () => {
 
 const saveValues = () => {
     let updatePreview: boolean = false;
+    let updateAllPreviews: boolean = false;
     pendingSaveId = null;
     for (const id in pendingSaves) {
         const value = pendingSaves[id];
@@ -249,11 +250,13 @@ const saveValues = () => {
             propName: id,
             propValue: value
         });
-        // Could improve on this
-        if (id.includes('size') || id.includes('count') || id.includes('desc')) updatePreview = true;
+        // Should improve on this
+        if (id.includes('size') || id.includes('count')) updateAllPreviews = true;
+        if (id.includes('desc')) updatePreview = true;
         if (id === 'defeat' || id === 'victory' || id === 'ovictory') requestFormMessagePreview(id);
     }
-    if (updatePreview) requestFormPreview();
+    if (updateAllPreviews) requestFullPreviewUpdate();
+    else if (updatePreview) requestFormPreview();
 }
 
 const queueSave = (propName: string, propValue: string) => {
@@ -306,7 +309,6 @@ const requestFullPreviewUpdate = () => {
     requestFormMessagePreview('victory');
     requestFormMessagePreview('ovictory');
     requestFormMessagePreview('defeat');
-
 }
 
 type GetFormResponse = {
