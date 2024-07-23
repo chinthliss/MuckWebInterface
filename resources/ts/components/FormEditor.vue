@@ -428,7 +428,8 @@ channel.on('updateFormFailed', (response) => {
                 <div class="card-text" v-html="friendlyFormPreview"></div>
             </div>
             <div class="card-footer text-muted text-center">
-                Please note - the preview can be slow to load or update, especially on larger forms.
+                Please note - the preview can be slow to load or update, especially on larger forms.<br/>
+                The preview code also overrides certain values (such as part counts and sizes) to force everything to show.
 
                 <div class="mt-2 text-center">
                     <button class="btn btn-primary" @click="showPreviewConfiguration">
