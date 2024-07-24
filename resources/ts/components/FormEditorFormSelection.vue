@@ -12,6 +12,7 @@ type FormListing = {
     account?: number, // Only transmitted if we're staff
     credit?: string,
     approved: boolean,
+    published: boolean,
     review: boolean,
     revise: boolean,
     lastEdit: number // Timestamp
@@ -166,6 +167,16 @@ if (props.startExpanded) getFormList()
                     <template #body="{ data }">
                         <i class="fa-solid fa-check w-100 text-center"
                            v-if="(data as FormListing).approved"
+                        ></i>
+                    </template>
+                </Column>
+                <Column field="published" :sortable="true">
+                    <template #header>
+                        <div class="flex-grow-1 text-center">Published?</div>
+                    </template>
+                    <template #body="{ data }">
+                        <i class="fa-solid fa-check w-100 text-center"
+                           v-if="(data as FormListing).published"
                         ></i>
                     </template>
                 </Column>

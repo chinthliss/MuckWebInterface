@@ -21,6 +21,7 @@ type Form = {
     owner?: number
     _: {
         approved: boolean
+        published: boolean
         review: boolean
         revise: boolean
         createdAt?: number // Timestamp
@@ -428,8 +429,12 @@ channel.on('updateFormFailed', (response) => {
                 <div class="card-text" v-html="friendlyFormPreview"></div>
             </div>
             <div class="card-footer text-muted text-center">
-                Please note - the preview can be slow to load or update, especially on larger forms.<br/>
-                The preview code also overrides certain values (such as part counts and sizes) to force everything to show.
+                Please note - the preview can be slow to load or update, especially on larger forms.
+
+                <div v-if="presentForm._.published" class="alert alert-danger" role="alert">
+                    The preview doesn't work correctly with forms that have been published.
+                    <br/>It tends to look at the published entry for some things.
+                </div>
 
                 <div class="mt-2 text-center">
                     <button class="btn btn-primary" @click="showPreviewConfiguration">

@@ -58,6 +58,7 @@ export default class ChannelCharacter extends Channel {
             _: {
 
                 approved: true,
+                published: true,
                 review: false,
                 revise: false,
                 lastEdit: Math.floor(Date.now() / 1000) - 1,
@@ -116,6 +117,7 @@ export default class ChannelCharacter extends Channel {
                 account: form.owner,
                 credit: 'name',
                 approved: form._.approved,
+                published: form._.published,
                 review: form._.review,
                 revise: form._.revise,
                 lastEdit: form._.lastEdit
