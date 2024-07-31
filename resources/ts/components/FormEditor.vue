@@ -8,6 +8,12 @@ import FormEditorTestConfigurator from "./FormEditorTestConfigurator.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 
+const props = defineProps<{
+    links: {
+        helpRoot: string
+    }
+}>();
+
 type FormLog = {
     when: number // Timestamp
     name: string
@@ -155,6 +161,10 @@ const channel = mwiWebsocket.channel('contribute');
 let pendingSaves: { [id: string]: string } = {};
 let pendingSaveId: number | null = null;
 
+const helpLink = (helpFile: string) => {
+    return props.links.helpRoot + '/' + helpFile;
+}
+
 const oneWordStatus = computed((): string => {
     if (!presentForm.value) return '';
     if (presentForm.value._.revise) return 'Revision Needed';
@@ -287,7 +297,7 @@ const queueSaveFromEditor = (e: { id: string, value; string }) => {
     queueSave(e.id, e.value);
 }
 
-const getPreviewConfig = (): {subject: object, other: object} => {
+const getPreviewConfig = (): { subject: object, other: object } => {
     const subjectConfig = subjectConfiguration.value ? subjectConfiguration.value.getConfig() : {};
     const otherConfig = otherConfiguration.value ? otherConfiguration.value.getConfig() : {};
     return {subject: subjectConfig, other: otherConfig};
@@ -432,8 +442,8 @@ channel.on('updateFormFailed', (response) => {
                 Please note - the preview can be slow to load or update, especially on larger forms.
 
                 <div v-if="presentForm._.published" class="alert alert-danger" role="alert">
-                    The preview doesn't work correctly with forms that have been published.
-                    <br/>It tends to look at the published entry for some things.
+                    The preview is unreliable with forms that have been published.
+                    <br/>Some of the code defaults to the published entry and won't reflect changes here.
                 </div>
 
                 <div class="mt-2 text-center">
@@ -883,7 +893,8 @@ channel.on('updateFormFailed', (response) => {
                         The list is available with 'list flags' on the muck.
                     </li>
                     <li>If a part is set as template, then it will attempt to supplement
-                        the present part rather than replacing it. See '+help String Parsing/template Forms'
+                        the present part rather than replacing it. See
+                        '<a :href="helpLink('String Parsing/template Forms')">+help String Parsing/template Forms</a>'
                     </li>
                 </ul>
 
@@ -1178,7 +1189,8 @@ channel.on('updateFormFailed', (response) => {
 
     <!-- Modal for changing the test configuration -->
     <modal-message class="modal-xl" ref="previewConfigurationModal" title="Preview Configuration"
-                   @close="requestFullPreviewUpdate">
+                   @close="requestFullPreviewUpdate"
+    >
         <div class="row">
             <div class="col-12 col-xl-6 mt-2">
                 <div class="border border-primary rounded-2 p-2">
