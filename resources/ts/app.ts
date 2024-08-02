@@ -59,11 +59,19 @@ else {
  */
 
 import {createApp} from 'vue';
-
 const app = createApp({});
 
+/**
+ * PrimeVue
+ */
+
 import PrimeVue from 'primevue/config';
-app.use(PrimeVue);
+import Aura from '@primevue/themes/aura';
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
+});
 
 // Code to load components manually:
 // import ExampleComponent from './components/ExampleComponent.vue';

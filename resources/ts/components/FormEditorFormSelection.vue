@@ -4,7 +4,7 @@ import {ref, Ref} from "vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
 import ProgressBar from "primevue/progressbar";
-import {FilterMatchMode, FilterService} from "primevue/api";
+import {FilterMatchMode, FilterService} from "@primevue/core/api";
 import {timestampToString} from "../formatting";
 
 type FormListing = {

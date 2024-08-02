@@ -5,7 +5,7 @@ import Spinner from "./Spinner.vue";
 import {AccountTransaction} from "../defs";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
-import {FilterService} from "primevue/api";
+import {FilterService} from "@primevue/core/api";
 
 const props = defineProps<{
     api: string

@@ -7,7 +7,7 @@ import ProgressBar from "primevue/progressbar";
 import {capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
-import {FilterService, FilterMatchMode} from "primevue/api";
+import {FilterService, FilterMatchMode} from "@primevue/core/api";
 
 const props = defineProps<{
     startingPlayerName?: string,

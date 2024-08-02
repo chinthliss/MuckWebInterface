@@ -12,9 +12,6 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 @import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "@fortawesome/fontawesome-free/scss/solid.scss";
 
-// PrimeVue
-@import 'primevue/resources/themes/bootstrap4-dark-blue/theme.css';
-
 // Headers get a brighter color
 h1, h2, h3, h4, h5, h6 {
     color: $primary
