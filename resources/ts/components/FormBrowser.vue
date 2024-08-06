@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import {ref, Ref, computed} from "vue";
+import Progress from "./Progress.vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
-import ProgressBar from "primevue/progressbar";
 import {capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
@@ -251,11 +251,11 @@ if (props.startingPlayerName) {
             to add additional people to view, if they've given you permission to do so. If more then one
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
-        <ProgressBar v-if="formsToLoadRemaining"
-                     :value="(formsToLoad - formsToLoadRemaining) * 100 / formsToLoad"
-        >
-            {{ Math.floor((formsToLoad - formsToLoadRemaining) * 100 / formsToLoad) }}%
-        </ProgressBar>
+        <Progress v-if="formsToLoadRemaining" id="form-list-progress-bar"
+                  :percentage="(formsToLoad - formsToLoadRemaining) * 100 / formsToLoad"
+                  alt="Form list loading progress"
+        ></Progress>
+
         <div v-else>
 
             <!-- Mode and detail selector -->

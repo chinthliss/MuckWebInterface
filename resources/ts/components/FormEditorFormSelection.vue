@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import {ref, Ref} from "vue";
+import Progress from "./Progress.vue";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
-import ProgressBar from "primevue/progressbar";
 import {FilterMatchMode, FilterService} from "@primevue/core/api";
 import {timestampToString} from "../formatting";
 
@@ -135,11 +135,10 @@ if (props.startExpanded) getFormList()
             </div>
         </div>
 
-        <ProgressBar v-if="formListLoadLeft"
-                     :value="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
-        >
-            {{ Math.floor((formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal) }}%
-        </ProgressBar>
+        <Progress v-if="formListLoadLeft" id="form-selection-progress-bar"
+                  :percentage="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
+                  alt="Form list loading progress"
+        ></Progress>
         <div v-else>
             <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
                        scrollHeight="flex" @row-select="rowSelected" selectionMode="single"

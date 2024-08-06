@@ -13,6 +13,7 @@ $content-foreground: #f8fafc;
 // *************************
 
 // Colors
+$text-on-primary: #000000;
 $info: $tertiary;
 $body-color: $content-foreground;
 $body-bg: $page-background;
@@ -21,11 +22,13 @@ $modal-content-border-color: $content-foreground;
 $btn-close-color: $secondary;
 $card-bg: scale-color($content-background, $lightness: -5%);
 $card-border-color: $primary;
+$progress-bg: $page-background;
+$progress-bar-color: $text-on-primary;
 $text-muted: scale-color($content-foreground, $lightness: -20%);
 
 // Forms
 $input-bg: #ffffff;
-$input-color: #000000;
+$input-color: $text-on-primary;
 
 // Typography
 // $font-family-sans-serif: 'Nunito', sans-serif;
