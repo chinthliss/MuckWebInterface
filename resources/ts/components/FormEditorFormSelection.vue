@@ -135,7 +135,7 @@ if (props.startExpanded) getFormList()
             </div>
         </div>
 
-        <ProgressBar v-if="formListLoadLeft" :indeterminate="!formListLoadTotal"
+        <ProgressBar v-if="formListLoadLeft"
                      :value="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
         >
             {{ Math.floor((formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal) }}%

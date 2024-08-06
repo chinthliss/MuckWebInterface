@@ -251,7 +251,7 @@ if (props.startingPlayerName) {
             to add additional people to view, if they've given you permission to do so. If more then one
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
-        <ProgressBar v-if="formsToLoadRemaining" :indeterminate="!formsToLoad"
+        <ProgressBar v-if="formsToLoadRemaining"
                      :value="(formsToLoad - formsToLoadRemaining) * 100 / formsToLoad"
         >
             {{ Math.floor((formsToLoad - formsToLoadRemaining) * 100 / formsToLoad) }}%
