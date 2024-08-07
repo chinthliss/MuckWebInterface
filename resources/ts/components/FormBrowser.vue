@@ -334,33 +334,34 @@ if (props.startingPlayerName) {
                 <DataTable :value="formDatabase" dataKey="name" size="small" stripedRows scrollable
                            scrollHeight="flex" :loading="tableLoading" @sort="setTableLoadingWhilstBusy()"
                            v-model:filters="filters" filterDisplay="row" :globalFilterFields="['name']"
+                           tableStyle="min-width: 50rem"
                 >
-                    <Column header="Name" field="name" class="fw-bold" frozen :sortable="true" style="min-width: 12rem">
+                    <Column header="Name" field="name" class="fw-bold" frozen sortable="true" style="min-width: 12rem">
                         <template #filter="{ filterModel, filterCallback }">
                             <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
                                    class="p-column-filter" placeholder="Search by name"
                             />
                         </template>
                     </Column>
-                    <Column header="Gender" field="gender" :sortable="true" style="min-width: 8rem">
+                    <Column header="Gender" field="gender" sortable="true" style="min-width: 8rem">
                         <template #body="{ data }">
                             <i class="fa-solid" :class="genderClassForForm((data as Form))"></i>
                             {{ capital((data as Form).gender) }}
                         </template>
                     </Column>
-                    <Column header="Size" field="size" class="text-end" :sortable="true"></Column>
-                    <Column header="Cock Count" field="cockCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Cock Size" field="cockSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Ball Count" field="ballCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Ball Size" field="ballSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Cunt Count" field="cuntCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Cunt Size" field="cuntSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Clit Count" field="clitCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Clit Size" field="clitSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Breast Count" field="breastCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Breast Size" field="breastSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Say Verb" field="sayVerb" class="text-end" :sortable="true"></Column>
-                    <Column header="Holiday" field="holiday" class="text-end" :sortable="true"></Column>
+                    <Column header="Size" field="size" class="text-end" sortable="true"></Column>
+                    <Column header="Cock Count" field="cockCount" class="text-end" sortable="true"></Column>
+                    <Column header="Cock Size" field="cockSize" class="text-end" sortable="true"></Column>
+                    <Column header="Ball Count" field="ballCount" class="text-end" sortable="true"></Column>
+                    <Column header="Ball Size" field="ballSize" class="text-end" sortable="true"></Column>
+                    <Column header="Cunt Count" field="cuntCount" class="text-end" sortable="true"></Column>
+                    <Column header="Cunt Size" field="cuntSize" class="text-end" sortable="true"></Column>
+                    <Column header="Clit Count" field="clitCount" class="text-end" sortable="true"></Column>
+                    <Column header="Clit Size" field="clitSize" class="text-end" sortable="true"></Column>
+                    <Column header="Breast Count" field="breastCount" class="text-end" sortable="true"></Column>
+                    <Column header="Breast Size" field="breastSize" class="text-end" sortable="true"></Column>
+                    <Column header="Say Verb" field="sayVerb" class="text-end" sortable="true"></Column>
+                    <Column header="Holiday" field="holiday" class="text-end" sortable="true"></Column>
                     <Column header="Tags" field="tags" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ (data as Form).tags?.join(', ') }}
@@ -424,7 +425,7 @@ if (props.startingPlayerName) {
                             <template v-else>{{ outputNestedListKeysOnly((data as Form).lstats) }}</template>
                         </template>
                     </Column>
-                    <Column header="Kemo Support" field="kemo" :sortable="true">
+                    <Column header="Kemo Support" field="kemo" sortable="true">
                         <template #body="{ data }">
                             <template v-if="detailedOutput">
                                 {{ (data as Form).kemo?.join(', ') }}
@@ -436,7 +437,7 @@ if (props.startingPlayerName) {
                             </template>
                         </template>
                     </Column>
-                    <Column header="Chubby Support" field="chubby" :sortable="true">
+                    <Column header="Chubby Support" field="chubby" sortable="true">
                         <template #body="{ data }">
                             <template v-if="detailedOutput">
                                 {{ (data as Form).chubby?.join(', ') }}
@@ -448,7 +449,7 @@ if (props.startingPlayerName) {
                             </template>
                         </template>
                     </Column>
-                    <Column header="Color Support" field="color" :sortable="true">
+                    <Column header="Color Support" field="color" sortable="true">
                         <template #body="{ data }">
                             <template v-if="detailedOutput">
                                 {{ (data as Form).color?.join(', ') }}
@@ -461,63 +462,63 @@ if (props.startingPlayerName) {
 
                         </template>
                     </Column>
-                    <Column header="Arm Divider" field="armDivider" :sortable="true">
+                    <Column header="Arm Divider" field="armDivider" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('arm') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Leg Divider" field="legDivider" :sortable="true">
+                    <Column header="Leg Divider" field="legDivider" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('leg') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Tail Divider" field="tailDivider" :sortable="true">
+                    <Column header="Tail Divider" field="tailDivider" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center"
                                v-if="(data as Form).dividers?.indexOf('tail') >= 0"
                             ></i>
                         </template>
                     </Column>
-                    <Column header="Private" field="private" :sortable="true">
+                    <Column header="Private" field="private" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).private"></i>
                         </template>
                     </Column>
-                    <Column header="No Mastering" field="noMastering" :sortable="true">
+                    <Column header="No Mastering" field="noMastering" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noMastering"></i>
                         </template>
                     </Column>
-                    <Column header="No Funnel" field="noFunnel" :sortable="true">
+                    <Column header="No Funnel" field="noFunnel" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noFunnel"></i>
                         </template>
                     </Column>
-                    <Column header="No Reward" field="noReward" :sortable="true">
+                    <Column header="No Reward" field="noReward" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noReward"></i>
                         </template>
                     </Column>
-                    <Column header="No Zap" field="noZap" :sortable="true">
+                    <Column header="No Zap" field="noZap" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noZap"></i>
                         </template>
                     </Column>
-                    <Column header="No Native" field="noNative" :sortable="true">
+                    <Column header="No Native" field="noNative" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noNative"></i>
                         </template>
                     </Column>
-                    <Column header="No Extract" field="noExtract" :sortable="true">
+                    <Column header="No Extract" field="noExtract" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noExtract"></i>
                         </template>
                     </Column>
-                    <Column header="Bypass Immune" field="bypassImmune" :sortable="true">
+                    <Column header="Bypass Immune" field="bypassImmune" sortable="true">
                         <template #body="{ data }">
                             <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
                         </template>
