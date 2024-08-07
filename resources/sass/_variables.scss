@@ -24,12 +24,14 @@ $card-bg: scale-color($content-background, $lightness: -5%);
 $card-border-color: $primary;
 $progress-bg: $page-background;
 $progress-bar-color: $text-on-primary;
-$progress-bar-transition: width 50ms ease;
 $text-muted: scale-color($content-foreground, $lightness: -20%);
 
 // Forms
 $input-bg: #ffffff;
 $input-color: $text-on-primary;
+
+// Fix for progress bar, where the animation means the bar gets lagged behind
+$progress-bar-transition: none;
 
 // Typography
 // $font-family-sans-serif: 'Nunito', sans-serif;
