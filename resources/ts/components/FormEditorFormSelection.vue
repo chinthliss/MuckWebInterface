@@ -2,7 +2,7 @@
 
 import {ref, Ref} from "vue";
 import Progress from "./Progress.vue";
-import DataTable from 'primevue/datatable';
+import DataTable, {DataTableRowClickEvent} from 'primevue/datatable';
 import Column from "primevue/column";
 import {FilterMatchMode, FilterService} from "@primevue/core/api";
 import {timestampToString} from "../formatting";
@@ -15,7 +15,8 @@ type FormListing = {
     published: boolean,
     review: boolean,
     revise: boolean,
-    lastEdit: number // Timestamp
+    lastEdit: number, // Timestamp
+    status?: string // Not passed in, we'll calculate ourselves
 }
 
 const props = defineProps<{
@@ -31,7 +32,6 @@ const formListLoaded: Ref<boolean> = ref(false);
 const formListLoadTotal: Ref<number> = ref(1); // May be set to 0 if the viewer can't see any forms.
 const formListLoadLeft: Ref<number> = ref(1);
 const formList: Ref<FormListing[]> = ref([]);
-const selected: Ref<FormListing | undefined> = ref();
 // We don't start showing accounts until we see we're being sent them (we don't get sent them if not staff)
 const seeingAccounts: Ref<boolean> = ref(false);
 
@@ -61,6 +61,7 @@ const getFormList = () => {
 }
 
 const statusForFormListing = (form: FormListing) => {
+    console.log("Test for " + form.name);
     if (form.revise) return 'Revision Needed';
     if (form.review) return 'Awaiting Review';
     return form.approved ? 'Finished' : 'Under Construction';
@@ -82,8 +83,9 @@ const refresh = () => {
 }
 defineExpose({refresh});
 
-const rowSelected = () => {
-    emit('update', selected.value?.name);
+const rowClicked = (e: DataTableRowClickEvent) => {
+    const form = e.data;
+    emit('update', form.name);
     expanded.value = false;
 }
 
@@ -100,6 +102,7 @@ channel.on('formListing', (data: FormListing) => {
     formListLoadLeft.value--;
     formList.value.push(data);
     if (data.account) seeingAccounts.value = true;
+    data.status = statusForFormListing(data);
 });
 
 if (props.startExpanded) getFormList()
@@ -141,26 +144,26 @@ if (props.startExpanded) getFormList()
         ></Progress>
         <div v-else>
             <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
-                       scrollHeight="600px" @row-select="rowSelected" selectionMode="single"
-                       v-model:selection="selected" v-model:filters="filters" filterDisplay="row"
+                       scrollHeight="600px" @row-click="rowClicked"
+                       v-model:filters="filters" filterDisplay="row"
                        tableStyle="min-width: 50rem"
             >
                 <template #empty>There are no forms that you can view. Perhaps you should create a new one?</template>
-                <Column header="Name" field="name" sortable="true">
+                <Column header="Name" field="name" :sortable="true">
                     <template #filter="{ filterModel, filterCallback }">
                         <input v-model="filterModel.value" type="text" @input="filterCallback()"
                                class="p-column-filter" placeholder="Search by name"
                         />
                     </template>
                 </Column>
-                <Column v-if="seeingAccounts" header="Account" field="account" sortable="true"></Column>
-                <Column header="Credit" field="credit" sortable="true"></Column>
-                <Column header="Last Edit" field="lastEdit" sortable="true">
+                <Column v-if="seeingAccounts" header="Account" field="account" :sortable="true"></Column>
+                <Column header="Credit" field="credit" :sortable="true"></Column>
+                <Column header="Last Edit" field="lastEdit" :sortable="true">
                     <template #body="{ data }">
                         {{ timestampToString((data as FormListing).lastEdit) }}
                     </template>
                 </Column>
-                <Column field="approved" sortable="true">
+                <Column field="approved" :sortable="true">
                     <template #header>
                         <div class="flex-grow-1 text-center">Approved?</div>
                     </template>
@@ -170,7 +173,7 @@ if (props.startExpanded) getFormList()
                         ></i>
                     </template>
                 </Column>
-                <Column field="published" sortable="true">
+                <Column field="published" :sortable="true">
                     <template #header>
                         <div class="flex-grow-1 text-center">Published?</div>
                     </template>
@@ -180,8 +183,8 @@ if (props.startExpanded) getFormList()
                         ></i>
                     </template>
                 </Column>
-                <Column header="Status" sortable="true">
-                    <template #body="{ data }">{{ statusForFormListing(data) }}</template>
+                <Column header="Status" :sortable="true">
+                    <template #body="{ data }">{{ data.status }}</template>
                 </Column>
             </DataTable>
         </div>
