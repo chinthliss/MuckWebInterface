@@ -162,14 +162,14 @@ if (props.startExpanded) getFormList()
                         {{ timestampToString((data as FormListing).lastEdit) }}
                     </template>
                 </Column>
-                <Column field="approved" header="Approved?" :sortable="true" style="max-width: 90px">
+                <Column field="approved" header="Approved?" :sortable="true">
                     <template #body="{ data }">
                         <i class="fa-solid fa-check w-100 text-center"
                            v-if="(data as FormListing).approved"
                         ></i>
                     </template>
                 </Column>
-                <Column field="published" header="Published?" :sortable="true" style="max-width: 90px">
+                <Column field="published" header="Published?" :sortable="true">
                     <template #body="{ data }">
                         <i class="fa-solid fa-check w-100 text-center"
                            v-if="(data as FormListing).published"
