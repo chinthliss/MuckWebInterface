@@ -146,7 +146,6 @@ if (props.startExpanded) getFormList()
             <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
                        scrollHeight="600px" @row-click="rowClicked"
                        v-model:filters="filters" filterDisplay="row"
-                       tableStyle="min-width: 50rem"
             >
                 <template #empty>There are no forms that you can view. Perhaps you should create a new one?</template>
                 <Column header="Name" field="name" :sortable="true">
@@ -163,29 +162,21 @@ if (props.startExpanded) getFormList()
                         {{ timestampToString((data as FormListing).lastEdit) }}
                     </template>
                 </Column>
-                <Column field="approved" :sortable="true">
-                    <template #header>
-                        <div class="flex-grow-1 text-center">Approved?</div>
-                    </template>
+                <Column field="approved" header="Approved?" :sortable="true" style="max-width: 90px">
                     <template #body="{ data }">
                         <i class="fa-solid fa-check w-100 text-center"
                            v-if="(data as FormListing).approved"
                         ></i>
                     </template>
                 </Column>
-                <Column field="published" :sortable="true">
-                    <template #header>
-                        <div class="flex-grow-1 text-center">Published?</div>
-                    </template>
+                <Column field="published" header="Published?" :sortable="true" style="max-width: 90px">
                     <template #body="{ data }">
                         <i class="fa-solid fa-check w-100 text-center"
                            v-if="(data as FormListing).published"
                         ></i>
                     </template>
                 </Column>
-                <Column header="Status" :sortable="true">
-                    <template #body="{ data }">{{ data.status }}</template>
-                </Column>
+                <Column field="status" header="Status" :sortable="true"></Column>
             </DataTable>
         </div>
     </template>
