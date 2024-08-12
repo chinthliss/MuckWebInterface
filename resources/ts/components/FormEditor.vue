@@ -38,8 +38,8 @@ type Form = {
     height: number
     mass: number
     tags: string
-    say: string
-    oSay: string
+    say2ndPerson: string
+    say3rdPerson: string
     breastCount: number
     breastSize: number
     cuntCount: number
@@ -496,8 +496,8 @@ channel.on('updateFormFailed', (response) => {
 
                 <!-- Allowed Viewers -->
                 <div class="d-flex mt-2">
-                    <label for="viewers" class="col-form-label">Allowed Viewers</label>
-                    <input id="viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
+                    <label for="_viewers" class="col-form-label">Allowed Viewers</label>
+                    <input id="_viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
                            placeholder="List of Viewers" v-model="presentForm._viewers" @input="queueSaveFromElement"
                     >
                 </div>
@@ -513,8 +513,8 @@ channel.on('updateFormFailed', (response) => {
                 <!-- Notes -->
                 <div class="mt-2">
                     <h4>Notes</h4>
-                    <label for="notes" class="form-label visually-hidden">Notes</label>
-                    <textarea class="form-control" id="notes" rows="3"
+                    <label for="_notes" class="form-label visually-hidden">Notes</label>
+                    <textarea class="form-control" id="_notes" rows="3"
                               v-model="notes" @input="queueSaveFromElement" :disabled="viewOnly"
                     ></textarea>
                     <div class="text-muted">These notes can be used to record things of interest, such as:
@@ -749,20 +749,20 @@ channel.on('updateFormFailed', (response) => {
                 <h4 class="mt-2">Say Verbs</h4>
                 <div class="row">
                     <div class="mt-2 col-12 col-lg-6">
-                        <label id="2nd-person-say-label" for="2nd-person-say" class="form-label">
+                        <label for="2nd-person-say" class="form-label">
                             2nd person (say, purr, bark)
                         </label>
-                        <input id="2nd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="2nd Person" v-model="presentForm.say" @input="queueSaveFromElement"
+                        <input id="say2ndPerson" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="2nd Person" v-model="presentForm.say2ndPerson" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label id="3rd-person-say-label" for="3rd-person-say" class="form-label">
+                        <label for="3rd-person-say" class="form-label">
                             3rd person (says, purrs, barks)
                         </label>
-                        <input id="3rd-person-say" type="text" class="form-control" :disabled="viewOnly"
-                               placeholder="3rd Person" v-model="presentForm.oSay" @input="queueSaveFromElement"
+                        <input id="say3rdPerson" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="3rd Person" v-model="presentForm.say3rdPerson" @input="queueSaveFromElement"
                         >
                     </div>
                 </div>
@@ -790,72 +790,72 @@ channel.on('updateFormFailed', (response) => {
                 <div class="row" v-if="!presentForm.sexless">
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="breast-count" class="form-label">Breast Count</label>
-                        <input id="breast-count" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="breastCount" class="form-label">Breast Count</label>
+                        <input id="breastCount" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.breastCount" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="breast-size" class="form-label">Breast Size (5 is average)</label>
-                        <input id="breast-size" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="breastSize" class="form-label">Breast Size (5 is average)</label>
+                        <input id="breastSize" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.breastSize" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cunt-count" class="form-label">Cunt Count</label>
-                        <input id="cunt-count" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="cuntCount" class="form-label">Cunt Count</label>
+                        <input id="cuntCount" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cuntCount" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cunt-size" class="form-label">Cunt Depth (5 is average)</label>
-                        <input id="cunt-size" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="cuntSize" class="form-label">Cunt Depth (5 is average)</label>
+                        <input id="cuntSize" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cuntSize" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="clit-count" class="form-label">Clit Count</label>
-                        <input id="clit-count" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="clitCount" class="form-label">Clit Count</label>
+                        <input id="clitCount" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.clitCount" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="clit-size" class="form-label">Clit Length (5 is average)</label>
-                        <input id="clit-size" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="clitSize" class="form-label">Clit Length (5 is average)</label>
+                        <input id="clitSize" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.clitSize" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cock-count" class="form-label">Cock Count</label>
-                        <input id="cock-count" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="cockCount" class="form-label">Cock Count</label>
+                        <input id="cockCount" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cockCount" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="cock-size" class="form-label">Cock Length (5 is average)</label>
-                        <input id="cock-size" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="cockSize" class="form-label">Cock Length (5 is average)</label>
+                        <input id="cockSize" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.cockSize" @input="queueSaveFromElement"
                         >
                     </div>
 
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="ball-count" class="form-label">Ball Count</label>
-                        <input id="ball-count" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="ballCount" class="form-label">Ball Count</label>
+                        <input id="ballCount" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.ballCount" @input="queueSaveFromElement"
                         >
                     </div>
 
                     <div class="mt-2 col-12 col-lg-6">
-                        <label for="ball-size" class="form-label">Ball Size (5 is average)</label>
-                        <input id="ball-size" type="number" class="form-control" :disabled="viewOnly"
+                        <label for="ballSize" class="form-label">Ball Size (5 is average)</label>
+                        <input id="ballSize" type="number" class="form-control" :disabled="viewOnly"
                                placeholder="#" v-model="presentForm.ballSize" @input="queueSaveFromElement"
                         >
                     </div>
@@ -1054,7 +1054,7 @@ channel.on('updateFormFailed', (response) => {
                 <hr/>
                 <h4 class="mt-2">Ass or Tail</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="assTemplate"
+                    <input class="form-check-input" type="checkbox" id="assTemplate" @input="queueSaveFromElement"
                            v-model="presentForm.assTemplate" :disabled="viewOnly"
                     >
                     <label class="form-check-label" for="assTemplate">Template?</label>
@@ -1062,6 +1062,7 @@ channel.on('updateFormFailed', (response) => {
                 <div class="mt-2">
                     <label for="assFlags" class="form-label">Flags</label>
                     <input id="assFlags" type="text" class="form-control" :disabled="viewOnly"
+                           @input="queueSaveFromElement"
                            placeholder="Enter a space separated list" v-model="presentForm.assFlags"
                     >
                 </div>
