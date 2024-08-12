@@ -1117,7 +1117,7 @@ channel.on('updateFormFailed', (response) => {
 
             <!-- Victory & Defeat Messages -->
             <div class="tab-pane show" id="nav-victorydefeat" role="tabpanel" aria-labelledby="nav-victorydefeat-tab">
-                <h4>Victory</h4>
+                <h4>Defeat</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Player defeated by Form"
                                       :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
@@ -1135,7 +1135,7 @@ channel.on('updateFormFailed', (response) => {
                 </div>
 
                 <hr/>
-                <h4>Defeat</h4>
+                <h4>Victory</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player (as form) defeats Monster"
                                       :prop-value="presentForm.victory.join('\n')" @input="queueSaveFromEditor"
@@ -1153,7 +1153,7 @@ channel.on('updateFormFailed', (response) => {
                 </div>
 
                 <hr/>
-                <h4>Observed Defeat</h4>
+                <h4>Observed Victory</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="ovictory" label="Form seen defeating Monster"
                                       :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"

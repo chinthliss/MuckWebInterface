@@ -13,16 +13,13 @@ type Difference = {
     dev: string
 }
 
-const differences: ComputedRef<Difference[]> = computed<Difference[]>(() => {
-    const result = [];
+type GroupedDifferences = {
+    [header: string]: Difference[]
+}
 
-    const baseProps = [
-        'height', 'mass', 'tags', 'say', 'oSay', 'breastCount', 'breastSize', 'cuntCount', 'cuntSize',
-        'clitCount', 'clitSize', 'cockCount', 'cockSize', 'ballCount', 'ballSize', 'scent', 'heat', 'template',
-        'sexless', 'noExtract', 'noReward', 'noFunnel', 'noZap', 'noMastering', 'noNative', 'bypassImmune',
-        'private', 'hidden', 'special?', 'powerset?', 'placement?'
-    ];
-    for (const prop of baseProps) {
+const compareProps = (propsToCheck: string[]): string[] => {
+    const result = [];
+    for (const prop of propsToCheck) {
         if (props.liveForm.value[prop] != props.devForm.value[prop]) {
             result.push({
                     prop: prop,
@@ -33,28 +30,78 @@ const differences: ComputedRef<Difference[]> = computed<Difference[]>(() => {
         }
     }
     return result;
+}
+
+const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences>(() => {
+    const result = {};
+
+    result['Status'] = compareProps([
+        'noReward', 'noExtract', 'noFunnel', 'noZap', 'noMastering', 'noNative', 'bypassImmune',
+        'private', 'hidden', 'special?', 'powerset?', 'placement?'
+    ]);
+
+    result['Properties'] = compareProps([
+        'height', 'mass', 'tags', 'scent', 'heat', 'say2ndPerson', 'say3rdPerson', 'sexless',
+        'breastCount', 'breastSize', 'cuntCount', 'cuntSize', 'clitCount', 'clitSize',
+        'cockCount', 'cockSize', 'ballCount', 'ballSize'
+    ]);
+
+    result['Skin'] = compareProps([
+        'skinTemplate', 'skinFlags', 'skinShortDescription', 'skinTransformation', 'skinDescription', 'skinKemoDescription'
+    ]);
+
+    result['Head'] = compareProps([
+        'headTemplate', 'headFlags', 'headTransformation', 'headDescription', 'headKemoDescription'
+    ]);
+
+    result['Torso'] = compareProps([
+        'torsoTemplate', 'torsoFlags', 'torsoTransformation', 'torsoDescription', 'torsoKemoDescription'
+    ]);
+
+    result['Arms'] = compareProps([
+        'armsTemplate', 'armsFlags', 'armsTransformation', 'armsDescription', 'armsKemoDescription'
+    ]);
+
+    result['Legs'] = compareProps([
+        'legsTemplate', 'legsFlags', 'legsTransformation', 'legsDescription', 'legsKemoDescription'
+    ]);
+
+    result['Ass / Tail'] = compareProps([
+        'assTemplate', 'assFlags', 'assTransformation', 'assDescription'
+    ]);
+
+    result['Groin'] = compareProps([
+        'groinTemplate', 'groinFlags', 'groinTransformation', 'groinCockDescription', 'groinCuntDescription', 'groinClitDescription'
+    ]);
+
+    result['Victory & Defeat'] = compareProps(['victory', 'defeat', 'oDefeat']);
+
+    return result;
 
 })
 
 </script>
 
 <template>
-    <table class="table table-dark table-hover table-striped table-responsive small">
-        <thead>
-        <tr>
-            <th scope="col">Prop</th>
-            <th scope="col">Live</th>
-            <th scope="col">Dev</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="difference in differences">
-            <td>{{ difference.prop }}</td>
-            <td>{{ difference.live }}</td>
-            <td>{{ difference.dev }}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div v-for="group in ['Status', 'Properties', 'Skin', 'Head', 'Torso', 'Arms', 'Legs', 'Ass / Tail', 'Groin', 'Victory & Defeat']">
+        <h4>{{ group }}</h4>
+        <table class="table table-dark table-hover table-striped table-responsive small">
+            <thead>
+            <tr>
+                <th scope="col">Property</th>
+                <th scope="col">Live Value</th>
+                <th scope="col">Dev Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="difference in differences[group]">
+                <td>{{ difference.prop }}</td>
+                <td>{{ difference.live }}</td>
+                <td>{{ difference.dev }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <style scoped>
