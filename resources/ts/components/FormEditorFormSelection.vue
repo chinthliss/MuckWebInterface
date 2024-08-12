@@ -93,6 +93,10 @@ const newForm = () => {
     emit('new');
 }
 
+const rowStyle = (_data) => {
+    return { cursor: 'pointer' };
+}
+
 channel.on('formList', (data: number) => {
     formListLoadTotal.value = formListLoadLeft.value = data;
     formList.value = [];
@@ -144,7 +148,7 @@ if (props.startExpanded) getFormList()
         ></Progress>
         <div v-else>
             <DataTable :value="formList" dataKey="name" size="small" stripedRows scrollable
-                       scrollHeight="600px" @row-click="rowClicked"
+                       scrollHeight="600px" @row-click="rowClicked" :rowStyle="rowStyle"
                        v-model:filters="filters" filterDisplay="row"
             >
                 <template #empty>There are no forms that you can view. Perhaps you should create a new one?</template>
@@ -200,5 +204,4 @@ if (props.startExpanded) getFormList()
 </template>
 
 <style scoped>
-
 </style>

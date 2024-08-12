@@ -25,17 +25,15 @@ type FormLog = {
 type Form = {
     name: string
     owner?: number
-    _: {
-        approved: boolean
-        published: boolean
-        review: boolean
-        revise: boolean
-        createdAt?: number // Timestamp
-        editedAt?: number // Timestamp
-        log?: FormLog[]
-        notes?: string[]
-        viewers: string
-    }
+    _approved: boolean
+    _published: boolean
+    _review: boolean
+    _revise: boolean
+    _createdAt?: number // Timestamp
+    _editedAt?: number // Timestamp
+    _log?: FormLog[]
+    _notes?: string[]
+    _viewers: string
 
     height: number
     mass: number
@@ -74,56 +72,48 @@ type Form = {
     oVictory: string[]
     defeat: string[]
 
-    skin: {
-        flags: string
-        transformation: string
-        shortDescription: string
-        description: string
-        kemoDescription: string
-        template: boolean
-    }
-    head: {
-        flags: string
-        transformation: string
-        description: string
-        kemoDescription: string
-        template: boolean
-    }
-    torso: {
-        flags: string
-        transformation: string
-        description: string
-        kemoDescription: string
-        template: boolean
-    }
-    arms: {
-        flags: string
-        transformation: string
-        description: string
-        kemoDescription: string
-        template: boolean
-    }
-    legs: {
-        flags: string
-        transformation: string
-        description: string
-        kemoDescription: string
-        template: boolean
-    }
-    groin: {
-        flags: string
-        transformation: string
-        cockDescription: string
-        cuntDescription: string
-        clitDescription: string
-        template: boolean
-    }
-    ass: {
-        flags: string
-        transformation: string
-        description: string
-        template: boolean
-    }
+    skinFlags: string
+    skinTransformation: string
+    skinShortDescription: string
+    skinDescription: string
+    skinKemoDescription: string
+    skinTemplate: boolean
+
+    headFlags: string
+    headTransformation: string
+    headDescription: string
+    headKemoDescription: string
+    headTemplate: boolean
+
+    torsoFlags: string
+    torsoTransformation: string
+    torsoDescription: string
+    torsoKemoDescription: string
+    torsoTemplate: boolean
+
+    armsFlags: string
+    armsTransformation: string
+    armsDescription: string
+    armsKemoDescription: string
+    armsTemplate: boolean
+
+    legsFlags: string
+    legsTransformation: string
+    legsDescription: string
+    legsKemoDescription: string
+    legsTemplate: boolean
+
+    groinFlags: string
+    groinTransformation: string
+    groinCockDescription: string
+    groinCuntDescription: string
+    groinClitDescription: string
+    groinTemplate: boolean
+
+    assFlags: string
+    assTransformation: string
+    assDescription: string
+    assTemplate: boolean
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -167,28 +157,28 @@ const helpLink = (helpFile: string) => {
 
 const oneWordStatus = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value._.revise) return 'Revision Needed';
-    if (presentForm.value._.review) return 'Awaiting Review';
-    return presentForm.value._.approved ? 'Finished' : 'Under Construction';
+    if (presentForm.value._revise) return 'Revision Needed';
+    if (presentForm.value._review) return 'Awaiting Review';
+    return presentForm.value._approved ? 'Finished' : 'Under Construction';
 });
 
 const statusDescription = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value._.revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
-    if (presentForm.value._.review) return 'The form is awaiting staff review. You can view it but not make any changes.';
-    if (presentForm.value._.approved) return 'This form has been finalized. You can view it but not make any changes.';
+    if (presentForm.value._revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
+    if (presentForm.value._review) return 'The form is awaiting staff review. You can view it but not make any changes.';
+    if (presentForm.value._approved) return 'This form has been finalized. You can view it but not make any changes.';
     return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
 });
 
 const hasTemplatedParts = computed((): boolean => {
     if (!presentForm.value) return false;
-    return presentForm.value.skin.template ||
-        presentForm.value.head.template ||
-        presentForm.value.torso.template ||
-        presentForm.value.arms.template ||
-        presentForm.value.legs.template ||
-        presentForm.value.groin.template ||
-        presentForm.value.ass.template;
+    return presentForm.value.skinTemplate ||
+        presentForm.value.headTemplate ||
+        presentForm.value.torsoTemplate ||
+        presentForm.value.armsTemplate ||
+        presentForm.value.legsTemplate ||
+        presentForm.value.groinTemplate ||
+        presentForm.value.assTemplate;
 });
 
 const friendlyFormPreview = computed(() => {
@@ -348,7 +338,7 @@ channel.on('form', (response: GetFormResponse) => {
     staff.value = response.staff ?? false;
 
     // Handle some fixes and translations
-    if (form._.notes) notes.value = form._.notes.join('\n');
+    if (form._notes) notes.value = form._notes.join('\n');
     if (!form.oVictory) form.oVictory = [];
     if (!form.victory) form.victory = [];
     if (!form.defeat) form.defeat = [];
@@ -441,7 +431,7 @@ channel.on('updateFormFailed', (response) => {
             <div class="card-footer text-muted text-center">
                 Please note - the preview can be slow to load or update, especially on larger forms.
 
-                <div v-if="presentForm._.published" class="alert alert-danger" role="alert">
+                <div v-if="presentForm._published" class="alert alert-danger" role="alert">
                     The preview is unreliable with forms that have been published.
                     <br/>Some of the code defaults to the published entry and won't reflect changes here.
                 </div>
@@ -500,15 +490,15 @@ channel.on('updateFormFailed', (response) => {
                 <div>Status: {{ oneWordStatus }}</div>
                 <div class="text-muted">{{ statusDescription }}</div>
 
-                <div class="mt-2">Created: {{ timestampToString(presentForm._.createdAt) }}</div>
+                <div class="mt-2">Created: {{ timestampToString(presentForm._createdAt) }}</div>
 
-                <div class="mt-2">Last edited: {{ timestampToString(presentForm._.editedAt) }}</div>
+                <div class="mt-2">Last edited: {{ timestampToString(presentForm._editedAt) }}</div>
 
                 <!-- Allowed Viewers -->
                 <div class="d-flex mt-2">
                     <label for="viewers" class="col-form-label">Allowed Viewers</label>
                     <input id="viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of Viewers" v-model="presentForm._.viewers" @input="queueSaveFromElement"
+                           placeholder="List of Viewers" v-model="presentForm._viewers" @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="text-muted">Space separated list of other people who are allowed to view this form,
@@ -540,7 +530,7 @@ channel.on('updateFormFailed', (response) => {
                 <!-- History -->
                 <div class="mt-2">
                     <h4>History</h4>
-                    <div v-if="!presentForm._.log || !presentForm._.log.length">No history recorded.</div>
+                    <div v-if="!presentForm._log || !presentForm._log.length">No history recorded.</div>
                     <table v-else class="table table-dark table-hover table-striped table-responsive small">
                         <thead>
                         <tr>
@@ -551,7 +541,7 @@ channel.on('updateFormFailed', (response) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="entry in presentForm?._.log">
+                        <tr v-for="entry in presentForm?._log">
                             <td>{{ timestampToString(entry.when) }}</td>
                             <td>{{ entry.name }}</td>
                             <td>{{ entry.what }}</td>
@@ -902,224 +892,224 @@ channel.on('updateFormFailed', (response) => {
                 <hr/>
                 <h4 class="mt-2">Skin</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="skin-template"
-                           v-model="presentForm.skin.template" :disabled="viewOnly" @input="queueSaveFromElement"
+                    <input class="form-check-input" type="checkbox" id="skinTemplate"
+                           v-model="presentForm.skinTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
-                    <label class="form-check-label" for="skin-template">Template?</label>
+                    <label class="form-check-label" for="skinTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="skin-flags" class="form-label">Flags</label>
-                    <input id="skin-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a space separated list" v-model="presentForm.skin.flags"
+                    <label for="skinFlags" class="form-label">Flags</label>
+                    <input id="skinFlags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="Enter a space separated list" v-model="presentForm.skinFlags"
                            @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="mt-2">
-                    <label for="skin-short-description" class="form-label">Short Description</label>
-                    <input id="skin-short-description" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="skinShortDescription" class="form-label">Short Description</label>
+                    <input id="skinShortDescription" type="text" class="form-control" :disabled="viewOnly"
                            placeholder="Enter a phrase for an adjective (e.g. dry and scaly) "
-                           v-model="presentForm.skin.shortDescription" @input="queueSaveFromElement"
+                           v-model="presentForm.skinShortDescription" @input="queueSaveFromElement"
                     >
                     <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="skin-transformation" label="Transformation"
-                                      :prop-value="presentForm.skin.transformation" @input="queueSaveFromEditor"
+                                      prop-name="skinTransformation" label="Transformation"
+                                      :prop-value="presentForm.skinTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">Skin descriptions are prefixed by the text 'Their body is covered in..'
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="skin-description" label="Description"
-                                      :prop-value="presentForm.skin.description" @input="queueSaveFromEditor"
+                                      prop-name="skinDescription" label="Description"
+                                      :prop-value="presentForm.skinDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="skin-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.skin.kemoDescription" @input="queueSaveFromEditor"
+                                      prop-name="skinKemoDescription" label="Kemo Description"
+                                      :prop-value="presentForm.skinKemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Head -->
                 <hr/>
                 <h4 class="mt-2">Head</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="head-template"
-                           v-model="presentForm.head.template" :disabled="viewOnly" @input="queueSaveFromElement"
+                    <input class="form-check-input" type="checkbox" id="headTemplate"
+                           v-model="presentForm.headTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
-                    <label class="form-check-label" for="head-template">Template?</label>
+                    <label class="form-check-label" for="headTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="head-flags" class="form-label">Flags</label>
-                    <input id="head-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="headFlags" class="form-label">Flags</label>
+                    <input id="headFlags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="Enter a space separated list" v-model="presentForm.head.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.headFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="head-transformation" label="Transformation"
-                                      :prop-value="presentForm.head.transformation" @input="queueSaveFromEditor"
+                                      prop-name="headTransformation" label="Transformation"
+                                      :prop-value="presentForm.headTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their head is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="head-description" label="Description"
-                                      :prop-value="presentForm.head.description" @input="queueSaveFromEditor"
+                                      prop-name="headDescription" label="Description"
+                                      :prop-value="presentForm.headDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="head-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.head.kemoDescription" @input="queueSaveFromEditor"
+                                      prop-name="headKemoDescription" label="Kemo Description"
+                                      :prop-value="presentForm.headKemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Torso -->
                 <hr/>
                 <h4 class="mt-2">Torso</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="torso-template" @input="queueSaveFromElement"
-                           v-model="presentForm.torso.template" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="torsoTemplate" @input="queueSaveFromElement"
+                           v-model="presentForm.torsoTemplate" :disabled="viewOnly"
                     >
-                    <label class="form-check-label" for="torso-template">Template?</label>
+                    <label class="form-check-label" for="torsoTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="torso-flags" class="form-label">Flags</label>
-                    <input id="torso-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="torsoFlags" class="form-label">Flags</label>
+                    <input id="torsoFlags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="Enter a space separated list" v-model="presentForm.torso.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.torsoFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="torso-transformation" label="Transformation"
-                                      :prop-value="presentForm.torso.transformation" @input="queueSaveFromEditor"
+                                      prop-name="torsoTransformation" label="Transformation"
+                                      :prop-value="presentForm.torsoTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their torso is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="torso-description" label="Description"
-                                      :prop-value="presentForm.torso.description" @input="queueSaveFromEditor"
+                                      prop-name="torsoDescription" label="Description"
+                                      :prop-value="presentForm.torsoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="torso-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.torso.kemoDescription" @input="queueSaveFromEditor"
+                                      prop-name="torsoKemoDescription" label="Kemo Description"
+                                      :prop-value="presentForm.torsoKemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Arms -->
                 <hr/>
                 <h4 class="mt-2">Arms</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="arms-template" @input="queueSaveFromElement"
-                           v-model="presentForm.arms.template" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="armsTemplate" @input="queueSaveFromElement"
+                           v-model="presentForm.armsTemplate" :disabled="viewOnly"
                     >
-                    <label class="form-check-label" for="arms-template">Template?</label>
+                    <label class="form-check-label" for="armsTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="arms-flags" class="form-label">Flags</label>
-                    <input id="arms-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="armsFlags" class="form-label">Flags</label>
+                    <input id="armsFlags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="Enter a space separated list" v-model="presentForm.arms.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.armsFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="arms-transformation" label="Transformation"
-                                      :prop-value="presentForm.arms.transformation" @input="queueSaveFromEditor"
+                                      prop-name="armsTransformation" label="Transformation"
+                                      :prop-value="presentForm.armsTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their arms are..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="arms-description" label="Description"
-                                      :prop-value="presentForm.arms.description" @input="queueSaveFromEditor"
+                                      prop-name="armsDescription" label="Description"
+                                      :prop-value="presentForm.armsDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="arms-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.arms.kemoDescription" @input="queueSaveFromEditor"
+                                      prop-name="armsKemoDescription" label="Kemo Description"
+                                      :prop-value="presentForm.armsKemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Legs -->
                 <hr/>
                 <h4 class="mt-2">Legs</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="legs-template" @input="queueSaveFromElement"
-                           v-model="presentForm.legs.template" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="legsTemplate" @input="queueSaveFromElement"
+                           v-model="presentForm.legsTemplate" :disabled="viewOnly"
                     >
-                    <label class="form-check-label" for="legs-template">Template?</label>
+                    <label class="form-check-label" for="legsTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="legs-flags" class="form-label">Flags</label>
-                    <input id="legs-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="legsFlags" class="form-label">Flags</label>
+                    <input id="legsFlags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="Enter a space separated list" v-model="presentForm.legs.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.legsFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="legs-transformation" label="Transformation"
-                                      :prop-value="presentForm.legs.transformation" @input="queueSaveFromEditor"
+                                      prop-name="legsTransformation" label="Transformation"
+                                      :prop-value="presentForm.legsTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">
                     Leg descriptions are prefixed by the text 'Their legs are..'.
                     They immediately follow with the ass description.
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="legs-description" label="Description"
-                                      :prop-value="presentForm.legs.description" @input="queueSaveFromEditor"
+                                      prop-name="legsDescription" label="Description"
+                                      :prop-value="presentForm.legsDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="legs-kemo-description" label="Kemo Description"
-                                      :prop-value="presentForm.legs.kemoDescription" @input="queueSaveFromEditor"
+                                      prop-name="legsKemoDescription" label="Kemo Description"
+                                      :prop-value="presentForm.legsKemoDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Ass or Tail -->
                 <hr/>
                 <h4 class="mt-2">Ass or Tail</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="ass-template"
-                           v-model="presentForm.ass.template" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="assTemplate"
+                           v-model="presentForm.assTemplate" :disabled="viewOnly"
                     >
-                    <label class="form-check-label" for="ass-template">Template?</label>
+                    <label class="form-check-label" for="assTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="ass-flags" class="form-label">Flags</label>
-                    <input id="ass-flags" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a space separated list" v-model="presentForm.ass.flags"
+                    <label for="assFlags" class="form-label">Flags</label>
+                    <input id="assFlags" type="text" class="form-control" :disabled="viewOnly"
+                           placeholder="Enter a space separated list" v-model="presentForm.assFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="ass-transformation" label="Transformation"
-                                      :prop-value="presentForm.ass.transformation" @input="queueSaveFromEditor"
+                                      prop-name="assTransformation" label="Transformation"
+                                      :prop-value="presentForm.assTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">Ass descriptions immediately follow the leg description'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="ass-description" label="Description"
-                                      :prop-value="presentForm.ass.description" @input="queueSaveFromEditor"
+                                      prop-name="assDescription" label="Description"
+                                      :prop-value="presentForm.assDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
                 <!-- Groin -->
                 <hr/>
                 <h4 class="mt-2">Groin</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="groin-template" @input="queueSaveFromElement"
-                           v-model="presentForm.groin.template" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="groinTemplate" @input="queueSaveFromElement"
+                           v-model="presentForm.groinTemplate" :disabled="viewOnly"
                     >
-                    <label class="form-check-label" for="groin-template">Template?</label>
+                    <label class="form-check-label" for="groinTemplate">Template?</label>
                 </div>
                 <div class="mt-2">
-                    <label for="groin-flags" class="form-label">Flags</label>
-                    <input id="groin-flags" type="text" class="form-control" :disabled="viewOnly"
+                    <label for="groinFlags" class="form-label">Flags</label>
+                    <input id="groinFlags" type="text" class="form-control" :disabled="viewOnly"
                            @input="queueSaveFromElement"
-                           placeholder="Enter a space separated list" v-model="presentForm.groin.flags"
+                           placeholder="Enter a space separated list" v-model="presentForm.groinFlags"
                     >
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="groin-transformation" label="Transformation"
-                                      :prop-value="presentForm.groin.transformation" @input="queueSaveFromEditor"
+                                      prop-name="groinTransformation" label="Transformation"
+                                      :prop-value="presentForm.groinTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="mt-2 text-muted">
                     Groin descriptions are more complicated and will be prefixed with a count and size adjective,
                     and follow with what's being described. E.g. 'they have one huge ... cock'
                 </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="cock-description" label="Cock Description"
-                                      :prop-value="presentForm.groin.cockDescription" @input="queueSaveFromEditor"
+                                      prop-name="groinCockDescription" label="Cock Description"
+                                      :prop-value="presentForm.groinCockDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="cunt-description" label="Cunt Description"
-                                      :prop-value="presentForm.groin.cuntDescription" @input="queueSaveFromEditor"
+                                      prop-name="groinCuntDescription" label="Cunt Description"
+                                      :prop-value="presentForm.groinCuntDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
-                                      prop-name="clit-description" label="Clit Description"
-                                      :prop-value="presentForm.groin.clitDescription" @input="queueSaveFromEditor"
+                                      prop-name="groinClitDescription" label="Clit Description"
+                                      :prop-value="presentForm.groinClitDescription" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
 
             </div>

@@ -9,19 +9,16 @@ export default class ChannelCharacter extends Channel {
         {
             name: 'Form in progress',
             owner: 1234,
-            _: {
-
-                approved: false,
-                review: false,
-                revise: false,
-                lastEdit: Math.floor(Date.now() / 1000) - 1,
-                notes: ['test', 'test2'],
-                log: [
-                    {name: 'Someone', what: 'test', message: 'Test', when: Math.floor(Date.now() / 1000) - 100},
-                    {name: 'Person', what: 'test', message: 'Words', when: Math.floor(Date.now() / 1000) - 10}
-                ],
-                viewers: 'Test viewers entry',
-            },
+            _approved: false,
+            _review: false,
+            _revise: false,
+            _lastEdit: Math.floor(Date.now() / 1000) - 1,
+            _notes: ['test', 'test2'],
+            _log: [
+                {name: 'Someone', what: 'test', message: 'Test', when: Math.floor(Date.now() / 1000) - 100},
+                {name: 'Person', what: 'test', message: 'Words', when: Math.floor(Date.now() / 1000) - 10}
+            ],
+            _viewers: 'Test viewers entry',
             mass: 5,
             height: 5,
             say: 'wibble',
@@ -44,68 +41,32 @@ export default class ChannelCharacter extends Channel {
             skin: {
                 transformation: 'This is a test transformation',
                 description: 'This is a test description.'
-            },
-            head: {},
-            torso: {},
-            arms: {},
-            legs: {},
-            groin: {},
-            ass: {}
+            }
         },
         {
             name: 'Approved Form',
             owner: 1234,
-            _: {
-
-                approved: true,
-                published: true,
-                review: false,
-                revise: false,
-                lastEdit: Math.floor(Date.now() / 1000) - 1,
-            },
-            skin: {},
-            head: {},
-            torso: {},
-            arms: {},
-            legs: {},
-            groin: {},
-            ass: {}
+            _approved: true,
+            _published: true,
+            _review: false,
+            _revise: false,
+            _lastEdit: Math.floor(Date.now() / 1000) - 1
         },
         {
             name: 'Form ready to review',
             owner: 1234,
-            _: {
-
-                approved: false,
-                review: true,
-                revise: false,
-                lastEdit: Math.floor(Date.now() / 1000) - 1,
-            },
-            skin: {},
-            head: {},
-            torso: {},
-            arms: {},
-            legs: {},
-            groin: {},
-            ass: {}
+            _approved: false,
+            _review: true,
+            _revise: false,
+            _lastEdit: Math.floor(Date.now() / 1000) - 1
         },
         {
             name: 'Form in need of revision',
             owner: 1234,
-            _: {
-
-                approved: false,
-                review: false,
-                revise: true,
-                lastEdit: Math.floor(Date.now() / 1000) - 1,
-            },
-            skin: {},
-            head: {},
-            torso: {},
-            arms: {},
-            legs: {},
-            groin: {},
-            ass: {}
+            _approved: false,
+            _review: false,
+            _revise: true,
+            _lastEdit: Math.floor(Date.now() / 1000) - 1,
         }
     ]
 
@@ -116,11 +77,11 @@ export default class ChannelCharacter extends Channel {
                 name: form.name,
                 account: form.owner,
                 credit: 'name',
-                approved: form._.approved,
-                published: form._.published,
-                review: form._.review,
-                revise: form._.revise,
-                lastEdit: form._.lastEdit
+                approved: form._approved,
+                published: form._published,
+                review: form._review,
+                revise: form._revise,
+                lastEdit: form._lastEdit
             });
         }
     };
@@ -130,7 +91,7 @@ export default class ChannelCharacter extends Channel {
             if (form.name === data) {
                 this.sendMessageToConnection(connection, 'form', {
                     form: form,
-                    canEdit: !form._.approved,
+                    canEdit: !form._approved,
                     staff: 1
                 });
                 return;
