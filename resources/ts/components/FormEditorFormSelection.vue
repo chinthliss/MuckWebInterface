@@ -61,6 +61,7 @@ const getFormList = () => {
 }
 
 const statusForFormListing = (form: FormListing) => {
+    console.log("Test for " + form.name);
     if (form.revise) return 'Revision Needed';
     if (form.review) return 'Awaiting Review';
     return form.approved ? 'Finished' : 'Under Construction';
@@ -72,7 +73,7 @@ const toggleExpanded = () => {
 }
 
 const refreshForms = () => {
-    if (formListLoadLeft.value > 0) return;
+    if (formListLoadLeft > 0) return;
     getFormList();
 }
 
@@ -92,7 +93,7 @@ const newForm = () => {
     emit('new');
 }
 
-const rowStyle = (_data: any) => {
+const rowStyle = (_data) => {
     return { cursor: 'pointer' };
 }
 

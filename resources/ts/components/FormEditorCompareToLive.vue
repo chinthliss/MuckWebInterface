@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {computed, ComputedRef} from "vue";
-import {Form} from "./FormEditor.vue";
+import type Form from "./FormEditor.vue";
+import {computed, ComputedRef, Ref} from "vue";
 
 const props = defineProps<{
-    devForm: Form
-    liveForm: Form
+    devForm: Ref<Form>;
+    liveForm: Ref<Form>;
 }>();
 
 type Difference = {
