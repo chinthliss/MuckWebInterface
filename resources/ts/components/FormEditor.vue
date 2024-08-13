@@ -7,6 +7,7 @@ import FormEditorFormSelection from "./FormEditorFormSelection.vue";
 import FormEditorTestConfigurator from "./FormEditorTestConfigurator.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
+import FormEditorCompareToLive from "./FormEditorCompareToLive.vue";
 
 const props = defineProps<{
     links: {
@@ -22,7 +23,7 @@ type FormLog = {
     message: string
 }
 
-type Form = {
+export type Form = {
     name: string
     owner?: number
     _approved: boolean
@@ -118,6 +119,7 @@ type Form = {
 
 const presentFormId: Ref<string | null> = ref(null);
 const presentForm: Ref<Form | null> = ref(null);
+const publishedForm: Ref<Form | null> = ref(null); // Used to compare with
 const previews: Ref<{
     form?: string
     defeat?: string
@@ -138,6 +140,8 @@ const newFormName: Ref<string> = ref('');
 
 const error: Ref<string> = ref('');
 const errorModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+
+const compareFormModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const previewConfigurationModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 const subjectConfiguration: Ref<InstanceType<typeof FormEditorTestConfigurator> | null> = ref(null);
@@ -235,6 +239,12 @@ const createForm = () => {
     }
 }
 
+const startCompareFormToLive = () => {
+    if (compareFormModal.value) compareFormModal.value.show();
+    publishedForm.value = null;
+    channel.send('getFormAsPublished', presentFormId.value);
+}
+
 const showPreviewConfiguration = () => {
     if (previewConfigurationModal.value) previewConfigurationModal.value.show();
 }
@@ -279,7 +289,7 @@ const queueSaveFromElement = (e: InputEvent) => {
 }
 
 // The code editors don't return an InputEvent unfortunately, so need their own mechanism
-const queueSaveFromEditor = (e: { id: string, value; string }) => {
+const queueSaveFromEditor = (e: { id: string, value: string }) => {
     if (!e?.id) {
         console.log("Couldn't queue save editor value as the element triggering it has no id: ", e);
         return;
@@ -396,6 +406,9 @@ channel.on('formMessagePreview', (response: { form: string, message: string, con
     }
 });
 
+channel.on('publishedForm', (response: Form) => {
+    publishedForm.value = response;
+});
 
 channel.on('updateFormFailed', (response) => {
     error.value = `Update failed or rejected by the muck when setting '${response.propName}' to '${response.propValue}.'`;
@@ -681,6 +694,12 @@ channel.on('updateFormFailed', (response) => {
 
                     <button class="btn btn-secondary me-2" @click="startDeleteForm">
                         <i class="fas fa-trash btn-icon-left"></i>Delete Form
+                    </button>
+
+                    <button v-if="staff" class="btn btn-secondary me-2" @click="startCompareFormToLive"
+                            :disabled="!presentForm._published"
+                    >
+                        <i class="fas fa-magnifying-glass btn-icon-left"></i>Compare to Live
                     </button>
                 </div>
 
@@ -1247,6 +1266,22 @@ channel.on('updateFormFailed', (response) => {
             Please review the Terms of Service.</p>
         TODO: Terms of Service link
     </modal-confirmation>
+
+    <!-- Modal for comparing the present form to the one in live -->
+    <modal-message class="modal-xl" ref="compareFormModal" title="Compare to Live Form">
+        This tool shows the difference between the present in process version of a form (The 'dev' version) and the
+        version published in live.
+        <div class="mt-2" v-if="!publishedForm">
+            Loading form..
+        </div>
+        <div v-else class="mt-2">
+            <form-editor-compare-to-live
+                :dev-form="publishedForm"
+                :live-form="presentForm"
+            >
+            </form-editor-compare-to-live>
+        </div>
+    </modal-message>
 
     <!-- Modal for error messages -->
     <modal-message ref="errorModal">

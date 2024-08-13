@@ -18,7 +18,7 @@ export const carbonToString = (carbonString: string | null, type?: string): stri
 /**
  * Takes a UTC timestamp exported from the muck and turns it into something friendlier
  */
-export const timestampToString = (timestamp: number | null): string => {
+export const timestampToString = (timestamp: number | null | undefined): string => {
     if (!timestamp) return '--';
     return new Date(timestamp * 1000).toLocaleString();
 };
