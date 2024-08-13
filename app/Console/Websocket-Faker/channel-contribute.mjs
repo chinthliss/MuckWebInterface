@@ -142,6 +142,13 @@ export default class ChannelCharacter extends Channel {
                     data.message.toUpperCase() + '-PREVIEW-SECOND-LINE',
                 ]
             });
+        },
+        'getFormAsPublished': (connection, data) => {
+            for (const form of this.formsCatalogue) {
+                if (form.name === data) {
+                    this.sendMessageToConnection(connection, 'publishedForm', form)
+                }
+            }
         }
     }
 }
