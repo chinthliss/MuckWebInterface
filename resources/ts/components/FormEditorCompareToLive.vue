@@ -22,13 +22,13 @@ const compareProps = (propsToCheck: string[]): Difference[] => {
     for (const prop of propsToCheck) {
         const liveValue = props.liveForm[prop as keyof Form];
         const devValue = props.devForm[prop as keyof Form];
-        if (liveValue != devValue) {
+        // Being lazy here since this is infrequent and occasionally we're comparing arrays of strings
+        if (JSON.stringify(liveValue) != JSON.stringify(devValue)) {
             result.push({
-                    prop: prop,
-                    live: liveValue as string,
-                    dev: devValue as string
-                }
-            );
+                prop: prop,
+                live: liveValue as string,
+                dev: devValue as string
+            });
         }
     }
     return result;
@@ -89,7 +89,9 @@ const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences
         v-for="group in ['Status', 'Properties', 'Skin', 'Head', 'Torso', 'Arms', 'Legs', 'Ass / Tail', 'Groin', 'Victory & Defeat']"
     >
         <h4 class="mt-1 mb-0">{{ group }}</h4>
-        <table v-if="differences[group].length" class="table table-dark table-hover table-striped table-responsive small">
+        <table v-if="differences[group].length"
+               class="table table-dark table-hover table-striped table-responsive small"
+        >
             <thead>
             <tr>
                 <th scope="col">Property</th>
