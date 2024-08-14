@@ -38,10 +38,8 @@ export default class ChannelCharacter extends Channel {
             victory: ['This is a victory description.', 'With multiple lines!'],
             oVictory: ['This is a 3rd party victory description.'],
             defeat: ['This is a defeat description.'],
-            skin: {
-                transformation: 'This is a test transformation',
-                description: 'This is a test description.'
-            }
+            skinTransformation: 'This is a test transformation',
+            skinDescription: 'This is a test description.'
         },
         {
             name: 'Approved Form',
@@ -146,7 +144,9 @@ export default class ChannelCharacter extends Channel {
         'getFormAsPublished': (connection, data) => {
             for (const form of this.formsCatalogue) {
                 if (form.name === data) {
-                    this.sendMessageToConnection(connection, 'publishedForm', form)
+                    const clonedForm = {...form};
+                    clonedForm.skinDescription = "This is a different description";
+                    this.sendMessageToConnection(connection, 'publishedForm', clonedForm);
                 }
             }
         }

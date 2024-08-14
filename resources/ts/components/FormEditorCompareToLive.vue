@@ -20,11 +20,13 @@ type GroupedDifferences = {
 const compareProps = (propsToCheck: string[]): Difference[] => {
     const result = [];
     for (const prop of propsToCheck) {
-        if (props.liveForm[prop as keyof Form] !== props.devForm[prop as keyof Form]) {
+        const liveValue = props.liveForm[prop as keyof Form];
+        const devValue = props.devForm[prop as keyof Form];
+        if (liveValue != devValue) {
             result.push({
                     prop: prop,
-                    live: props.liveForm[prop as keyof Form] as string,
-                    dev: props.devForm[prop as keyof Form] as string
+                    live: liveValue as string,
+                    dev: devValue as string
                 }
             );
         }
@@ -87,7 +89,7 @@ const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences
         v-for="group in ['Status', 'Properties', 'Skin', 'Head', 'Torso', 'Arms', 'Legs', 'Ass / Tail', 'Groin', 'Victory & Defeat']"
     >
         <h4 class="mt-1 mb-0">{{ group }}</h4>
-        <table v-if="differences.length" class="table table-dark table-hover table-striped table-responsive small">
+        <table v-if="differences[group].length" class="table table-dark table-hover table-striped table-responsive small">
             <thead>
             <tr>
                 <th scope="col">Property</th>
