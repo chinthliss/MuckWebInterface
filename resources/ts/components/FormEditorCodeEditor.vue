@@ -20,7 +20,7 @@ let view: EditorView;
 // This needs a compartment as we'll be toggling it externally via watching when we change form
 const readOnlySetting = new Compartment;
 
-const setReadOnly = (newValue) => {
+const setReadOnly = (newValue: any) => {
     view.dispatch({
         effects: readOnlySetting.reconfigure(EditorState.readOnly.of(newValue))
     });
@@ -58,7 +58,7 @@ onMounted(() => {
     view = new EditorView({
         doc: props.propValue,
         extensions: extensions,
-        parent: document.getElementById(props.propName)
+        parent: document.getElementById(props.propName)!
     });
 });
 

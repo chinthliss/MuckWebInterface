@@ -3,7 +3,7 @@ import {computed, ComputedRef} from "vue";
 import {Form} from "./FormEditor.vue";
 
 const props = defineProps<{
-    devForm: Form
+    devForm: Form,
     liveForm: Form
 }>();
 
@@ -17,14 +17,14 @@ type GroupedDifferences = {
     [header: string]: Difference[]
 }
 
-const compareProps = (propsToCheck: string[]): string[] => {
+const compareProps = (propsToCheck: string[]): Difference[] => {
     const result = [];
     for (const prop of propsToCheck) {
-        if (props.liveForm.value[prop] != props.devForm.value[prop]) {
+        if (props.liveForm[prop as keyof Form] !== props.devForm[prop as keyof Form]) {
             result.push({
                     prop: prop,
-                    live: props.liveForm.value[prop],
-                    dev: props.devForm.value[prop]
+                    live: props.liveForm[prop as keyof Form] as string,
+                    dev: props.devForm[prop as keyof Form] as string
                 }
             );
         }
@@ -33,7 +33,7 @@ const compareProps = (propsToCheck: string[]): string[] => {
 }
 
 const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences>(() => {
-    const result = {};
+    const result: { [group: string]: Difference[] } = {};
 
     result['Status'] = compareProps([
         'noReward', 'noExtract', 'noFunnel', 'noZap', 'noMastering', 'noNative', 'bypassImmune',
@@ -83,9 +83,11 @@ const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences
 </script>
 
 <template>
-    <div v-for="group in ['Status', 'Properties', 'Skin', 'Head', 'Torso', 'Arms', 'Legs', 'Ass / Tail', 'Groin', 'Victory & Defeat']">
-        <h4>{{ group }}</h4>
-        <table class="table table-dark table-hover table-striped table-responsive small">
+    <div
+        v-for="group in ['Status', 'Properties', 'Skin', 'Head', 'Torso', 'Arms', 'Legs', 'Ass / Tail', 'Groin', 'Victory & Defeat']"
+    >
+        <h4 class="mt-1 mb-0">{{ group }}</h4>
+        <table v-if="differences.length" class="table table-dark table-hover table-striped table-responsive small">
             <thead>
             <tr>
                 <th scope="col">Property</th>
@@ -101,6 +103,7 @@ const differences: ComputedRef<GroupedDifferences> = computed<GroupedDifferences
             </tr>
             </tbody>
         </table>
+        <div v-else>No differences</div>
     </div>
 </template>
 

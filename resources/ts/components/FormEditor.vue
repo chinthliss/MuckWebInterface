@@ -264,7 +264,7 @@ const saveValues = () => {
         // Should improve on this
         if (id.includes('size') || id.includes('count')) updateAllPreviews = true;
         if (id.includes('desc')) updatePreview = true;
-        if (id === 'defeat' || id === 'victory' || id === 'ovictory') requestFormMessagePreview(id);
+        if (id === 'defeat' || id === 'victory' || id === 'oVictory') requestFormMessagePreview(id);
     }
     if (updateAllPreviews) requestFullPreviewUpdate();
     else if (updatePreview) requestFormPreview();
@@ -275,7 +275,7 @@ const queueSave = (propName: string, propValue: string) => {
     if (!pendingSaveId) pendingSaveId = setTimeout(saveValues, 1000);
 }
 
-const queueSaveFromElement = (e: InputEvent) => {
+const queueSaveFromElement = (e: Event) => {
     const element = e.target as HTMLInputElement;
     if (!element?.id) {
         console.log("Couldn't queue save value as the element triggering it has no id: ", e);
@@ -318,7 +318,7 @@ const requestFormMessagePreview = (messageId: string) => {
 const requestFullPreviewUpdate = () => {
     requestFormPreview();
     requestFormMessagePreview('victory');
-    requestFormMessagePreview('ovictory');
+    requestFormMessagePreview('oVictory');
     requestFormMessagePreview('defeat');
 }
 
@@ -344,7 +344,7 @@ channel.on('form', (response: GetFormResponse) => {
         console.log("Received form data but we're not editing this form?", form);
         return;
     }
-    viewOnly.value = !(response.canEdit == true);
+    viewOnly.value = !response.canEdit;
     staff.value = response.staff ?? false;
 
     // Handle some fixes and translations
@@ -397,7 +397,7 @@ channel.on('formMessagePreview', (response: { form: string, message: string, con
         case 'victory':
             previews.value.victory = parsedContent;
             break;
-        case 'ovictory':
+        case 'oVictory':
             previews.value.oVictory = parsedContent;
             break;
         default:
@@ -1174,7 +1174,7 @@ channel.on('updateFormFailed', (response) => {
                 <hr/>
                 <h4>Observed Victory</h4>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
-                                      prop-name="ovictory" label="Form seen defeating Monster"
+                                      prop-name="oVictory" label="Form seen defeating Monster"
                                       :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
                 <div class="text-muted">
@@ -1269,10 +1269,13 @@ channel.on('updateFormFailed', (response) => {
 
     <!-- Modal for comparing the present form to the one in live -->
     <modal-message class="modal-xl" ref="compareFormModal" title="Compare to Live Form">
-        This tool shows the difference between the present in process version of a form (The 'dev' version) and the
+        This tool shows the difference between the in-progress version of a form (The 'dev' version) and the
         version published in live.
         <div class="mt-2" v-if="!publishedForm">
             Loading form..
+        </div>
+        <div class="mt-2" v-else-if="!presentForm">
+            Present form should be set!
         </div>
         <div v-else class="mt-2">
             <form-editor-compare-to-live
