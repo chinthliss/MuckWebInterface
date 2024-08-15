@@ -9,7 +9,7 @@ type Perk = {
     id: string,
     name: string,
     description: string,
-    notes: string,
+    notes?: string,
     cost: number
     tags: string[],
     vanity?: boolean,
@@ -126,7 +126,7 @@ const buyPerk = (perk: Perk): void => {
 
 const startUpdatingNotes = (perk: Perk): void => {
     perkBeingUpdated.value = perk;
-    notesBeingUpdated.value = perk.notes;
+    notesBeingUpdated.value = perk.notes ?? '';
     if (updateNotesModal.value) updateNotesModal.value.show();
 };
 
@@ -145,7 +145,7 @@ const shallWeShow = (perk: Perk): boolean => {
     return show;
 }
 const recalculateExclusions = () => {
-    let excluded = [];
+    let excluded: string[] = [];
     // Pass 1, calculation exclusions
     for (const perk of perks.value) {
         if (perk.owned && perk.excludes) {

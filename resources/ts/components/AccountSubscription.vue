@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {carbonToString, usdToString} from "../formatting";
+import {carbonToString} from "../formatting";
 import {accountId} from "../siteutils";
 import {Ref, ref} from "vue";
 import {AccountSubscription, AccountTransaction} from "../defs";
@@ -31,19 +31,6 @@ const friendlyStatus = () => {
         default:
             return 'Unknown';
     }
-}
-
-const renderResult = (result: string):string => {
-    if (!result) return 'Open'
-    if (result === 'fulfilled') return 'Fulfilled';
-    if (result === 'user_declined') return 'User Declined';
-    if (result === 'vendor_refused') return 'Vendor Declined';
-    if (result === 'expired') return 'Expired';
-    return result;
-}
-
-const renderIdWithLink = (data: any, type: string, row: any) => {
-    return `<a href="${row.url}">${data}</a>`;
 }
 
 </script>

@@ -20,7 +20,7 @@ onMounted(() => {
                 }
             })
         ],
-        parent: document.getElementById('stringparsing-scratchpad')
+        parent: document.getElementById('stringparsing-scratchpad')!
     });
 });
 </script>

@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const cards: Ref<AccountCard[]> = ref(props.cardsIn);
 
-const errors: Ref<object> = ref({});
+const errors: Ref<{[errorKey:string]: string}> = ref({});
 
 const cardNumber: Ref<string> = ref('');
 const expiryDate: Ref<string> = ref('');

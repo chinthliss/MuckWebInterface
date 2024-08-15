@@ -229,7 +229,7 @@ const redrawCanvas = () => {
     }
 };
 
-const adjustZ = (item, modifier) => {
+const adjustZ = (item: AvatarItemInstance, modifier: number) => {
     let oldZ = item.z;
     let newZ = oldZ + modifier;
 
@@ -267,7 +267,7 @@ const changeBackground = (newId: string) => {
         scale: template.scale,
         x: template.x,
         y: template.y,
-        z: template.z
+        z: 0
     } as AvatarItemInstance;
     avatar.value.background.image = new Image();
     avatar.value.background.image.onload = () => {
@@ -328,7 +328,7 @@ const addItemAndGotoIt = (itemId: string) => {
     if (avatar.value.items.length >= 10) return;
     addItem(itemId);
     let triggerEl = document.getElementById('nav-items-edit-tab');
-    triggerEl.click();
+    if (triggerEl) triggerEl.click();
 };
 
 const deleteItem = (item: AvatarItemInstance) => {
@@ -679,7 +679,9 @@ const purchaseItem = (itemId: string) => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use 'resources/sass/variables' as *;
+
 .imgResource {
     display: none;
 }

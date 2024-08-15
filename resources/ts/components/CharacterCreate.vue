@@ -29,11 +29,11 @@ const props = defineProps<{
                     <div class="form-group">
                         <label for="characterName">New Character Name</label>
                         <input type="text" class="form-control" id="characterName" name="characterName"
-                               placeholder="Enter name" v-bind:class="{ 'is-invalid' : errors?.characterName }"
-                               :value="old?.characterName"
+                               placeholder="Enter name" v-bind:class="{ 'is-invalid' : props.errors?.characterName }"
+                               :value="props.old?.characterName"
                         >
                         <div class="invalid-feedback" role="alert">
-                            <p v-for="error in errors?.characterName">{{ error }}</p>
+                            <p v-for="error in props.errors?.characterName">{{ error }}</p>
                         </div>
                     </div>
                     <button type="submit" class="mt-2 btn btn-primary">Submit</button>

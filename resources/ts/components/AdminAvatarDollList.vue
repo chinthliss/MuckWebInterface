@@ -16,9 +16,9 @@ const props = defineProps<{
 <template>
     <div class="container">
         <h2>Avatar Paper Doll List</h2>
-        <div v-if="Object.values(invalid).length > 0" class="alert alert-warning">
+        <div v-if="Object.values(props.invalid).length > 0" class="alert alert-warning">
             The following avatar dolls were referenced but couldn't be found:
-            <div v-for="(forms, avatar) in invalid">
+            <div v-for="(forms, avatar) in props.invalid">
                 {{ avatar }}, referenced by: {{ Object.values(forms).join(', ') }}
             </div>
         </div>
@@ -31,7 +31,7 @@ const props = defineProps<{
         </div>
         <div>Clicking on a doll will start an instance of the tester using that doll as the base.</div>
         <div>
-            <template v-for="doll in dolls">
+            <template v-for="doll in props.dolls">
                 <a :href="doll.edit">
                     <div class="card doll-card">
                         <div class="card-img-top">
@@ -58,7 +58,7 @@ const props = defineProps<{
             </tr>
             </thead>
             <tbody>
-            <template v-for="doll in dolls">
+            <template v-for="doll in props.dolls">
                 <tr v-if="doll.usage.length > 0">
                     <td>{{ doll.name }}</td>
                     <td>{{ doll.usage.join(', ') }}</td>

@@ -20,8 +20,8 @@ const filters = ref({
 
 FilterService.register('paymentTypeFilter', (id: string, type: string) => {
     if (!type) return true;
-    const transaction: AccountTransaction = transactions.value.find((entry) => entry.id == id);
-    return (transaction && transaction.type == type);
+    const transaction: AccountTransaction | undefined = transactions.value.find((entry) => entry.id == id);
+    return (transaction?.type == type);
 });
 
 const loadTransactions = () => {
@@ -69,7 +69,7 @@ onMounted(() => {
         </div>
 
         <Spinner v-if="loading"/>
-        <DataTable v-else :value="transactions" stripedRows sortField="created_at" sortOrder="1"
+        <DataTable v-else :value="transactions" stripedRows sortField="created_at" :sortOrder="1"
                    v-model:filters="filters" :globalFilterFields="['id']">
             <template #empty>No transactions to display.</template>
             <Column header="Account" field="account_id" sortable></Column>

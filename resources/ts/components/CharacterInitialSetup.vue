@@ -95,7 +95,7 @@ const updateExclusions = (type: string) => {
         selected = character.value.flaws;
     }
     // Pass 1 - get active exclusions
-    let excluded = [];
+    let excluded: string[] = [];
     catalog.forEach(item => {
         if (selected.includes(item.name)) excluded = excluded.concat(item.excludes);
     });

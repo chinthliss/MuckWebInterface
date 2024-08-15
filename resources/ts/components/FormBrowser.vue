@@ -78,7 +78,7 @@ type Target = {
     forms?: { [form: string]: number }
 }
 const targets: Ref<[Target, Target, Target, Target]> = ref([{}, {}, {}, {}]);
-const changeTargetModal: Ref<Element | null> = ref(null);
+const changeTargetModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
 
@@ -172,7 +172,7 @@ const genderClassForForm = (form: Form): string => {
 }
 
 FilterService.register('filteredFormList', (name: string, mode: string) => {
-    const form: Form = formDatabase.value.find((form) => form.name == name);
+    const form: Form | undefined = formDatabase.value.find((form) => form.name == name);
     if (!form) return false;
     let count = 0;
     for (const target of targets.value) {

@@ -119,15 +119,15 @@ export type Character = {
 export type AvatarItem = {
     id: string
     name: string
-    type: string
-    desc: string
-    requirement: string
+    type?: string
+    desc?: string
+    requirement?: string
     earned?: boolean
     created_at?: string
-    cost: number
-    free: boolean
+    cost?: number
+    free?: boolean
     owner?: Account
-    url: string
+    url?: string
     x: number
     y: number
     rotate: number

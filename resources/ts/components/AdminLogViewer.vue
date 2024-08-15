@@ -41,7 +41,7 @@ const loadDate = (date: string, event: Event) => {
 }
 
 const parseLog = (rawText: string) => {
-    const newLog = [];
+    const newLog: LogEntry[] = [];
     let slicePoints = [];
     // Figure out where individual line entries start
     let token = logRegEx.exec(rawText);
@@ -78,7 +78,7 @@ const parseLog = (rawText: string) => {
 
             <!-- Available log list -->
             <div class="ps-2 pe-2 text-nowrap border border-secondary rounded" id="date-selector">
-                <div v-for="date in dates"><a href="#" @click="loadDate(date, $event)">{{ date }}</a></div>
+                <div v-for="date in props.dates"><a href="#" @click="loadDate(date, $event)">{{ date }}</a></div>
             </div>
 
             <!-- View individual log -->

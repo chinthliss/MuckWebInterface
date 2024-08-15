@@ -84,7 +84,7 @@ const buyCharacterSlot = () => {
                 cost.value = response.data.characterSlotCost;
             } else {
                 lastMessage.value = "The request was declined: " + response.data.error;
-                if (messageModal) messageModal.value.show();
+                if (messageModal.value) messageModal.value.show();
             }
         })
         .catch(error => {

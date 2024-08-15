@@ -9,7 +9,7 @@ const ansi_up = new AnsiUp();
  * Takes a string representation of a Carbon object exported from PHP and turns it into something friendlier
  * Type is to support DataTables - if it's for sorting, the conversion to a string isn't done.
  */
-export const carbonToString = (carbonString: string | null, type?: string): string => {
+export const carbonToString = (carbonString: string | null | undefined, type?: string): string => {
     if (!carbonString) return '--';
     if (type === 'sort') return carbonString;
     return new Date(carbonString).toLocaleString();
@@ -35,7 +35,7 @@ export const usdToString = (usd: number | string | null): string => {
 /**
  * Converts the first letter of a string to be a capital one
  */
-export const capital = (text: string): string => {
+export const capital = (text: string | null | undefined): string => {
     if (!text) return '';
     return text.substring(0, 1).toUpperCase() + text.slice(1);
 };

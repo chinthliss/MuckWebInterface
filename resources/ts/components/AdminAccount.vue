@@ -4,7 +4,7 @@ import {Ref, ref} from 'vue';
 import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
-import {Account, AccountEmail} from "../defs";
+import {Account, AccountEmail, AccountNote} from "../defs";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
 
@@ -155,7 +155,7 @@ const overallSubscriptionStatus = (): string => {
                     <template #empty>No notes on this account.</template>
                     <Column header="When" field="whenAt">
                         <template #body="{ data }">
-                            {{ carbonToString((data as AccountEmail).whenAt) }}
+                            {{ carbonToString((data as AccountNote).whenAt) }}
                         </template>
                     </Column>
                     <Column header="Staff Member" field="staffMember"></Column>

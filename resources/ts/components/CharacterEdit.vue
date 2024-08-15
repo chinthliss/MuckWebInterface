@@ -17,7 +17,7 @@ const customFields: Ref<CustomField[]> = ref([]);
 const channel = mwiWebsocket.channel('character');
 const dbref = characterDbref();
 
-const fieldEditModal: Ref<Element | null> = ref(null);
+const fieldEditModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const fieldEditOriginalName: Ref<string> = ref(''); // To capture renames
 const fieldEditName: Ref<string> = ref('');
 const fieldEditValue: Ref<string> = ref('');

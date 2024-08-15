@@ -2,17 +2,19 @@
 
 import {ref, Ref} from "vue";
 
+type Settings = {
+    avatarPreference: string
+}
+
 const props = defineProps<{
     apiUrl: string
-    initialSettings: {
-        avatarPreference: string
-    }
+    initialSettings: Settings
 }>();
 
-const settings: Ref<object> = ref(props.initialSettings);
+const settings: Ref<Settings> = ref(props.initialSettings);
 
-const saveSetting = (setting: string): void => {
-    const value = settings.value[setting];
+const saveSetting = (setting: keyof Settings): void => {
+    const value: string = settings.value[setting];
     console.log(`Saving ${setting}: ${value}`);
     axios.post(props.apiUrl, {setting, value})
         .then(() => {

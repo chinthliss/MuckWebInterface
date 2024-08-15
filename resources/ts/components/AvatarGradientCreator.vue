@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import {lex} from "../siteutils";
 
 const props = defineProps<{
@@ -16,7 +16,7 @@ const steps = ref([ // each inner array is in the form [step, R, G, B] with valu
 ]);
 const previewUrl = ref('');
 // Rendering context for the canvas element
-let ctx = null;
+let ctx: CanvasRenderingContext2D | null = null;
 
 onMounted(() => {
     const canvasElement: HTMLCanvasElement = document.getElementById('GradientCanvas') as HTMLCanvasElement;
@@ -25,6 +25,7 @@ onMounted(() => {
 });
 
 const renderGradient = () => {
+    if (!ctx) return;
     if (steps.value.length < 2) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     } else {
@@ -86,13 +87,15 @@ const addStepAfter = (index: number) => {
         <div class="form-group">
             <label for="newName">Name</label>
             <input v-model="name" type="text" class="form-control"
-                   id="newName" maxlength="40" placeholder="Enter name">
+                   id="newName" maxlength="40" placeholder="Enter name"
+            >
         </div>
 
         <div class="form-group">
             <label for="newDescription">Description</label>
             <input v-model="description" type="text" class="form-control"
-                   id="newDescription" maxlength="200" placeholder="Enter a short description">
+                   id="newDescription" maxlength="200" placeholder="Enter a short description"
+            >
         </div>
 
         <p class="text-muted">A submitted gradient's name and description may be changed without warning if they're
@@ -112,14 +115,16 @@ const addStepAfter = (index: number) => {
                         <div class="d-flex">
                             <div class="font-weight-bold">Step {{ index + 1 }}</div>
                             <div class="stepPreview ms-2 flex-grow-1"
-                                 :style="stepPreviewCss(step[1], step[2], step[3])"></div>
+                                 :style="stepPreviewCss(step[1], step[2], step[3])"
+                            ></div>
                         </div>
 
                         <div class="d-flex align-items-center mt-2">
                             <div class="sliderLabel">When</div>
                             <div class="ms-1 flex-fill"><input type="range" v-model.number="step[0]"
                                                                class="form-range" min="0" max="255"
-                                                               @change="maybeReorderSteps"></div>
+                                                               @change="maybeReorderSteps"
+                            ></div>
                             <div class="ms-1 sliderValue">{{ step[0] }}</div>
                         </div>
 
@@ -127,7 +132,8 @@ const addStepAfter = (index: number) => {
                             <div class="sliderLabel">Red</div>
                             <div class="ms-1 flex-fill"><input type="range" v-model.number="step[1]"
                                                                class="form-range" min="0" max="255"
-                                                               @change="renderGradient"></div>
+                                                               @change="renderGradient"
+                            ></div>
                             <div class="ms-1 sliderValue">{{ step[1] }}</div>
                         </div>
 
@@ -135,7 +141,8 @@ const addStepAfter = (index: number) => {
                             <div class="sliderLabel">Green</div>
                             <div class="ms-1 flex-fill"><input type="range" v-model.number="step[2]"
                                                                class="form-range" min="0" max="255"
-                                                               @change="renderGradient"></div>
+                                                               @change="renderGradient"
+                            ></div>
                             <div class="ms-1 sliderValue">{{ step[2] }}</div>
                         </div>
 
@@ -143,7 +150,8 @@ const addStepAfter = (index: number) => {
                             <div class="sliderLabel">Blue</div>
                             <div class="ms-1 flex-fill"><input type="range" v-model.number="step[3]"
                                                                class="form-range" min="0" max="255"
-                                                               @change="renderGradient"></div>
+                                                               @change="renderGradient"
+                            ></div>
                             <div class="ms-1 sliderValue">{{ step[3] }}</div>
                         </div>
 
