@@ -228,6 +228,10 @@ class AvatarController extends Controller
                 break;
             case AvatarPreference::EXPLICIT:
                 $avatarInstance->mode = AvatarService::MODE_EXPLICIT;
+                break;
+            case AvatarPreference::DEFAULT:
+                // Do nothing, only in here for code checking
+                break;
         }
     }
 

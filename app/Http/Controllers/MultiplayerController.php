@@ -6,7 +6,6 @@ use App\User as User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Log;
 
 class MultiplayerController extends Controller
 {

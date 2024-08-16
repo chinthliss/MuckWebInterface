@@ -16,7 +16,7 @@ class EnsureEmailIsVerified
      * @param Closure $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         /** @var User $user */
         $user = $request->user();
