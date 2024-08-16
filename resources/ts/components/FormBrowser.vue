@@ -248,11 +248,10 @@ if (props.startingPlayerName) {
             to add additional people to view, if they've given you permission to do so. If more then one
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
-        <Progress v-if="formsToLoadRemaining" id="form-list-progress-bar"
+        <Progress v-if="loading" id="form-list-progress-bar"
                   :percentage="loadingPercentage"
                   alt="Form list loading progress"
         ></Progress>
-
         <div v-else>
 
             <!-- Mode and detail selector -->
@@ -329,7 +328,7 @@ if (props.startingPlayerName) {
 
             <div :style="{ height: '75vh' }">
                 <DataTable :value="formDatabase" dataKey="name" size="small" stripedRows scrollable
-                           scrollHeight="flex" :loading="loading"
+                           scrollHeight="flex"
                            v-model:filters="filters" filterDisplay="row" :globalFilterFields="['name']"
                            tableStyle="min-width: 50rem"
                 >
