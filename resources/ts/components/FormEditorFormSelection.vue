@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, Ref} from "vue";
+import {computed, ref, Ref} from "vue";
 import Progress from "./Progress.vue";
 import DataTable, {DataTableRowClickEvent} from 'primevue/datatable';
 import Column from "primevue/column";
@@ -28,9 +28,9 @@ const emit = defineEmits(['update', 'new'])
 const channel = mwiWebsocket.channel('contribute');
 
 const expanded: Ref<boolean> = ref(props.startExpanded);
-const formListLoaded: Ref<boolean> = ref(false);
-const formListLoadTotal: Ref<number> = ref(1); // May be set to 0 if the viewer can't see any forms.
-const formListLoadLeft: Ref<number> = ref(1);
+const initialLoadDone: Ref<boolean> = ref(false); // Since it's passive and might not load at all
+const formsToLoad: Ref<number | null> = ref(null); // May be set to 0 if the user can't see any forms
+const formsToLoadRemaining: Ref<number> = ref(0);
 const formList: Ref<FormListing[]> = ref([]);
 // We don't start showing accounts until we see we're being sent them (we don't get sent them if not staff)
 const seeingAccounts: Ref<boolean> = ref(false);
@@ -53,10 +53,18 @@ FilterService.register('filteredFormList', (name: string, mode: string) => {
     }
 });
 
+const loading = computed(() : boolean => {
+    return (!formsToLoad.value || formsToLoadRemaining.value > 0);
+});
+
+// Returns a 0 to 100 value, not a ratio.
+const loadingPercentage = computed(() => {
+    if (!formsToLoad.value) return 0;
+    return (formsToLoad.value - formsToLoadRemaining.value) * 100 / formsToLoad.value;
+});
+
 const getFormList = () => {
-    formListLoadTotal.value = 0;
-    formListLoadLeft.value = 1;
-    formListLoaded.value = true;
+    initialLoadDone.value = true;
     channel.send('getFormList');
 }
 
@@ -68,11 +76,11 @@ const statusForFormListing = (form: FormListing) => {
 
 const toggleExpanded = () => {
     expanded.value = !expanded.value;
-    if (!formListLoaded.value) getFormList();
+    if (!initialLoadDone.value) getFormList();
 }
 
 const refreshForms = () => {
-    if (formListLoadLeft.value > 0) return;
+    if (formsToLoadRemaining.value > 0) return;
     getFormList();
 }
 
@@ -97,12 +105,13 @@ const rowStyle = (_data: any) => {
 }
 
 channel.on('formList', (data: number) => {
-    formListLoadTotal.value = formListLoadLeft.value = data;
+    formsToLoad.value = data;
+    formsToLoadRemaining.value = data;
     formList.value = [];
 });
 
 channel.on('formListing', (data: FormListing) => {
-    formListLoadLeft.value--;
+    formsToLoadRemaining.value--;
     formList.value.push(data);
     if (data.account) seeingAccounts.value = true;
     data.status = statusForFormListing(data);
@@ -141,8 +150,8 @@ if (props.startExpanded) getFormList()
             </div>
         </div>
 
-        <Progress v-if="formListLoadLeft" id="form-selection-progress-bar"
-                  :percentage="(formListLoadTotal - formListLoadLeft) * 100 / formListLoadTotal"
+        <Progress v-if="loading" id="form-selection-progress-bar"
+                  :percentage="loadingPercentage"
                   alt="Form list loading progress"
         ></Progress>
         <div v-else>
