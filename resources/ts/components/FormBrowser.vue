@@ -59,8 +59,7 @@ type Form = {
 const formDatabase: Ref<Form[]> = ref([]);
 const channel = mwiWebsocket.channel('forms');
 const formsToLoad: Ref<number | null> = ref(null);
-const formsToLoadRemaining: Ref<number> = ref(1); // Starting at 1 to cover initial loading
-const tableLoading: Ref<boolean> = ref(true);
+const formsToLoadRemaining: Ref<number> = ref(0);
 const detailedOutput: Ref<boolean> = ref(false);
 
 const filters = ref({
@@ -91,10 +90,6 @@ channel.on('formDatabase', (data: number) => {
 channel.on('formListing', (data: Form) => {
     formDatabase.value.push(data);
     formsToLoadRemaining.value--;
-    if (!formsToLoadRemaining.value) {
-        tableLoading.value = false;
-        // filters.value.global.value = 'mastered';
-    }
 });
 
 type FormMasteryResponse = {
@@ -120,6 +115,16 @@ channel.on('mastery', (data: FormMasteryResponse) => {
     }
 });
 
+const loading = computed(() : boolean => {
+    return (!formsToLoad.value || formsToLoadRemaining.value > 0);
+});
+
+// Returns a 0 to 100 value, not a ratio.
+const loadingPercentage = computed(() => {
+    if (!formsToLoad.value) return 0;
+    return (formsToLoad.value - formsToLoadRemaining.value) * 100 / formsToLoad.value;
+});
+
 const changeTarget = (): void => {
     if (!changeTargetName.value) return;
     let target = targets.value[changeTargetIndex.value];
@@ -135,14 +140,6 @@ const launchChangeTarget = (index: number): void => {
 
 const clearTarget = (index: number) => {
     targets.value[index] = {};
-}
-
-const setTableLoadingWhilstBusy = () => {
-    if (tableLoading.value) return;
-    tableLoading.value = true;
-    setTimeout(() => {
-        tableLoading.value = false;
-    });
 }
 
 const unknownForms = computed((): string => {
@@ -218,7 +215,7 @@ const outputNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): s
     return result.join(', ');
 }
 
-const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] }): string => {
+const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | undefined ): string => {
     if (!nestedList) return '';
     const result = [];
     for (const key in nestedList) {
@@ -252,7 +249,7 @@ if (props.startingPlayerName) {
             person is set as a target, additional columns will also appear to compare form mastery.</p>
 
         <Progress v-if="formsToLoadRemaining" id="form-list-progress-bar"
-                  :percentage="(formsToLoad - formsToLoadRemaining) * 100 / formsToLoad"
+                  :percentage="loadingPercentage"
                   alt="Form list loading progress"
         ></Progress>
 
@@ -332,7 +329,7 @@ if (props.startingPlayerName) {
 
             <div :style="{ height: '75vh' }">
                 <DataTable :value="formDatabase" dataKey="name" size="small" stripedRows scrollable
-                           scrollHeight="flex" :loading="tableLoading" @sort="setTableLoadingWhilstBusy()"
+                           scrollHeight="flex" :loading="loading"
                            v-model:filters="filters" filterDisplay="row" :globalFilterFields="['name']"
                            tableStyle="min-width: 50rem"
                 >
