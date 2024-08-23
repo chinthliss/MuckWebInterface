@@ -26,6 +26,7 @@ type FormLog = {
 export type Form = {
     name: string
     owner?: number
+    credit?: string
     _approved: boolean
     _published: boolean
     _review: boolean
@@ -500,7 +501,11 @@ channel.on('updateFormFailed', (response) => {
             <!-- Status -->
             <div class="tab-pane show active" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
 
-                <div>Status: {{ oneWordStatus }}</div>
+                <div class="mt-2" v-if="staff">Account: {{ presentForm.owner }}</div>
+
+                <div class="mt-2">Credited Character: {{ presentForm.credit }}</div>
+
+                <div class="mt-2">Status: {{ oneWordStatus }}</div>
                 <div class="text-muted">{{ statusDescription }}</div>
 
                 <div class="mt-2">Created: {{ timestampToString(presentForm._createdAt) }}</div>
