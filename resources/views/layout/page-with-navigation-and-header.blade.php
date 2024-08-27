@@ -17,8 +17,8 @@
     <a class="nav-link rounded" href="{{ route('multiplayer.contribute') }}">Contribute</a>
     @Staff
     <div class="mt-2 fw-bold"><i class="fas fa-fw fa-hat-wizard me-1 mt-2"></i>Administrative</div>
+    <a class="nav-link rounded" href="{{ route('admin.home') }}">Admin Dashboard</a>
     <a class="nav-link rounded" href="{{ route('admin.tickets') }}">Support / Request (Agent)</a>
-    <a class="nav-link rounded" href="{{ route('admin.avatar') }}">Avatar Administration</a>
     @Admin
     <a class="nav-link rounded" href="{{ route('admin.accounts') }}">Account Browser</a>
     @endAdmin

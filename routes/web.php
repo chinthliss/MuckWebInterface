@@ -175,9 +175,6 @@ Route::prefix('/admin/')->group(function () {
 
         Route::prefix('avatar/')->group(function () {
 
-            Route::get('', [AvatarController::class, 'showAdminHub'])
-                ->name('admin.avatar');
-
             //Avatar Doll testing
             Route::get('dolllist', [AvatarController::class, 'showAdminDollList'])
                 ->name('admin.avatar.dolllist');
