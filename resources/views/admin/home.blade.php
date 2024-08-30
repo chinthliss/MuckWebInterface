@@ -9,12 +9,19 @@
     ]) }}
 @endsection
 
+@php($links = [
+    "formEdit" => route('multiplayer.contribute.forms')
+])
+
 @section('content')
     <div class="container">
         <div class="row">
             <h1>Admin Dashboard</h1>
         </div>
-        <admin-dashboard></admin-dashboard>
+
+        <admin-dashboard
+            :links="{{ json_encode($links) }}"
+        ></admin-dashboard>
     </div>
 
 
