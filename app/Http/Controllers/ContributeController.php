@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class ContributeController extends Controller
 {
@@ -18,8 +19,10 @@ class ContributeController extends Controller
         return view('multiplayer.contribute-stringparsing-scratchpad');
     }
 
-    public function showFormEditor(): View
+    public function showFormEditor(Request $request): View
     {
-        return view('multiplayer.contribute-forms');
+        return view('multiplayer.contribute-forms')->with([
+            'form' => $request->input('form', '')
+        ]);
     }
 }

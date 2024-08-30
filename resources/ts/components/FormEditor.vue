@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, Ref, ref} from "vue";
+import {computed, onMounted, Ref, ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
 import FormEditorFormSelection from "./FormEditorFormSelection.vue";
@@ -11,8 +11,10 @@ import FormEditorCompareToLive from "./FormEditorCompareToLive.vue";
 
 const props = defineProps<{
     links: {
+        rootUrl: string,
         helpRoot: string
-    }
+    },
+    initialForm: string
 }>();
 
 type FormLog = {
@@ -330,6 +332,10 @@ type GetFormResponse = {
     staff?: boolean
 }
 
+const linkToPresentFormId = computed(() => {
+    return presentFormId.value ? props.links.rootUrl + '?form=' + encodeURIComponent(presentFormId.value) : ''
+})
+
 channel.on('form', (response: GetFormResponse) => {
     if (response.error) {
         error.value = response.error;
@@ -418,11 +424,15 @@ channel.on('updateFormFailed', (response) => {
     if (errorModal.value) errorModal.value.show();
 });
 
+onMounted(() => {
+    if (props.initialForm) loadForm(props.initialForm);
+})
+
 
 </script>
 
 <template>
-    <FormEditorFormSelection ref="formSelector" :start-expanded="presentFormId == null"
+    <FormEditorFormSelection ref="formSelector" :start-expanded="props.initialForm == ''"
                              @update="loadForm" @new="startCreateForm"
     >
     </FormEditorFormSelection>
@@ -434,7 +444,11 @@ channel.on('updateFormFailed', (response) => {
         Loading form..
     </div>
     <div v-if="presentForm">
-        <h3>Editing - {{ presentFormId }}</h3>
+        <h3>Editing - {{ presentFormId }}
+            <a :href="linkToPresentFormId">
+                <i class="fas fa-link"></i>
+            </a>
+        </h3>
 
         <!-- Preview -->
         <div class="card">
@@ -521,6 +535,7 @@ channel.on('updateFormFailed', (response) => {
                 </div>
                 <div class="text-muted">Space separated list of other people who are allowed to view this form,
                     in case you want to seek assistance or review.
+                    A direct link to this form is available besides the title above.
                 </div>
 
                 <!-- Template status -->

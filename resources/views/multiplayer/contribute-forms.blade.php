@@ -12,6 +12,7 @@
 @endsection
 
 @php($links = [
+    "rootUrl" => route('multiplayer.contribute.forms'),
     "helpRoot" => route('multiplayer.help')
 ])
 
@@ -28,6 +29,7 @@
 
         <form-editor
             :links="{{ json_encode($links) }}"
+            initial-form="{{ $form }}"
         ></form-editor>
 
         <div class="mt-4 p-3 border rounded border-warning">
