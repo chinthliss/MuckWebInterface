@@ -172,9 +172,15 @@ const oneWordStatus = computed((): string => {
 
 const statusDescription = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value._revise) return 'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
-    if (presentForm.value._review) return 'The form is awaiting staff review. You can view it but not make any changes.';
-    if (presentForm.value._approved) return 'This form has been finalized. You can view it but not make any changes.';
+    if (presentForm.value._revise) return staff.value ?
+        'The form is awaiting revision from the author.' :
+        'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
+    if (presentForm.value._review) return staff.value ?
+        'The form is awaiting review and either being accepted or returned for revision.' :
+        'The form is awaiting staff review. You can view it but not make any changes.';
+    if (presentForm.value._approved) return staff.value ?
+        'This form has been finalized. Any changes will not be update the live copy without manual intervention' :
+        'This form has been finalized. You can view it but not make any changes.';
     return 'This is a new or unfinished form. After you have completed enough of the required content you can submit the form for review.';
 });
 
@@ -227,7 +233,25 @@ const startSubmitForm = () => {
 const submitForm = () => {
     error.value = "Not implemented yet";
     if (errorModal.value) errorModal.value.show();
-    //TODO: Form submission
+    //TODO: Form Submission
+}
+
+const startCancelSubmitForm = () => {
+    error.value = "Not implemented yet";
+    if (errorModal.value) errorModal.value.show();
+    //TODO: Cancel Form Submission
+}
+
+const startRefuseFormSubmission = () => {
+    error.value = "Not implemented yet";
+    if (errorModal.value) errorModal.value.show();
+    //TODO: Refuse Form Submission
+}
+
+const startApproveFormSubmission = () => {
+    error.value = "Not implemented yet";
+    if (errorModal.value) errorModal.value.show();
+    //TODO: Approve Form Submission
 }
 
 const startCreateForm = () => {
@@ -708,20 +732,51 @@ onMounted(() => {
 
                 </div>
 
+                <!-- Editor buttons -->
                 <div class="mt-2">
-                    <button class="btn btn-primary me-2" @click="startSubmitForm">
-                        <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form
+
+                    <!-- Submit button, available if the form is new or awaiting revision. -->
+                    <button v-if="!presentForm._review && !presentForm._approved"
+                            class="btn btn-primary me-2" @click="startSubmitForm">
+                        <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form for review
                     </button>
 
-                    <button class="btn btn-secondary me-2" @click="startDeleteForm">
+                    <!-- Cancel Submission button, available if the form is awaiting review. -->
+                    <button v-if="presentForm._review"
+                            class="btn btn-primary me-2" @click="startCancelSubmitForm">
+                        <i class="fas fa-hand btn-icon-left"></i>Cancel Submission
+                    </button>
+
+                    <!-- Delete button, not available after approval -->
+                    <button v-if="!presentForm._approved"
+                            class="btn btn-secondary me-2" @click="startDeleteForm">
                         <i class="fas fa-trash btn-icon-left"></i>Delete Form
                     </button>
 
-                    <button v-if="staff" class="btn btn-secondary me-2" @click="startCompareFormToLive"
+                </div>
+
+                <!-- Staff only buttons -->
+                <div v-if="staff" class="mt-2">
+
+                    <!-- Compare to live, available if published to live -->
+                    <button class="btn btn-secondary me-2" @click="startCompareFormToLive"
                             :disabled="!presentForm._published"
                     >
                         <i class="fas fa-magnifying-glass btn-icon-left"></i>Compare to Live
                     </button>
+
+                    <!-- Refuse submission, available if the form is awaiting review -->
+                    <button v-if="presentForm._review"
+                            class="btn btn-primary me-2" @click="startRefuseFormSubmission">
+                        <i class="fas fa-x btn-icon-left"></i>Return for Revision
+                    </button>
+
+                    <!-- Approve submission, available if the form is awaiting review -->
+                    <button v-if="presentForm._review"
+                            class="btn btn-primary me-2" @click="startApproveFormSubmission">
+                        <i class="fas fa-check btn-icon-left"></i>Approve Form
+                    </button>
+
                 </div>
 
             </div>
