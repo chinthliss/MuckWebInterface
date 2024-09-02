@@ -13,6 +13,7 @@
 
 @php($links = [
     "rootUrl" => route('multiplayer.contribute.forms'),
+    "termsOfService" => route('auth.terms-of-service'),
     "helpRoot" => route('multiplayer.help')
 ])
 

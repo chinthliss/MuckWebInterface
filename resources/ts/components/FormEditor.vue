@@ -12,7 +12,8 @@ import FormEditorCompareToLive from "./FormEditorCompareToLive.vue";
 const props = defineProps<{
     links: {
         rootUrl: string,
-        helpRoot: string
+        helpRoot: string,
+        termsOfService: string
     },
     initialForm: string
 }>();
@@ -1269,7 +1270,11 @@ onMounted(() => {
     <modal-confirmation ref="confirmSubmitModal" @yes="submitForm"
                         title="Submit Form" yes-label="Submit" no-label="Cancel"
     >
-        <p>Are you sure you're finished with this form? You won't be able to make any changes after submitting it.</p>
+        <p>Are you sure you're finished with this form?</p>
+        <p>
+            While the form is waiting for staff review you won't be able to make any changes, although you can
+            recall the submission if you need to change something before it's reviewed.
+        </p>
     </modal-confirmation>
 
     <!-- Modal to create a new form -->
@@ -1282,9 +1287,8 @@ onMounted(() => {
 
         <p class="mt-4">WARNING: Do not enter pokemon, disney characters, or any other copyrighted material.
             Fictional races made in the last century ARE copyrighted, don't use them.</p>
-        <p>Any content entered becomes property of the game, and its owning company(Silver Games LLC).
-            Please review the Terms of Service.</p>
-        TODO: Terms of Service link
+        <p>Any content entered becomes property of the game, and its owning company Silver Games LLC.
+            If required, please review the <a :href="links.termsOfService">Terms of Service</a>.</p>
     </modal-confirmation>
 
     <!-- Modal for comparing the present form to the one in live -->
