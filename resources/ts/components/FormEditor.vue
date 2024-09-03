@@ -138,6 +138,15 @@ const confirmDeleteModal: Ref<InstanceType<typeof ModalConfirmation> | null> = r
 const formToDelete: Ref<string> = ref('');
 
 const confirmSubmitModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const submissionNotes: Ref<string> = ref('');
+
+const confirmCancelSubmitModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const cancelSubmissionNotes: Ref<string> = ref('');
+
+const confirmRequestRevisionModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const requestRevisionNotes: Ref<string> = ref('');
+
+const confirmApproveModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 
 const createFormModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const newFormName: Ref<string> = ref('');
@@ -237,21 +246,33 @@ const submitForm = () => {
 }
 
 const startCancelSubmitForm = () => {
+    if (confirmCancelSubmitModal.value) confirmCancelSubmitModal.value.show();
+}
+
+const cancelSubmitForm = () => {
     error.value = "Not implemented yet";
     if (errorModal.value) errorModal.value.show();
     //TODO: Cancel Form Submission
 }
 
-const startRefuseFormSubmission = () => {
+const startRequestRevision = () => {
+    if (confirmRequestRevisionModal.value) confirmRequestRevisionModal.value.show();
+}
+
+const requestRevision = () => {
     error.value = "Not implemented yet";
     if (errorModal.value) errorModal.value.show();
     //TODO: Refuse Form Submission
 }
 
-const startApproveFormSubmission = () => {
+const startApproveForm = () => {
+    if (confirmApproveModal.value) confirmApproveModal.value.show();
+}
+
+const approveForm = () => {
     error.value = "Not implemented yet";
     if (errorModal.value) errorModal.value.show();
-    //TODO: Approve Form Submission
+    //TODO: Approve Form
 }
 
 const startCreateForm = () => {
@@ -544,9 +565,6 @@ onMounted(() => {
 
                 <div class="mt-2">Credited Character: {{ presentForm.credit }}</div>
 
-                <div class="mt-2">Status: {{ oneWordStatus }}</div>
-                <div class="text-muted">{{ statusDescription }}</div>
-
                 <div class="mt-2">Created: {{ timestampToString(presentForm._createdAt) }}</div>
 
                 <div class="mt-2">Last edited: {{ timestampToString(presentForm._editedAt) }}</div>
@@ -609,8 +627,63 @@ onMounted(() => {
                     </table>
                 </div>
 
+                <div class="mt-2">Status: {{ oneWordStatus }}</div>
+                <div class="text-muted">{{ statusDescription }}</div>
+
+                <!-- State changing buttons -->
+                <div class="mt-2">
+
+                    <!-- Submit button, available if the form is new or awaiting revision. -->
+                    <button :disabled="presentForm._review || presentForm._approved"
+                            class="btn btn-primary me-2" @click="startSubmitForm"
+                    >
+                        <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form for review
+                    </button>
+
+                    <!-- Cancel Submission button, available if the form is awaiting review. -->
+                    <button :disabled="!presentForm._review"
+                            class="btn btn-primary me-2" @click="startCancelSubmitForm"
+                    >
+                        <i class="fas fa-hand btn-icon-left"></i>Cancel Submission
+                    </button>
+
+                    <!-- Delete button, not available after approval -->
+                    <button :disabled="presentForm._approved"
+                            class="btn btn-secondary me-2" @click="startDeleteForm"
+                    >
+                        <i class="fas fa-trash btn-icon-left"></i>Delete Form
+                    </button>
+
+                </div>
+
+                <!-- Staff only controls and buttons -->
                 <div v-if="staff" class="mt-2">
-                    <h4>Staff Controls</h4>
+                    <h3>Staff Controls</h3>
+
+                    <div class="mt-2">
+
+                        <!-- Refuse submission, available if the form is awaiting review -->
+                        <button :disabled="!presentForm._review"
+                                class="btn btn-primary me-2" @click="startRequestRevision"
+                        >
+                            <i class="fas fa-x btn-icon-left"></i>Return for Revision
+                        </button>
+
+                        <!-- Approve submission, available if the form is awaiting review -->
+                        <button :disabled="!presentForm._review"
+                                class="btn btn-primary me-2" @click="startApproveForm"
+                        >
+                            <i class="fas fa-check btn-icon-left"></i>Approve Form
+                        </button>
+
+                        <!-- Compare to live, available if published to live -->
+                        <button :disabled="!presentForm._published"
+                                class="btn btn-secondary me-2" @click="startCompareFormToLive"
+                        >
+                            <i class="fas fa-magnifying-glass btn-icon-left"></i>Compare to Live
+                        </button>
+
+                    </div>
 
                     <!-- No Reward -->
                     <div class="mt-2 form-check">
@@ -619,7 +692,7 @@ onMounted(() => {
                         >
                         <label class="form-check-label" for="noreward">No Reward</label>
                     </div>
-                    <div class="text-muted">Prevents rewards from containing nanites of this form.</div>
+                    <div class="text-muted">Prevents rewards from including nanites of this form.</div>
 
                     <!-- No Extract -->
                     <div class="mt-2 form-check">
@@ -728,54 +801,6 @@ onMounted(() => {
                     <div class="text-muted">Any outstanding placement tasks.
                         NOTE: If this isn't blank a form is considered unreleased and won't be visible.
                     </div>
-
-
-                </div>
-
-                <!-- Editor buttons -->
-                <div class="mt-2">
-
-                    <!-- Submit button, available if the form is new or awaiting revision. -->
-                    <button v-if="!presentForm._review && !presentForm._approved"
-                            class="btn btn-primary me-2" @click="startSubmitForm">
-                        <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form for review
-                    </button>
-
-                    <!-- Cancel Submission button, available if the form is awaiting review. -->
-                    <button v-if="presentForm._review"
-                            class="btn btn-primary me-2" @click="startCancelSubmitForm">
-                        <i class="fas fa-hand btn-icon-left"></i>Cancel Submission
-                    </button>
-
-                    <!-- Delete button, not available after approval -->
-                    <button v-if="!presentForm._approved"
-                            class="btn btn-secondary me-2" @click="startDeleteForm">
-                        <i class="fas fa-trash btn-icon-left"></i>Delete Form
-                    </button>
-
-                </div>
-
-                <!-- Staff only buttons -->
-                <div v-if="staff" class="mt-2">
-
-                    <!-- Compare to live, available if published to live -->
-                    <button class="btn btn-secondary me-2" @click="startCompareFormToLive"
-                            :disabled="!presentForm._published"
-                    >
-                        <i class="fas fa-magnifying-glass btn-icon-left"></i>Compare to Live
-                    </button>
-
-                    <!-- Refuse submission, available if the form is awaiting review -->
-                    <button v-if="presentForm._review"
-                            class="btn btn-primary me-2" @click="startRefuseFormSubmission">
-                        <i class="fas fa-x btn-icon-left"></i>Return for Revision
-                    </button>
-
-                    <!-- Approve submission, available if the form is awaiting review -->
-                    <button v-if="presentForm._review"
-                            class="btn btn-primary me-2" @click="startApproveFormSubmission">
-                        <i class="fas fa-check btn-icon-left"></i>Approve Form
-                    </button>
 
                 </div>
 
@@ -1330,6 +1355,56 @@ onMounted(() => {
             While the form is waiting for staff review you won't be able to make any changes, although you can
             recall the submission if you need to change something before it's reviewed.
         </p>
+        <p>
+            You can use the box below if you have any notes, comments or concerns you'd like to include with this.
+        </p>
+
+        <label for="submission-notes" class="form-label">Notes:</label>
+        <input type="text" class="form-control" id="submission-notes" v-model="submissionNotes">
+
+    </modal-confirmation>
+
+    <!-- Modal to cancel the submission of a form -->
+    <modal-confirmation ref="confirmCancelSubmitModal" @yes="cancelSubmitForm"
+                        title="Cancel Submission" yes-label="Cancel" no-label="Don't Cancel"
+    >
+        <p>Are you sure you wish to cancel the submission?</p>
+        <p>
+            This will allow you to make additional changes, though it may cause confusion
+            if someone is already looking at the form.
+        </p>
+        <p>
+            You can use the box below if you have any notes, comments or concerns you'd like to include with this.
+        </p>
+
+        <label for="cancel-submission-notes" class="form-label">Notes:</label>
+        <input type="text" class="form-control" id="cancel-submission-notes" v-model="cancelSubmissionNotes">
+
+    </modal-confirmation>
+
+    <!-- Staff modal to mark a form as requiring revision -->
+    <modal-confirmation ref="confirmRequestRevisionModal" @yes="requestRevision"
+                        title="Request Revision" yes-label="Request Revision" no-label="Cancel"
+    >
+        <p>
+            This will push the form back to the editor for more work to be done on it.
+        </p>
+        <div>
+            Make sure to use the box below to detail what's required.
+        </div>
+
+        <label for="request-revision-notes" class="form-label">Notes:</label>
+        <input type="text" class="form-control" id="request-revision-notes" v-model="requestRevisionNotes">
+
+    </modal-confirmation>
+
+    <!-- Staff modal to approve a form -->
+    <modal-confirmation ref="confirmApproveModal" @yes="approveForm"
+                        title="Approve Form" yes-label="I don't believe you" no-label="Cancel"
+    >
+        <p>
+            This part is absolutely not implemented yet.
+        </p>
     </modal-confirmation>
 
     <!-- Modal to create a new form -->
@@ -1346,7 +1421,7 @@ onMounted(() => {
             If required, please review the <a :href="links.termsOfService">Terms of Service</a>.</p>
     </modal-confirmation>
 
-    <!-- Modal for comparing the present form to the one in live -->
+    <!-- Staff modal for comparing the present form to the one in live -->
     <modal-message class="modal-xl" ref="compareFormModal" title="Compare to Live Form">
         This tool shows the difference between the in-progress version of a form (The 'dev' version) and the
         version published in live.
