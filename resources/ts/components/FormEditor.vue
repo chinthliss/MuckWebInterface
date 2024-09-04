@@ -219,6 +219,7 @@ const unloadForm = () => {
 const loadForm = (selected: string) => {
     unloadForm();
     presentFormId.value = selected;
+    console.log("Now editing form: ", selected);
     channel.send('getForm', presentFormId.value);
 }
 
@@ -240,9 +241,11 @@ const startSubmitForm = () => {
 }
 
 const submitForm = () => {
-    error.value = "Not implemented yet";
-    if (errorModal.value) errorModal.value.show();
-    //TODO: Form Submission
+    channel.send('updateFormState', {
+        form: presentFormId.value,
+        action: 'submit',
+        notes: submissionNotes.value
+    });
 }
 
 const startCancelSubmitForm = () => {
@@ -250,9 +253,11 @@ const startCancelSubmitForm = () => {
 }
 
 const cancelSubmitForm = () => {
-    error.value = "Not implemented yet";
-    if (errorModal.value) errorModal.value.show();
-    //TODO: Cancel Form Submission
+    channel.send('updateFormState', {
+        form: presentFormId.value,
+        action: 'cancel-submission',
+        notes: cancelSubmissionNotes.value
+    });
 }
 
 const startRequestRevision = () => {
@@ -260,10 +265,11 @@ const startRequestRevision = () => {
 }
 
 const requestRevision = () => {
-    error.value = "Not implemented yet";
-    if (errorModal.value) errorModal.value.show();
-    //TODO: Refuse Form Submission
-}
+    channel.send('updateFormState', {
+        form: presentFormId.value,
+        action: 'revision',
+        notes: requestRevisionNotes.value
+    });}
 
 const startApproveForm = () => {
     if (confirmApproveModal.value) confirmApproveModal.value.show();
@@ -468,6 +474,13 @@ channel.on('updateFormFailed', (response) => {
     error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere.";
     if (response.error) error.value += "\n\nActual error returned: " + response.error;
     if (errorModal.value) errorModal.value.show();
+});
+
+channel.on('formStateUpdate', (response) => {
+    if (!response.form || response.form != presentFormId.value) return;
+    // Reload everything to see updates
+    if (formSelector.value) formSelector.value.refresh();
+    if (presentFormId.value) loadForm(presentFormId.value);
 });
 
 onMounted(() => {
@@ -1360,7 +1373,8 @@ onMounted(() => {
         </p>
 
         <label for="submission-notes" class="form-label">Notes:</label>
-        <input type="text" class="form-control" id="submission-notes" v-model="submissionNotes">
+        <textarea type="text" class="form-control" id="submission-notes" v-model="submissionNotes">
+        </textarea>
 
     </modal-confirmation>
 
@@ -1368,7 +1382,7 @@ onMounted(() => {
     <modal-confirmation ref="confirmCancelSubmitModal" @yes="cancelSubmitForm"
                         title="Cancel Submission" yes-label="Cancel" no-label="Don't Cancel"
     >
-        <p>Are you sure you wish to cancel the submission?</p>
+        <p>Are you sure you wish to recall the form?</p>
         <p>
             This will allow you to make additional changes, though it may cause confusion
             if someone is already looking at the form.
@@ -1378,7 +1392,8 @@ onMounted(() => {
         </p>
 
         <label for="cancel-submission-notes" class="form-label">Notes:</label>
-        <input type="text" class="form-control" id="cancel-submission-notes" v-model="cancelSubmissionNotes">
+        <textarea type="text" class="form-control" id="cancel-submission-notes" v-model="cancelSubmissionNotes">
+        </textarea>
 
     </modal-confirmation>
 
@@ -1387,14 +1402,15 @@ onMounted(() => {
                         title="Request Revision" yes-label="Request Revision" no-label="Cancel"
     >
         <p>
-            This will push the form back to the editor for more work to be done on it.
+            This will return the form to the creator for more work to be done on it.
         </p>
         <div>
             Make sure to use the box below to detail what's required.
         </div>
 
         <label for="request-revision-notes" class="form-label">Notes:</label>
-        <input type="text" class="form-control" id="request-revision-notes" v-model="requestRevisionNotes">
+        <textarea type="text" class="form-control" id="request-revision-notes" v-model="requestRevisionNotes">
+        </textarea>
 
     </modal-confirmation>
 

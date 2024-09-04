@@ -106,6 +106,11 @@ export default class ChannelCharacter extends Channel {
         this.sendMessageToConnection(connection, 'deleteForm', {error: 'Not implemented yet'});
     }
 
+    // Data is expected to include {form, action, notes}
+    updateFormState = (connection, data) => {
+        this.sendMessageToConnection(connection, 'formStateUpdate', {form: data.form});
+    }
+
     handlers = {
         'getFormList': (connection, _data) => {
             this.sendFormList(connection);
@@ -118,6 +123,9 @@ export default class ChannelCharacter extends Channel {
         },
         'deleteForm': (connection, data) => {
             this.deleteForm(connection, data);
+        },
+        'updateFormState': (connection, data) => {
+            this.updateFormState(connection, data);
         },
         'updateForm': (connection, data) => {
             // We don't do anything with this in dev.
