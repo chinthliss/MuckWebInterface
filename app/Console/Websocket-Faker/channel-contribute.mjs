@@ -15,8 +15,9 @@ export default class ChannelCharacter extends Channel {
             _lastEdit: Math.floor(Date.now() / 1000) - 1,
             _notes: ['test', 'test2'],
             _log: [
-                {name: 'Someone', what: 'test', message: 'Test', when: Math.floor(Date.now() / 1000) - 100},
-                {name: 'Person', what: 'test', message: 'Words', when: Math.floor(Date.now() / 1000) - 10}
+                {name: 'Someone', what: 'test', message: ['Test'], when: Math.floor(Date.now() / 1000) - 100},
+                {name: 'Person', what: 'test', message: ['Words', 'Multiline'], when: Math.floor(Date.now() / 1000) - 10},
+                {name: 'Another', what: 'no message', when: Math.floor(Date.now() / 1000) - 10}
             ],
             _viewers: 'Test viewers entry',
             mass: 5,

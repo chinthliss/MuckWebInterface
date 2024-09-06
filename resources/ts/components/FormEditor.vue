@@ -23,7 +23,7 @@ type FormLog = {
     name: string
     account?: number // Only transmitted if we're staff
     what: string // Fixed list of events, such as 'Submitted for Review'
-    message: string
+    message: string[]
 }
 
 export type Form = {
@@ -38,6 +38,7 @@ export type Form = {
     _editedAt?: number // Timestamp
     _log?: FormLog[]
     _notes?: string[]
+    _notesTranslated?: string // Created when the form is loaded
     _viewers: string
 
     height: number
@@ -160,9 +161,6 @@ const previewConfigurationModal: Ref<InstanceType<typeof ModalMessage> | null> =
 const subjectConfiguration: Ref<InstanceType<typeof FormEditorTestConfigurator> | null> = ref(null);
 const otherConfiguration: Ref<InstanceType<typeof FormEditorTestConfigurator> | null> = ref(null);
 
-// Notes gets a special separate entry because the muck treats it as an array and html as a \n separated string
-const notes: Ref<string> = ref('');
-
 const channel = mwiWebsocket.channel('contribute');
 
 let pendingSaves: { [id: string]: string } = {};
@@ -212,7 +210,6 @@ const friendlyFormPreview = computed(() => {
 const unloadForm = () => {
     presentFormId.value = null;
     presentForm.value = null;
-    notes.value = '';
     previews.value = {};
 }
 
@@ -407,7 +404,7 @@ channel.on('form', (response: GetFormResponse) => {
     staff.value = response.staff ?? false;
 
     // Handle some fixes and translations
-    if (form._notes) notes.value = form._notes.join('\n');
+    if (form._notes) form._notesTranslated = form._notes.join('\n');
     if (!form.oVictory) form.oVictory = [];
     if (!form.victory) form.victory = [];
     if (!form.defeat) form.defeat = [];
@@ -604,7 +601,7 @@ onMounted(() => {
                     <h4>Notes</h4>
                     <label for="_notes" class="form-label visually-hidden">Notes</label>
                     <textarea class="form-control" id="_notes" rows="3"
-                              v-model="notes" @input="queueSaveFromElement" :disabled="viewOnly"
+                              v-model="presentForm._notesTranslated" @input="queueSaveFromElement" :disabled="viewOnly"
                     ></textarea>
                     <div class="text-muted">These notes can be used to record things of interest, such as:
                         <ul>
@@ -634,7 +631,7 @@ onMounted(() => {
                             <td>{{ timestampToString(entry.when) }}</td>
                             <td>{{ entry.name }}</td>
                             <td>{{ entry.what }}</td>
-                            <td>{{ entry.message }}</td>
+                            <td><div v-for="line in entry.message">{{ line }}</div></td>
                         </tr>
                         </tbody>
                     </table>
@@ -1373,7 +1370,8 @@ onMounted(() => {
         </p>
 
         <label for="submission-notes" class="form-label">Notes:</label>
-        <textarea type="text" class="form-control" id="submission-notes" v-model="submissionNotes">
+        <textarea type="text" class="form-control" id="submission-notes"
+                  v-model="submissionNotes" rows="3">
         </textarea>
 
     </modal-confirmation>
@@ -1392,7 +1390,8 @@ onMounted(() => {
         </p>
 
         <label for="cancel-submission-notes" class="form-label">Notes:</label>
-        <textarea type="text" class="form-control" id="cancel-submission-notes" v-model="cancelSubmissionNotes">
+        <textarea type="text" class="form-control" id="cancel-submission-notes"
+                  v-model="cancelSubmissionNotes" rows="3">
         </textarea>
 
     </modal-confirmation>
@@ -1409,7 +1408,8 @@ onMounted(() => {
         </div>
 
         <label for="request-revision-notes" class="form-label">Notes:</label>
-        <textarea type="text" class="form-control" id="request-revision-notes" v-model="requestRevisionNotes">
+        <textarea type="text" class="form-control" id="request-revision-notes"
+                  v-model="requestRevisionNotes" rows="3">
         </textarea>
 
     </modal-confirmation>
