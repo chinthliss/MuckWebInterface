@@ -90,7 +90,12 @@ const refreshForms = () => {
 const refresh = () => {
     refreshForms();
 }
-defineExpose({refresh});
+
+// Allow external reveal
+const expand = () => {
+    expanded.value = true;
+}
+defineExpose({refresh, expand});
 
 const rowClicked = (e: DataTableRowClickEvent) => {
     const form = e.data;

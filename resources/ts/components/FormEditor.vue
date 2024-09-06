@@ -214,6 +214,7 @@ const unloadForm = () => {
     presentFormId.value = null;
     presentForm.value = null;
     previews.value = {};
+    if (formSelector.value) formSelector.value.expand();
 }
 
 const loadForm = (selected: string) => {
