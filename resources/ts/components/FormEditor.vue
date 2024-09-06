@@ -650,11 +650,11 @@ onMounted(() => {
                         <i class="fas fa-thumbs-up btn-icon-left"></i>Submit Form for review
                     </button>
 
-                    <!-- Cancel Submission button, available if the form is awaiting review. -->
+                    <!-- Recall Submission button, available if the form is awaiting review. -->
                     <button :disabled="!presentForm._review"
                             class="btn btn-primary me-2" @click="startCancelSubmitForm"
                     >
-                        <i class="fas fa-hand btn-icon-left"></i>Cancel Submission
+                        <i class="fas fa-hand btn-icon-left"></i>Recall Submission
                     </button>
 
                     <!-- Delete button, not available after approval -->
@@ -1378,7 +1378,7 @@ onMounted(() => {
 
     <!-- Modal to cancel the submission of a form -->
     <modal-confirmation ref="confirmCancelSubmitModal" @yes="cancelSubmitForm"
-                        title="Cancel Submission" yes-label="Cancel" no-label="Don't Cancel"
+                        title="Recall Submission" yes-label="Recall" no-label="Cancel"
     >
         <p>Are you sure you wish to recall the form?</p>
         <p>
