@@ -38,10 +38,8 @@
             This page is under construction even more so than usual, with the following outstanding:
             <ul>
                 <li>Responsive layout review (e.g. placing hints to the side if there's room rather than beneath, etc).
-                <li>Submission isn't done yet.</li>
-                <li>Submission cancelling isn't done yet.</li>
-                <li>Staff side after submission (Review) isn't done yet.</li>
-                <li>Deletion isn't done yet (want to make it a soft delete for 90 days or somesuch).</li>
+                <li>Deletion is only partially implemented.</li>
+                <li>No 'cancel deletion' option.</li>
                 <li>Strongly considering removing the main preview or making it run by request.</li>
                 <li>Adding a preview by each description to save scrolling around.</li>
                 <li>Maybe make each area (e.g. head, skin, etc) a separate sub-tab rather than using a giant list.</li>
