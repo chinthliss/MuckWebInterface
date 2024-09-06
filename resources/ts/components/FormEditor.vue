@@ -410,7 +410,7 @@ channel.on('form', (response: GetFormResponse) => {
 
     // Handle some fixes and translations
     if (form._notes) form._notesTranslated = form._notes.join('\n');
-    if (form._deleted) form._deleted = true;
+    if (form._deletedAt) form._deleted = true;
     if (!form.oVictory) form.oVictory = [];
     if (!form.victory) form.victory = [];
     if (!form.defeat) form.defeat = [];
