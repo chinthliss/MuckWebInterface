@@ -34,6 +34,7 @@ export type Form = {
     _published: boolean
     _review: boolean
     _revise: boolean
+    _deleted: boolean // Not actually sent but will be set on getting the form
     _createdAt?: number // Timestamp
     _editedAt?: number // Timestamp
     _deletedAt?: number // Timestamp
@@ -173,7 +174,7 @@ const helpLink = (helpFile: string) => {
 
 const oneWordStatus = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value._deletedAt) return 'Deleted';
+    if (presentForm.value._deleted) return 'Deleted';
     if (presentForm.value._revise) return 'Revision Needed';
     if (presentForm.value._review) return 'Awaiting Review';
     return presentForm.value._approved ? 'Finished' : 'Under Construction';
@@ -181,7 +182,7 @@ const oneWordStatus = computed((): string => {
 
 const statusDescription = computed((): string => {
     if (!presentForm.value) return '';
-    if (presentForm.value._deletedAt) return 'This form has been marked as deleted will be completely removed from the database at some point.';
+    if (presentForm.value._deleted) return 'This form has been marked as deleted will be completely removed from the database at some point.';
     if (presentForm.value._revise) return staff.value ?
         'The form is awaiting revision from the author.' :
         'Staff have reviewed the form and some additional work is needed. After reviewing staff feedback you can submit the form again.';
@@ -409,6 +410,7 @@ channel.on('form', (response: GetFormResponse) => {
 
     // Handle some fixes and translations
     if (form._notes) form._notesTranslated = form._notes.join('\n');
+    if (form._deleted) form._deleted = true;
     if (!form.oVictory) form.oVictory = [];
     if (!form.victory) form.victory = [];
     if (!form.defeat) form.defeat = [];
@@ -533,7 +535,7 @@ onMounted(() => {
         </div>
 
         <!-- Deleted or Read-Only mode warning -->
-        <div v-if="presentForm._deletedAt" class="mt-2 p-2 rounded text-bg-danger">
+        <div v-if="presentForm._deleted" class="mt-2 p-2 rounded text-bg-danger">
             This form is flagged for deletion.
         </div>
         <div v-else-if="viewOnly" class="mt-2 p-2 rounded text-bg-warning">
@@ -665,7 +667,7 @@ onMounted(() => {
                     </button>
 
                     <!-- Delete button, not available after approval -->
-                    <button :disabled="presentForm._approved"
+                    <button :disabled="presentForm._approved || presentForm._deleted"
                             class="btn btn-secondary me-2" @click="startDeleteForm"
                     >
                         <i class="fas fa-trash btn-icon-left"></i>Delete Form
