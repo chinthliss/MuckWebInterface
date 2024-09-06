@@ -12,7 +12,7 @@ export default class ChannelCharacter extends Channel {
             _approved: false,
             _review: false,
             _revise: false,
-            _lastEdit: Math.floor(Date.now() / 1000) - 1,
+            _editedAt: Math.floor(Date.now() / 1000) - 1,
             _notes: ['test', 'test2'],
             _log: [
                 {name: 'Someone', what: 'test', message: ['Test'], when: Math.floor(Date.now() / 1000) - 100},
@@ -49,7 +49,7 @@ export default class ChannelCharacter extends Channel {
             _published: true,
             _review: false,
             _revise: false,
-            _lastEdit: Math.floor(Date.now() / 1000) - 1
+            _editedAt: Math.floor(Date.now() / 1000) - 1
         },
         {
             name: 'Form ready to review',
@@ -57,7 +57,7 @@ export default class ChannelCharacter extends Channel {
             _approved: false,
             _review: true,
             _revise: false,
-            _lastEdit: Math.floor(Date.now() / 1000) - 1
+            _editedAt: Math.floor(Date.now() / 1000) - 1
         },
         {
             name: 'Form in need of revision',
@@ -65,7 +65,16 @@ export default class ChannelCharacter extends Channel {
             _approved: false,
             _review: false,
             _revise: true,
-            _lastEdit: Math.floor(Date.now() / 1000) - 1,
+            _editedAt: Math.floor(Date.now() / 1000) - 1,
+        },
+        {
+            name: 'Deleted Form',
+            owner: 1234,
+            _approved: false,
+            _review: false,
+            _revise: false,
+            _deletedAt: Math.floor(Date.now() / 1000) - 2,
+            _editedAt: Math.floor(Date.now() / 1000) - 5,
         }
     ]
 
@@ -80,7 +89,8 @@ export default class ChannelCharacter extends Channel {
                 published: form._published,
                 review: form._review,
                 revise: form._revise,
-                lastEdit: form._lastEdit
+                lastEdit: form._editedAt,
+                deleted: form._deletedAt ?? 0
             });
         }
     };

@@ -12,6 +12,7 @@ type FormListing = {
     account?: number, // Only transmitted if we're staff
     credit?: string,
     approved: boolean,
+    deleted?: number, // Timestamp
     published: boolean,
     review: boolean,
     revise: boolean,
@@ -69,6 +70,7 @@ const getFormList = () => {
 }
 
 const statusForFormListing = (form: FormListing) => {
+    if (form.deleted) return 'Deleted';
     if (form.revise) return 'Revision Needed';
     if (form.review) return 'Awaiting Review';
     return form.approved ? 'Finished' : 'Under Construction';
