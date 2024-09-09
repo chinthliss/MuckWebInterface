@@ -43,6 +43,15 @@ export default class ChannelCharacter extends Channel {
             skinDescription: 'This is a test description.'
         },
         {
+            name: 'Form that will be rejected',
+            owner: 1234,
+            _approved: false,
+            _published: false,
+            _review: false,
+            _revise: false,
+            _editedAt: Math.floor(Date.now() / 1000) - 1
+        },
+        {
             name: 'Approved Form',
             owner: 1234,
             _approved: true,
@@ -119,7 +128,10 @@ export default class ChannelCharacter extends Channel {
 
     // Data is expected to include {form, action, notes}
     updateFormState = (connection, data) => {
-        this.sendMessageToConnection(connection, 'formStateUpdate', {form: data.form});
+        if (data.form === 'Form that will be rejected')
+            this.sendMessageToConnection(connection, 'formStateUpdate', {error: 'Rejected!'});
+        else
+            this.sendMessageToConnection(connection, 'formStateUpdate', {form: data.form});
     }
 
     handlers = {

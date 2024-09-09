@@ -473,13 +473,18 @@ channel.on('publishedForm', (response: Form) => {
 });
 
 channel.on('updateFormFailed', (response) => {
-    error.value = `Update failed or rejected by the muck when setting '${response.propName}' to '${response.propValue}.'`;
+    error.value = `Update failed or rejected by the game when setting '${response.propName}' to '${response.propValue}.'`;
     error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere.";
     if (response.error) error.value += "\n\nActual error returned: " + response.error;
     if (errorModal.value) errorModal.value.show();
 });
 
 channel.on('formStateUpdate', (response) => {
+    if (response.error) {
+        error.value = "The update failed. Reason given by the game was:\n\n" + response.error
+        if (errorModal.value) errorModal.value.show();
+        return;
+    }
     if (!response.form || response.form != presentFormId.value) return;
     // Reload everything to see updates
     if (formSelector.value) formSelector.value.refresh();
@@ -1467,7 +1472,7 @@ onMounted(() => {
 
     <!-- Modal for error messages -->
     <modal-message ref="errorModal">
-        {{ error }}
+        <div v-for="line in error.split('\n')">{{ line }}</div>
     </modal-message>
 
 </template>
