@@ -170,7 +170,7 @@ const cancelSubscription = (subscription: AccountSubscription) => {
                 </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.changeEmail">
+                <a :href="links.newEmail">
                     <button class="w-100 btn btn-primary">Change to new Email</button>
                 </a>
             </div>
