@@ -48,7 +48,7 @@
                     <div class="col">
                         <input id="password" type="password" name="password"
                                @class(['form-control', 'is-invalid' => $errors->get('password')])
-                               placeholder="Enter new password"
+                               placeholder="Enter your account password"
                         >
                         @error('password')
                         <div class="invalid-feedback" role="alert">{{ $message }}</div>
