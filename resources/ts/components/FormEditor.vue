@@ -481,7 +481,8 @@ channel.on('updateFormFailed', (response) => {
 
 channel.on('formStateUpdate', (response) => {
     if (response.error) {
-        error.value = "The update failed. Reason given by the game was:\n\n" + response.error
+        // The error from the muck should be more specifically tailored here, so use that.
+        error.value = response.error;
         if (errorModal.value) errorModal.value.show();
         return;
     }
