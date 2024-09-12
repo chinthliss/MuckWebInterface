@@ -11,11 +11,12 @@ type FormListing = {
     name: string,
     account?: number, // Only transmitted if we're staff
     credit?: string,
-    approved: boolean,
+    approved: number,
     deleted?: number, // Timestamp
-    published: boolean,
-    review: boolean,
-    revise: boolean,
+    template?: number,
+    published: number,
+    review: number,
+    revise: number,
     lastEdit: number, // Timestamp
     status?: string // Not passed in, we'll calculate ourselves
 }
@@ -46,9 +47,9 @@ FilterService.register('filteredFormList', (name: string, mode: string) => {
     if (!form) return false;
     switch (mode) {
         case 'review':
-            return form.review;
+            return form.review == 1;
         case 'revise':
-            return form.revise;
+            return form.revise == 1;
         default:
             return true;
     }

@@ -94,10 +94,10 @@ export default class ChannelCharacter extends Channel {
                 name: form.name,
                 account: form.owner,
                 credit: 'name',
-                approved: form._approved,
-                published: form._published,
-                review: form._review,
-                revise: form._revise,
+                approved: form._approved ? 1 : 0,
+                published: form._published ? 1 : 0,
+                review: form._review ? 1 : 0,
+                revise: form._revise ? 1 : 0,
                 lastEdit: form._editedAt,
                 deleted: form._deletedAt ?? 0
             });
