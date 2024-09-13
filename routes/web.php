@@ -118,6 +118,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('notifications.api/{id}', [AccountController::class, 'deleteNotification']);
     Route::delete('notifications.api', [AccountController::class, 'deleteAllNotifications']);
 
+    // Account Currency History
+    Route::get('account/history', [AccountController::class, 'showAccountCurrencyHistory'])
+        ->name('account.history');
+
     // Account Transactions
     Route::get('account/transactions', [AccountCurrencyController::class, 'showTransactions'])
         ->name('account.transactions');

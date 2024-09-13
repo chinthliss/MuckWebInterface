@@ -101,6 +101,15 @@ export type AccountNotification = {
     message: string
 }
 
+// More of an AccountCurrencyHistoryEntry
+export type AccountHistory = {
+    id: number
+    createdAt: string
+    balance: number
+    message: string
+    game: string
+}
+
 export type MuckDbref = {
     dbref: number
     type: string

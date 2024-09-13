@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\AccountHistoryManager;
 use App\AccountNotificationManager;
 use App\Http\Controllers\Controller;
 use App\User as User;
@@ -115,6 +116,17 @@ class AccountController extends Controller
     public function showNotifications(): View
     {
         return view('notifications');
+    }
+
+    public function showAccountCurrencyHistory(AccountHistoryManager $historyManager): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if (!$user) abort(401);
+        return view('account.history')->with([
+            'history' => $historyManager->getHistoryFor($user)
+        ]);
     }
 
     public function getNotifications(AccountNotificationManager $notificationManager): array

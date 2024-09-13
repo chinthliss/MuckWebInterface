@@ -14,6 +14,7 @@ const props = defineProps<{
         changePassword: string,
         changeEmail: string,
         newEmail: string,
+        accountCurrencyHistory: string,
         cardManagement: string,
         transactions: string
     }
@@ -161,6 +162,14 @@ const cancelSubscription = (subscription: AccountSubscription) => {
                 </template>
             </Column>
         </DataTable>
+        <div class="d-flex align-items-center">
+            <a :href="links.newEmail">
+                <button class="btn btn-primary mt-2">Add new Email</button>
+            </a>
+            <div class="ms-2 text-muted">
+                Adding a new email will also cause the new email to become your primary email.
+            </div>
+        </div>
 
         <h2 class="mt-2">Account Controls</h2>
         <div class="row g-2">
@@ -170,8 +179,8 @@ const cancelSubscription = (subscription: AccountSubscription) => {
                 </a>
             </div>
             <div class="col-12 col-sm-6">
-                <a :href="links.newEmail">
-                    <button class="w-100 btn btn-primary">Change to new Email</button>
+                <a :href="links.accountCurrencyHistory">
+                    <button class="w-100 btn btn-primary">{{ lex('accountCurrency') }} History</button>
                 </a>
             </div>
             <div class="col-12 col-sm-6">
