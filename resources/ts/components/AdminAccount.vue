@@ -7,10 +7,13 @@ import CharacterCard from "./CharacterCard.vue";
 import {Account, AccountEmail, AccountNote} from "../defs";
 import DataTable from 'primevue/datatable';
 import Column from "primevue/column";
+import {AccountHistoryEntry} from "../defs";
+import AccountHistory from "./AccountHistory.vue";
 
 const props = defineProps<{
     account: Account,
-    apiUrl: string
+    apiUrl: string,
+    historyIn: AccountHistoryEntry[]
 }>();
 
 const account: Ref<Account> = ref(props.account);
@@ -182,6 +185,10 @@ const overallSubscriptionStatus = (): string => {
             <dt class="col-sm-2 text-primary">Tickets</dt>
             <dd class="col-sm-10"> <!-- TODO: Show tickets from tickets system -->
                 PENDING
+            </dd>
+
+            <dt class="col-sm-2 text-primary">{{ lex('accountCurrency') }} History</dt>
+            <dd class="col-sm-10"> <account-history :history-in="props.historyIn"></account-history>
             </dd>
 
 

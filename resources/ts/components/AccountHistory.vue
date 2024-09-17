@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
-import {AccountHistory} from "../defs";
+import {AccountHistoryEntry} from "../defs";
 import {ref, Ref} from "vue";
 import {carbonToString} from "../formatting";
 
 const props = defineProps<{
-    historyIn: AccountHistory[]
+    historyIn: AccountHistoryEntry[]
 }>();
 
-const history: Ref<AccountHistory[]> = ref(props.historyIn);
+const history: Ref<AccountHistoryEntry[]> = ref(props.historyIn);
 
 </script>
 

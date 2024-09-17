@@ -14,6 +14,7 @@
 @section('content')
     <admin-account
         :account="{{ json_encode($account) }}"
+        :history-in="{{ json_encode($history) }}"
         api-url="{{ route('admin.account.api', ['accountId' => $account['id']]) }}"
     >
     </admin-account>

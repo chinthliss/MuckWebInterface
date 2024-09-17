@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AccountHistoryManager;
 use App\Admin\LogManager;
 use App\MuckWebInterfaceUserProvider;
 use App\User;
@@ -17,13 +18,14 @@ class AdminController extends Controller
         return view('admin.home');
     }
 
-    public function showAccount(string $accountId): View
+    public function showAccount(string $accountId, AccountHistoryManager $historyManager): View
     {
         $user = User::find($accountId);
         if (!$user) abort(404);
 
         return view('admin.account', [
-            'account' => $user->toArray('all')
+            'account' => $user->toArray('all'),
+            'history' => $historyManager->getHistoryFor($user)
         ]);
     }
 

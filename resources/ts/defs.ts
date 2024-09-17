@@ -102,7 +102,7 @@ export type AccountNotification = {
 }
 
 // More of an AccountCurrencyHistoryEntry
-export type AccountHistory = {
+export type AccountHistoryEntry = {
     id: number
     createdAt: string
     balance: number
