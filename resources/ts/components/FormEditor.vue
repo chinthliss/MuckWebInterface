@@ -150,6 +150,8 @@ const confirmRequestRevisionModal: Ref<InstanceType<typeof ModalConfirmation> | 
 const requestRevisionNotes: Ref<string> = ref('');
 
 const confirmApproveModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const confirmApproveNotes: Ref<string> = ref('');
+const confirmApproveRating: Ref<number> = ref(1);
 
 const createFormModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const newFormName: Ref<string> = ref('');
@@ -1431,11 +1433,52 @@ onMounted(() => {
 
     <!-- Staff modal to approve a form -->
     <modal-confirmation ref="confirmApproveModal" @yes="approveForm"
-                        title="Approve Form" yes-label="I don't believe you" no-label="Cancel"
+                        title="Approve Form" yes-label="Approve Form" no-label="Cancel"
     >
-        <p>
-            This part is absolutely not implemented yet.
-        </p>
+        <div class="p-2 mb-2 rounded bg-warning text-dark">Not Implemented Yet</div>
+        <div>Select a quality rating for this submission.</div>
+
+        <div class="my-2 d-flex align-items-center justify-content-center">
+            <div class="me-2">Rating:</div>
+            <div class="btn-group" role="group" aria-label="Approval Rating">
+
+                <input type="radio" class="btn-check" name="rating" id="rating_basic" autocomplete="off"
+                       v-model="confirmApproveRating" :value="1"
+                >
+                <label class="btn btn-outline-primary" for="rating_basic">Basic</label>
+
+                <input type="radio" class="btn-check" name="rating" id="rating_average" autocomplete="off"
+                       v-model="confirmApproveRating" :value="2"
+                >
+                <label class="btn btn-outline-primary" for="rating_average">Average</label>
+
+                <input type="radio" class="btn-check" name="rating" id="rating_advanced" autocomplete="off"
+                       v-model="confirmApproveRating" :value="3"
+                >
+                <label class="btn btn-outline-primary" for="rating_advanced">Advanced</label>
+
+            </div>
+        </div>
+
+        <div>
+            Things that could contribute towards a better rating:
+            <ul>
+                <li>Good writing - quality over quantity</li>
+                <li>Adherence to guidelines, e.g. not assuming actions in descriptions</li>
+                <li>String parsing support, where appropriate, for things like:
+                    <ul>
+                        <li>Flags / preferences</li>
+                        <li>Splitters</li>
+                        <li>Color choosers</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <label for="approve-form-notes" class="form-label">Notes:</label>
+        <textarea type="text" class="form-control" id="approve-form-notes"
+                  v-model="confirmApproveNotes" rows="3">
+        </textarea>
     </modal-confirmation>
 
     <!-- Modal to create a new form -->
