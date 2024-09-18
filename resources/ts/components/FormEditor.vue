@@ -1461,9 +1461,9 @@ onMounted(() => {
         </div>
 
         <div>
-            Things that could contribute towards a better rating:
+            Examples of things that could contribute towards a better rating:
             <ul>
-                <li>Good writing - quality over quantity</li>
+                <li>Good writing, with precedence for quality over quantity</li>
                 <li>Adherence to guidelines, e.g. not assuming actions in descriptions</li>
                 <li>String parsing support, where appropriate, for things like:
                     <ul>
@@ -1473,6 +1473,10 @@ onMounted(() => {
                     </ul>
                 </li>
             </ul>
+        </div>
+        <div>
+            Add any additional notes below. After approval a form will automatically be published
+            and have its placement and powerset fields set to 'Pending'.
         </div>
 
         <label for="approve-form-notes" class="form-label">Notes:</label>
