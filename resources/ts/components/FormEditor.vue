@@ -1474,15 +1474,15 @@ onMounted(() => {
                 </li>
             </ul>
         </div>
-        <div>
-            Add any additional notes below. After approval a form will automatically be published
-            and have its placement and powerset fields set to 'Pending'.
-        </div>
-
         <label for="approve-form-notes" class="form-label">Notes:</label>
         <textarea type="text" class="form-control" id="approve-form-notes"
                   v-model="confirmApproveNotes" rows="3">
         </textarea>
+        <div>
+            If approved, a form will be automatically published.
+            The placement and powerset fields will be set to 'Pending' unless they're already set to something.
+        </div>
+
     </modal-confirmation>
 
     <!-- Modal to create a new form -->
