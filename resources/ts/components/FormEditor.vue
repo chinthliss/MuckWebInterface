@@ -280,9 +280,11 @@ const startApproveForm = () => {
 }
 
 const approveForm = () => {
-    error.value = "Not implemented yet";
-    if (errorModal.value) errorModal.value.show();
-    //TODO: Approve Form
+    channel.send('approveForm', {
+        form: presentFormId.value,
+        rating: confirmApproveRating.value,
+        notes: confirmApproveNotes.value
+    });
 }
 
 const startCreateForm = () => {
@@ -482,6 +484,19 @@ channel.on('updateFormFailed', (response) => {
 });
 
 channel.on('formStateUpdate', (response) => {
+    if (response.error) {
+        // The error from the muck should be more specifically tailored here, so use that.
+        error.value = response.error;
+        if (errorModal.value) errorModal.value.show();
+        return;
+    }
+    if (!response.form || response.form != presentFormId.value) return;
+    // Reload everything to see updates
+    if (formSelector.value) formSelector.value.refresh();
+    if (presentFormId.value) loadForm(presentFormId.value);
+});
+
+channel.on('formApproved', (response) => {
     if (response.error) {
         // The error from the muck should be more specifically tailored here, so use that.
         error.value = response.error;
