@@ -74,7 +74,7 @@ const statusForFormListing = (form: FormListing) => {
     if (form.deleted) return 'Deleted';
     if (form.revise) return 'Revision Needed';
     if (form.review) return 'Awaiting Review';
-    return form.approved ? 'Finished' : 'Under Construction';
+    return form.approved ? 'Approved' : 'Under Construction';
 }
 
 const toggleExpanded = () => {

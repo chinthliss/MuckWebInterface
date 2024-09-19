@@ -179,7 +179,7 @@ const oneWordStatus = computed((): string => {
     if (presentForm.value._deleted) return 'Deleted';
     if (presentForm.value._revise) return 'Revision Needed';
     if (presentForm.value._review) return 'Awaiting Review';
-    return presentForm.value._approved ? 'Finished' : 'Under Construction';
+    return presentForm.value._approved ? 'Approved' : 'Under Construction';
 });
 
 const statusDescription = computed((): string => {
@@ -1450,7 +1450,6 @@ onMounted(() => {
     <modal-confirmation ref="confirmApproveModal" @yes="approveForm"
                         title="Approve Form" yes-label="Approve Form" no-label="Cancel"
     >
-        <div class="p-2 mb-2 rounded bg-warning text-dark">Not Implemented Yet</div>
         <div>Select a quality rating for this submission.</div>
 
         <div class="my-2 d-flex align-items-center justify-content-center">
