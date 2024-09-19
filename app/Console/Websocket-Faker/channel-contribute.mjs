@@ -156,6 +156,10 @@ export default class ChannelCharacter extends Channel {
             if (data?.propName === 'skin-transformation')
                 this.sendMessageToConnection(connection, 'updateFormFailed', data);
         },
+        'approveForm': (connection, data) => {
+            // We don't do anything with this in dev.
+            this.sendMessageToConnection(connection, 'formApproved', data);
+        },
         'previewForm': (connection, data) => {
             this.sendMessageToConnection(connection, 'formPreview', {
                 form: data.form,
