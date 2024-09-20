@@ -727,6 +727,12 @@ onMounted(() => {
 
                     </div>
 
+                    <div v-if="presentForm._published" class="p-2 my-2 bg-warning text-dark rounded">
+                        These settings are for the form submission and were copied over on approval.
+                        <br/>
+                        Changing them now will NOT update the published form. You should do that manually.
+                    </div>
+
                     <!-- No Reward -->
                     <div class="mt-2 form-check">
                         <input class="form-check-input" type="checkbox" id="noreward"
