@@ -131,13 +131,13 @@ if (props.startExpanded) getFormList()
 <template>
     <template v-if="expanded">
         <div class="row my-4">
-            <div class="col-6">
+            <div class="col-12 col-xl-6">
                 <h4>Form Selection</h4>
             </div>
-            <div class="col-6">
-                <div class="d-lg-flex align-items-center justify-content-center">
+            <div class="col-12 col-xl-6">
+                <div class="w-100 d-flex align-items-center justify-content-center">
                     <div class="me-2 text-primary">Filter:</div>
-                    <div class="me-4 btn-group" role="group" aria-label="Filter mode">
+                    <div class="flex-grow-1  btn-group" role="group" aria-label="Filter mode">
                         <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
                                v-model="filters.global.value" value="all"
                         >
