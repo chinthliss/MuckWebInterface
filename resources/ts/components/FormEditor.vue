@@ -390,9 +390,20 @@ type GetFormResponse = {
     staff?: boolean
 }
 
-const linkToPresentFormId = computed(() => {
+const linkToPresentFormId = (): string => {
     return presentFormId.value ? props.links.rootUrl + '?form=' + encodeURIComponent(presentFormId.value) : ''
+}
+
+const trackLinkToPresentFormId = computed(() => {
+    return linkToPresentFormId();
 })
+
+const copyPresentFormLinkToClipboard = (e: Event) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(linkToPresentFormId());
+    let message = document.getElementById('link-copied-message');
+    if (message) message.classList.remove('d-none');
+}
 
 channel.on('form', (response: GetFormResponse) => {
     if (response.error) {
@@ -530,10 +541,11 @@ onMounted(() => {
     </div>
     <div v-if="presentForm">
         <h3>Editing - {{ presentFormId }}
-            <a :href="linkToPresentFormId">
-                <i class="fas fa-link"></i>
+            <a @click="copyPresentFormLinkToClipboard" :href="trackLinkToPresentFormId">
+                <i class="fas fa-link" role="button"></i>
             </a>
         </h3>
+        <p id="link-copied-message" class="text-muted small d-none">(Link copied to clipboard)</p>
 
         <!-- Preview -->
         <div class="card">
