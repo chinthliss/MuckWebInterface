@@ -161,3 +161,20 @@ export type AvatarGradient = {
     url: string
 }
 
+// Taken from https://datatables.net/manual/vue - Not sure why it isn't in types for DataTables!
+export interface DataTablesNamedSlotProps {
+    /** The data to show in the cell (from the `columns.data` configuration) */
+    cellData: string;
+
+    /** The column index for the cell (0-based index) */
+    colIndex: Number;
+
+    /** The data object for the whole row */
+    rowData: any;
+
+    /** Row index for the cell (data index, not the display index) */
+    rowIndex: Number;
+
+    /** Orthogonal data type */
+    type: string;
+}
