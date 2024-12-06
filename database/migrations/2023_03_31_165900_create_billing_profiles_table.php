@@ -15,8 +15,8 @@ return new class extends Migration {
         //The existing server already has this table so need to check if it exists or not
         if (!Schema::hasTable('billing_profiles')) {
             Schema::create('billing_profiles', function (Blueprint $table) {
-                $table->bigInteger('aid')->unsigned();
-                $table->bigInteger('profileid');
+                $table->bigInteger('aid')->unsigned()->index();
+                $table->bigInteger('profileid')->index();
                 $table->bigInteger('defaultcard');
                 $table->integer('spendinglimit');
             });
