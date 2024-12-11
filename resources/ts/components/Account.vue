@@ -2,11 +2,12 @@
 
 import {Ref, ref} from 'vue';
 import ModalConfirmation from './ModalConfirmation.vue';
-import {usdToString, carbonToString, arrayToList} from "../formatting";
+import {arrayToList, carbonToString, usdToString} from "../formatting";
 import {csrf, lex} from "../siteutils";
 import {Account, AccountEmail, AccountSubscription, DataTablesNamedSlotProps} from "../defs";
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+
 DataTable.use(DataTablesLib);
 
 const props = defineProps<{
@@ -39,11 +40,11 @@ const emailTableOptions: DataTableOptions = {
     paging: false,
     searching: false,
     columns: [
-        {title: 'Email', data: 'email'},
-        {title: 'Primary?', name: 'primary', data: 'isPrimary', className: 'text-center'},
-        {title: 'Registered', data: 'createdAt', render: carbonToString},
-        {title: 'Verified', data: 'verifiedAt', render: carbonToString},
-        {title: '', data: null, name:'controls', orderable: false}
+        {data: 'email'},
+        {name: 'primary', data: 'isPrimary', className: 'text-center', orderable: false},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString},
+        {data: null, name: 'controls', orderable: false}
     ],
     headerCallback: (thead) => {
         thead.childNodes[2];
@@ -84,12 +85,12 @@ const subscriptionTableOptions: DataTableOptions = {
     paging: false,
     searching: false,
     columns: [
-        {title: 'Type', data: 'type'},
-        {title: 'Amount (USD)', data: 'amount_usd', render: usdToString},
-        {title: 'Interval (days)', data: 'recurring_interval'},
-        {title: 'Next (approx)', data: 'next_charge_at', render: carbonToString},
-        {title: 'Status', data: 'status', render: friendlySubscriptionStatus},
-        {title: '', data: null, name:'controls', orderable: false}
+        {data: 'type'},
+        {data: 'amount_usd', render: usdToString},
+        {data: 'recurring_interval'},
+        {data: 'next_charge_at', render: carbonToString},
+        {data: 'status', render: friendlySubscriptionStatus},
+        {data: null, name: 'controls', orderable: false}
     ]
 };
 
@@ -128,7 +129,18 @@ const subscriptionTableOptions: DataTableOptions = {
             <h2 class="mt-2">Subscriptions</h2>
 
             <DataTable class="table table-dark table-hover table-striped"
-                       :options="subscriptionTableOptions" :data="account.subscriptions">
+                       :options="subscriptionTableOptions" :data="account.subscriptions"
+            >
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Amount (USD)</th>
+                    <th>Interval (days)</th>
+                    <th>Next (approx)</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
                 <template #column-controls="dt: DataTablesNamedSlotProps">
                     <a :href="(dt.rowData as AccountSubscription).url"><i class="fas fa-search"></i></a>
                     <button class="btn btn-secondary ms-2"
@@ -147,7 +159,17 @@ const subscriptionTableOptions: DataTableOptions = {
         <h2 class="mt-2">Emails</h2>
 
         <DataTable class="table table-dark table-hover table-striped"
-                   :options="emailTableOptions" :data="account.emails">
+                   :options="emailTableOptions" :data="account.emails"
+        >
+            <thead>
+            <tr>
+                <th>Email</th>
+                <th>Primary?</th>
+                <th>Registered</th>
+                <th>Verified</th>
+                <th></th>
+            </tr>
+            </thead>
             <template #column-primary="dt: DataTablesNamedSlotProps">
                 <i class="fa-solid fa-check w-100 text-center"
                    v-if="(dt.rowData as AccountEmail).isPrimary"
@@ -196,7 +218,8 @@ const subscriptionTableOptions: DataTableOptions = {
 
         <!-- Change primary email modal -->
         <modal-confirmation ref="confirmPrimaryEmailModal" @yes="makeEmailPrimary"
-                            title="Change Primary Email?" yes-label="Change" no-label="Cancel">
+                            title="Change Primary Email?" yes-label="Change" no-label="Cancel"
+        >
             <form id="changeEmailForm" :action="links.changeEmail" method="POST">
                 <input type="hidden" name="_token" :value="csrf()">
                 <input type="hidden" name="email" :value="emailToMakePrimary">

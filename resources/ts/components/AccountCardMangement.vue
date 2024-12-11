@@ -33,10 +33,10 @@ const tableOptions: DataTableOptions = {
         emptyTable: "You have no cards registered."
     },
     columns: [
-        {title: 'Card Type', data: 'cardType'},
-        {title: 'Ends With', data: 'maskedCardNumber'},
-        {title: 'Expiry', data: 'expiryDate'},
-        {title: '', data: null, name:'controls', orderable: false}
+        {data: 'cardType'},
+        {data: 'maskedCardNumber'},
+        {data: 'expiryDate'},
+        {data: null, name:'controls', orderable: false}
     ]
 };
 
@@ -108,6 +108,14 @@ const setCardAsDefault = (card: AccountCard) => {
         <h1>Card Management</h1>
 
         <DataTable class="table table-dark table-hover table-striped" :options="tableOptions" :data="cards">
+            <thead>
+            <tr>
+                <th>Card Type</th>
+                <th>Ends With</th>
+                <th>Expiry</th>
+                <th></th>
+            </tr>
+            </thead>
             <template #column-controls="dt: DataTablesNamedSlotProps">
                 <button class="btn btn-secondary ms-2"
                         @click="deleteCard(dt.rowData as AccountCard)">
