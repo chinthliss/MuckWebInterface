@@ -2,9 +2,12 @@
 
 import {Ref, ref} from 'vue';
 import {carbonToString, usdToString} from "../formatting";
-import {AccountTransaction} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
+import {AccountTransaction, DataTablesNamedSlotProps} from "../defs";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     transactionsIn: AccountTransaction[]
@@ -21,39 +24,44 @@ const renderResult = (result: string): string => {
     return result;
 }
 
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No transactions to show."
+    },
+    columns: [
+        {data: 'id'},
+        {data: 'created_at', render: carbonToString},
+        {data: 'completed_at', render: carbonToString},
+        {data: 'type'},
+        {data: 'total_usd', render: usdToString},
+        {data: 'account_currency_quoted'},
+        {data: 'items'},
+        {data: 'subscription_id'},
+        {data: 'result', render: renderResult}
+    ]
+};
 </script>
 
 <template>
-    <DataTable :value="transactions" stripedRows>
-        <Column field="id" header="Id">
-            <template #body="{ data  }">
-                <a :href="(data as AccountTransaction).url">{{ (data as AccountTransaction).id }}</a>
-            </template>
-        </Column>
-        <Column field="created_at" header="Created">
-            <template #body="{ data }">
-                {{ carbonToString((data as AccountTransaction).created_at) }}
-            </template>
-        </Column>
-        <Column field="completed_at" header="Completed">
-            <template #body="{ data }">
-                {{ carbonToString((data as AccountTransaction).completed_at) }}
-            </template>
-        </Column>
-        <Column field="type" header="Type">Type</Column>
-        <Column field="total_usd" header="USD">
-            <template #body="{ data }">
-                {{ usdToString((data as AccountTransaction).total_usd) }}
-            </template>
-        </Column>
-        <Column field="account_currency_quoted" header="Account Currency">Account Currency</Column>
-        <Column field="items" header="Items">Items</Column>
-        <Column field="subscription_id" header="Subscription"></Column>
-        <Column field="result" header="Result">
-            <template #body="{ data }">
-                {{ renderResult((data as AccountTransaction).result) }}
-            </template>
-        </Column>
+    <DataTable class="table table-dark table-hover table-striped" :options="tableOptions" :data="transactions">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Created</th>
+            <th>Completed</th>
+            <th>Type</th>
+            <th>Total (USD)</th>
+            <th>Account Currency</th>
+            <th>Items</th>
+            <th>Subscription</th>
+            <th>Result</th>
+        </tr>
+        </thead>
+        <template #column-id="dt: DataTablesNamedSlotProps">
+            <a :href="dt.rowData.url">{{ dt.rowData.id }}</a>
+        </template>
     </DataTable>
 </template>
 
