@@ -41,6 +41,7 @@ const rowClicked = (account: Account) => {
 const tableOptions: DataTableOptions = {
     info: false,
     paging: false,
+    searching: false,
     language: {
         emptyTable: "No accounts found matching the present criteria."
     },
