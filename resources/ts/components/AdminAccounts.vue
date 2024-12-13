@@ -3,8 +3,10 @@ import {ref, Ref} from 'vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import {Account, Character} from "../defs";
-import DataTable, {DataTableRowClickEvent} from 'primevue/datatable';
-import Column from "primevue/column";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     apiUrl: string,
@@ -20,7 +22,6 @@ const searchCreatedAfter: Ref<string> = ref('');
 const tableLoading: Ref<boolean> = ref(false);
 const tableData: Ref<any[] | null> = ref(null);
 
-
 const listCharacters = (characters: Character[]): string => {
     let names = [];
     for (const character of characters) {
@@ -29,13 +30,35 @@ const listCharacters = (characters: Character[]): string => {
     return names.join(', ');
 };
 
-const rowClicked = (event: DataTableRowClickEvent) => {
-    const url = event.data?.url;
-    if (url)
-        window.open(url, '_blank');
+const rowClicked = (account: Account) => {
+
+    if (account.url)
+        window.open(account.url, '_blank');
     else
         console.log("Clicked row doesn't have an associated url with it!");
 }
+
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No accounts found matching the present criteria."
+    },
+    columns: [
+        {data: 'id'},
+        {data: 'primaryEmail'},
+        {data: 'characters', render: listCharacters},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'lastConnected', render: carbonToString}
+    ],
+    createdRow: (row: Node, data: any) => {
+        console.log(row);
+        row.addEventListener('click', () => {
+            rowClicked(data)
+        });
+
+    }
+};
 
 type SearchCriteria = {
     character?: string
@@ -83,7 +106,8 @@ const jumpToAccount = () => {
         <div class="d-flex justify-content-center align-items-center">
             <label class="me-2" for="InputAccountId">Know the ID already?</label>
             <input class="w-auto form-control me-2" type="text" id="InputAccountId" placeholder="Account ID"
-                   v-model="quickOpen">
+                   v-model="quickOpen"
+            >
             <button class="btn btn-primary" @click="jumpToAccount">View</button>
         </div>
 
@@ -102,7 +126,8 @@ const jumpToAccount = () => {
                 <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCharacter">Character</label>
                 <div class="mt-2 col-6 col-xl-2">
                     <input type="text" class="form-control" id="InputCharacter" placeholder="Character"
-                           v-model="searchCharacter">
+                           v-model="searchCharacter"
+                    >
                 </div>
             </div>
 
@@ -111,14 +136,16 @@ const jumpToAccount = () => {
                 <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCreatedAfter">Created After</label>
                 <div class="mt-2 col-6 col-xl-2">
                     <input type="date" class="form-control" id="InputCreatedAfter" placeholder="Created After"
-                           v-model="searchCreatedAfter">
+                           v-model="searchCreatedAfter"
+                    >
                 </div>
 
                 <label class="col-form-label text-end mt-2 col-6 col-xl-2" for="InputCreatedBefore">Created
                     Before</label>
                 <div class="mt-2 col-6 col-xl-2">
                     <input type="date" class="form-control" id="InputCreatedBefore" placeholder="Created Before"
-                           v-model="searchCreatedBefore">
+                           v-model="searchCreatedBefore"
+                    >
                 </div>
 
                 <button type="button" class="btn btn-primary mt-2 col-12 col-xl-2" @click="doAccountSearch">
@@ -133,25 +160,19 @@ const jumpToAccount = () => {
         <Spinner v-if="tableLoading"/>
         <div v-else-if="!tableData" class="text-center">No data loaded yet...</div>
         <div v-else>
-            <DataTable :value="tableData" stripedRows @row-click="rowClicked">
-                <template #empty>No accounts found matching the present criteria.</template>
-                <Column header="ID" field="id"></Column>
-                <Column header="Primary Email" field="primaryEmail"></Column>
-                <Column header="Characters" field="characters">
-                    <template #body="{ data }">
-                        {{ listCharacters((data as Account).characters) }}
-                    </template>
-                </Column>
-                <Column header="Created" field="createdAt">
-                    <template #body="{ data }">
-                        {{ carbonToString((data as Account).createdAt) }}
-                    </template>
-                </Column>
-                <Column header="Last Connected" field="lastConnected">
-                    <template #body="{ data }">
-                        {{ carbonToString((data as Account).lastConnected) }}
-                    </template>
-                </Column>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="tableOptions" :data="tableData"
+            >
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Primary Email</th>
+                    <th>Characters</th>
+                    <th>Created</th>
+                    <th>Last Connected</th>
+                </tr>
+                </thead>
+
             </DataTable>
         </div>
     </div>

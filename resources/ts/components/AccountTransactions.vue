@@ -6,7 +6,6 @@ import {AccountTransaction, DataTablesNamedSlotProps} from "../defs";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
-
 DataTable.use(DataTablesLib);
 
 const props = defineProps<{

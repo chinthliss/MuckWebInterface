@@ -4,11 +4,12 @@ import {Ref, ref} from 'vue';
 import {arrayToList, carbonToString} from "../formatting";
 import {lex} from "../siteutils";
 import CharacterCard from "./CharacterCard.vue";
-import {Account, AccountEmail, AccountNote} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
-import {AccountHistoryEntry} from "../defs";
+import {Account, AccountEmail, AccountHistoryEntry, DataTablesNamedSlotProps} from "../defs";
 import AccountHistory from "./AccountHistory.vue";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     account: Account,
@@ -18,6 +19,34 @@ const props = defineProps<{
 
 const account: Ref<Account> = ref(props.account);
 const newAccountNote: Ref<string> = ref('');
+
+const emailTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No emails found."
+    },
+    columns: [
+        {data: 'email'},
+        {name: 'primary', data: 'isPrimary', className: 'text-center', orderable: false},
+        {data: 'createdAt', render: carbonToString},
+        {data: 'verifiedAt', render: carbonToString}
+    ],
+};
+
+const noteTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No notes on this account."
+    },
+    columns: [
+        {data: 'whenAt', render: carbonToString},
+        {data: 'staffMember'},
+        {data: 'game'},
+        {data: 'body'}
+    ],
+};
 
 const addAccountNote = () => {
     axios
@@ -53,7 +82,6 @@ const unlockAccount = () => {
         .catch(error => {
             console.log("Request failed:", error);
         })
-
 }
 
 const overallSubscriptionStatus = (): string => {
@@ -128,42 +156,38 @@ const overallSubscriptionStatus = (): string => {
 
             <dt class="col-sm-2 text-primary">Emails</dt>
             <dd class="col-sm-10">
-                <DataTable :value="account.emails" stripedRows>
-                    <template #empty>No emails associated with this account.</template>
-                    <Column header="Email" field="email"></Column>
-                    <Column header="Primary?" field="isPrimary" headerClass="d-flex justify-content-center" class="text-center">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center"
-                               v-if="(data as AccountEmail).isPrimary"
-                            ></i>
-                        </template>
-                    </Column>
-                    <Column header="Registered" field="createdAt">
-                        <template #body="{ data }">
-                            {{ carbonToString((data as AccountEmail).createdAt) }}
-                        </template>
-
-                    </Column>
-                    <Column header="Verified" field="verifiedAt">
-                        <template #body="{ data }">
-                            {{ carbonToString((data as AccountEmail).verifiedAt) }}
-                        </template>
-                    </Column>
+                <DataTable class="table table-dark table-hover table-striped"
+                           :options="emailTableOptions" :data="account.emails"
+                >
+                    <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Primary?</th>
+                        <th>Registered</th>
+                        <th>Verified</th>
+                    </tr>
+                    </thead>
+                    <template #column-primary="dt: DataTablesNamedSlotProps">
+                        <i class="fa-solid fa-check w-100 text-center"
+                           v-if="(dt.rowData as AccountEmail).isPrimary"
+                        ></i>
+                    </template>
                 </DataTable>
             </dd>
 
             <dt class="col-sm-2 text-primary">Account Notes</dt>
             <dd class="col-sm-10">
-                <DataTable :value="account.notes" stripedRows>
-                    <template #empty>No notes on this account.</template>
-                    <Column header="When" field="whenAt">
-                        <template #body="{ data }">
-                            {{ carbonToString((data as AccountNote).whenAt) }}
-                        </template>
-                    </Column>
-                    <Column header="Staff Member" field="staffMember"></Column>
-                    <Column header="Game" field="game"></Column>
-                    <Column header="Note" field="body"></Column>
+                <DataTable class="table table-dark table-hover table-striped"
+                           :options="noteTableOptions" :data="account.notes"
+                >
+                    <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>Staff Member</th>
+                        <th>Game</th>
+                        <th>Note</th>
+                    </tr>
+                    </thead>
                 </DataTable>
                 <div class="row g-2 mt-2">
                     <div class="col-12 col-xl-3">
@@ -188,7 +212,8 @@ const overallSubscriptionStatus = (): string => {
             </dd>
 
             <dt class="col-sm-2 text-primary">{{ lex('accountCurrency') }} History</dt>
-            <dd class="col-sm-10"> <account-history :history-in="props.historyIn"></account-history>
+            <dd class="col-sm-10">
+                <account-history :history-in="props.historyIn"></account-history>
             </dd>
 
 
