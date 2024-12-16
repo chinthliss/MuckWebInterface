@@ -1,7 +1,6 @@
 /**
  * Type Definitions that are used on multiple pages
  */
-
 export type Account = {
     id: number
     createdAt: string
@@ -161,7 +160,9 @@ export type AvatarGradient = {
     url: string
 }
 
-// Taken from https://datatables.net/manual/vue - Not sure why it isn't in types for DataTables!
+// Taken from Datatables documentation - https://datatables.net/manual/vue
+// Figure there should be an alternative in its own typescript exports but couldn't find one
+
 export interface DataTablesNamedSlotProps {
     /** The data to show in the cell (from the `columns.data` configuration) */
     cellData: string;
@@ -177,4 +178,10 @@ export interface DataTablesNamedSlotProps {
 
     /** Orthogonal data type */
     type: string;
+}
+
+import {Api} from "datatables.net-bs5";
+export interface DataTablesEvent {
+    e: Event;
+    dt: Api
 }

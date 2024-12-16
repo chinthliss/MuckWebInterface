@@ -2,10 +2,11 @@
 import {ref, onMounted, Ref} from 'vue';
 import {carbonToString, usdToString} from "../formatting";
 import Spinner from "./Spinner.vue";
-import {AccountTransaction} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
-import {FilterService} from "@primevue/core/api";
+import {AccountTransaction, DataTablesNamedSlotProps} from "../defs";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     api: string
@@ -13,17 +14,39 @@ const props = defineProps<{
 
 const transactions: Ref<AccountTransaction[]> = ref([]);
 const loading: Ref<boolean> = ref(true);
+let dtApi: Api | null = null;
+const typeFilter: Ref<string> = ref('');
 
-const filters = ref({
-    global: {value: '', matchMode: 'paymentTypeFilter'}
-});
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No transactions to show."
+    },
+    columns: [
+        {data: 'account_id'},
+        {data: 'id', className: 'limit-column-width', name: 'id'},
+        {data: 'type'},
+        {data: 'created_at', render: carbonToString},
+        {data: 'paid_at', render: carbonToString},
+        {data: 'completed_at', render: carbonToString},
+        {data: 'total_usd', render: usdToString},
+        {data: 'account_currency_quoted'},
+        {data: 'items'},
+        {data: 'subscription_id'},
+        {data: 'result'}
+    ],
+    initComplete: () => {
+        dtApi = new DataTablesLib.Api('table')
+    }
+};
 
-FilterService.register('paymentTypeFilter', (id: string, type: string) => {
-    if (!type) return true;
-    const transaction: AccountTransaction | undefined = transactions.value.find((entry) => entry.id == id);
-    return (transaction?.type == type);
-});
-
+const filterChanged = () => {
+    if (dtApi) {
+        let column = dtApi.columns(2);
+        column.search(typeFilter.value, {exact: true}).draw();
+    }
+}
 const loadTransactions = () => {
     loading.value = true;
     axios.get(props.api)
@@ -51,58 +74,45 @@ onMounted(() => {
 
         <div class="btn-group" role="group" aria-label="Type Filter">
             <input type="radio" class="btn-check" name="filter" id="filterNone" autocomplete="off"
-                   v-model="filters.global.value" value="">
+                   v-model="typeFilter" value="" @change="filterChanged">
             <label class="btn btn-outline-primary" for="filterNone">All</label>
 
             <input type="radio" class="btn-check" name="filter" id="filterCard" autocomplete="off"
-                   v-model="filters.global.value" value="Card">
+                   v-model="typeFilter" value="Card" @change="filterChanged">
             <label class="btn btn-outline-primary" for="filterCard">Card</label>
 
             <input type="radio" class="btn-check" name="filter" id="filterPayPal" autocomplete="off"
-                   v-model="filters.global.value" value="Paypal">
+                   v-model="typeFilter" value="Paypal" @change="filterChanged">
             <label class="btn btn-outline-primary" for="filterPayPal">PayPal</label>
 
             <input type="radio" class="btn-check" name="filter" id="filterPatreon" autocomplete="off"
-                   v-model="filters.global.value" value="Patreon">
+                   v-model="typeFilter" value="Patreon" @change="filterChanged">
             <label class="btn btn-outline-primary" for="filterPatreon">Patreon</label>
 
         </div>
 
         <Spinner v-if="loading"/>
-        <DataTable v-else :value="transactions" stripedRows sortField="created_at" :sortOrder="1"
-                   v-model:filters="filters" :globalFilterFields="['id']">
-            <template #empty>No transactions to display.</template>
-            <Column header="Account" field="account_id" sortable></Column>
-            <Column header="Id" field="id" sortable>
-                <template #body="{ data  }">
-                    <a :href="(data as AccountTransaction).url">{{ (data as AccountTransaction).id }}</a>
-                </template>
-            </Column>
-            <Column header="Type" field="type"></Column>
-            <Column header="Created" field="created_at" sortable>
-                <template #body="{ data }">
-                    {{ carbonToString((data as AccountTransaction).created_at) }}
-                </template>
-            </Column>
-            <Column header="Paid" field="paid_at" sortable>
-                <template #body="{ data }">
-                    {{ carbonToString((data as AccountTransaction).paid_at) }}
-                </template>
-            </Column>
-            <Column header="Completed" field="completed_at" sortable>
-                <template #body="{ data }">
-                    {{ carbonToString((data as AccountTransaction).completed_at) }}
-                </template>
-            </Column>
-            <Column header="USD" field="total_usd" sortable>
-                <template #body="{ data }">
-                    {{ usdToString((data as AccountTransaction).total_usd) }}
-                </template>
-            </Column>
-            <Column header="Account Currency" field="account_currency_quoted" sortable></Column>
-            <Column header="Items" field="items" sortable></Column>
-            <Column header="Subscription?" field="subscription_id" sortable></Column>
-            <Column header="Result" field="result" sortable></Column>
+        <DataTable v-else id="table" class="table table-dark table-hover table-striped"
+                   :options="tableOptions" :data="transactions"
+        >
+            <thead>
+            <tr>
+                <th>Account</th>
+                <th>Id</th>
+                <th>Type</th>
+                <th>Created</th>
+                <th>Paid</th>
+                <th>Completed</th>
+                <th>USD</th>
+                <th>Account Currency</th>
+                <th>Items</th>
+                <th>Subscription?</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <template #column-id="dt: DataTablesNamedSlotProps">
+                <a :href="dt.rowData.url">{{ dt.rowData.id }}</a>
+            </template>
         </DataTable>
 
     </div>
