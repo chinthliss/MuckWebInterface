@@ -31,7 +31,6 @@ const listCharacters = (characters: Character[]): string => {
 };
 
 const rowClicked = (account: Account) => {
-
     if (account.url)
         window.open(account.url, '_blank');
     else
@@ -53,11 +52,7 @@ const tableOptions: DataTableOptions = {
         {data: 'lastConnected', render: carbonToString}
     ],
     createdRow: (row: Node, data: any) => {
-        console.log(row);
-        row.addEventListener('click', () => {
-            rowClicked(data)
-        });
-
+        row.addEventListener('click', () => rowClicked(data));
     }
 };
 
