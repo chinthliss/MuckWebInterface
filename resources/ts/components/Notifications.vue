@@ -3,9 +3,11 @@ import {ref, onMounted, Ref} from 'vue';
 import ModalConfirmation from './ModalConfirmation.vue';
 import {carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
-import {AccountNotification} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
+import {AccountNotification, DataTablesNamedSlotProps} from "../defs";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 
 const props = defineProps<{
@@ -18,6 +20,21 @@ const initialLoading: Ref<boolean> = ref(true);
 const notifications: Ref<AccountNotification[]> = ref([]);
 
 const confirmationModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No notifications to show."
+    },
+    columns: [
+        {data: null, name: 'body', orderable: false},
+        {data: 'character'},
+        {data: 'date', render: carbonToString},
+        {data: 'message'}
+    ],
+    order: [[2, 'asc']]
+};
 
 const refreshNotifications = () => {
     loadingNotifications.value = true;
@@ -88,29 +105,27 @@ onMounted(() => {
                 </button>
             </div>
 
-            <DataTable :value="notifications" stripedRows>
-                <template #empty>
-                    <div class="text-center">You have no notifications.</div>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="tableOptions" :data="notifications"
+            >
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Character</th>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+                </thead>
+                <template #column-body="dt: DataTablesNamedSlotProps">
+                    <div class="d-flex align-items-center">
+                        <i v-if="(dt.rowData as AccountNotification).read_at" class="fas fa-envelope-open text-muted"></i>
+                        <i v-else class="fas fa-envelope text-primary"></i>
+                        <button class="btn btn-secondary ms-2"
+                                @click="deleteNotification(dt.rowData as AccountNotification)"
+                        ><i class="fas fa-trash btn-icon-left"></i>Delete
+                        </button>
+                    </div>
                 </template>
-                <Column>
-                    <template #body="{ data }">
-                        <div class="d-flex align-items-center">
-                            <i v-if="(data as AccountNotification).read_at" class="fas fa-envelope-open text-muted"></i>
-                            <i v-else class="fas fa-envelope text-primary"></i>
-                            <button class="btn btn-secondary ms-2"
-                                    @click="deleteNotification(data as AccountNotification)"
-                            ><i class="fas fa-trash btn-icon-left"></i>Delete
-                            </button>
-                        </div>
-                    </template>
-                </Column>
-                <Column header="Character" field="character" sortable></Column>
-                <Column header="Date" field="created_at" sortable>
-                    <template #body="{ data }">
-                        {{ carbonToString((data as AccountNotification).created_at) }}
-                    </template>
-                </Column>
-                <Column header="Message" field="message"></Column>
             </DataTable>
 
             <div class="d-flex justify-content-center mt-2">
