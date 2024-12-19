@@ -45,10 +45,7 @@ const emailTableOptions: DataTableOptions = {
         {data: 'createdAt', render: carbonToString},
         {data: 'verifiedAt', render: carbonToString},
         {data: null, name: 'controls', orderable: false}
-    ],
-    headerCallback: (thead) => {
-        thead.childNodes[2];
-    }
+    ]
 };
 const friendlySubscriptionStatus = (status: string): string => {
     switch (status) {
