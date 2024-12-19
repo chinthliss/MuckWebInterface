@@ -49,6 +49,14 @@ export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): str
 };
 
 /**
+ * Joins an array of strings into one string with newlines
+ */
+export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
+    if (!arrayToParse.length) return emptyWord;
+    return arrayToParse.join('\n');
+};
+
+/**
  * Replaces key parts of HTML so that it can be used without being parsed
  */
 export const escapeHTML = (text: string): string  => {
