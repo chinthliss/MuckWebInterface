@@ -174,8 +174,8 @@ const jumpToAccount = () => {
     </div>
 </template>
 
-<style scoped>
-:deep(tr) {
+<style scoped lang="scss">
+:deep(tbody tr) {
     cursor: pointer;
 }
 </style>
