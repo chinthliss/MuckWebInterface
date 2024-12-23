@@ -2,12 +2,14 @@
 
 import {ref, Ref, computed} from "vue";
 import Progress from "./Progress.vue";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
-import {capital} from "../formatting";
+import {arrayToList, arrayToStringWithNewlines, capital} from "../formatting";
 import Spinner from "./Spinner.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
-import {FilterService, FilterMatchMode} from "@primevue/core/api";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
+import {DataTablesNamedSlotProps} from "../defs";
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     startingPlayerName?: string,
@@ -18,7 +20,7 @@ type Form = {
     name: string,
     private?: number, // We'll list private forms IF they're mastered
     gender: string,
-    size?: number,
+    size: number,
     ballCount: number,
     ballSize: number,
     breastCount: number,
@@ -56,30 +58,151 @@ type Form = {
     specialNote?: string
 }
 
-const formDatabase: Ref<Form[]> = ref([]);
-const channel = mwiWebsocket.channel('forms');
-const formsToLoad: Ref<number | null> = ref(null);
-const formsToLoadRemaining: Ref<number> = ref(0);
-const detailedOutput: Ref<boolean> = ref(false);
-
-const filters = ref({
-    name: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    powers: {value: null, matchMode: 'filteredNestedList'},
-    tags: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    flags: {value: null, matchMode: 'filteredNestedList'},
-    global: {value: 'mastered', matchMode: 'filteredFormList'}
-});
-
 type Target = {
     name?: string,
     loading?: boolean,
     error?: string,
     forms?: { [form: string]: number }
 }
+
+let dtApi: Api | null = null;
+const formDatabase: Ref<Form[]> = ref([]);
+const channel = mwiWebsocket.channel('forms');
+const formsToLoad: Ref<number | null> = ref(null);
+const formsToLoadRemaining: Ref<number> = ref(0);
+const detailedOutput: Ref<boolean> = ref(false);
+
 const targets: Ref<[Target, Target, Target, Target]> = ref([{}, {}, {}, {}]);
 const changeTargetModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
+
+const filters = ref({
+    name: '',
+    gender: '',
+    powers: '',
+    tags: '',
+    flags: '',
+    global: ''
+});
+
+const updateFilterForName = () => {
+    if (dtApi) {
+        let nameColumn = dtApi.columns('name:name');
+        nameColumn.search(filters.value.name).draw();
+    }
+}
+
+const updateFilterForTags = () => {
+    if (dtApi) {
+        let nameColumn = dtApi.columns('tags:name');
+        nameColumn.search(filters.value.name).draw();
+    }
+}
+
+const updateFilterForFlags = () => {
+    if (dtApi) {
+        let nameColumn = dtApi.columns('flags:name');
+        nameColumn.search(filters.value.name).draw();
+    }
+}
+
+const updateFilterForPowers = () => {
+    if (dtApi) {
+        let nameColumn = dtApi.columns('powers:name');
+        nameColumn.search(filters.value.name).draw();
+    }
+}
+
+const renderList = (data: string[], _type: string, _row: any, _meta: object) => {
+    return arrayToList(data);
+}
+
+const renderListWithNewLines = (data: string[], _type: string, _row: any, _meta: object) => {
+    return arrayToStringWithNewlines(data);
+}
+
+
+const renderNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): string => {
+    if (!nestedList) return '';
+    const result = [];
+    for (const key in nestedList) {
+        for (const value of nestedList[key]) {
+            if (result.indexOf(value) == -1) result.push(value);
+        }
+    }
+    return result.join(', ');
+}
+
+const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | undefined ): string => {
+    if (!nestedList) return '';
+    const result = [];
+    for (const key in nestedList) {
+        if (result.indexOf(key) == -1) result.push(key);
+    }
+    return result.join(', ');
+}
+
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    layout: {
+        topEnd: null
+    },
+    language: {
+        emptyTable: "No forms to view."
+    },
+    scrollY: '400px',
+    columns: [
+        {data: 'name', name: 'name'},
+        {data: 'gender', name: 'gender'},
+        {data: 'size', defaultContent: ''},
+        {data: 'cockCount'},
+        {data: 'cockSize'},
+        {data: 'ballCount'},
+        {data: 'ballSize'},
+        {data: 'cuntCount'},
+        {data: 'cuntSize'},
+        {data: 'clitCount'},
+        {data: 'clitSize'},
+        {data: 'breastCount'},
+        {data: 'breastSize'},
+        {data: 'sayVerb'},
+        {data: 'holiday', defaultContent: ''},
+        {data: 'tags', name: 'tags', render: renderList},
+        {data: 'flags', name: 'flags', render: renderNestedListItemsOnly},
+        {data: 'powers', name: 'powers', render: renderNestedListItemsOnly},
+        {data: 'lstats', render: renderNestedListKeysOnly},
+        {data: 'kemo', render: renderList},
+        {data: 'chubby', render: renderList},
+        {data: 'color', render: renderList},
+        {data: null},
+        {data: null},
+        {data: null},
+        {data: 'private', name: 'private', defaultContent: ''},
+        {data: 'noMastering', name: 'no-master'},
+        {data: 'noFunnel', name: 'no-funnel'},
+        {data: 'noZap', name: 'no-zap'},
+        {data: 'noNative', name: 'no-native'},
+        {data: 'noExtract', name: 'no-extract'},
+        {data: 'noReward', name: 'no-reward'},
+        {data: 'bypassImmune', name: 'bypass-immunity'},
+        // Staff Only
+        {data: 'placement', defaultContent: '', visible: props.staff, render: renderListWithNewLines},
+        {data: 'placementNote', defaultContent: '', visible: props.staff},
+        {data: 'powerNote', defaultContent: '', visible: props.staff},
+        {data: 'specialNote', defaultContent: '', visible: props.staff},
+        // Comparison targets
+        {data: 'target1', defaultContent: '', visible: false},
+        {data: 'target2', defaultContent: '', visible: false},
+        {data: 'target3', defaultContent: '', visible: false},
+        {data: 'target4', defaultContent: '', visible: false}
+
+    ],
+    initComplete: () => {
+        dtApi = new DataTablesLib.Api('table');
+    }
+};
 
 channel.on('formDatabase', (data: number) => {
     formDatabase.value = [];
@@ -168,34 +291,6 @@ const genderClassForForm = (form: Form): string => {
 
 }
 
-FilterService.register('filteredFormList', (name: string, mode: string) => {
-    const form: Form | undefined = formDatabase.value.find((form) => form.name == name);
-    if (!form) return false;
-    let count = 0;
-    for (const target of targets.value) {
-        if (target.forms && target.forms[name]) count++;
-    }
-    if (mode === 'mastered' && !count) return false;
-    if (mode === 'unmastered' && count) return false;
-
-    if (!props.staff) {
-        if (form.staffonly) return false;
-        // Only show private forms that are present
-        if (form.private && !count) return false;
-    }
-    return true;
-});
-
-FilterService.register('filteredNestedList', (data, value) => {
-    if (!value) return true;
-    for (const key in data) {
-        for (const nestedItem of data[key]) {
-            if (nestedItem.indexOf && nestedItem.indexOf(value) !== -1) return true;
-        }
-    }
-    return false;
-});
-
 const highestUsedTargetIndex = () => {
     let result = 0;
     for (let i = 0; i < targets.value.length; i++) {
@@ -203,27 +298,6 @@ const highestUsedTargetIndex = () => {
     }
     return result;
 }
-
-const outputNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): string => {
-    if (!nestedList) return '';
-    const result = [];
-    for (const key in nestedList) {
-        for (const value of nestedList[key]) {
-            if (result.indexOf(value) == -1) result.push(value);
-        }
-    }
-    return result.join(', ');
-}
-
-const outputNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | undefined ): string => {
-    if (!nestedList) return '';
-    const result = [];
-    for (const key in nestedList) {
-        if (result.indexOf(key) == -1) result.push(key);
-    }
-    return result.join(', ');
-}
-
 
 // Send requests for data
 channel.send('getFormDatabase');
@@ -259,17 +333,17 @@ if (props.startingPlayerName) {
                 <div class="me-2 text-primary">Mode:</div>
                 <div class="me-4 btn-group" role="group" aria-label="Filter mode">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
-                           v-model="filters.global.value" value="mastered"
+                           v-model="filters.global" value="mastered"
                     >
                     <label class="btn btn-outline-secondary" for="filter_mastered">Mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
-                           v-model="filters.global.value" value="unmastered"
+                           v-model="filters.global" value="unmastered"
                     >
                     <label class="btn btn-outline-secondary" for="filter_unmastered">Un-mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
-                           v-model="filters.global.value" value="none"
+                           v-model="filters.global" value="none"
                     >
                     <label class="btn btn-outline-secondary" for="filter_none">All Forms</label>
 
@@ -326,225 +400,158 @@ if (props.startingPlayerName) {
 
             <hr>
 
-            <div :style="{ height: '75vh' }">
-                <DataTable :value="formDatabase" dataKey="name" size="small" stripedRows scrollable
-                           scrollHeight="flex"
-                           v-model:filters="filters" filterDisplay="row" :globalFilterFields="['name']"
-                           tableStyle="min-width: 50rem"
-                >
-                    <Column header="Name" field="name" class="fw-bold" frozen :sortable="true" style="min-width: 12rem">
-                        <template #filter="{ filterModel, filterCallback }">
-                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
-                                   class="p-column-filter" placeholder="Search by name"
-                            />
-                        </template>
-                    </Column>
-                    <Column header="Gender" field="gender" :sortable="true" style="min-width: 8rem">
-                        <template #body="{ data }">
-                            <i class="fa-solid" :class="genderClassForForm((data as Form))"></i>
-                            {{ capital((data as Form).gender) }}
-                        </template>
-                    </Column>
-                    <Column header="Size" field="size" class="text-end" :sortable="true"></Column>
-                    <Column header="Cock Count" field="cockCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Cock Size" field="cockSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Ball Count" field="ballCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Ball Size" field="ballSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Cunt Count" field="cuntCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Cunt Size" field="cuntSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Clit Count" field="clitCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Clit Size" field="clitSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Breast Count" field="breastCount" class="text-end" :sortable="true"></Column>
-                    <Column header="Breast Size" field="breastSize" class="text-end" :sortable="true"></Column>
-                    <Column header="Say Verb" field="sayVerb" class="text-end" :sortable="true"></Column>
-                    <Column header="Holiday" field="holiday" class="text-end" :sortable="true"></Column>
-                    <Column header="Tags" field="tags" style="min-width: 12rem">
-                        <template #body="{ data }">
-                            {{ (data as Form).tags?.join(', ') }}
-                        </template>
-                        <template #filter="{ filterModel, filterCallback }">
-                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
-                                   class="p-column-filter" placeholder="Search by tag"
-                            />
-                        </template>
-                    </Column>
-                    <Column header="Flags" field="flags" style="min-width: 12rem">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (data as Form).flags">
-                                <div>
-                                    <span class="text-primary">
-                                        {{ capital(bodyPart) }}
-                                    </span>: {{ nestedList.join(', ') }}
-                                </div>
-                            </template>
-                            <template v-else>{{ outputNestedListItemsOnly((data as Form).flags) }}</template>
-                        </template>
-                        <template #filter="{ filterModel, filterCallback }">
-                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
-                                   class="p-column-filter" placeholder="Search by flag"
-                            />
-                        </template>
-                    </Column>
-                    <Column header="Powers" field="powers" style="min-width: 12rem">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (data as Form).powers">
-                                <div>
-                                    <span class="text-primary">
-                                        {{ capital(bodyPart) }}
-                                    </span>: {{ nestedList.join(', ') }}
-                                </div>
-                            </template>
-                            <template v-else>{{ outputNestedListItemsOnly((data as Form).powers) }}</template>
-                            <template v-for="(nestedList, requirement) in (data as Form).powersBonus">
-                                <div>
-                                    <span class="text-secondary">
-                                        {{ requirement }} parts
-                                    </span>: {{ nestedList.join(', ') }}
-                                </div>
-                            </template>
-                        </template>
-                        <template #filter="{ filterModel, filterCallback }">
-                            <input v-model.lazy="filterModel.value" type="text" @input="filterCallback()"
-                                   class="p-column-filter" placeholder="Search by power"
-                            />
-                        </template>
-                    </Column>
-                    <Column header="Local Stats" field="lstats" style="min-width: 12rem">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput" v-for="(nestedList, localStat) in (data as Form).lstats">
-                                <div>
-                                    <span class="text-primary">
-                                        {{ capital(localStat) }}
-                                    </span>: {{ nestedList.join(', ') }}
-                                </div>
-                            </template>
-                            <template v-else>{{ outputNestedListKeysOnly((data as Form).lstats) }}</template>
-                        </template>
-                    </Column>
-                    <Column header="Kemo Support" field="kemo" :sortable="true">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput">
-                                {{ (data as Form).kemo?.join(', ') }}
-                            </template>
-                            <template v-else>
-                                <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="(data as Form).kemo?.length"
-                                ></i>
-                            </template>
-                        </template>
-                    </Column>
-                    <Column header="Chubby Support" field="chubby" :sortable="true">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput">
-                                {{ (data as Form).chubby?.join(', ') }}
-                            </template>
-                            <template v-else>
-                                <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="(data as Form).chubby?.length"
-                                ></i>
-                            </template>
-                        </template>
-                    </Column>
-                    <Column header="Color Support" field="color" :sortable="true">
-                        <template #body="{ data }">
-                            <template v-if="detailedOutput">
-                                {{ (data as Form).color?.join(', ') }}
-                            </template>
-                            <template v-else>
-                                <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="(data as Form).color?.length > 0"
-                                ></i>
-                            </template>
+            <DataTable id="table" class="table table-dark table-hover table-striped"
+                       :options="tableOptions" :data="formDatabase"
+            >
+                <thead>
+                <tr>
+                    <th>Form</th>
+                    <th>Gender</th>
+                    <th>Size</th>
 
-                        </template>
-                    </Column>
-                    <Column header="Arm Divider" field="armDivider" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center"
-                               v-if="(data as Form).dividers?.indexOf('arm') >= 0"
-                            ></i>
-                        </template>
-                    </Column>
-                    <Column header="Leg Divider" field="legDivider" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center"
-                               v-if="(data as Form).dividers?.indexOf('leg') >= 0"
-                            ></i>
-                        </template>
-                    </Column>
-                    <Column header="Tail Divider" field="tailDivider" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center"
-                               v-if="(data as Form).dividers?.indexOf('tail') >= 0"
-                            ></i>
-                        </template>
-                    </Column>
-                    <Column header="Private" field="private" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).private"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Mastering" field="noMastering" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noMastering"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Funnel" field="noFunnel" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noFunnel"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Reward" field="noReward" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noReward"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Zap" field="noZap" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noZap"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Native" field="noNative" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noNative"></i>
-                        </template>
-                    </Column>
-                    <Column header="No Extract" field="noExtract" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).noExtract"></i>
-                        </template>
-                    </Column>
-                    <Column header="Bypass Immune" field="bypassImmune" :sortable="true">
-                        <template #body="{ data }">
-                            <i class="fa-solid fa-check w-100 text-center" v-if="(data as Form).bypassImmune"></i>
-                        </template>
-                    </Column>
-                    <!-- Staff -->
-                    <template v-if="staff">
-                        <Column header="Placement" field="placement" style="min-width: 25rem">
-                            <template #body="{ data }">
-                                <div v-for="placement in (data as Form).placement">{{ placement }}</div>
-                            </template>
-                        </Column>
-                        <Column header="Placement Note" field="placementNote" style="min-width: 12rem"
-                        ></Column>
-                        <Column header="Power Note" field="powerNote" style="min-width: 12rem"></Column>
-                        <Column header="Special Note" field="specialNote" style="min-width: 12rem"></Column>
-                    </template>
-                    <!-- Comparison -->
-                    <template v-if="highestUsedTargetIndex() > 0" v-for="target in targets">
-                        <Column v-if="target.name"
-                                :header="target.name"
-                        >
-                            <template #body="{ data }">
-                                <i class="fa-solid fa-check w-100 text-center"
-                                   v-if="target.forms && target.forms[(data as Form).name]"
-                                ></i>
-                            </template>
-                        </Column>
-                    </template>
-                </Datatable>
-            </div>
+                    <th>Cock Count</th>
+                    <th>Cock Size</th>
+                    <th>Ball Count</th>
+                    <th>Ball Size</th>
+                    <th>Cunt Count</th>
+                    <th>Cunt Size</th>
+                    <th>Clit Count</th>
+                    <th>Clit Size</th>
+                    <th>Breast Count</th>
+                    <th>Breast Size</th>
+
+                    <th>Say Verb</th>
+                    <th>Holiday</th>
+                    <th>Tags</th>
+                    <th>Flags</th>
+                    <th>Powers</th>
+
+                    <th>Local Stats</th>
+                    <th>Kemo Support</th>
+                    <th>Chubby Support</th>
+                    <th>Color Support</th>
+                    <th>Arm Divider</th>
+                    <th>Leg Divider</th>
+                    <th>Tail Divider</th>
+
+                    <th>Private</th>
+                    <th>Can't Master</th>
+                    <th>Can't Funnel</th>
+                    <th>Can't Zap</th>
+                    <th>Can't be Native</th>
+                    <th>Can't Extract</th>
+                    <th>Not Rewarded</th>
+                    <th>Bypass Immunity</th>
+
+                    <th>Placement</th>
+                    <th>Placement Note</th>
+                    <th>Power Note</th>
+                    <th>Special Note</th>
+
+                    <th>{{ targets[0].name }}</th>
+                    <th>{{ targets[1].name }}</th>
+                    <th>{{ targets[2].name }}</th>
+                    <th>{{ targets[3].name }}</th>
+                </tr>
+                <tr>
+                    <th data-dt-order="disable">
+                        <input type="text" v-model="filters.name" @input="updateFilterForName"
+                               class="form-control" placeholder="Search by name"
+                        />
+                    </th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable">
+                        <input type="text" v-model="filters.tags" @input="updateFilterForTags"
+                               class="form-control" placeholder="Search by Tag"
+                        />
+                    </th>
+                    <th data-dt-order="disable">
+                        <input type="text" v-model="filters.flags" @input="updateFilterForFlags"
+                               class="form-control" placeholder="Search by Flag"
+                        />
+                    </th>
+                    <th data-dt-order="disable">
+                        <input type="text" v-model="filters.powers" @input="updateFilterForPowers"
+                               class="form-control" placeholder="Search by Power"
+                        />
+                    </th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                </tr>
+                </thead>
+
+                <template #column-gender="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid" :class="genderClassForForm((dt.rowData as Form))"></i>
+                    {{ capital((dt.rowData as Form).gender) }}
+                </template>
+
+                <template #column-private="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).private"></i>
+                </template>
+
+                <template #column-no-master="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noMastering"></i>
+                </template>
+
+                <template #column-no-funnel="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noFunnel"></i>
+                </template>
+
+                <template #column-no-reward="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noReward"></i>
+                </template>
+
+                <template #column-no-zap="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noZap"></i>
+                </template>
+
+                <template #column-no-native="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noNative"></i>
+                </template>
+
+                <template #column-no-extract="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).noExtract"></i>
+                </template>
+
+                <template #column-bypass-immunity="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).bypassImmune"></i>
+                </template>
+
+            </Datatable>
 
             <div v-if="unknownForms" class="mt-4 alert alert-warning">
                 <div>Form mastery was found for the following forms but no information on them was available:</div>
@@ -566,4 +573,7 @@ if (props.startingPlayerName) {
 </template>
 
 <style scoped>
+    .form-control {
+        min-width: 180px;
+    }
 </style>
