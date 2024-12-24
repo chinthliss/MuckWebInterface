@@ -1,4 +1,9 @@
 <script setup lang="ts">
+//TODO: Target visibility
+//TODO: tags/flags/powers Filters
+//TODO: Mode filter
+//TODO: Sticky first column
+//TODO: Toggle column ranges
 
 import {ref, Ref, computed} from "vue";
 import Progress from "./Progress.vue";
@@ -55,7 +60,15 @@ type Form = {
     placement?: string[], // Maybe allow with terminal download?
     powersetNote?: string,
     placementNote?: string,
-    specialNote?: string
+    specialNote?: string,
+    // Field we'll add manually so we can trigger updates.
+    // For some reason updates won't happen unless we change something on the row
+    _detail?: boolean,
+    // And whether the present target has the form
+    _target1: boolean,
+    _target2: boolean,
+    _target3: boolean,
+    _target4: boolean
 }
 
 type Target = {
@@ -114,6 +127,12 @@ const updateFilterForPowers = () => {
     }
 }
 
+const changeDetailMode = () => {
+    for (const form of formDatabase.value) {
+        form._detail = detailedOutput.value;
+    }
+}
+
 const renderList = (data: string[], _type: string, _row: any, _meta: object) => {
     return arrayToList(data);
 }
@@ -121,7 +140,6 @@ const renderList = (data: string[], _type: string, _row: any, _meta: object) => 
 const renderListWithNewLines = (data: string[], _type: string, _row: any, _meta: object) => {
     return arrayToStringWithNewlines(data);
 }
-
 
 const renderNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): string => {
     if (!nestedList) return '';
@@ -170,15 +188,15 @@ const tableOptions: DataTableOptions = {
         {data: 'sayVerb'},
         {data: 'holiday', defaultContent: ''},
         {data: 'tags', name: 'tags', render: renderList},
-        {data: 'flags', name: 'flags', render: renderNestedListItemsOnly},
-        {data: 'powers', name: 'powers', render: renderNestedListItemsOnly},
-        {data: 'lstats', render: renderNestedListKeysOnly},
-        {data: 'kemo', render: renderList},
-        {data: 'chubby', render: renderList},
-        {data: 'color', render: renderList},
-        {data: null},
-        {data: null},
-        {data: null},
+        {data: 'flags', name: 'flags'},
+        {data: 'powers', name: 'powers'},
+        {data: 'lstats', name: 'lstats'},
+        {data: 'kemo', name: 'kemo'},
+        {data: 'chubby', name: 'chubby'},
+        {data: 'color', name: 'color'},
+        {data: null, name: 'arm-divider'},
+        {data: null, name: 'leg-divider'},
+        {data: null, name: 'tail-divider'},
         {data: 'private', name: 'private', defaultContent: ''},
         {data: 'noMastering', name: 'no-master'},
         {data: 'noFunnel', name: 'no-funnel'},
@@ -193,10 +211,10 @@ const tableOptions: DataTableOptions = {
         {data: 'powerNote', defaultContent: '', visible: props.staff},
         {data: 'specialNote', defaultContent: '', visible: props.staff},
         // Comparison targets
-        {data: 'target1', defaultContent: '', visible: false},
-        {data: 'target2', defaultContent: '', visible: false},
-        {data: 'target3', defaultContent: '', visible: false},
-        {data: 'target4', defaultContent: '', visible: false}
+        {data: '_target1', name: 'target1', visible: false},
+        {data: '_target2', name: 'target2', visible: false},
+        {data: '_target3', name: 'target3', visible: false},
+        {data: '_target4', name: 'target4', visible: false}
 
     ],
     initComplete: () => {
@@ -211,6 +229,11 @@ channel.on('formDatabase', (data: number) => {
 });
 
 channel.on('formListing', (data: Form) => {
+    data._detail = false;
+    data._target1 = false;
+    data._target2 = false;
+    data._target3 = false;
+    data._target4 = false;
     formDatabase.value.push(data);
     formsToLoadRemaining.value--;
 });
@@ -352,12 +375,12 @@ if (props.startingPlayerName) {
                 <div class="me-2 text-primary">Detail:</div>
                 <div class="btn-group" role="group" aria-label="Detail mode">
                     <input type="radio" class="btn-check" name="detail" id="detail_off" autocomplete="off"
-                           v-model="detailedOutput" :value="false"
+                           v-model="detailedOutput" :value="false" @change="changeDetailMode"
                     >
                     <label class="btn btn-outline-secondary" for="detail_off">Simplify Lists</label>
 
                     <input type="radio" class="btn-check" name="detail" id="detail_on" autocomplete="off"
-                           v-model="detailedOutput" :value="true"
+                           v-model="detailedOutput" :value="true" @change="changeDetailMode"
                     >
                     <label class="btn btn-outline-secondary" for="detail_on">Detail by part</label>
                 </div>
@@ -453,6 +476,7 @@ if (props.startingPlayerName) {
                     <th>{{ targets[2].name }}</th>
                     <th>{{ targets[3].name }}</th>
                 </tr>
+                <!-- Second header row is to host search boxes and is mostly blank -->
                 <tr>
                     <th data-dt-order="disable">
                         <input type="text" v-model="filters.name" @input="updateFilterForName"
@@ -519,6 +543,84 @@ if (props.startingPlayerName) {
                     {{ capital((dt.rowData as Form).gender) }}
                 </template>
 
+                <template #column-flags="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (dt.rowData as Form).flags">
+                        <div>
+                    <span class="text-primary">
+                        {{ capital(bodyPart as string) }}
+                    </span>: {{ nestedList.join(', ') }}
+                        </div>
+                    </template>
+                    <template v-else>{{ renderNestedListItemsOnly((dt.rowData as Form).flags) }}</template>
+                </template>
+
+                <template #column-powers="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput" v-for="(nestedList, bodyPart) in (dt.rowData as Form).powers">
+                        <div>
+                    <span class="text-primary">
+                        {{ capital(bodyPart as string) }}
+                    </span>: {{ nestedList.join(', ') }}
+                        </div>
+                    </template>
+                    <template v-else>{{ renderNestedListItemsOnly((dt.rowData as Form).powers) }}</template>
+                </template>
+
+                <template #column-lstats="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput" v-for="(nestedList, localStat) in (dt.rowData as Form).lstats">
+                        <div>
+                    <span class="text-primary">
+                        {{ capital(localStat as string) }}
+                    </span>: {{ nestedList.join(', ') }}
+                        </div>
+                    </template>
+                    <template v-else>{{ renderNestedListKeysOnly((dt.rowData as Form).lstats) }}</template>
+                </template>
+
+                <template #column-kemo="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput">
+                        {{ (dt.rowData as Form).kemo?.join(', ') }}
+                    </template>
+                    <template v-else>
+                        <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).kemo?.length"></i>
+                    </template>
+                </template>
+
+                <template #column-chubby="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput">
+                        {{ (dt.rowData as Form).chubby?.join(', ') }}
+                    </template>
+                    <template v-else>
+                        <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).chubby?.length"></i>
+                    </template>
+                </template>
+
+                <template #column-color="dt: DataTablesNamedSlotProps">
+                    <template v-if="detailedOutput">
+                        {{ (dt.rowData as Form).color?.join(', ') }}
+                    </template>
+                    <template v-else>
+                        <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).color?.length"></i>
+                    </template>
+                </template>
+
+                <template #column-arm-divider="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('arm') >= 0"
+                    ></i>
+                </template>
+
+                <template #column-leg-divider="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('leg') >= 0"
+                    ></i>
+                </template>
+
+                <template #column-tail-divider="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('tail') >= 0"
+                    ></i>
+                </template>
+
                 <template #column-private="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).private"></i>
                 </template>
@@ -569,7 +671,6 @@ if (props.startingPlayerName) {
             <input type="text" class="form-control" id="changeTargetInput" v-model="changeTargetName">
         </div>
     </modal-confirmation>
-
 </template>
 
 <style scoped>

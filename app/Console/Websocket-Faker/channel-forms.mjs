@@ -70,10 +70,10 @@ export default class ChannelForms extends Channel {
             holiday: 'July',
             powers: {'legs': ['A power']},
             powersBonus: {'2': ['A set power']},
-            lstats: {waffle: ['legs', 'arms']},
+            lstats: {waffle: ['legs', 'arms', 'tail']},
             kemo: ['arms', 'legs'],
-            chubby: ['arms', 'legs'],
-            color: ['arms', 'legs'],
+            chubby: ['head', 'legs'],
+            color: ['arms', 'head'],
             dividers: ['arm', 'leg', 'tail']
         },
         {
