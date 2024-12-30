@@ -1,5 +1,4 @@
 <script setup lang="ts">
-//TODO: Target visibility
 //TODO: tags/flags/powers Filters
 //TODO: Mode filter
 //TODO: Sticky first column
@@ -65,10 +64,10 @@ type Form = {
     // For some reason updates won't happen unless we change something on the row
     _detail?: boolean,
     // And whether the present target has the form
+    _target0: boolean,
     _target1: boolean,
     _target2: boolean,
-    _target3: boolean,
-    _target4: boolean
+    _target3: boolean
 }
 
 type Target = {
@@ -85,7 +84,7 @@ const formsToLoad: Ref<number | null> = ref(null);
 const formsToLoadRemaining: Ref<number> = ref(0);
 const detailedOutput: Ref<boolean> = ref(false);
 
-const targets: Ref<[Target, Target, Target, Target]> = ref([{}, {}, {}, {}]);
+const targets: Ref<[Target | null, Target | null, Target | null, Target | null]> = ref([null, null, null, null]);
 const changeTargetModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
@@ -96,7 +95,7 @@ const filters = ref({
     powers: '',
     tags: '',
     flags: '',
-    global: ''
+    global: 'mastered'
 });
 
 const updateFilterForName = () => {
@@ -124,6 +123,12 @@ const updateFilterForPowers = () => {
     if (dtApi) {
         let nameColumn = dtApi.columns('powers:name');
         nameColumn.search(filters.value.name).draw();
+    }
+}
+
+const updateFilterForMode = () => {
+    if (dtApi) {
+        // TBC
     }
 }
 
@@ -211,15 +216,41 @@ const tableOptions: DataTableOptions = {
         {data: 'powerNote', defaultContent: '', visible: props.staff},
         {data: 'specialNote', defaultContent: '', visible: props.staff},
         // Comparison targets
+        {data: '_target0', name: 'target0', visible: false},
         {data: '_target1', name: 'target1', visible: false},
         {data: '_target2', name: 'target2', visible: false},
-        {data: '_target3', name: 'target3', visible: false},
-        {data: '_target4', name: 'target4', visible: false}
+        {data: '_target3', name: 'target3', visible: false}
 
     ],
     initComplete: () => {
         dtApi = new DataTablesLib.Api('table');
     }
+};
+
+/**
+ * Updates the cached target fields on each form and column visibility
+ */
+const updateTargetDisplay = () => {
+    if (!dtApi) return;
+    for (let i = 0; i < 4; i++) {
+        let target = targets.value[i];
+        let column = dtApi.columns(`target${i}:name`);
+        if (target && !target.loading && !target.error) {
+            column.visible(true, false);
+            // This is ugly but need to use JQuery to update the header text
+            let element = column.header(0).to$();
+            element.children('.dt-column-title').text(target.name || 'Unset');
+            // Update the values for each form
+            for (const form of formDatabase.value) {
+                // @ts-ignore -- because I can't find the proper way to do this
+                form[`_target${i}`] = form.name in target.forms;
+            }
+        } else {
+            column.visible(false, false);
+        }
+    }
+    // Update column sizes from any changes
+    dtApi.columns.adjust().draw();
 };
 
 channel.on('formDatabase', (data: number) => {
@@ -230,12 +261,13 @@ channel.on('formDatabase', (data: number) => {
 
 channel.on('formListing', (data: Form) => {
     data._detail = false;
+    data._target0 = false;
     data._target1 = false;
     data._target2 = false;
     data._target3 = false;
-    data._target4 = false;
     formDatabase.value.push(data);
     formsToLoadRemaining.value--;
+    if (!formsToLoadRemaining.value) updateTargetDisplay();
 });
 
 type FormMasteryResponse = {
@@ -248,17 +280,18 @@ channel.on('mastery', (data: FormMasteryResponse) => {
     // User might have entered the same target in multiple rows, so just step through them all
     let updatedCount = 0;
     for (const target of targets.value) {
-        if (target.name !== data.who) continue;
-        target.name = data.who;
-        target.error = data.error;
-        target.forms = data.forms;
-        target.loading = false;
-        updatedCount++;
+        if (target && target.name == data.who) {
+            target.name = data.who;
+            target.error = data.error;
+            target.forms = data.forms;
+            target.loading = false;
+            updatedCount++;
+        }
     }
     if (!updatedCount) {
         console.log("Unable to find a target to update for: ", data);
         return;
-    }
+    } else updateTargetDisplay();
 });
 
 const loading = computed(() : boolean => {
@@ -273,10 +306,11 @@ const loadingPercentage = computed(() => {
 
 const changeTarget = (): void => {
     if (!changeTargetName.value) return;
-    let target = targets.value[changeTargetIndex.value];
-    target.loading = true;
-    target.name = changeTargetName.value;
-    channel.send('getFormMasteryOf', target.name);
+    targets.value[changeTargetIndex.value] = {
+        name: changeTargetName.value,
+        loading: true
+    }
+    channel.send('getFormMasteryOf', changeTargetName.value);
 }
 
 const launchChangeTarget = (index: number): void => {
@@ -285,7 +319,8 @@ const launchChangeTarget = (index: number): void => {
 }
 
 const clearTarget = (index: number) => {
-    targets.value[index] = {};
+    targets.value[index] = null;
+    updateTargetDisplay();
 }
 
 const unknownForms = computed((): string => {
@@ -294,6 +329,7 @@ const unknownForms = computed((): string => {
         return form.name;
     });
     for (const target of targets.value) {
+        if (!target) continue;
         for (const form in target.forms) {
             if (formList.indexOf(form) === -1 && result.indexOf(form) === -1) result.push(form)
         }
@@ -317,7 +353,7 @@ const genderClassForForm = (form: Form): string => {
 const highestUsedTargetIndex = () => {
     let result = 0;
     for (let i = 0; i < targets.value.length; i++) {
-        if (targets.value[i].name) result = i;
+        if (targets.value[i]) result = i;
     }
     return result;
 }
@@ -356,17 +392,17 @@ if (props.startingPlayerName) {
                 <div class="me-2 text-primary">Mode:</div>
                 <div class="me-4 btn-group" role="group" aria-label="Filter mode">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
-                           v-model="filters.global" value="mastered"
+                           v-model="filters.global" value="mastered" @change="updateFilterForMode"
                     >
                     <label class="btn btn-outline-secondary" for="filter_mastered">Mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_unmastered" autocomplete="off"
-                           v-model="filters.global" value="unmastered"
+                           v-model="filters.global" value="unmastered" @change="updateFilterForMode"
                     >
                     <label class="btn btn-outline-secondary" for="filter_unmastered">Un-mastered Forms</label>
 
                     <input type="radio" class="btn-check" name="filter" id="filter_none" autocomplete="off"
-                           v-model="filters.global" value="none"
+                           v-model="filters.global" value="none" @change="updateFilterForMode"
                     >
                     <label class="btn btn-outline-secondary" for="filter_none">All Forms</label>
 
@@ -390,7 +426,7 @@ if (props.startingPlayerName) {
                 <div v-if="index <= highestUsedTargetIndex() + 1" class="d-lg-flex align-items-center mb-2">
                     <div class="flex-grow-1">
                         <span class="text-primary">Target {{ index + 1 }}: </span>
-                        <template v-if="target.name">
+                        <template v-if="target">
                             {{ target.name }}
                         </template>
                         <template v-else>
@@ -400,10 +436,10 @@ if (props.startingPlayerName) {
                     </div>
 
                     <div>
-                        <div v-if="target.loading" class="me-2">
+                        <div v-if="target?.loading" class="me-2">
                             <spinner></spinner>
                         </div>
-                        <div v-if="target.error" class="me-2 text-danger">
+                        <div v-if="target?.error" class="me-2 text-danger">
                             Can't display: {{ target.error }}
                         </div>
                     </div>
@@ -413,7 +449,9 @@ if (props.startingPlayerName) {
                             <i class="fas fa-search btn-icon-left"></i>Select Target
                         </button>
 
-                        <button class="btn btn-primary me-lg-2" @click="clearTarget(index)" :disabled="!target.name">
+                        <button class="btn btn-primary me-lg-2" @click="clearTarget(index)"
+                                :disabled="!target || !index"
+                        >
                             <i class="fas fa-close btn-icon-left"></i>Clear Target
                         </button>
                     </div>
@@ -471,10 +509,11 @@ if (props.startingPlayerName) {
                     <th>Power Note</th>
                     <th>Special Note</th>
 
-                    <th>{{ targets[0].name }}</th>
-                    <th>{{ targets[1].name }}</th>
-                    <th>{{ targets[2].name }}</th>
-                    <th>{{ targets[3].name }}</th>
+                    <!-- Target names. These are set dynamically -->
+                    <th>??</th>
+                    <th>??</th>
+                    <th>??</th>
+                    <th>??</th>
                 </tr>
                 <!-- Second header row is to host search boxes and is mostly blank -->
                 <tr>
@@ -652,6 +691,23 @@ if (props.startingPlayerName) {
                 <template #column-bypass-immunity="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).bypassImmune"></i>
                 </template>
+
+                <template #column-target0="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target0"></i>
+                </template>
+
+                <template #column-target1="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target1"></i>
+                </template>
+
+                <template #column-target2="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target2"></i>
+                </template>
+
+                <template #column-target3="dt: DataTablesNamedSlotProps">
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target3"></i>
+                </template>
+
 
             </Datatable>
 
