@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "es2020",
-        "lib": ["es2020", "DOM", "DOM.Iterable"],
-        "moduleResolution": "node",
+        "module": "ES2020",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "moduleResolution": "Bundler",
         "baseUrl": "./",
         "strict": true,
         // "skipLibCheck": true
@@ -11,7 +11,12 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noEmit": true,
+        // Required in Vue projects
+        "jsx": "preserve",
+        "jsxImportSource": "vue"
     },
     "include": ["resources/ts/"]  // Frontend paths pattern
 }

@@ -12,6 +12,7 @@
         "@types/bootstrap": "^5.2.6",
         "@types/jquery": "^3.5.17",
         "@vitejs/plugin-vue": "^5.0.0",
+        "@vue/language-server": "^2.2.0",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.1.14",
         "rollup-plugin-visualizer": "^5.9.2",
@@ -30,7 +31,7 @@
         "codemirror-lang-stringparsing": "github:chinthliss/codemirror-lang-stringparsing",
         "datatables.net-bs5": "^2.1.8",
         "datatables.net-fixedcolumns-bs5": "^5.0.4",
-        "datatables.net-vue3": "^3.0.2",
+        "datatables.net-vue3": "3.0.2",
         "muckwebinterface-websocket": "github:chinthliss/MuckWebInterface-Websocket",
         "vue": "^3.2.37"
     }

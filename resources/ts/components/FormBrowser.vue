@@ -58,21 +58,21 @@ type Form = {
     powersetNote?: string,
     placementNote?: string,
     specialNote?: string,
-    // Field we'll add manually so we can trigger updates.
+    // Fields added by us
     // For some reason updates won't happen unless we change something on the row
-    _detail?: boolean,
+    detail: boolean,
     // And whether the present target has the form
-    _target0: boolean,
-    _target1: boolean,
-    _target2: boolean,
-    _target3: boolean
+    target0: boolean,
+    target1: boolean,
+    target2: boolean,
+    target3: boolean
 }
 
 type Target = {
     name?: string,
     loading?: boolean,
     error?: string,
-    forms?: { [form: string]: number }
+    forms: { [form: string]: number }
 }
 
 let dtApi: Api | null = null;
@@ -124,7 +124,7 @@ const updateFilterForMode = () => {
 
 const changeDetailMode = () => {
     for (const form of formDatabase.value) {
-        form._detail = detailedOutput.value;
+        form.detail = detailedOutput.value;
     }
 }
 
@@ -223,10 +223,10 @@ const tableOptions: DataTableOptions = {
         {data: 'powerNote', defaultContent: '', visible: props.staff},
         {data: 'specialNote', defaultContent: '', visible: props.staff},
         // Comparison targets
-        {data: '_target0', name: 'target0', visible: false},
-        {data: '_target1', name: 'target1', visible: false},
-        {data: '_target2', name: 'target2', visible: false},
-        {data: '_target3', name: 'target3', visible: false}
+        {data: 'target0', name: 'target0', visible: false},
+        {data: 'target1', name: 'target1', visible: false},
+        {data: 'target2', name: 'target2', visible: false},
+        {data: 'target3', name: 'target3', visible: false}
 
     ],
     initComplete: () => {
@@ -241,8 +241,8 @@ const tableOptions: DataTableOptions = {
             }
             */
             // Optimisation - since we had to cache them, may as well use the existing target meta information
-            let masteredCount = Number(form._target0) + Number(form._target1)
-                + Number(form._target2) + Number(form._target3);
+            let masteredCount = Number(form.target0) + Number(form.target1)
+                + Number(form.target2) + Number(form.target3);
 
             if (filters.value.global === 'mastered' && !masteredCount) return false;
             if (filters.value.global === 'unmastered' && masteredCount) return false;
@@ -290,14 +290,14 @@ const updateSectionDisplay = () => {
  */
 const updateTargetDisplay = () => {
     if (!dtApi) return;
-    sections.value.mastery = true; // Assuming we're showing the section if we triggered an udpate
+    sections.value.mastery = true; // Assuming we're showing the section if we triggered an update
     for (let i = 0; i < 4; i++) {
         const target = targets.value[i];
         const column = dtApi.column(`target${i}:name`);
         // Update the values for each form
         for (const form of formDatabase.value) {
             // @ts-ignore -- because I can't find the proper way to do this
-            form[`_target${i}` as keyof Form] = target?.forms ? form.name in target.forms : false;
+            form[`target${i}` as keyof Form] = target ? form.name in target.forms : null;
         }
         if (okayToShowTarget(target)) {
             column.visible(true, false);
@@ -311,7 +311,7 @@ const updateTargetDisplay = () => {
     }
     // DEBUG
     for (const form of formDatabase.value) {
-        console.log("Updated Form", form);
+        console.log(`Updated Form ${form.name}`, form);
     }
     // Update column sizes from any changes
     dtApi.columns.adjust().draw();
@@ -324,11 +324,11 @@ channel.on('formDatabase', (data: number) => {
 });
 
 channel.on('formListing', (data: Form) => {
-    data._detail = false;
-    data._target0 = false;
-    data._target1 = false;
-    data._target2 = false;
-    data._target3 = false;
+    data.detail = detailedOutput.value;
+    data.target0 = false;
+    data.target1 = false;
+    data.target2 = false;
+    data.target3 = false
     formDatabase.value.push(data);
     formsToLoadRemaining.value--;
     if (!formsToLoadRemaining.value) updateTargetDisplay();
@@ -372,7 +372,8 @@ const changeTarget = (): void => {
     if (!changeTargetName.value) return;
     targets.value[changeTargetIndex.value] = {
         name: changeTargetName.value,
-        loading: true
+        loading: true,
+        forms: {}
     }
     channel.send('getFormMasteryOf', changeTargetName.value);
 }
@@ -770,19 +771,19 @@ if (props.startingPlayerName) {
                 </template>
 
                 <template #column-target0="dt: DataTablesNamedSlotProps">
-                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target0"></i>
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).target0"></i>
                 </template>
 
                 <template #column-target1="dt: DataTablesNamedSlotProps">
-                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target1"></i>
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).target1"></i>
                 </template>
 
                 <template #column-target2="dt: DataTablesNamedSlotProps">
-                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target2"></i>
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).target2"></i>
                 </template>
 
                 <template #column-target3="dt: DataTablesNamedSlotProps">
-                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target3"></i>
+                    <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form).target3"></i>
                 </template>
 
             </Datatable>
@@ -852,8 +853,6 @@ if (props.startingPlayerName) {
 </template>
 
 <style scoped>
-    @import 'datatables.net-fixedcolumns-bs5';
-
     .form-control {
         min-width: 160px;
     }
