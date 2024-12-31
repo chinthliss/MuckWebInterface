@@ -57,8 +57,8 @@ const tableOptions: DataTableOptions = {
     scrollY: '400px',
     columns: [
         {data: 'name', name: 'name'},
-        {data: 'account', visible: false, name: 'account'},
-        {data: 'credit'},
+        {data: 'account', visible: false, name: 'account', defaultContent: ''},
+        {data: 'credit', defaultContent: ''},
         {data: 'lastEdit', render: timestampToString},
         {data: 'approved', name: 'approved'},
         {data: 'published', name: 'published'},
