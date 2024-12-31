@@ -276,7 +276,7 @@ const updateSectionDisplay = () => {
             for (let i = 0; i < 4; i++) {
                 const target = targets.value[i];
                 const column = dtApi.column(columnIndexes[i]);
-                column.visible(showColumn && okayToShowTarget(target));
+                column.visible(showColumn && okayToShowTarget(target), false);
             }
         }
     }
@@ -292,22 +292,26 @@ const updateTargetDisplay = () => {
     if (!dtApi) return;
     sections.value.mastery = true; // Assuming we're showing the section if we triggered an udpate
     for (let i = 0; i < 4; i++) {
-        let target = targets.value[i];
-        let column = dtApi.column(`target${i}:name`);
+        const target = targets.value[i];
+        const column = dtApi.column(`target${i}:name`);
+        // Update the values for each form
+        for (const form of formDatabase.value) {
+            // @ts-ignore -- because I can't find the proper way to do this
+            form[`_target${i}` as keyof Form] = target?.forms ? form.name in target.forms : false;
+        }
         if (okayToShowTarget(target)) {
             column.visible(true, false);
-            let element = column.header(1);
+            const element = column.header(1);
             for (const child of element.getElementsByClassName('dt-column-title')) {
                 child.innerHTML = target?.name || 'Unset';
-            }
-            // Update the values for each form
-            for (const form of formDatabase.value) {
-                // @ts-ignore -- because I can't find the proper way to do this
-                form[`_target${i}` as keyof Form] = target?.forms ? form.name in target.forms : false;
             }
         } else {
             column.visible(false, false);
         }
+    }
+    // DEBUG
+    for (const form of formDatabase.value) {
+        console.log("Updated Form", form);
     }
     // Update column sizes from any changes
     dtApi.columns.adjust().draw();
@@ -780,7 +784,6 @@ if (props.startingPlayerName) {
                 <template #column-target3="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center" v-if="(dt.rowData as Form)._target3"></i>
                 </template>
-
 
             </Datatable>
 
