@@ -199,7 +199,7 @@ const tableOptions: DataTableOptions = {
         {data: 'clitSize'},
         {data: 'breastCount'},
         {data: 'breastSize'},
-        {data: 'sayVerb'},
+        {data: 'sayVerb', defaultContent: ''},
         {data: 'holiday', defaultContent: ''},
         {data: 'powers', name: 'powers'},
         {data: 'lstats', name: 'lstats'},
