@@ -14,6 +14,7 @@
     <form-browser
         starting-player-name="{{ $startingPlayerName }}"
         :staff="{{ $staff ? 'true' : 'false' }}"
+        help-root="{{ route('multiplayer.help') }}"
     ></form-browser>
 @endsection
 

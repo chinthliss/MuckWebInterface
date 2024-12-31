@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
+import {DataTablesNamedSlotProps} from "../defs";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+
+DataTable.use(DataTablesLib);
 
 const logRegEx = /^\[\d{4}-\d\d-\d\d (\d\d:\d\d:\d\d)] (?:\S*)?\.(\S*): /mg;
 
@@ -22,6 +26,20 @@ let loading = ref(false);
 const renderLines = (lines: string[]): string => {
     return lines.join('\n');
 }
+
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    searching: false,
+    language: {
+        emptyTable: "No lines in log file."
+    },
+    columns: [
+        {data: 'time'},
+        {data: 'level', name: 'level'},
+        {data: 'lines', render: renderLines, className: 'text-break'}
+    ]
+};
 
 const classForLevel = (data: LogEntry):string => {
     if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) return 'text-danger';
@@ -87,22 +105,21 @@ const parseLog = (rawText: string) => {
                 <div v-else-if="!log.length">
                     Select a date to view log entries.
                 </div>
-                <DataTable v-else :value="log" stripedRows>
-                    <template #empty>No lines in log file.</template>
-                    <Column header="Time" field="time"></Column>
-                    <Column header="Level" field="level">
-                        <template #body="{ data }">
-                            <span :class="classForLevel(data)"> {{ (data as LogEntry).level }} </span>
-                        </template>
-                    </Column>
-                    <Column header="Log" field="lines">
-                        <template #body="{ data }">
-                            {{ renderLines((data as LogEntry).lines) }}
-                        </template>
-                    </Column>
+                <DataTable v-else class="table table-dark table-hover table-striped"
+                           :options="tableOptions" :data="log"
+                >
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Level</th>
+                        <th>Log</th>
+                    </tr>
+                    </thead>
+                    <template #column-level="dt: DataTablesNamedSlotProps">
+                        <span :class="classForLevel(dt.rowData)">{{ (dt.rowData as LogEntry).level }}</span>
+                    </template>
                 </DataTable>
             </div>
-
         </div>
 
     </div>

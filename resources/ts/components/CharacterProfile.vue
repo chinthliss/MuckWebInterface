@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import {Ref, ref} from 'vue';
-import {ansiToHtml, carbonToString} from "../formatting";
+import {ansiToHtml, arrayToStringWithNewlines, carbonToString} from "../formatting";
 import Spinner from "./Spinner.vue";
 import type {Character} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     characterIn: Character,
@@ -17,20 +20,20 @@ type CharacterProfile = {
     name?: string,
     alias?: string,
     level?: number,
-    sex?: string,
-    species?: string,
-    height?: string,
-    shortDescription?: string,
-    faction?: string,
-    group?: string,
-    class?: string,
-    role?: string,
-    whatIs?: string,
-    views?: any[] | null,
+    sex: string | null,
+    species: string | null,
+    height: string | null,
+    shortDescription: string | null,
+    faction: string | null,
+    group: string | null,
+    class: string | null,
+    role: string | null,
+    whatIs: string | null,
+    views: any[] | null,
     custom?: any[] | null,
     equipment?: any[] | null,
     badges?: Badge[] | null,
-    birthday: string,
+    birthday?: string,
     mailTotal?: number
     mailUnread?: number,
     laston?: string
@@ -53,6 +56,56 @@ const profile: Ref<CharacterProfile> = ref({
     equipment: null,
     badges: null
 } as CharacterProfile);
+
+const customTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No extra information configured."
+    },
+    columns: [
+        {data: 'field'},
+        {data: 'value'}
+    ]
+};
+
+const viewTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No views configured"
+    },
+    columns: [
+        {data: 'view'},
+        {data: 'content'}
+    ]
+};
+
+const equipmentTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "Nothing equipped."
+    },
+    columns: [
+        {data: 'name'},
+        {data: 'description'}
+    ]
+};
+
+const badgeTableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "No badges."
+    },
+    columns: [
+        {data: 'name'},
+        {data: 'description', render: arrayToStringWithNewlines},
+        {data: 'awarded', render: carbonToString}
+    ]
+};
+
 
 const channel = mwiWebsocket.channel('character');
 const profileLoading: Ref<boolean> = ref(true);
@@ -91,7 +144,7 @@ channel.on('badge', (data) => {
 <template>
     <div class="container">
 
-        <h1>{{ profile.name }} <span v-if="profile.alias">, aka {{profile.alias}}</span></h1>
+        <h1>{{ profile.name }} <span v-if="profile.alias">, aka {{ profile.alias }}</span></h1>
 
         <div class="d-flex flex-column flex-xl-row">
             <div class="mx-auto">
@@ -159,7 +212,9 @@ channel.on('badge', (data) => {
                     <div class="mt-2 d-flex">
                         <div>
                             <div class="label">Mail (Unread)</div>
-                            <div class="value">{{ profile.mailTotal ? profile.mailTotal + ' (' + profile.mailUnread + ')' : '--' }}</div>
+                            <div class="value">
+                                {{ profile.mailTotal ? profile.mailTotal + ' (' + profile.mailUnread + ')' : '--' }}
+                            </div>
                         </div>
                         <div class="ms-4">
                             <div class="label">Last On</div>
@@ -176,7 +231,9 @@ channel.on('badge', (data) => {
                     <!-- Short Description -->
                     <div class="mt-2">
                         <div class="label">Short Description <span class="text-muted">(+glance)</span></div>
-                        <div class="value" v-html="profile.shortDescription ? ansiToHtml(profile.shortDescription) : '--'"></div>
+                        <div class="value"
+                             v-html="profile.shortDescription ? ansiToHtml(profile.shortDescription) : '--'"
+                        ></div>
                     </div>
 
                     <!-- WhatIs -->
@@ -191,44 +248,58 @@ channel.on('badge', (data) => {
         <template v-if="!profileLoading">
             <!-- Custom -->
             <h3 class="mt-2">Custom Information <span class="text-muted">(profile)</span></h3>
-            <DataTable :value="profile.custom" stripedRows>
-                <template #empty>No extra information configured.</template>
-                <Column header="Field" field="field" sortable></Column>
-                <Column header="Value" field="value"></Column>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="customTableOptions" :data="profile.custom"
+            >
+                <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+
             </DataTable>
 
             <!-- Views -->
             <h3 class="mt-2">Views <span class="text-muted">(+view)</span></h3>
-            <DataTable :value="profile.views" stripedRows>
-                <template #empty>No views configured.</template>
-                <Column header="View" field="view" sortable></Column>
-                <Column header="Content" field="content"></Column>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="viewTableOptions" :data="profile.views"
+            >
+                <thead>
+                <tr>
+                    <th>View</th>
+                    <th>Content</th>
+                </tr>
+                </thead>
             </DataTable>
 
             <!-- Equipment -->
             <h3 class="mt-2">Equipment <span class="text-muted">(+equip)</span></h3>
-            <DataTable :value="profile.equipment" striedRows>
-                <template #empty>Nothing equipped.</template>
-                <Column header="Name" field="name" sortable></Column>
-                <Column header="Description" field="description"></Column>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="equipmentTableOptions" :data="profile.equipment"
+            >
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
             </DataTable>
 
             <!-- Badges -->
             <h3 class="mt-2">Badges <span class="text-muted">(+badge)</span></h3>
-            <DataTable :value="profile.badges" stripedRows>
-                <template #empty>No badges.</template>
-                <Column header="Badge" field="name" sortable></Column>
-                <Column header="Description" field="description">
-                    <template #body="{ data }">
-                        {{ (data as Badge).description.join('\n') }}
-                    </template>
-                </Column>
-                <Column header="Awarded" field="awarded" sortable>
-                    <template #body="{ data }">
-                        {{ carbonToString((data as Badge).awarded) }}
-                    </template>
-                </Column>
+            <DataTable class="table table-dark table-hover table-striped"
+                       :options="badgeTableOptions" :data="profile.badges"
+            >
+                <thead>
+                <tr>
+                    <th>Badge</th>
+                    <th>Description</th>
+                    <th>Awarded</th>
+                </tr>
+                </thead>
             </DataTable>
+
         </template>
 
     </div>

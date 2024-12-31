@@ -44,8 +44,16 @@ export const capital = (text: string | null | undefined): string => {
  * Joins an array of strings into one string
  */
 export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): string => {
-    if (!arrayToParse.length) return emptyWord;
+    if (!arrayToParse?.length) return emptyWord;
     return arrayToParse.join(', ');
+};
+
+/**
+ * Joins an array of strings into one string with newlines
+ */
+export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
+    if (!arrayToParse?.length) return emptyWord;
+    return arrayToParse.join('\n');
 };
 
 /**

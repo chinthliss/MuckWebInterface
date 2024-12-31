@@ -1,9 +1,11 @@
 <script setup lang="ts">
 
 import {Ref, ref} from 'vue';
-import {AccountCard} from "../defs";
-import DataTable from 'primevue/datatable';
-import Column from "primevue/column";
+import {AccountCard, DataTablesNamedSlotProps} from "../defs";
+
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     profileId: string,
@@ -23,6 +25,20 @@ const cardNumber: Ref<string> = ref('');
 const expiryDate: Ref<string> = ref('');
 const securityCode: Ref<string> = ref('');
 const pendingRequest: Ref<boolean> = ref(false);
+
+const tableOptions: DataTableOptions = {
+    info: false,
+    paging: false,
+    language: {
+        emptyTable: "You have no cards registered."
+    },
+    columns: [
+        {data: 'cardType'},
+        {data: 'maskedCardNumber'},
+        {data: 'expiryDate'},
+        {data: null, name:'controls', orderable: false}
+    ]
+};
 
 const addCard = (event: Event) => {
     event.preventDefault();
@@ -91,26 +107,27 @@ const setCardAsDefault = (card: AccountCard) => {
 
         <h1>Card Management</h1>
 
-        <DataTable :value="cards" stripedRows>
-            <template #empty>You have no cards registered.</template>
-            <Column header="Type" field="cardType"></Column>
-            <Column header="Ends With" field="maskedCardNumber"></Column>
-            <Column header="Expiry" field="expiryDate"></Column>
-            <Column>
-                <template #body="{ data }">
-                    <button class="btn btn-secondary ms-2"
-                            @click="deleteCard(data as AccountCard)">
-                        <i class="fas fa-trash btn-icon-left"></i>Delete
-                    </button>
-                    <button v-if="!(data as AccountCard).isDefault"
-                            class="btn btn-secondary ms-2"
-                            @click="setCardAsDefault(data as AccountCard)"
-                    >
-                        <i class="fas fa-check btn-icon-left"></i>Make Default
-                    </button>
-                </template>
-
-            </Column>
+        <DataTable class="table table-dark table-hover table-striped" :options="tableOptions" :data="cards">
+            <thead>
+            <tr>
+                <th>Card Type</th>
+                <th>Ends With</th>
+                <th>Expiry</th>
+                <th></th>
+            </tr>
+            </thead>
+            <template #column-controls="dt: DataTablesNamedSlotProps">
+                <button class="btn btn-secondary ms-2"
+                        @click="deleteCard(dt.rowData as AccountCard)">
+                    <i class="fas fa-trash btn-icon-left"></i>Delete
+                </button>
+                <button v-if="!(dt.rowData as AccountCard).isDefault"
+                        class="btn btn-secondary ms-2"
+                        @click="setCardAsDefault(dt.rowData as AccountCard)"
+                >
+                    <i class="fas fa-check btn-icon-left"></i>Make Default
+                </button>
+            </template>
         </DataTable>
 
 
