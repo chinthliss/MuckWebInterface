@@ -1,5 +1,4 @@
 <script setup lang="ts">
-//TODO: Sticky first column
 //TODO: Toggle column ranges
 
 import {ref, Ref, computed} from "vue";
@@ -16,7 +15,8 @@ DataTable.use(DataTablesLib);
 
 const props = defineProps<{
     startingPlayerName?: string,
-    staff?: boolean
+    staff?: boolean,
+    helpRoot?: string
 }>();
 
 type Form = {
@@ -382,13 +382,19 @@ if (props.startingPlayerName) {
 
         <h1>Form Browser<span v-if="props.staff"> (Staff Mode)</span></h1>
 
-        <p class="lead">This is presently a root page and should have some introductory text here for new users that
-            might click on
-            it. Something about forms being a key part of the game?</p>
-
-        <p>By default this page will show forms you've mastered. You can use the controls below to change this and even
-            to add additional people to view, if they've given you permission to do so. If more then one
-            person is set as a target, additional columns will also appear to compare form mastery.</p>
+        <p class="lead">
+            This page is for seeing which forms are in the game,
+            as well as which ones you have or have not mastered yet.
+        </p>
+        <p>
+            Forms can also be called infections, mutations or nanite strains depending upon context.
+            They're an integral part of the game in that they represent the starting point for what you can become
+            and host the powers you can obtain.
+        </p>
+        <p v-if="props.helpRoot">
+            For more information see the help file
+            '<a :href="props.helpRoot + '/Theme/Infection'">+help Theme/Infections</a>'.
+        </p>
 
         <Progress v-if="loading" id="form-list-progress-bar"
                   :percentage="loadingPercentage"
@@ -430,45 +436,6 @@ if (props.startingPlayerName) {
                     <label class="btn btn-outline-secondary" for="detail_on">Detail by part</label>
                 </div>
             </div>
-            <!-- Target rows -->
-            <template v-for="(target, index) in targets">
-                <div v-if="index <= highestUsedTargetIndex() + 1" class="d-lg-flex align-items-center mb-2">
-                    <div class="flex-grow-1">
-                        <span class="text-primary">Target {{ index + 1 }}: </span>
-                        <template v-if="target">
-                            {{ target.name }}
-                        </template>
-                        <template v-else>
-                            No Target Selected
-                        </template>
-
-                    </div>
-
-                    <div>
-                        <div v-if="target?.loading" class="me-2">
-                            <spinner></spinner>
-                        </div>
-                        <div v-if="target?.error" class="me-2 text-danger">
-                            Can't display: {{ target.error }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <button class="btn btn-primary me-lg-2" @click="launchChangeTarget(index)">
-                            <i class="fas fa-search btn-icon-left"></i>Select Target
-                        </button>
-
-                        <button class="btn btn-primary me-lg-2" @click="clearTarget(index)"
-                                :disabled="!target || !index"
-                        >
-                            <i class="fas fa-close btn-icon-left"></i>Clear Target
-                        </button>
-                    </div>
-
-                </div>
-            </template>
-
-            <hr>
 
             <DataTable id="table" class="table table-dark table-hover table-striped"
                        :options="tableOptions" :data="formDatabase"
@@ -723,6 +690,51 @@ if (props.startingPlayerName) {
                 <div>{{ unknownForms }}</div>
                 <div>(This might just mean the form hasn't been released yet.)</div>
             </div>
+
+            <!-- Target rows -->
+            <hr>
+            <h2>Targets</h2>
+            <p>
+                By default this page will show your mastered/unmastered forms.
+                Here you can change that, as well as set up to 4 targets to compare.
+            </p>
+            <p v-if="!props.staff">You need to have permission to see each target's form list in order for this to work.</p>
+            <template v-for="(target, index) in targets">
+                <div v-if="index <= highestUsedTargetIndex() + 1" class="d-lg-flex align-items-center mb-2">
+                    <div class="flex-grow-1">
+                        <span class="text-primary">Target {{ index + 1 }}: </span>
+                        <template v-if="target">
+                            {{ target.name }}
+                        </template>
+                        <template v-else>
+                            No Target Selected
+                        </template>
+
+                    </div>
+
+                    <div>
+                        <div v-if="target?.loading" class="me-2">
+                            <spinner></spinner>
+                        </div>
+                        <div v-if="target?.error" class="me-2 text-danger">
+                            Can't display: {{ target.error }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="btn btn-primary me-lg-2" @click="launchChangeTarget(index)">
+                            <i class="fas fa-search btn-icon-left"></i>Select Target
+                        </button>
+
+                        <button class="btn btn-primary me-lg-2" @click="clearTarget(index)"
+                                :disabled="!target || !index"
+                        >
+                            <i class="fas fa-close btn-icon-left"></i>Clear Target
+                        </button>
+                    </div>
+
+                </div>
+            </template>
 
         </div>
     </div>
