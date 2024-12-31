@@ -1,6 +1,5 @@
 <script setup lang="ts">
 //TODO: tags/flags/powers Filters
-//TODO: Mode filter
 //TODO: Sticky first column
 //TODO: Toggle column ranges
 
@@ -128,7 +127,7 @@ const updateFilterForPowers = () => {
 
 const updateFilterForMode = () => {
     if (dtApi) {
-        // TBC
+        dtApi.draw();
     }
 }
 
@@ -167,7 +166,6 @@ const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | un
 }
 
 const tableOptions: DataTableOptions = {
-    info: false,
     paging: false,
     layout: {
         topEnd: null
@@ -224,6 +222,30 @@ const tableOptions: DataTableOptions = {
     ],
     initComplete: () => {
         dtApi = new DataTablesLib.Api('table');
+        dtApi.search.fixed('mode', (_searchString: string, form: Form) => {
+            // Since we have up to 4 compare targets, we need to figure out if any of them have the form
+            /*
+            let masteredCount = 0;
+            for (const target of targets.value) {
+                if (target && target.forms && target.forms[form.name]) masteredCount++;
+            }
+            */
+            // Optimisation - since we had to cache them, may as well use the existing target meta information
+            let masteredCount = Number(form._target0) + Number(form._target1)
+                + Number(form._target2) + Number(form._target3);
+
+            if (filters.value.global === 'mastered' && !masteredCount) return false;
+            if (filters.value.global === 'unmastered' && masteredCount) return false;
+
+            if (!props.staff) {
+                if (form.staffonly) return false;
+                // Only show private forms that are present
+                if (form.private && !masteredCount) return false;
+            }
+
+            return true;
+        })
+
     }
 };
 
