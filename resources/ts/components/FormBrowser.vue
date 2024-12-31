@@ -98,7 +98,7 @@ const filters = ref({
 
 const sections = ref({
     parts: false,
-    extra: true,
+    extra: false,
     supports: false,
     restrictions: false,
     staff: props.staff,
@@ -599,18 +599,6 @@ if (props.startingPlayerName) {
                     </th>
                     <th data-dt-order="disable"></th>
                     <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
                     <th data-dt-order="disable">
                         <input type="text" v-model="filters.tags" @input="updateFilterForTags"
                                class="form-control" placeholder="Search by Tag"
@@ -621,6 +609,18 @@ if (props.startingPlayerName) {
                                class="form-control" placeholder="Search by Flag"
                         />
                     </th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
+                    <th data-dt-order="disable"></th>
                     <th data-dt-order="disable">
                         <input type="text" v-model="filters.powers" @input="updateFilterForPowers"
                                class="form-control" placeholder="Search by Power"
@@ -852,6 +852,6 @@ if (props.startingPlayerName) {
     @import 'datatables.net-fixedcolumns-bs5';
 
     .form-control {
-        min-width: 180px;
+        min-width: 160px;
     }
 </style>
