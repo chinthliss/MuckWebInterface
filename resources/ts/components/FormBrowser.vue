@@ -309,10 +309,6 @@ const updateTargetDisplay = () => {
             column.visible(false, false);
         }
     }
-    // DEBUG
-    for (const form of formDatabase.value) {
-        console.log(`Updated Form ${form.name}`, form);
-    }
     // Update column sizes from any changes
     dtApi.columns.adjust().draw();
 };
