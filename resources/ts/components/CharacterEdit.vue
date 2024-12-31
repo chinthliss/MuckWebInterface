@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
 import {ref, Ref} from "vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
 import {characterDbref} from "../siteutils";
 import ModalConfirmation from "./ModalConfirmation.vue";
 
@@ -100,23 +98,33 @@ channel.send('bootCharacterEdit', dbref);
         <h4>Custom Fields</h4>
         <p>These are shown on the character's profile and allow you to set any details you want, e.g. history, rumours,
             common knowledge, player availability, etc.</p>
-        <DataTable :value="customFields" stripedRows>
-            <template #empty>No custom fields configured.</template>
-            <Column header="Field" field="field" sortable></Column>
-            <Column header="Value" field="value"></Column>
-            <Column>
-                <template #body="{ data }">
+        <table v-if="customFields.length" class="table table-dark table-hover table-striped table-responsive">
+            <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Value</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="field in customFields">
+                <td>{{ field.field }}</td>
+                <td>{{ field.value }}</td>
+                <td>
                     <button class="btn btn-primary"
-                            @click="startEditingCustomField(data)"
+                            @click="startEditingCustomField(field)"
                     >Edit
                     </button>
                     <button class="btn btn-secondary ms-2"
-                            @click="deleteCustomField(data)"
+                            @click="deleteCustomField(field)"
                     >Delete
                     </button>
-                </template>
-            </Column>
-        </DataTable>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div v-else><p>You haven't yet configured any custom fields.</p></div>
+
         <div class="float-end mt-2">
             <button class="btn btn-primary" @click="startAddingCustomField()">Create New Field</button>
         </div>
