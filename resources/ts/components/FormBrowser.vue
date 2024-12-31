@@ -1,5 +1,4 @@
 <script setup lang="ts">
-//TODO: Toggle column ranges
 
 import {ref, Ref, computed} from "vue";
 import Progress from "./Progress.vue";
@@ -97,6 +96,15 @@ const filters = ref({
     global: 'mastered'
 });
 
+const sections = ref({
+    parts: false,
+    extra: true,
+    supports: false,
+    restrictions: false,
+    staff: props.staff,
+    mastery: true
+});
+
 const updateFilterOnColumn = (columnName: string, filter: string) => {
     if (dtApi) {
         let column = dtApi.columns(`${columnName}:name`);
@@ -148,6 +156,18 @@ const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | un
     return result.join(', ');
 }
 
+/**
+ * Start and stop indexes for which columns to show/hide per section
+ */
+const sectionConfiguration = {
+    parts: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+    extra: [15, 16, 17],
+    supports: [18, 19, 20, 21, 22, 23, 24],
+    restrictions: [25, 26, 27, 28, 29, 30, 31, 32],
+    staff: [33, 34, 35, 36],
+    mastery: [37, 38, 39, 40]
+}
+
 const tableOptions: DataTableOptions = {
     paging: false,
     fixedColumns: {
@@ -162,9 +182,13 @@ const tableOptions: DataTableOptions = {
     scrollY: '400px',
     scrollX: true,
     columns: [
+        // Core
         {data: 'name', name: 'name'},
         {data: 'gender', name: 'gender'},
         {data: 'size', defaultContent: ''},
+        {data: 'tags', name: 'tags', render: renderList},
+        {data: 'flags', name: 'flags'},
+        // Parts
         {data: 'cockCount'},
         {data: 'cockSize'},
         {data: 'ballCount'},
@@ -177,8 +201,6 @@ const tableOptions: DataTableOptions = {
         {data: 'breastSize'},
         {data: 'sayVerb'},
         {data: 'holiday', defaultContent: ''},
-        {data: 'tags', name: 'tags', render: renderList},
-        {data: 'flags', name: 'flags'},
         {data: 'powers', name: 'powers'},
         {data: 'lstats', name: 'lstats'},
         {data: 'kemo', name: 'kemo'},
@@ -209,6 +231,7 @@ const tableOptions: DataTableOptions = {
     ],
     initComplete: () => {
         dtApi = new DataTablesLib.Api('table');
+        updateSectionDisplay();
         dtApi.search.fixed('mode', (_searchString: string, form: Form) => {
             // Since we have up to 4 compare targets, we need to figure out if any of them have the form
             /*
@@ -236,23 +259,51 @@ const tableOptions: DataTableOptions = {
     }
 };
 
+const okayToShowTarget = (target: Target | null): boolean => {
+    return (target !== null && !target.loading && !target.error);
+}
+
+const updateSectionDisplay = () => {
+    if (!dtApi) return;
+    for (const section in sections.value) {
+        const showColumn = sections.value[section as keyof typeof sections.value];
+        const columnIndexes = sectionConfiguration[section as keyof typeof sectionConfiguration];
+        if (section !== 'mastery') {
+            // Simply toggle all columns
+            dtApi.columns(columnIndexes).visible(showColumn);
+        } else {
+            // These four all only show if on AND they have a target, so we have to set by column
+            for (let i = 0; i < 4; i++) {
+                const target = targets.value[i];
+                const column = dtApi.column(columnIndexes[i]);
+                column.visible(showColumn && okayToShowTarget(target));
+            }
+        }
+    }
+    // Update column sizes from any changes
+    dtApi.columns.adjust().draw();
+
+}
+
 /**
  * Updates the cached target fields on each form and column visibility
  */
 const updateTargetDisplay = () => {
     if (!dtApi) return;
+    sections.value.mastery = true; // Assuming we're showing the section if we triggered an udpate
     for (let i = 0; i < 4; i++) {
         let target = targets.value[i];
-        let column = dtApi.columns(`target${i}:name`);
-        if (target && !target.loading && !target.error) {
+        let column = dtApi.column(`target${i}:name`);
+        if (okayToShowTarget(target)) {
             column.visible(true, false);
-            // This is ugly but need to use JQuery to update the header text
-            let element = column.header(0).to$();
-            element.children('.dt-column-title').text(target.name || 'Unset');
+            let element = column.header(1);
+            for (const child of element.getElementsByClassName('dt-column-title')) {
+                child.innerHTML = target?.name || 'Unset';
+            }
             // Update the values for each form
             for (const form of formDatabase.value) {
                 // @ts-ignore -- because I can't find the proper way to do this
-                form[`_target${i}`] = form.name in target.forms;
+                form[`_target${i}` as keyof Form] = target?.forms ? form.name in target.forms : false;
             }
         } else {
             column.visible(false, false);
@@ -401,11 +452,49 @@ if (props.startingPlayerName) {
                   alt="Form list loading progress"
         ></Progress>
         <div v-else>
+            <!-- Section selector -->
+            <div class="d-lg-flex align-items-center justify-content-center mb-3">
+                <div class="me-2 text-primary">Toggle Sections:</div>
+                <div class="btn-group" role="group" aria-label="Toggle buttons for sections to display">
+                    <input type="checkbox" class="btn-check" id="section_parts" autocomplete="off"
+                           v-model="sections.parts" :value="true" @change="updateSectionDisplay"
+                    >
+                    <label class="btn btn-outline-primary" for="section_parts">Part Counts and Sizes</label>
 
-            <!-- Mode and detail selector -->
-            <div class="d-lg-flex align-items-center justify-content-center mb-4">
+                    <input type="checkbox" class="btn-check" id="section_extra" autocomplete="off"
+                           v-model="sections.extra" :value="true" @change="updateSectionDisplay"
+                    >
+                    <label class="btn btn-outline-primary" for="section_extra">Extra Information</label>
+
+                    <input type="checkbox" class="btn-check" id="section_supports" autocomplete="off"
+                           v-model="sections.supports" :value="true" @change="updateSectionDisplay"
+                    >
+                    <label class="btn btn-outline-primary" for="section_supports">Supports</label>
+
+                    <input type="checkbox" class="btn-check" id="section_restrictions" autocomplete="off"
+                           v-model="sections.restrictions" :value="true" @change="updateSectionDisplay"
+                    >
+                    <label class="btn btn-outline-primary" for="section_restrictions">Restrictions</label>
+
+                    <template v-if="props.staff">
+                        <input type="checkbox" class="btn-check" id="section_staff" autocomplete="off"
+                               v-model="sections.staff" :value="true" @change="updateSectionDisplay"
+                        >
+                        <label class="btn btn-outline-primary" for="section_staff">Staff</label>
+                    </template>
+
+                    <input type="checkbox" class="btn-check" id="section_mastery" autocomplete="off"
+                           v-model="sections.mastery" :value="true" @change="updateSectionDisplay"
+                    >
+                    <label class="btn btn-outline-primary" for="section_mastery">Mastery</label>
+
+                </div>
+            </div>
+
+            <!-- Mode and detail level selector -->
+            <div class="d-lg-flex align-items-center justify-content-center mb-3">
                 <div class="me-2 text-primary">Mode:</div>
-                <div class="me-4 btn-group" role="group" aria-label="Filter mode">
+                <div class="me-4 btn-group" role="group" aria-label="Filter mode buttons">
                     <input type="radio" class="btn-check" name="filter" id="filter_mastered" autocomplete="off"
                            v-model="filters.global" value="mastered" @change="updateFilterForMode"
                     >
@@ -424,7 +513,7 @@ if (props.startingPlayerName) {
                 </div>
 
                 <div class="me-2 text-primary">Detail:</div>
-                <div class="btn-group" role="group" aria-label="Detail mode">
+                <div class="btn-group" role="group" aria-label="Detail mode buttons">
                     <input type="radio" class="btn-check" name="detail" id="detail_off" autocomplete="off"
                            v-model="detailedOutput" :value="false" @change="changeDetailMode"
                     >
@@ -442,9 +531,21 @@ if (props.startingPlayerName) {
             >
                 <thead>
                 <tr>
+                    <th colspan="1" data-dt-order="disable"></th> <!-- Sticky column needs to be separate -->
+                    <th colspan="4" data-dt-order="disable" class="text-muted">Core</th>
+                    <th colspan="10" data-dt-order="disable" class="text-muted">Part Counts and Size</th>
+                    <th colspan="3" data-dt-order="disable" class="text-muted">Extra Information</th>
+                    <th colspan="7" data-dt-order="disable" class="text-muted">Supports</th>
+                    <th colspan="8" data-dt-order="disable" class="text-muted">Restrictions</th>
+                    <th colspan="4" data-dt-order="disable" class="text-muted">Staff</th>
+                    <th colspan="4" data-dt-order="disable" class="text-muted">Mastery</th>
+                </tr>
+                <tr>
                     <th>Form</th>
                     <th>Gender</th>
                     <th>Size</th>
+                    <th>Tags</th>
+                    <th>Flags</th>
 
                     <th>Cock Count</th>
                     <th>Cock Size</th>
@@ -459,8 +560,6 @@ if (props.startingPlayerName) {
 
                     <th>Say Verb</th>
                     <th>Holiday</th>
-                    <th>Tags</th>
-                    <th>Flags</th>
                     <th>Powers</th>
 
                     <th>Local Stats</th>
@@ -475,7 +574,7 @@ if (props.startingPlayerName) {
                     <th>Can't Master</th>
                     <th>Can't Funnel</th>
                     <th>Can't Zap</th>
-                    <th>Can't be Native</th>
+                    <th>Can't Nativize</th>
                     <th>Can't Extract</th>
                     <th>Not Rewarded</th>
                     <th>Bypass Immunity</th>
@@ -486,10 +585,10 @@ if (props.startingPlayerName) {
                     <th>Special Note</th>
 
                     <!-- Target names. These are set dynamically -->
-                    <th>?</th>
-                    <th>?</th>
-                    <th>?</th>
-                    <th>?</th>
+                    <th>Pending</th>
+                    <th>Pending</th>
+                    <th>Pending</th>
+                    <th>Pending</th>
                 </tr>
                 <!-- Second header row is to host search boxes and is mostly blank -->
                 <tr>
@@ -697,6 +796,7 @@ if (props.startingPlayerName) {
             <p>
                 By default this page will show your mastered/unmastered forms.
                 Here you can change that, as well as set up to 4 targets to compare.
+                Mastery for each target shows as the last columns on the table.
             </p>
             <p v-if="!props.staff">You need to have permission to see each target's form list in order for this to work.</p>
             <template v-for="(target, index) in targets">
