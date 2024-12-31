@@ -10,6 +10,7 @@ import ModalConfirmation from "./ModalConfirmation.vue";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
+import 'datatables.net-fixedcolumns-bs5';
 import {DataTablesNamedSlotProps} from "../defs";
 DataTable.use(DataTablesLib);
 
@@ -149,6 +150,9 @@ const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | un
 
 const tableOptions: DataTableOptions = {
     paging: false,
+    fixedColumns: {
+        start: 1
+    },
     layout: {
         topEnd: null
     },
@@ -156,6 +160,7 @@ const tableOptions: DataTableOptions = {
         emptyTable: "No forms to view."
     },
     scrollY: '400px',
+    scrollX: true,
     columns: [
         {data: 'name', name: 'name'},
         {data: 'gender', name: 'gender'},
@@ -514,10 +519,10 @@ if (props.startingPlayerName) {
                     <th>Special Note</th>
 
                     <!-- Target names. These are set dynamically -->
-                    <th>??</th>
-                    <th>??</th>
-                    <th>??</th>
-                    <th>??</th>
+                    <th>?</th>
+                    <th>?</th>
+                    <th>?</th>
+                    <th>?</th>
                 </tr>
                 <!-- Second header row is to host search boxes and is mostly blank -->
                 <tr>
@@ -574,10 +579,8 @@ if (props.startingPlayerName) {
                     <th data-dt-order="disable"></th>
                     <th data-dt-order="disable"></th>
                     <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable"></th>
+
+                    <th colspan="4" data-dt-order="disable"></th>
                 </tr>
                 </thead>
 
@@ -734,6 +737,8 @@ if (props.startingPlayerName) {
 </template>
 
 <style scoped>
+    @import 'datatables.net-fixedcolumns-bs5';
+
     .form-control {
         min-width: 180px;
     }
