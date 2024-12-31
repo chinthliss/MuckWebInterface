@@ -1,5 +1,4 @@
 <script setup lang="ts">
-//TODO: tags/flags/powers Filters
 //TODO: Sticky first column
 //TODO: Toggle column ranges
 
@@ -97,33 +96,16 @@ const filters = ref({
     global: 'mastered'
 });
 
-const updateFilterForName = () => {
+const updateFilterOnColumn = (columnName: string, filter: string) => {
     if (dtApi) {
-        let nameColumn = dtApi.columns('name:name');
-        nameColumn.search(filters.value.name).draw();
+        let column = dtApi.columns(`${columnName}:name`);
+        column.search(filter).draw();
     }
 }
-
-const updateFilterForTags = () => {
-    if (dtApi) {
-        let nameColumn = dtApi.columns('tags:name');
-        nameColumn.search(filters.value.name).draw();
-    }
-}
-
-const updateFilterForFlags = () => {
-    if (dtApi) {
-        let nameColumn = dtApi.columns('flags:name');
-        nameColumn.search(filters.value.name).draw();
-    }
-}
-
-const updateFilterForPowers = () => {
-    if (dtApi) {
-        let nameColumn = dtApi.columns('powers:name');
-        nameColumn.search(filters.value.name).draw();
-    }
-}
+const updateFilterForName = () => updateFilterOnColumn('name', filters.value.name);
+const updateFilterForTags = () => updateFilterOnColumn('tags', filters.value.tags);
+const updateFilterForFlags = () => updateFilterOnColumn('flags', filters.value.flags)
+const updateFilterForPowers = () => updateFilterOnColumn('powers', filters.value.powers)
 
 const updateFilterForMode = () => {
     if (dtApi) {
