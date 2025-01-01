@@ -445,7 +445,7 @@ if (props.startingPlayerName) {
         </p>
         <p v-if="props.helpRoot">
             For more information see the help file
-            '<a :href="props.helpRoot + '/Theme/Infection'">+help Theme/Infections</a>'.
+            '<a :href="props.helpRoot + '/Theme/Infections'">+help Theme/Infections</a>'.
         </p>
 
         <Progress v-if="loading" id="form-list-progress-bar"
