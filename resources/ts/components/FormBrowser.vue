@@ -985,4 +985,8 @@ if (props.startingPlayerName) {
 .form-control {
     min-width: 140px;
 }
+/* Lazy fix to prevent the 'Edit' buttons getting too small */
+.btn {
+    min-width: 74px;
+}
 </style>
