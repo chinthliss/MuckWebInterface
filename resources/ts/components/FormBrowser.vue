@@ -388,9 +388,10 @@ channel.on('formListing', (data: Form) => {
 
     if (data.tags) { // Tags are a list
         for (const tag of data.tags) {
-            if (tags.value.findIndex(x => x.id == tag) == -1) {
+            const id = tag.toLowerCase();
+            if (tags.value.findIndex(x => x.id == id) == -1) {
                 tags.value.push({
-                    id: tag.toLowerCase(),
+                    id: id,
                     label: capital(tag),
                     enabled: false
                 });
@@ -401,9 +402,10 @@ channel.on('formListing', (data: Form) => {
     if (data.flags) { // Flags are a dict of which body part has then, so use the indexes
         for (const bodypart in data.flags) {
             for (const flag of data.flags[bodypart]) {
-                if (flags.value.findIndex(x => x.id == flag) == -1) {
+                const id = flag.toLowerCase();
+                if (flags.value.findIndex(x => x.id == id) == -1) {
                     flags.value.push({
-                        id: flag.toLowerCase(),
+                        id: id,
                         label: capital(flag),
                         enabled: false
                     });
