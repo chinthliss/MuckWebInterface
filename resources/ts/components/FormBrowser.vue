@@ -41,10 +41,10 @@ type Form = {
     flags: { [bodyPart: string]: string[] } // List of flags by bodypart
     powers: { [bodyPart: string]: string[] } // List of powers by bodypart
     powersBonus: { [requirement: string]: string[] } // List of powers by requirement (setN)
-    kemo: string[], // List of bodyparts that support it
-    chubby: string[], // List of bodyparts that support it
-    color: string[], // List of bodyparts that support it
-    dividers: string[],
+    kemo?: string[], // List of bodyparts that support it
+    chubby?: string[], // List of bodyparts that support it
+    color?: string[], // List of bodyparts that support it
+    dividers?: string[],
     noMastering?: number,
     noFunnel?: number,
     noReward?: number,
@@ -833,19 +833,19 @@ if (props.startingPlayerName) {
 
                 <template #column-arm-divider="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center"
-                       v-if="(dt.rowData as Form).dividers?.indexOf('arm') >= 0"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('arm') || 0 >= 0"
                     ></i>
                 </template>
 
                 <template #column-leg-divider="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center"
-                       v-if="(dt.rowData as Form).dividers?.indexOf('leg') >= 0"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('leg') || 0 >= 0"
                     ></i>
                 </template>
 
                 <template #column-tail-divider="dt: DataTablesNamedSlotProps">
                     <i class="fa-solid fa-check w-100 text-center"
-                       v-if="(dt.rowData as Form).dividers?.indexOf('tail') >= 0"
+                       v-if="(dt.rowData as Form).dividers?.indexOf('tail') || 0 >= 0"
                     ></i>
                 </template>
 
