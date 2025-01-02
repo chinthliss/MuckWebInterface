@@ -295,7 +295,11 @@ const tableOptions: DataTableOptions = {
         dtApi.column('tags:name').search.fixed('tags', (_searchString: string, form: Form) => {
             for (const tag of tags.value) {
                 if (!tag.enabled) continue;
-                if (!form.tags.includes(tag.id)) return false;
+                let found: boolean = false;
+                for (const possibleTag of form.tags) {
+                    if (possibleTag.toLowerCase() == tag.id) found = true;
+                }
+                if (!found) return false;
             }
             return true;
         });
@@ -306,7 +310,9 @@ const tableOptions: DataTableOptions = {
                 if (!flag.enabled) continue;
                 let found = false;
                 for (const bodypart in form.flags) {
-                    if (form.flags[bodypart].includes(flag.id)) found = true;
+                    for (const possibleFlag of form.flags[bodypart]) {
+                        if (possibleFlag.toLowerCase() == flag.id) found = true;
+                    }
                 }
                 if (!found) return false;
             }
