@@ -96,14 +96,40 @@ const filters = ref({
     global: 'mastered'
 });
 
-const sections = ref({
-    parts: false,
-    extra: false,
-    supports: false,
-    restrictions: false,
-    staff: props.staff,
-    mastery: true
-});
+type Section = {
+    id: string,
+    label: string,
+    enabled: boolean,
+    staffOnly: boolean,
+    columnIndexes: number[]
+}
+
+const sections: Ref<Section[]> = ref([
+    {
+        id: 'parts', label: 'Part Counts and Sizes', enabled: false, staffOnly: false,
+        columnIndexes: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    },
+    {
+        id: 'extra', label: 'Extra Information', enabled: false, staffOnly: false,
+        columnIndexes: [15, 16, 17]
+    },
+    {
+        id: 'supports', label: 'Supports', enabled: false, staffOnly: false,
+        columnIndexes: [18, 19, 20, 21, 22, 23, 24]
+    },
+    {
+        id: 'restrictions', label: 'Restrictions', enabled: false, staffOnly: false,
+        columnIndexes: [25, 26, 27, 28, 29, 30, 31, 32]
+    },
+    {
+        id: 'staff', label: 'Staff', enabled: false, staffOnly: true,
+        columnIndexes: [33, 34, 35, 36]
+    },
+    {
+        id: 'mastery', label: 'Mastery', enabled: false, staffOnly: false,
+        columnIndexes: [37, 38, 39, 40]
+    },
+]);
 
 const updateFilterOnColumn = (columnName: string, filter: string) => {
     if (dtApi) {
@@ -154,18 +180,6 @@ const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | un
         if (result.indexOf(key) == -1) result.push(key);
     }
     return result.join(', ');
-}
-
-/**
- * Start and stop indexes for which columns to show/hide per section
- */
-const sectionConfiguration = {
-    parts: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-    extra: [15, 16, 17],
-    supports: [18, 19, 20, 21, 22, 23, 24],
-    restrictions: [25, 26, 27, 28, 29, 30, 31, 32],
-    staff: [33, 34, 35, 36],
-    mastery: [37, 38, 39, 40]
 }
 
 const tableOptions: DataTableOptions = {
@@ -265,18 +279,16 @@ const okayToShowTarget = (target: Target | null): boolean => {
 
 const updateSectionDisplay = () => {
     if (!dtApi) return;
-    for (const section in sections.value) {
-        const showColumn = sections.value[section as keyof typeof sections.value];
-        const columnIndexes = sectionConfiguration[section as keyof typeof sectionConfiguration];
-        if (section !== 'mastery') {
+    for (const section of sections.value) {
+        if (section.id !== 'mastery') {
             // Simply toggle all columns
-            dtApi.columns(columnIndexes).visible(showColumn);
+            dtApi.columns(section.columnIndexes).visible(section.enabled);
         } else {
             // These four all only show if on AND they have a target, so we have to set by column
             for (let i = 0; i < 4; i++) {
                 const target = targets.value[i];
-                const column = dtApi.column(columnIndexes[i]);
-                column.visible(showColumn && okayToShowTarget(target), false);
+                const column = dtApi.column(section.columnIndexes[i]);
+                column.visible(section.enabled && okayToShowTarget(target), false);
             }
         }
     }
@@ -290,7 +302,10 @@ const updateSectionDisplay = () => {
  */
 const updateTargetDisplay = () => {
     if (!dtApi) return;
-    sections.value.mastery = true; // Assuming we're showing the section if we triggered an update
+    // Make sure the mastery section is enabled - if we set a target we probably want to see it.
+    for (const section of sections.value) {
+        if (section.id == 'mastery') section.enabled = true;
+    }
     for (let i = 0; i < 4; i++) {
         const target = targets.value[i];
         const column = dtApi.column(`target${i}:name`);
@@ -455,41 +470,20 @@ if (props.startingPlayerName) {
         ></Progress>
         <div v-else>
             <!-- Section selector -->
-            <div class="d-lg-flex align-items-center justify-content-center mb-3">
+            <div class="d-flex align-items-center mb-3">
+
                 <div class="me-2 text-primary">Toggle Sections:</div>
-                <div class="btn-group" role="group" aria-label="Toggle buttons for sections to display">
-                    <input type="checkbox" class="btn-check" id="section_parts" autocomplete="off"
-                           v-model="sections.parts" :value="true" @change="updateSectionDisplay"
-                    >
-                    <label class="btn btn-outline-primary" for="section_parts">Part Counts and Sizes</label>
-
-                    <input type="checkbox" class="btn-check" id="section_extra" autocomplete="off"
-                           v-model="sections.extra" :value="true" @change="updateSectionDisplay"
-                    >
-                    <label class="btn btn-outline-primary" for="section_extra">Extra Information</label>
-
-                    <input type="checkbox" class="btn-check" id="section_supports" autocomplete="off"
-                           v-model="sections.supports" :value="true" @change="updateSectionDisplay"
-                    >
-                    <label class="btn btn-outline-primary" for="section_supports">Supports</label>
-
-                    <input type="checkbox" class="btn-check" id="section_restrictions" autocomplete="off"
-                           v-model="sections.restrictions" :value="true" @change="updateSectionDisplay"
-                    >
-                    <label class="btn btn-outline-primary" for="section_restrictions">Restrictions</label>
-
-                    <template v-if="props.staff">
-                        <input type="checkbox" class="btn-check" id="section_staff" autocomplete="off"
-                               v-model="sections.staff" :value="true" @change="updateSectionDisplay"
-                        >
-                        <label class="btn btn-outline-primary" for="section_staff">Staff</label>
+                <div class="flex-grow-1 row g-1" role="group" aria-label="Toggle buttons for sections to display">
+                    <template v-for="section in sections">
+                        <div v-if="!section.staffOnly || props.staff" class="col-6 col-md-3 col-lg-3 col-xl-2">
+                            <input type="checkbox" class="btn-check" :id="`section_${section.id}`" autocomplete="off"
+                                   v-model="section.enabled" :value="true" @change="updateSectionDisplay"
+                            >
+                            <label class="btn btn-outline-primary w-100 h-100" :for="`section_${section.id}`">
+                                {{section.label}}
+                            </label>
+                        </div>
                     </template>
-
-                    <input type="checkbox" class="btn-check" id="section_mastery" autocomplete="off"
-                           v-model="sections.mastery" :value="true" @change="updateSectionDisplay"
-                    >
-                    <label class="btn btn-outline-primary" for="section_mastery">Mastery</label>
-
                 </div>
             </div>
 
@@ -851,6 +845,6 @@ if (props.startingPlayerName) {
 
 <style scoped>
     .form-control {
-        min-width: 160px;
+        min-width: 140px;
     }
 </style>
