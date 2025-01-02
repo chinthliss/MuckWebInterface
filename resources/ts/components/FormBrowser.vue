@@ -132,16 +132,16 @@ const sections: Ref<Section[]> = ref([
     },
 ]);
 
-const updateFilterOnColumn = (columnName: string, filter: string) => {
+const updateFilterOnColumn = (columnName: string, filter: string, boundary: boolean) => {
     if (dtApi) {
         let column = dtApi.columns(`${columnName}:name`);
-        column.search(filter).draw();
+        column.search(filter, {boundary: boundary}).draw();
     }
 }
-const updateFilterForName = () => updateFilterOnColumn('name', filters.value.name);
-const updateFilterForTags = () => updateFilterOnColumn('tags', filters.value.tags);
-const updateFilterForFlags = () => updateFilterOnColumn('flags', filters.value.flags)
-const updateFilterForPowers = () => updateFilterOnColumn('powers', filters.value.powers)
+const updateFilterForName = () => updateFilterOnColumn('name', filters.value.name, false);
+const updateFilterForTags = () => updateFilterOnColumn('tags', filters.value.tags, true);
+const updateFilterForFlags = () => updateFilterOnColumn('flags', filters.value.flags, true)
+const updateFilterForPowers = () => updateFilterOnColumn('powers', filters.value.powers, false)
 
 const updateFilterForMode = () => {
     if (dtApi) {
