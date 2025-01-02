@@ -211,7 +211,8 @@ const tableOptions: DataTableOptions = {
         topEnd: null
     },
     language: {
-        emptyTable: "No forms to view."
+        emptyTable: "No forms to view.",
+        info: "Showing _TOTAL_ _ENTRIES-TOTAL_"
     },
     scrollY: '400px',
     scrollX: true,
