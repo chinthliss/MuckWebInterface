@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+// TODO: Figure out how to solve first keypress being 'eaten' issue on search filters.
 import {computed, Ref, ref} from "vue";
 import Progress from "./Progress.vue";
 import {arrayToList, arrayToStringWithNewlines, capital} from "../formatting";
@@ -10,6 +11,7 @@ import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
 import 'datatables.net-fixedcolumns-bs5';
 import {DataTablesNamedSlotProps} from "../defs";
+import ModalMessage from "./ModalMessage.vue";
 
 DataTable.use(DataTablesLib);
 
@@ -69,6 +71,14 @@ type Form = {
     target3: boolean
 }
 
+type TagOrFlagToggle = {
+    id: string,
+    label: string,
+    enabled: boolean
+}
+const tags: Ref<TagOrFlagToggle[]> = ref([]);
+const flags: Ref<TagOrFlagToggle[]> = ref([]);
+
 type Target = {
     name?: string,
     loading?: boolean,
@@ -87,13 +97,13 @@ const targets: Ref<[Target | null, Target | null, Target | null, Target | null]>
 const changeTargetModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const changeTargetIndex: Ref<number> = ref(0);
 const changeTargetName: Ref<string> = ref('');
+const editTagFilterModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+const editFlagFilterModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const filters = ref({
     name: '',
     gender: '',
     powers: '',
-    tags: '',
-    flags: '',
     global: 'mastered'
 });
 
@@ -132,16 +142,25 @@ const sections: Ref<Section[]> = ref([
     },
 ]);
 
-const updateFilterOnColumn = (columnName: string, filter: string, boundary: boolean) => {
+const updateStringFilterOnColumn = (columnName: string, filter: string, boundary: boolean) => {
     if (dtApi) {
         let column = dtApi.columns(`${columnName}:name`);
         column.search(filter, {boundary: boundary}).draw();
     }
 }
-const updateFilterForName = () => updateFilterOnColumn('name', filters.value.name, false);
-const updateFilterForTags = () => updateFilterOnColumn('tags', filters.value.tags, true);
-const updateFilterForFlags = () => updateFilterOnColumn('flags', filters.value.flags, true)
-const updateFilterForPowers = () => updateFilterOnColumn('powers', filters.value.powers, false)
+const updateFilterForName = () => updateStringFilterOnColumn('name', filters.value.name, false);
+const updateFilterForPowers = () => updateStringFilterOnColumn('powers', filters.value.powers, false)
+const updateFilterForTags = () => {
+    const element = document.getElementById('tag-filter');
+    if (element) element.innerHTML = tagFilter();
+    if (dtApi) dtApi.columns(`tags:name`).draw();
+}
+const updateFilterForFlags = () => {
+    if (!dtApi) return;
+    const element = document.getElementById('flag-filter');
+    if (element) element.innerHTML = flagFilter();
+    if (dtApi) dtApi.columns(`flags:name`).draw();
+}
 
 const updateFilterForMode = () => {
     if (dtApi) {
@@ -246,6 +265,7 @@ const tableOptions: DataTableOptions = {
     initComplete: () => {
         dtApi = new DataTablesLib.Api('table');
         updateSectionDisplay();
+        // Global filter for the mode
         dtApi.search.fixed('mode', (_searchString: string, form: Form) => {
             // Since we have up to 4 compare targets, we need to figure out if any of them have the form
             /*
@@ -268,7 +288,29 @@ const tableOptions: DataTableOptions = {
             }
 
             return true;
-        })
+        });
+
+        // Column filter for tags
+        dtApi.column('tags:name').search.fixed('tags', (_searchString: string, form: Form) => {
+            for (const tag of tags.value) {
+                if (!tag.enabled) continue;
+                if (!form.tags.includes(tag.id)) return false;
+            }
+            return true;
+        });
+
+        // Column filter for flags
+        dtApi.column('flags:name').search.fixed('flags', (_searchString: string, form: Form) => {
+            for (const flag of flags.value) {
+                if (!flag.enabled) continue;
+                let found = false;
+                for (const bodypart in form.flags) {
+                    if (form.flags[bodypart].includes(flag.id)) found = true;
+                }
+                if (!found) return false;
+            }
+            return true;
+        });
 
     }
 };
@@ -342,6 +384,33 @@ channel.on('formListing', (data: Form) => {
     data.target3 = false
     formDatabase.value.push(data);
     formsToLoadRemaining.value--;
+
+    if (data.tags) { // Tags are a list
+        for (const tag of data.tags) {
+            if (tags.value.findIndex(x => x.id == tag) == -1) {
+                tags.value.push({
+                    id: tag,
+                    label: capital(tag),
+                    enabled: false
+                });
+            }
+        }
+    }
+
+    if (data.flags) { // Flags are a dict of which body part has then, so use the indexes
+        for (const bodypart in data.flags) {
+            for (const flag of data.flags[bodypart]) {
+                if (flags.value.findIndex(x => x.id == flag) == -1) {
+                    flags.value.push({
+                        id: flag,
+                        label: capital(flag),
+                        enabled: false
+                    });
+                }
+            }
+        }
+    }
+
     if (!formsToLoadRemaining.value) updateTargetDisplay();
 });
 
@@ -380,6 +449,22 @@ const loadingPercentage = computed(() => {
     return (formsToLoad.value - formsToLoadRemaining.value) * 100 / formsToLoad.value;
 });
 
+const tagFilter = (): string => {
+    const list: string[] = [];
+    for (const tag of tags.value) {
+        if (tag.enabled) list.push(tag.label);
+    }
+    return arrayToList(list, '(None Set)');
+};
+
+const flagFilter = (): string => {
+    const list: string[] = [];
+    for (const flag of flags.value) {
+        if (flag.enabled) list.push(flag.label);
+    }
+    return arrayToList(list, '(None Set)');
+};
+
 const changeTarget = (): void => {
     if (!changeTargetName.value) return;
     targets.value[changeTargetIndex.value] = {
@@ -398,6 +483,14 @@ const launchChangeTarget = (index: number): void => {
 const clearTarget = (index: number) => {
     targets.value[index] = null;
     updateTargetDisplay();
+}
+
+const launchTagFilterModal = () => {
+    if (editTagFilterModal.value) editTagFilterModal.value.show();
+}
+
+const launchFlagFlterModal = () => {
+    if (editFlagFilterModal.value) editFlagFilterModal.value.show();
 }
 
 const unknownForms = computed((): string => {
@@ -595,15 +688,25 @@ if (props.startingPlayerName) {
                     </th>
                     <th data-dt-order="disable"></th>
                     <th data-dt-order="disable"></th>
-                    <th data-dt-order="disable">
-                        <input type="text" v-model="filters.tags" @input="updateFilterForTags"
-                               class="form-control" placeholder="Search by Tag"
-                        />
+                    <th data-dt-order="disable" class="small">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-secondary me-1" @click="launchTagFilterModal">
+                                <span class="d-inline-block text-nowrap">
+                                    <i class="fas fa-filter btn-icon-left"></i>Edit
+                                </span>
+                            </button>
+                            <span id="tag-filter">{{ tagFilter() }}</span>
+                        </div>
                     </th>
-                    <th data-dt-order="disable">
-                        <input type="text" v-model="filters.flags" @input="updateFilterForFlags"
-                               class="form-control" placeholder="Search by Flag"
-                        />
+                    <th data-dt-order="disable" class="small">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-secondary me-1" @click="launchFlagFlterModal">
+                                <span class="d-inline-block text-nowrap">
+                                    <i class="fas fa-filter btn-icon-left"></i>Edit
+                                </span>
+                            </button>
+                            <span id="flag-filter">{{ flagFilter() }}</span>
+                        </div>
                     </th>
                     <th data-dt-order="disable"></th>
                     <th data-dt-order="disable"></th>
@@ -835,6 +938,7 @@ if (props.startingPlayerName) {
 
         </div>
     </div>
+
     <modal-confirmation ref="changeTargetModal" title="Change Target"
                         yes-label="Search" no-label="Cancel" @yes="changeTarget"
     >
@@ -843,6 +947,38 @@ if (props.startingPlayerName) {
             <input type="text" class="form-control" id="changeTargetInput" v-model="changeTargetName">
         </div>
     </modal-confirmation>
+
+    <modal-message ref="editTagFilterModal" title="Edit Tag Filter" @close="updateFilterForTags">
+        <div class="container">
+            <div class="row">Tick the tags you want to require, then close this popup and they'll be applied.</div>
+            <div class="row">
+                <div v-for="tag in tags" class="form-check form-switch mt-2 col-12 col-md-6">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           :id="`flag_${tag.id}`" v-model="tag.enabled"
+                    >
+                    <label class="form-check-label" :for="`flag_${tag.id}`">{{ tag.label }}</label>
+                </div>
+
+            </div>
+        </div>
+    </modal-message>
+
+    <modal-message ref="editFlagFilterModal" title="Edit Flag Filter" @close="updateFilterForFlags">
+        <div class="container">
+            <div class="row">Tick the flags you want to require, then close this popup and they'll be applied.</div>
+            <div class="row">
+                <div v-for="flag in flags" class="form-check form-switch mt-2 col-12 col-md-6">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           :id="`flag_${flag.id}`" v-model="flag.enabled"
+                    >
+                    <label class="form-check-label" :for="`flag_${flag.id}`">{{ flag.label }}</label>
+                </div>
+
+            </div>
+        </div>
+    </modal-message>
+
+
 </template>
 
 <style scoped>
