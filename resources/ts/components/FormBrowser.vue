@@ -390,7 +390,7 @@ channel.on('formListing', (data: Form) => {
         for (const tag of data.tags) {
             if (tags.value.findIndex(x => x.id == tag) == -1) {
                 tags.value.push({
-                    id: tag,
+                    id: tag.toLowerCase(),
                     label: capital(tag),
                     enabled: false
                 });
@@ -403,7 +403,7 @@ channel.on('formListing', (data: Form) => {
             for (const flag of data.flags[bodypart]) {
                 if (flags.value.findIndex(x => x.id == flag) == -1) {
                     flags.value.push({
-                        id: flag,
+                        id: flag.toLowerCase(),
                         label: capital(flag),
                         enabled: false
                     });
