@@ -411,7 +411,15 @@ channel.on('formListing', (data: Form) => {
         }
     }
 
-    if (!formsToLoadRemaining.value) updateTargetDisplay();
+    if (!formsToLoadRemaining.value) {
+        updateTargetDisplay();
+        tags.value.sort((a, b) => {
+            return a.id > b.id ? 1 : -1
+        });
+        flags.value.sort((a, b) => {
+            return a.id > b.id ? 1 : -1
+        });
+    }
 });
 
 type FormMasteryResponse = {
@@ -952,7 +960,7 @@ if (props.startingPlayerName) {
         <div class="container">
             <div class="row">Tick the tags you want to require, then close this popup and they'll be applied.</div>
             <div class="row">
-                <div v-for="tag in tags" class="form-check form-switch mt-2 col-12 col-md-6">
+                <div v-for="tag in tags" class="form-check form-switch mt-2 col-12 col-md-6 col-lg-4">
                     <input class="form-check-input" type="checkbox" role="switch"
                            :id="`flag_${tag.id}`" v-model="tag.enabled"
                     >
@@ -967,7 +975,7 @@ if (props.startingPlayerName) {
         <div class="container">
             <div class="row">Tick the flags you want to require, then close this popup and they'll be applied.</div>
             <div class="row">
-                <div v-for="flag in flags" class="form-check form-switch mt-2 col-12 col-md-6">
+                <div v-for="flag in flags" class="form-check form-switch mt-2 col-12 col-md-6 col-lg-4">
                     <input class="form-check-input" type="checkbox" role="switch"
                            :id="`flag_${flag.id}`" v-model="flag.enabled"
                     >
@@ -985,6 +993,7 @@ if (props.startingPlayerName) {
 .form-control {
     min-width: 140px;
 }
+
 /* Lazy fix to prevent the 'Edit' buttons getting too small */
 .btn {
     min-width: 74px;
