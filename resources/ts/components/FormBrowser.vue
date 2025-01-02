@@ -341,9 +341,10 @@ channel.on('mastery', (data: FormMasteryResponse) => {
     let updatedCount = 0;
     for (const target of targets.value) {
         if (target && target.name == data.who) {
-            target.name = data.who;
-            target.error = data.error;
-            target.forms = data.forms;
+            if (data.error) target.error = data.error;
+            else delete target.error;
+            if (data.forms) target.forms = data.forms;
+            else target.forms = {};
             target.loading = false;
             updatedCount++;
         }
