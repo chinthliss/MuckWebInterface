@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, Ref, computed} from "vue";
+import {computed, Ref, ref} from "vue";
 import Progress from "./Progress.vue";
 import {arrayToList, arrayToStringWithNewlines, capital} from "../formatting";
 import Spinner from "./Spinner.vue";
@@ -10,6 +10,7 @@ import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
 import 'datatables.net-fixedcolumns-bs5';
 import {DataTablesNamedSlotProps} from "../defs";
+
 DataTable.use(DataTablesLib);
 
 const props = defineProps<{
@@ -173,7 +174,7 @@ const renderNestedListItemsOnly = (nestedList: { [lstat: string]: string[] }): s
     return result.join(', ');
 }
 
-const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | undefined ): string => {
+const renderNestedListKeysOnly = (nestedList: { [lstat: string]: string[] } | undefined): string => {
     if (!nestedList) return '';
     const result = [];
     for (const key in nestedList) {
@@ -241,7 +242,6 @@ const tableOptions: DataTableOptions = {
         {data: 'target1', name: 'target1', visible: false},
         {data: 'target2', name: 'target2', visible: false},
         {data: 'target3', name: 'target3', visible: false}
-
     ],
     initComplete: () => {
         dtApi = new DataTablesLib.Api('table');
@@ -370,7 +370,7 @@ channel.on('mastery', (data: FormMasteryResponse) => {
     } else updateTargetDisplay();
 });
 
-const loading = computed(() : boolean => {
+const loading = computed((): boolean => {
     return (!formsToLoad.value || formsToLoadRemaining.value > 0);
 });
 
@@ -480,7 +480,7 @@ if (props.startingPlayerName) {
                                    v-model="section.enabled" :value="true" @change="updateSectionDisplay"
                             >
                             <label class="btn btn-outline-primary w-100 h-100" :for="`section_${section.id}`">
-                                {{section.label}}
+                                {{ section.label }}
                             </label>
                         </div>
                     </template>
@@ -793,7 +793,9 @@ if (props.startingPlayerName) {
                 Here you can change that, as well as set up to 4 targets to compare.
                 Mastery for each target shows as the last columns on the table.
             </p>
-            <p v-if="!props.staff">You need to have permission to see each target's form list in order for this to work.</p>
+            <p v-if="!props.staff">
+                You need to have permission to see each target's form list in order for this to work.
+            </p>
             <template v-for="(target, index) in targets">
                 <div v-if="index <= highestUsedTargetIndex() + 1" class="d-lg-flex align-items-center mb-2">
                     <div class="flex-grow-1">
@@ -844,7 +846,7 @@ if (props.startingPlayerName) {
 </template>
 
 <style scoped>
-    .form-control {
-        min-width: 140px;
-    }
+.form-control {
+    min-width: 140px;
+}
 </style>
