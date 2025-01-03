@@ -24,6 +24,14 @@ export const timestampToString = (timestamp: number | null | undefined): string 
 };
 
 /**
+ * Version of timestampToString that won't interfere with DataTables sorting
+ */
+export const datatablesTimestampToString = (timestamp: number | null | undefined, type: string): string | number => {
+    if (type == 'sort') return timestamp || 0;
+    return timestampToString(timestamp);
+}
+
+/**
  * Takes a USD value and turns it into something friendlier
  */
 export const usdToString = (usd: number | string | null): string => {

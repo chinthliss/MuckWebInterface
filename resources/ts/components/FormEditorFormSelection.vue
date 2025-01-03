@@ -2,7 +2,7 @@
 
 import {computed, ref, Ref} from "vue";
 import Progress from "./Progress.vue";
-import {timestampToString} from "../formatting";
+import {datatablesTimestampToString} from "../formatting";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
@@ -59,7 +59,7 @@ const tableOptions: DataTableOptions = {
         {data: 'name', name: 'name'},
         {data: 'account', visible: false, name: 'account', defaultContent: ''},
         {data: 'credit', defaultContent: ''},
-        {data: 'lastEdit', render: timestampToString},
+        {data: 'lastEdit', render: datatablesTimestampToString},
         {data: 'approved', name: 'approved'},
         {data: 'published', name: 'published'},
         {data: 'status', name: 'status'}
