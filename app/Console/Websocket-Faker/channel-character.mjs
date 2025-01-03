@@ -14,6 +14,10 @@ const perksOwned = [
     {name: 'Perk 6', notes: 'Test notes!'}
 ]
 
+const dedicationsCatalogue = [
+    {name: 'Test Dedication 1', cost: 50, description: 'Test Description'}
+];
+
 export default class ChannelCharacter extends Channel {
 
     sendPerkStatus = (connection) => {
@@ -145,6 +149,19 @@ export default class ChannelCharacter extends Channel {
         'buyPerkPoint': (connection, _data) => {
             this.sendNotificationToConnection(connection, "Test fault!");
             // this.sendPerkStatus(connection);
+        },
+
+        /**
+         * Dedications
+         */
+        'getDedicationList': (connection, _data) => {
+            this.sendMessageToConnection(connection, 'dedicationList', dedicationsCatalogue.length);
+            for (const dedication of dedicationsCatalogue) {
+                this.sendMessageToConnection(connection, 'dedicationListing', dedication);
+            }
         }
+
     }
 }
+
+

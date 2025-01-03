@@ -287,4 +287,9 @@ class CharacterController extends Controller
         return view('multiplayer.character-perks');
     }
 
+    public function showDedications(): View
+    {
+        return view('multiplayer.character-dedications');
+    }
+
 }

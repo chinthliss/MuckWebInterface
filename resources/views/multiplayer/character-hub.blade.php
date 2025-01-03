@@ -44,7 +44,7 @@
         ['title' => 'Classes', 'description' => 'Change your class. What does this do for you?', 'url' => route('multiplayer.classes')],
         ['title' => 'Professions', 'description' => 'Pick professions to get free initial proficiencies.', 'url' => route('multiplayer.professions')],
         ['title' => 'Training', 'description' => 'Purchase upgrades to mutant powers, proficiencies or resources.', 'url' => route('multiplayer.training')],
-        ['title' => 'Dedication', 'description' => 'Get information about dedications or switch your current one. There\'s also some fake terminal output?', 'url' => route('multiplayer.dedication')],
+        ['title' => 'Dedications', 'description' => 'Get information about dedications or switch your current one.', 'url' => route('multiplayer.dedication')],
         ['title' => 'Avatar', 'description' => 'Customize the graphical representation of your character.', 'url' => route('multiplayer.avatar.edit')],
         ['title' => 'Kinks', 'description' => 'Set your detailed preferences for interacting with other characters.', 'url' => route('multiplayer.kinks')],
         ['title' => 'AI', 'description' => 'Adjust how your character acts in combat while under automatic control.', 'url' => route('multiplayer.ai')]
