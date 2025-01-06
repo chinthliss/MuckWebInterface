@@ -15,7 +15,9 @@ const perksOwned = [
 ]
 
 const dedicationsCatalogue = [
-    {name: 'Test Dedication 1', cost: 50, description: 'Test Description'}
+    {name: 'Test Dedication 1', cost: 50, description: 'Test Description', powers: [], forms: []},
+    {name: 'Test Dedication 2', cost: 50, description: 'Test Description', powers: [], forms: []},
+    {name: 'Full Dedication', cost: 50, description: 'Full Description\nWith newline!', class: 'class', item: 'item', noWeb: true, home: 'home', powers: [], forms: [] }
 ];
 
 export default class ChannelCharacter extends Channel {
@@ -154,11 +156,16 @@ export default class ChannelCharacter extends Channel {
         /**
          * Dedications
          */
-        'getDedicationList': (connection, _data) => {
+        'bootDedications': (connection, _data) => {
+
             this.sendMessageToConnection(connection, 'dedicationList', dedicationsCatalogue.length);
             for (const dedication of dedicationsCatalogue) {
                 this.sendMessageToConnection(connection, 'dedicationListing', dedication);
             }
+
+            this.sendMessageToConnection(connection, 'trainingRespecializer', false);
+
+            this.sendMessageToConnection(connection, 'knownDedications', ['Test Dedication 2']);
         }
 
     }
