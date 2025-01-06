@@ -70,7 +70,7 @@ type PerkStatusUpdate = {
     owned: {
         name: string,
         notes: string
-    }
+    }[]
 };
 
 channel.on('perkStatus', (update: PerkStatusUpdate) => {
