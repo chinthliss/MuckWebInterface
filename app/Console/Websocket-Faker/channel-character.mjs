@@ -17,7 +17,7 @@ const perksOwned = [
 const dedicationsCatalogue = [
     {name: 'Test Dedication 1', cost: 50, description: 'Test Description', powers: [], forms: []},
     {name: 'Test Dedication 2', cost: 50, description: 'Test Description', powers: [], forms: []},
-    {name: 'Full Dedication', cost: 50, description: 'Full Description\nWith newline!', class: 'class', item: 'item', noWeb: true, home: 'home', powers: [], forms: [] }
+    {name: 'Full Dedication', cost: 50, description: 'Full Description\nWith newline!', class: 'class', item: 'item', noWeb: true, home: 'home', powers: ['power 1', 'power 2'], forms: [] }
 ];
 
 export default class ChannelCharacter extends Channel {

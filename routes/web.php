@@ -308,8 +308,8 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.training');
         Route::get('kinks', [HomeController::class, 'showPending'])
             ->name('multiplayer.kinks');
-        Route::get('dedication', [CharacterController::class, 'showDedications'])
-            ->name('multiplayer.dedication');
+        Route::get('dedications', [CharacterController::class, 'showDedications'])
+            ->name('multiplayer.dedications');
         Route::get('ai', [HomeController::class, 'showPending'])
             ->name('multiplayer.ai');
 
