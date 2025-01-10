@@ -18,6 +18,9 @@ type DedicationListing = {
     forms: string[]
 }
 
+//TODO: Replace wiki references at some point
+const wikiRoot = 'https://wiki.flexiblesurvival.com/w/';
+
 const channel = mwiWebsocket.channel('character');
 const dedications: Ref<DedicationListing[]> = ref([]);
 
@@ -94,7 +97,8 @@ channel.send('bootDedications');
                         <div class="col-12 col-lg-4 text-center">
                             <button class="btn btn-primary"
                                     v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)"
-                                    @click="switchToDedication(dedication)">
+                                    @click="switchToDedication(dedication)"
+                            >
                                 <i class="fas fa-person-booth btn-icon-left"></i>Switch to {{ dedication.name }}
                             </button>
                         </div>
@@ -109,10 +113,11 @@ channel.send('bootDedications');
                                 <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}<br/>
                             </span>
                             <button v-else class="btn btn-primary btn-with-img-icon"
-                                    @click="purchaseDedication(dedication)">
+                                    @click="purchaseDedication(dedication)"
+                            >
                                 <span class="btn-icon-accountcurrency btn-icon-left"></span>
                                 Purchase Dedication
-                                <span class="btn-second-line">{{dedication.cost}} {{ lex('accountcurrency') }}</span>
+                                <span class="btn-second-line">{{ dedication.cost }} {{ lex('accountcurrency') }}</span>
                             </button>
                         </div>
 
@@ -128,7 +133,12 @@ channel.send('bootDedications');
                     <div class="row mt-2">
                         <div class="col-12 col-lg-4">
                             <div class="text-primary fw-bold">Powers</div>
-                            <div v-for="power in dedication.powers">{{ power }}</div>
+                            <template v-if="dedication.powers.length">
+                                <div v-for="power in dedication.powers">
+                                    <a :href="wikiRoot + power">{{ power }}</a>
+                                </div>
+                            </template>
+                            <div v-else class="text-muted">No associated powers.</div>
                         </div>
                         <div class="col-12 col-lg-4">
                             <div class="text-primary fw-bold">Associated Item</div>
