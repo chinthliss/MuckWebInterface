@@ -17,8 +17,14 @@
             <h1>Dedications</h1>
         </div>
 
-        <p class="lead">Dedications are ..</p>
-        <p>TODO: What are dedications?</p>
+        <p class="lead">
+            Each Dedication has a certain bit of theme behind it, be it supernatural, scientific, or just pure training.
+            Devoting to one can grant unique boons, powers and abilities.
+        </p>
+        <p>
+            For more information see the help file
+            <a href="{{ route('multiplayer.help') }}/Theme/dedications">+help Theme/dedications</a>.
+        </p>
         <character-dedications></character-dedications>
     </div>
 @endsection

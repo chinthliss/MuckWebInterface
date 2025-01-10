@@ -4,6 +4,7 @@ import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
 import {ansiToHtml} from "../formatting";
 import {lex} from "../siteutils";
+import ModalMessage from "./ModalMessage.vue";
 
 type DedicationListing = {
     name: string,
@@ -25,13 +26,19 @@ const dedicationsToLoadRemaining: Ref<number> = ref(-1);
 
 const dedicationsKnown: Ref<string[] | null> = ref(null);
 const hasTrainingRespecializer: Ref<boolean | null> = ref(null);
+const modal: Ref<typeof ModalMessage | null> = ref(null);
+const modalText: Ref<string> = ref('');
 
 const purchaseDedication = (dedication: DedicationListing) => {
     console.log("TODO: Purchase dedication - ", dedication);
+    modalText.value = 'Not implemented yet.';
+    if (modal.value) modal.value.show();
 }
 
 const switchToDedication = (dedication: DedicationListing) => {
     console.log("TODO: switch to dedication - ", dedication);
+    modalText.value = 'Not implemented yet.';
+    if (modal.value) modal.value.show();
 }
 
 channel.on('dedicationList', (data: number) => {
@@ -76,16 +83,23 @@ channel.send('bootDedications');
     <spinner v-if="dedicationsToLoadRemaining"></spinner>
     <div v-else>
         <template v-for="dedication in dedications">
-            <div class="card mb-2">
+            <div class="card mb-4">
                 <div class="card-header">
-                    <div class="card-title">
-                        {{ dedication.name }}
-                        <button class="btn btn-primary"
-                                @click="switchToDedication(dedication)">
-                            <i class="fas fa-person-booth btn-icon-left"></i>Switch to {{ dedication.name }}
-                        </button>
-
-                        <span class="float-end">
+                    <div class="card-title row">
+                        <!-- Name -->
+                        <div class="col-12 col-lg-4">
+                            <h4>{{ dedication.name }}</h4>
+                        </div>
+                        <!-- Switch to -->
+                        <div class="col-12 col-lg-4 text-center">
+                            <button class="btn btn-primary"
+                                    v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)"
+                                    @click="switchToDedication(dedication)">
+                                <i class="fas fa-person-booth btn-icon-left"></i>Switch to {{ dedication.name }}
+                            </button>
+                        </div>
+                        <!-- Purchase / status -->
+                        <div class="col-12 col-lg-4 text-center">
                             <span v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
                                 You own this dedication
                                 <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
@@ -100,7 +114,9 @@ channel.send('bootDedications');
                                 Purchase Dedication
                                 <span class="btn-second-line">{{dedication.cost}} {{ lex('accountcurrency') }}</span>
                             </button>
-                        </span>
+                        </div>
+
+
                     </div>
                 </div>
                 <div class="card-body">
@@ -115,18 +131,22 @@ channel.send('bootDedications');
                             <div v-for="power in dedication.powers">{{ power }}</div>
                         </div>
                         <div class="col-12 col-lg-4">
-                            <div class="text-primary fw-bold">Item</div>
-                            {{ dedication.item }}
+                            <div class="text-primary fw-bold">Associated Item</div>
+                            <div v-if="dedication.item">{{ dedication.item }}</div>
+                            <div v-else class="text-muted">No associated item.</div>
                         </div>
                         <div class="col-12 col-lg-4">
-                            <div class="text-primary fw-bold">Home</div>
-                            {{ dedication.home }}
+                            <div class="text-primary fw-bold">Associated Location</div>
+                            <div v-if="dedication.home">{{ dedication.home }}</div>
+                            <div v-else class="text-muted">No associated location.</div>
                         </div>
                     </div>
                 </div>
             </div>
         </template>
     </div>
+
+    <ModalMessage ref="modal">{{ modalText }}</ModalMessage>
 </template>
 
 <style scoped>
