@@ -33,15 +33,11 @@ const modal: Ref<typeof ModalMessage | null> = ref(null);
 const modalText: Ref<string> = ref('');
 
 const purchaseDedication = (dedication: DedicationListing) => {
-    console.log("TODO: Purchase dedication - ", dedication);
-    modalText.value = 'Not implemented yet.';
-    if (modal.value) modal.value.show();
+    channel.send('buyDedication', dedication.name);
 }
 
 const switchToDedication = (dedication: DedicationListing) => {
-    console.log("TODO: switch to dedication - ", dedication);
-    modalText.value = 'Not implemented yet.';
-    if (modal.value) modal.value.show();
+    channel.send('setDedication', dedication.name);
 }
 
 channel.on('dedicationList', (data: number) => {
@@ -64,6 +60,19 @@ channel.on('trainingRespecializer', (data: boolean) => {
 channel.on('knownDedications', (data: string[]) => {
     dedicationsKnown.value = data;
 });
+
+channel.on('buyDedication', (data) => {
+    // TODO: Implement Buy Dedication Response
+    modalText.value = 'Not implemented yet.';
+    if (modal.value) modal.value.show();
+});
+
+channel.on('setDedication', (data) => {
+    // TODO: Implement Set Dedication Response
+    modalText.value = 'Not implemented yet.';
+    if (modal.value) modal.value.show();
+});
+
 
 channel.send('bootDedications');
 
