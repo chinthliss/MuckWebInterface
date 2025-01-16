@@ -17,6 +17,7 @@ const perksOwned = [
 const dedicationsCatalogue = [
     {name: 'Test Dedication 1', cost: 50, description: 'Test Description', powers: [], forms: []},
     {name: 'Test Dedication 2', cost: 50, description: 'Test Description', powers: [], forms: []},
+    {name: 'Unpurchaseable Dedication', cost: 100, description: 'Will cause an error on purcase', powers: [], forms: []},
     {name: 'Full Dedication', cost: 50, description: 'Full Description\nWith newline!', class: 'class', item: 'item', noWeb: true, home: 'home', powers: ['power 1', 'power 2'], forms: [] }
 ];
 
@@ -166,7 +167,21 @@ export default class ChannelCharacter extends Channel {
             this.sendMessageToConnection(connection, 'trainingRespecializer', false);
 
             this.sendMessageToConnection(connection, 'knownDedications', ['Test Dedication 2']);
+        },
+
+        'buyDedication': (connection, data) => {
+            const response = {dedication: data}
+            if (data === 'Unpurchaseable Dedication') response.error = 'This dedication can not be purchased';
+            this.sendMessageToConnection(connection, 'buyDedication', response);
+        },
+
+        'setDedication': (connection, data) => {
+            const response = {dedication: data}
+            // response.error = 'Not Implemented Yet';
+            this.sendMessageToConnection(connection, 'setDedication', response);
+
         }
+
 
     }
 }

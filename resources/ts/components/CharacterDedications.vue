@@ -61,15 +61,32 @@ channel.on('knownDedications', (data: string[]) => {
     dedicationsKnown.value = data;
 });
 
-channel.on('buyDedication', (data) => {
-    // TODO: Implement Buy Dedication Response
-    modalText.value = 'Not implemented yet.';
+type BuyResponse = {
+    dedication: string,
+    error?: string
+}
+channel.on('buyDedication', (data: BuyResponse) => {
+    if (data.error) {
+        modalText.value = data.error;
+    } else {
+        if (dedicationsKnown.value) {
+            dedicationsKnown.value.push(data.dedication);
+        }
+        modalText.value = "Dedication Purchased: " + data.dedication;
+    }
     if (modal.value) modal.value.show();
 });
 
-channel.on('setDedication', (data) => {
-    // TODO: Implement Set Dedication Response
-    modalText.value = 'Not implemented yet.';
+type SetResponse = {
+    dedication: string,
+    error?: string
+}
+channel.on('setDedication', (data: SetResponse) => {
+    if (data.error) {
+        modalText.value = data.error;
+    } else {
+        modalText.value = "Dedication Changed to: " + data.dedication;
+    }
     if (modal.value) modal.value.show();
 });
 
