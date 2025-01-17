@@ -171,7 +171,7 @@ channel.send('bootDedications');
                             <div class="text-primary fw-bold">Powers</div>
                             <template v-if="dedication.powers.length">
                                 <div v-for="power in dedication.powers">
-                                    <a :href="wikiRoot + power">{{ power }}</a>
+                                    <a :href="wikiRoot + power.replace(' ', '_')">{{ power }}</a>
                                 </div>
                             </template>
                             <div v-else class="text-muted">No associated powers.</div>
