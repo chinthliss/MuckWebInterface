@@ -5,6 +5,7 @@ import Spinner from "./Spinner.vue";
 import {ansiToHtml} from "../formatting";
 import {lex} from "../siteutils";
 import ModalMessage from "./ModalMessage.vue";
+import ModalConfirmation from "./ModalConfirmation.vue";
 
 type DedicationListing = {
     name: string,
@@ -29,11 +30,20 @@ const dedicationsToLoadRemaining: Ref<number> = ref(-1);
 
 const dedicationsKnown: Ref<string[] | null> = ref(null);
 const hasTrainingRespecializer: Ref<boolean | null> = ref(null);
+const purchaseDedication: Ref<string> = ref('');
+const purchaseCost: Ref<string> = ref('');
 const modal: Ref<typeof ModalMessage | null> = ref(null);
+const confirmPurchaseModal: Ref<typeof ModalConfirmation | null> = ref(null);
 const modalText: Ref<string> = ref('');
 
-const purchaseDedication = (dedication: DedicationListing) => {
-    channel.send('buyDedication', dedication.name);
+const startBuyDedication = (dedication: DedicationListing) => {
+    purchaseDedication.value = dedication.name;
+    purchaseCost.value = dedication.cost + ' ' + lex('accountCurrency');
+    if (confirmPurchaseModal.value) confirmPurchaseModal.value.show();
+}
+
+const buyDedication = () => {
+    channel.send('buyDedication', purchaseDedication.value);
 }
 
 const switchToDedication = (dedication: DedicationListing) => {
@@ -139,7 +149,7 @@ channel.send('bootDedications');
                                 <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}<br/>
                             </span>
                             <button v-else class="btn btn-primary btn-with-img-icon"
-                                    @click="purchaseDedication(dedication)"
+                                    @click="startBuyDedication(dedication)"
                             >
                                 <span class="btn-icon-accountcurrency btn-icon-left"></span>
                                 Purchase Dedication
@@ -183,6 +193,11 @@ channel.send('bootDedications');
     </div>
 
     <ModalMessage ref="modal">{{ modalText }}</ModalMessage>
+    <ModalConfirmation ref="confirmPurchaseModal" @yes="buyDedication"
+                       title="Confirm Purchase" yes-label="Buy Dedication" no-label="Cancel"
+    >
+        <p>Are you sure you wish to purchase the dedication '{{ purchaseDedication }}' for {{ purchaseCost }}?</p>
+    </ModalConfirmation>
 </template>
 
 <style scoped>
