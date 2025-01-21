@@ -30,6 +30,7 @@ const dedicationsToLoadRemaining: Ref<number> = ref(-1);
 
 const dedicationsKnown: Ref<string[] | null> = ref(null);
 const hasTrainingRespecializer: Ref<boolean | null> = ref(null);
+const freePurchases: Ref<boolean | null> = ref(null);
 const purchaseDedication: Ref<string> = ref('');
 const purchaseCost: Ref<string> = ref('');
 const modal: Ref<typeof ModalMessage | null> = ref(null);
@@ -66,6 +67,11 @@ channel.on('dedicationListing', (data: DedicationListing) => {
 channel.on('trainingRespecializer', (data: boolean) => {
     hasTrainingRespecializer.value = data;
 });
+
+channel.on('freePurchases', (data: boolean) => {
+    freePurchases.value = data;
+});
+
 
 channel.on('knownDedications', (data: string[]) => {
     dedicationsKnown.value = data;
@@ -119,6 +125,11 @@ channel.send('bootDedications');
         </div>
     </template>
 
+    <!-- Free purchases notice -->
+    <div v-if="freePurchases" class="p-2 mb-2 bg-primary text-dark rounded">
+        Because of your present subscription level, you can pick up any dedication without the mako cost listed.
+    </div>
+
     <!-- List of dedications -->
     <spinner v-if="dedicationsToLoadRemaining"></spinner>
     <div v-else>
@@ -138,7 +149,7 @@ channel.send('bootDedications');
                             </span>
                             <span v-else-if="dedication.noWeb">
                                 Not available from web
-                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}<br/>
+                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
                             </span>
                             <button v-else class="btn btn-primary btn-with-img-icon"
                                     @click="startBuyDedication(dedication)"
@@ -187,14 +198,14 @@ channel.send('bootDedications');
                                     @click="switchToDedication(dedication, 'patrol')"
                             >
                                 <i class="fas fa-person-booth btn-icon-left"></i>
-                                Switch to {{dedication.name}} with patrol points
+                                Switch to {{ dedication.name }} with patrol points
                             </button>
                             <button class="btn btn-primary mt-2 ms-2"
                                     v-if="hasTrainingRespecializer"
                                     @click="switchToDedication(dedication, 'hero')"
                             >
                                 <i class="fas fa-person-booth btn-icon-left"></i>
-                                Switch to {{dedication.name}} with hero points
+                                Switch to {{ dedication.name }} with hero points
                             </button>
                         </div>
                     </div>
