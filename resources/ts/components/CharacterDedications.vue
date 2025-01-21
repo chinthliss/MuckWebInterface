@@ -46,8 +46,8 @@ const buyDedication = () => {
     channel.send('buyDedication', purchaseDedication.value);
 }
 
-const switchToDedication = (dedication: DedicationListing) => {
-    channel.send('setDedication', dedication.name);
+const switchToDedication = (dedication: DedicationListing, currency: 'patrol' | 'hero') => {
+    channel.send('setDedication', {dedication: dedication.name, currency: currency});
 }
 
 channel.on('dedicationList', (data: number) => {
@@ -110,11 +110,12 @@ channel.send('bootDedications');
     <!-- Training Respecializer notice -->
     <template v-if="hasTrainingRespecializer !== null">
         <div v-if="hasTrainingRespecializer" class="p-2 mb-2 bg-primary text-dark rounded">
-            You have the Training Respecializer, so switching your dedication will only cost 1 hero point.
+            You have the Training Respecializer,
+            so you can switch dedications with 5 patrol points or 1 hero point.
         </div>
         <div v-else class="p-2 mb-2 bg-warning text-dark rounded">
-            You don't have the Training Respecializer, so switching your dedication from here costs 25 patrol points.
-            With it, it only costs 1 hero point.
+            You don't have the Training Respecializer, so switching your dedication from here costs 15 patrol points.
+            With it, it only costs 5 patrol points or 1 hero point.
         </div>
     </template>
 
@@ -126,20 +127,11 @@ channel.send('bootDedications');
                 <div class="card-header">
                     <div class="card-title row">
                         <!-- Name -->
-                        <div class="col-12 col-lg-4">
+                        <div class="col-12 col-lg-6">
                             <h4>{{ dedication.name }}</h4>
                         </div>
-                        <!-- Switch to -->
-                        <div class="col-12 col-lg-4 text-center">
-                            <button class="btn btn-primary"
-                                    v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)"
-                                    @click="switchToDedication(dedication)"
-                            >
-                                <i class="fas fa-person-booth btn-icon-left"></i>Switch to {{ dedication.name }}
-                            </button>
-                        </div>
                         <!-- Purchase / status -->
-                        <div class="col-12 col-lg-4 text-center">
+                        <div class="col-12 col-lg-6 text-center">
                             <span v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
                                 You own this dedication
                                 <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
@@ -185,6 +177,25 @@ channel.send('bootDedications');
                             <div class="text-primary fw-bold">Associated Location</div>
                             <div v-if="dedication.home">{{ dedication.home }}</div>
                             <div v-else class="text-muted">No associated location.</div>
+                        </div>
+                    </div>
+                    <!-- Line 3 - optional, if owned -->
+                    <div class="row" v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
+                        <!-- Switch to -->
+                        <div class="col-12 text-center">
+                            <button class="btn btn-primary mt-2"
+                                    @click="switchToDedication(dedication, 'patrol')"
+                            >
+                                <i class="fas fa-person-booth btn-icon-left"></i>
+                                Switch to {{dedication.name}} with patrol points
+                            </button>
+                            <button class="btn btn-primary mt-2 ms-2"
+                                    v-if="hasTrainingRespecializer"
+                                    @click="switchToDedication(dedication, 'hero')"
+                            >
+                                <i class="fas fa-person-booth btn-icon-left"></i>
+                                Switch to {{dedication.name}} with hero points
+                            </button>
                         </div>
                     </div>
                 </div>

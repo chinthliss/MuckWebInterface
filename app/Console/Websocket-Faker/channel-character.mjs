@@ -175,8 +175,9 @@ export default class ChannelCharacter extends Channel {
             this.sendMessageToConnection(connection, 'buyDedication', response);
         },
 
+        // Data is in the form {dedication, currency}
         'setDedication': (connection, data) => {
-            const response = {dedication: data}
+            const response = {dedication: data.dedication}
             // response.error = 'Not Implemented Yet';
             this.sendMessageToConnection(connection, 'setDedication', response);
 
