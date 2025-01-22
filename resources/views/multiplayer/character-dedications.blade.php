@@ -22,6 +22,7 @@
             Devoting to one can grant unique boons, powers and abilities.
         </p>
         <p>
+            A number of dedications can't be purchased on the web and you will need to reach their location in game.
             For more information see the help file
             <a href="{{ route('multiplayer.help') }}/Theme/dedications">+help Theme/dedications</a>.
         </p>
