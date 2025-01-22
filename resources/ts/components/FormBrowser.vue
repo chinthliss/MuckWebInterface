@@ -284,8 +284,9 @@ const tableOptions: DataTableOptions = {
 
             if (!props.staff) {
                 if (form.staffonly) return false;
-                // Only show private forms that are present
-                if (form.private && !masteredCount) return false;
+                // Private forms aren't hidden in the muck's listforms command, so removing this to match
+                // Only show private forms that have been mastered by a party
+                // if (form.private && !masteredCount) return false;
             }
 
             return true;
