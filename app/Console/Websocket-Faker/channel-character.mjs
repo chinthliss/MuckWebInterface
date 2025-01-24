@@ -170,14 +170,14 @@ export default class ChannelCharacter extends Channel {
         },
 
         'buyDedication': (connection, data) => {
-            const response = {dedication: data}
+            const response = {dedication: data, messages: ['A message']};
             if (data === 'Unpurchaseable Dedication') response.error = 'This dedication can not be purchased';
             this.sendMessageToConnection(connection, 'buyDedication', response);
         },
 
         // Data is in the form {dedication, currency}
         'setDedication': (connection, data) => {
-            const response = {dedication: data.dedication}
+            const response = {dedication: data.dedication, messages: ['A message']};
             // response.error = 'Not Implemented Yet';
             this.sendMessageToConnection(connection, 'setDedication', response);
 

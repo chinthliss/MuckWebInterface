@@ -35,8 +35,8 @@ const purchaseDedication: Ref<string> = ref('');
 const purchaseCost: Ref<string> = ref('');
 const modal: Ref<typeof ModalMessage | null> = ref(null);
 const confirmPurchaseModal: Ref<typeof ModalConfirmation | null> = ref(null);
-const modalText: Ref<string> = ref('');
-
+const modalPrimaryText: Ref<string> = ref('');
+const modalSecondaryText: Ref<string[]> = ref([]);
 const startBuyDedication = (dedication: DedicationListing) => {
     purchaseDedication.value = dedication.name;
     purchaseCost.value = dedication.cost + ' ' + lex('accountCurrency');
@@ -77,31 +77,30 @@ channel.on('knownDedications', (data: string[]) => {
     dedicationsKnown.value = data;
 });
 
-type BuyResponse = {
+type BuyOrSetResponse = {
     dedication: string,
+    messages: string[],
     error?: string
 }
-channel.on('buyDedication', (data: BuyResponse) => {
+channel.on('buyDedication', (data: BuyOrSetResponse) => {
     if (data.error) {
-        modalText.value = data.error;
+        modalPrimaryText.value = data.error;
     } else {
         if (dedicationsKnown.value) {
             dedicationsKnown.value.push(data.dedication);
         }
-        modalText.value = "Dedication Purchased: " + data.dedication;
+        modalPrimaryText.value = "Dedication Purchased: " + data.dedication;
+        modalSecondaryText.value = data.messages;
     }
     if (modal.value) modal.value.show();
 });
 
-type SetResponse = {
-    dedication: string,
-    error?: string
-}
-channel.on('setDedication', (data: SetResponse) => {
+channel.on('setDedication', (data: BuyOrSetResponse) => {
     if (data.error) {
-        modalText.value = data.error;
+        modalPrimaryText.value = data.error;
     } else {
-        modalText.value = "Dedication Changed to: " + data.dedication;
+        modalPrimaryText.value = "Dedication Changed to: " + data.dedication;
+        modalSecondaryText.value = data.messages;
     }
     if (modal.value) modal.value.show();
 });
@@ -214,7 +213,10 @@ channel.send('bootDedications');
         </template>
     </div>
 
-    <ModalMessage ref="modal">{{ modalText }}</ModalMessage>
+    <ModalMessage ref="modal">
+        {{ modalPrimaryText }}
+        <div v-for="line in modalSecondaryText">{{ line }}</div>
+    </ModalMessage>
     <ModalConfirmation ref="confirmPurchaseModal" @yes="buyDedication"
                        title="Confirm Purchase" yes-label="Buy Dedication" no-label="Cancel"
     >
