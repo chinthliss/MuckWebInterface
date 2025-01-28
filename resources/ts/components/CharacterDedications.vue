@@ -30,7 +30,7 @@ const dedicationsToLoadRemaining: Ref<number> = ref(-1);
 
 const dedicationsKnown: Ref<string[] | null> = ref(null);
 const hasTrainingRespecializer: Ref<boolean | null> = ref(null);
-const freePurchases: Ref<boolean | null> = ref(null);
+const freeSwitching: Ref<boolean | null> = ref(null);
 const purchaseDedication: Ref<string> = ref('');
 const purchaseCost: Ref<string> = ref('');
 const modal: Ref<typeof ModalMessage | null> = ref(null);
@@ -68,8 +68,8 @@ channel.on('trainingRespecializer', (data: boolean) => {
     hasTrainingRespecializer.value = data;
 });
 
-channel.on('freePurchases', (data: boolean) => {
-    freePurchases.value = data;
+channel.on('freeSwitching', (data: boolean) => {
+    freeSwitching.value = data;
 });
 
 
@@ -125,8 +125,9 @@ channel.send('bootDedications');
     </template>
 
     <!-- Free purchases notice -->
-    <div v-if="freePurchases" class="p-2 mb-2 bg-primary text-dark rounded">
-        Because of your present subscription level, you can pick up any dedication without the mako cost listed.
+    <div v-if="freeSwitching" class="p-2 mb-2 bg-primary text-dark rounded">
+        Because of your present subscription level, you can switch to any dedication without purchasing it.
+        The purchase option is still shown in case you wish to use it.
     </div>
 
     <!-- List of dedications -->
@@ -189,8 +190,10 @@ channel.send('bootDedications');
                             <div v-else class="text-muted">No associated location.</div>
                         </div>
                     </div>
-                    <!-- Line 3 - optional, if owned -->
-                    <div class="row" v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
+                    <!-- Line 3 - optional, if owned or can free switch-->
+                    <div class="row"
+                         v-if="(dedicationsKnown && dedicationsKnown.includes(dedication.name)) || freeSwitching"
+                    >
                         <!-- Switch to -->
                         <div class="col-12 text-center">
                             <button class="btn btn-primary mt-2"
