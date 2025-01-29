@@ -136,32 +136,7 @@ channel.send('bootDedications');
         <template v-for="dedication in dedications">
             <div class="card mb-4">
                 <div class="card-header">
-                    <div class="card-title row">
-                        <!-- Name -->
-                        <div class="col-12 col-lg-6">
-                            <h4>{{ dedication.name }}</h4>
-                        </div>
-                        <!-- Purchase / status -->
-                        <div class="col-12 col-lg-6 text-center">
-                            <span v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
-                                You own this dedication
-                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
-                            </span>
-                            <span v-else-if="dedication.noWeb">
-                                Not available from web
-                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
-                            </span>
-                            <button v-else class="btn btn-primary btn-with-img-icon"
-                                    @click="startBuyDedication(dedication)"
-                            >
-                                <span class="btn-icon-accountcurrency btn-icon-left"></span>
-                                Purchase Dedication
-                                <span class="btn-second-line">{{ dedication.cost }} {{ lex('accountcurrency') }}</span>
-                            </button>
-                        </div>
-
-
-                    </div>
+                    <h4>{{ dedication.name }}</h4>
                 </div>
                 <div class="card-body">
                     <!-- Line 1 -->
@@ -211,6 +186,27 @@ channel.send('bootDedications');
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer">
+                    <!-- Purchase / status -->
+                    <div class="text-end">
+                            <span v-if="dedicationsKnown && dedicationsKnown.includes(dedication.name)">
+                                You own this dedication
+                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
+                            </span>
+                        <span v-else-if="dedication.noWeb">
+                                Not available from web
+                                <br/>Cost: {{ dedication.cost }} {{ lex('accountCurrency') }}
+                            </span>
+                        <button v-else class="btn btn-primary btn-with-img-icon"
+                                @click="startBuyDedication(dedication)"
+                        >
+                            <span class="btn-icon-accountcurrency btn-icon-left"></span>
+                            Purchase Dedication
+                            <span class="btn-second-line">{{ dedication.cost }} {{ lex('accountcurrency') }}</span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </template>
