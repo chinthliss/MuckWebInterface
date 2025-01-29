@@ -85,6 +85,7 @@ type BuyOrSetResponse = {
 channel.on('buyDedication', (data: BuyOrSetResponse) => {
     if (data.error) {
         modalPrimaryText.value = data.error;
+        modalSecondaryText.value = data.messages || [];
     } else {
         if (dedicationsKnown.value) {
             dedicationsKnown.value.push(data.dedication);
@@ -98,6 +99,7 @@ channel.on('buyDedication', (data: BuyOrSetResponse) => {
 channel.on('setDedication', (data: BuyOrSetResponse) => {
     if (data.error) {
         modalPrimaryText.value = data.error;
+        modalSecondaryText.value = data.messages || [];
     } else {
         modalPrimaryText.value = "Dedication Changed to: " + data.dedication;
         modalSecondaryText.value = data.messages;
