@@ -43,8 +43,9 @@
                 <li>Add in Flora's error checking as an option</li>
                 <li>Maybe make each area (e.g. head, skin, etc) a separate sub-tab rather than using a giant list.</li>
                 <li>Maybe make it so there's only one editor and switch things in and out of it as required?</li>
-                <li>Not having all the help tips as a dump at the top of the parts&description tab.</li>
+                <li>Not having all the help tips as a dump at the top of the parts/description tab.</li>
                 <li>More links to help files.</li>
+                <li>Better handling of fields that are superseded by live ones after a form is published.</li>
             </ul>
         </div>
     </div>
