@@ -14,6 +14,7 @@
     <a class="nav-link rounded" href="{{ route('multiplayer.inventory') }}">Inventory</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.forms') }}">Forms</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.help') }}">Help</a>
+    <a class="nav-link rounded" href="{{ route('multiplayer.info') }}">Information</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.contribute') }}">Contribute</a>
     @Staff
     <div class="mt-2 fw-bold"><i class="fas fa-fw fa-hat-wizard me-1 mt-2"></i>Administrative</div>

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ContributeController;
+use App\Http\Controllers\InformationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\Payment\CardManagementController;
@@ -329,6 +330,11 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::get('stringparsingscratchpad', [ContributeController::class, 'showStringparsingScratchpad'])
             ->name('multiplayer.contribute.stringparsingscratchpad');
 
+        // Information
+        Route::get('info', [InformationController::class, 'showInformationHub'])
+            ->name('multiplayer.info');
+        Route::get('statuses', [InformationController::class, 'showStatuses'])
+            ->name('multiplayer.info.statuses');
         // Avatar functionality
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])
             ->name('multiplayer.avatar.gradients');
