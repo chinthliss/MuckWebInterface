@@ -7,13 +7,13 @@ export default class ChannelHelp extends Channel {
             status: 'testStatus',
             desc: 'testDescription',
             fragment: 'testFragment',
-            property: 'testProperty'
+            properties: ['special/specialname/testProperty', 'talent/talentname/testPropertyTwo']
         },
         "anotherStatus": {
             status: 'anotherStatus',
-            desc: 'testDescription',
+            desc: 'testDescription with a longer description in it, to taste layout when it takes more space',
             fragment: 'testFragment',
-            property: 'testProperty'
+            properties: ['recipe/recipename/testProperty with a longer location', 'recipe modifier/recipemodifiername/testPropertyTheSecond']
         }
 
     }

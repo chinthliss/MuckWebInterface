@@ -51,17 +51,23 @@ export const capital = (text: string | null | undefined): string => {
 /**
  * Joins an array of strings into one string
  */
-export const arrayToList = (arrayToParse: string[], emptyWord: string = ''): string => {
+export const arrayToList = (arrayToParse: string[], emptyWord: string = '', joinString:string = ', '): string => {
     if (!arrayToParse?.length) return emptyWord;
-    return arrayToParse.join(', ');
+    return arrayToParse.join(joinString);
 };
 
 /**
  * Joins an array of strings into one string with newlines
  */
 export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
-    if (!arrayToParse?.length) return emptyWord;
-    return arrayToParse.join('\n');
+    return arrayToList(arrayToParse, emptyWord, '\n');
+};
+
+/**
+ * Joins an array of strings into one string with breaks
+ */
+export const arrayToStringWithBreaks = (arrayToParse: string[], emptyWord: string = ''): string => {
+    return arrayToList(arrayToParse, emptyWord, '<br\>');
 };
 
 /**
