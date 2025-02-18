@@ -47,9 +47,10 @@ channel.on('status', (data: StatusListing) => {
     for (const property of data.properties) {
         const parts: string[] = property.split('/', 3);
         if (parts.length == 3) {
-            let [category, name, location] = parts;
+            let [category, name, _location] = parts;
+            if (category == 'talents') category = 'special';
             category = capital(category);
-            formattedProperties.push(`${category} ${name} - ${location}`);
+            formattedProperties.push(`${category} ${name}`);
         } else formattedProperties.push(property);
     }
     data.properties = formattedProperties;
