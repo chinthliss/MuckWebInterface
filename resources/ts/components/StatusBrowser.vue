@@ -2,7 +2,7 @@
 
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import {arrayToStringWithBreaks, capital} from "../formatting";
+import {arrayToStringWithBreaks, arrayToStringWithNewlines, capital} from "../formatting";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
@@ -17,7 +17,8 @@ type StatusListing = {
     status: string,
     properties: string[],
     desc: string,
-    fragment: string
+    fragment: string,
+    node?: Node
 }
 
 const statuses: Ref<StatusListing[]> = ref([]);
@@ -51,7 +52,7 @@ const rowClicked = (row: Node, data: StatusListing) => {
         dtRow.child.hide();
     }
     else {
-        dtRow.child(arrayToStringWithBreaks(data.properties)).show();
+        if (data.node) dtRow.child(data.node).show();
     }
 }
 
@@ -73,6 +74,11 @@ channel.on('status', (data: StatusListing) => {
         } else formattedProperties.push(property);
     }
     data.properties = formattedProperties;
+    const element = document.createElement('div');
+    element.classList.add('ps-3');
+    element.innerText = arrayToStringWithNewlines(data.properties);
+    data.node = element;
+    // data.node = ;
     statuses.value.push(data);
     statusesToLoadRemaining.value--;
 });
