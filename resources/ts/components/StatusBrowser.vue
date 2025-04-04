@@ -2,7 +2,7 @@
 
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import {arrayToStringWithBreaks, arrayToStringWithNewlines, capital} from "../formatting";
+import {arrayToStringWithNewlines, capital} from "../formatting";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
