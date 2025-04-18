@@ -6,7 +6,6 @@
     {{ Breadcrumbs::render([
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
         [ 'route' => 'admin.home', 'label' => 'Admin' ],
-        [ 'route' => 'admin.avatar', 'label' => 'Avatar Administration' ],
         [ 'label' => 'Avatar Gradients (Admin)' ]
     ]) }}
 @endsection
