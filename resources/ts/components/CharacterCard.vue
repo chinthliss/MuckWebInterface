@@ -39,6 +39,7 @@ const clicked = () => {
 
 <style scoped lang="scss">
 @use 'resources/sass/variables' as *;
+@use 'sass:color';
 
 // Shared in all modes
 .avatar {
@@ -86,7 +87,7 @@ const clicked = () => {
         top: 0;
         bottom: 0;
         width: 192px;
-        background: darken($content-background, 5%);
+        background: color.adjust($content-background, $lightness: -5%)
     }
 
     .name {
