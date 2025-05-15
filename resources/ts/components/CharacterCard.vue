@@ -38,7 +38,8 @@ const clicked = () => {
 </template>
 
 <style scoped lang="scss">
-@import 'resources/sass/variables';
+@use 'resources/sass/variables' as *;
+
 // Shared in all modes
 .avatar {
     position: relative;

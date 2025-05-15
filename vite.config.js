@@ -23,6 +23,13 @@ export default defineConfig({
         splitVendorChunkPlugin(),
         visualizer()
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'legacy' // Supposedly going to be removed in Vite7, but can't find stylesheets from components without it
+            }
+        }
+    },
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js'

@@ -72,7 +72,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'resources/sass/variables';
+@use 'resources/sass/variables' as *;
 
 .editor {
     border: 1px solid $primary;
