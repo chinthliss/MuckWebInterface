@@ -26,7 +26,11 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                api: 'legacy' // Supposedly going to be removed in Vite7, but can't find stylesheets from components without it
+                // Supposedly going to be removed in Vite7, but can't find stylesheets from components without it
+                api: 'legacy',
+                silenceDeprecations: [
+                    'legacy-js-api'
+                ]
             }
         }
     },
