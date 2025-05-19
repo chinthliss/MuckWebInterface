@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\TermsOfServiceController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ContributeController;
+use App\Http\Controllers\GearController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiplayerController;
@@ -316,8 +317,6 @@ Route::prefix('/multiplayer/')->group(function () {
 
         Route::get('forms', [MultiplayerController::class, 'showFormBrowser'])
             ->name('multiplayer.forms');
-        Route::get('inventory', [HomeController::class, 'showPending'])
-            ->name('multiplayer.inventory');
         Route::get('help/{startingPage?}', [MultiplayerController::class, 'showHelp'])
             ->name('multiplayer.help')
             ->where('startingPage', '(.*)'); // To allow nested values
@@ -335,6 +334,15 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.info');
         Route::get('statuses', [InformationController::class, 'showStatuses'])
             ->name('multiplayer.info.statuses');
+
+        // Gear
+        Route::get('gear', [GearController::class, 'showGearHub'])
+            ->name('multiplayer.gear');
+        Route::get('crafting', [GearController::class, 'showCrafting'])
+            ->name('multiplayer.gear.crafting');
+        Route::get('inventory', [GearController::class, 'showInventory'])
+            ->name('multiplayer.gear.inventory');
+
         // Avatar functionality
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])
             ->name('multiplayer.avatar.gradients');
