@@ -23,6 +23,7 @@
         <!-- TODO Write better intro to status browser page -->
 
         <status-browser class="mt-2"></status-browser>
+    </div>
 @endsection
 
 
