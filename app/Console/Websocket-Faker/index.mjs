@@ -9,6 +9,7 @@ import ChannelForms from "./channel-forms.mjs";
 import ChannelContribute from "./channel-contribute.mjs";
 import ChannelAdmin from "./channel-admin.mjs";
 import ChannelInfo from "./channel-info.mjs";
+import ChannelGear from "./channel-gear.mjs";
 
 // A fake database to use for queries
 const database = process.env?.MUCK_DATABASE ? JSON.parse(process.env.MUCK_DATABASE) : null;
@@ -20,7 +21,8 @@ const channelOverrides = {
     'forms': ChannelForms,
     'contribute': ChannelContribute,
     'admin': ChannelAdmin,
-    'info': ChannelInfo
+    'info': ChannelInfo,
+    'gear': ChannelGear
 }
 
 /**

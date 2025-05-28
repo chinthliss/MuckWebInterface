@@ -14,16 +14,16 @@
 @section('content')
     <div class="container">
 
-        <div class="row">
-            <h1>Crafting</h1>
-        </div>
+        <h1>Crafting</h1>
 
         <div class="lead">
             Crafting page. Which needs a better opening.
         </div>
         <!-- TODO Write better intro to crafting page -->
 
-        <gear-crafting></gear-crafting>
+        <div class="mt-2">
+            <gear-crafting></gear-crafting>
+        </div>
     </div>
 @endsection
 
