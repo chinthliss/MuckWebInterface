@@ -59,16 +59,4 @@ class MultiplayerController extends Controller
         ]);
     }
 
-    public function showFormBrowser(): View
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $character = ($user?->getCharacter());
-
-        return view('multiplayer.form-browser')->with([
-            'startingPlayerName' => $character?->name,
-            'staff' => $character?->isStaff()
-        ]);
-    }
-
 }

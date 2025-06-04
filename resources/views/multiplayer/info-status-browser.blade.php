@@ -7,7 +7,7 @@
         [ 'route' => 'welcome', 'label' => 'Welcome' ],
         [ 'route' => 'multiplayer.home', 'label' => 'Multiplayer' ],
         [ 'route' => 'multiplayer.info', 'label' => 'Information' ],
-        [ 'label' => 'Statuses' ]
+        [ 'label' => 'Status Browser' ]
     ]) }}
 @endsection
 

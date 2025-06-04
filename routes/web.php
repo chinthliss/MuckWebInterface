@@ -315,8 +315,7 @@ Route::prefix('/multiplayer/')->group(function () {
         Route::get('ai', [HomeController::class, 'showPending'])
             ->name('multiplayer.ai');
 
-        Route::get('forms', [MultiplayerController::class, 'showFormBrowser'])
-            ->name('multiplayer.forms');
+        // Help
         Route::get('help/{startingPage?}', [MultiplayerController::class, 'showHelp'])
             ->name('multiplayer.help')
             ->where('startingPage', '(.*)'); // To allow nested values
@@ -332,8 +331,10 @@ Route::prefix('/multiplayer/')->group(function () {
         // Information
         Route::get('info', [InformationController::class, 'showInformationHub'])
             ->name('multiplayer.info');
-        Route::get('statuses', [InformationController::class, 'showStatuses'])
+        Route::get('statuses', [InformationController::class, 'showStatusBrowser'])
             ->name('multiplayer.info.statuses');
+        Route::get('forms', [InformationController::class, 'showFormBrowser'])
+            ->name('multiplayer.info.forms');
 
         // Gear
         Route::get('gear', [GearController::class, 'showGearHub'])

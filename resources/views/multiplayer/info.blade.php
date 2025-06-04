@@ -27,6 +27,7 @@
 @section('links')
     <!-- TODO: Investigate and scaffold out the information pages properly -->
     {{ PageLinks::render([
-        ['title' => 'Statuses', 'description' => 'View the statuses used by the game', 'url' => route('multiplayer.info.statuses')],
+        ['title' => 'Form Browser', 'description' => 'View the forms available in game', 'url' => route('multiplayer.info.forms')],
+        ['title' => 'Status Browser', 'description' => 'View the statuses used by the game', 'url' => route('multiplayer.info.statuses')]
     ]) }}
 @endsection

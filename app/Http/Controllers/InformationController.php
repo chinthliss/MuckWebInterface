@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User as User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,9 +15,22 @@ class InformationController extends Controller
         return view('multiplayer.info');
     }
 
-    public function showStatuses(): View
+
+    public function showFormBrowser(): View
     {
-        return view('multiplayer.info-statuses');
+        /** @var User $user */
+        $user = auth()->user();
+        $character = ($user?->getCharacter());
+
+        return view('multiplayer.info-form-browser')->with([
+            'startingPlayerName' => $character?->name,
+            'staff' => $character?->isStaff()
+        ]);
+    }
+
+    public function showStatusBrowser(): View
+    {
+        return view('multiplayer.info-status-browser');
     }
 
 }
