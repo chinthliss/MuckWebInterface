@@ -4,8 +4,26 @@ import Channel from './channel.mjs';
 export default class ChannelGear extends Channel {
     recipes = [
         {
-            name: 'Test Recipe',
-            description: 'this is a test entry',
+            name: 'Test Recipe 1',
+            description: 'This is the 1st test recipe',
+            availability: 'somewhere',
+            costMoney: 100,
+            costXp: 200,
+            skills: {
+                mechanical: 20
+            },
+            salvage: {
+                food: {
+                    common: 1
+                }
+            },
+            item: {
+
+            }
+        },
+        {
+            name: 'Test Recipe 2',
+            description: 'This is the 2nd test recipe',
             availability: 'somewhere',
             costMoney: 100,
             costXp: 200,
@@ -26,6 +44,16 @@ export default class ChannelGear extends Channel {
     modifiers = [
         {
             name: 'Test Modifier',
+            description: 'This is a test modifier',
+            costMoney: 200,
+            costXp: 300,
+            item: {
+
+            }
+        },
+        {
+            name: 'Test Modifier 2',
+            description: 'This is a second test modifier',
             costMoney: 200,
             costXp: 300,
             item: {
@@ -57,6 +85,10 @@ export default class ChannelGear extends Channel {
             };
 
             this.sendMessageToConnection(connection, 'bootCrafting', initialEnvironment);
+        },
+        'preview': (connection, data) => {
+            // Data is 'recipe' and 'modifiers'
+            this.sendMessageToConnection(connection, 'preview', data);
         }
     };
 
