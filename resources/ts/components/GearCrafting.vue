@@ -4,7 +4,11 @@ import {onMounted, Ref, ref} from "vue";
 
 type Recipe = {
     name: string,
-    description: string
+    description: string,
+    item: {
+        type: string,
+        useType: string
+    }
 }
 
 type Modifier = {
@@ -12,7 +16,7 @@ type Modifier = {
     description: string
 }
 
-type Blueprint = {
+type SavedPlan = {
     name: string,
     recipeName: string,
     recipe: Recipe | null, // Might be null if invalid
@@ -22,7 +26,7 @@ type Blueprint = {
 
 type CraftPreview = {}
 
-const blueprints: Ref<Blueprint[]> = ref([]);
+const savedPlans: Ref<SavedPlan[]> = ref([]);
 const recipes: Ref<Recipe[]> = ref([]);
 const modifiers: Ref<Modifier[]> = ref([]);
 const showDescriptions: Ref<boolean> = ref(false);
@@ -49,27 +53,33 @@ const toggleModifier = (modifier: Modifier) => {
     updatePreview();
 }
 
+const classForRecipeIcon = (recipe: Recipe) => {
+    if (recipe.item.useType == 'consumable') return 'fa-utensils';
+    if (recipe.item.useType == 'tool') return 'fa-toolbox';
+    return 'fa-shirt'; // Default for equipment
+}
+
 channel.on('preview', (response: CraftPreview) => {
     preview.value = response;
 });
 
 channel.on('bootCrafting', (response: {
-    blueprints: Blueprint[],
+    savedPlans: SavedPlan[],
     recipes: Recipe[],
     modifiers: Modifier[]
 }) => {
-    blueprints.value = response.blueprints;
+    savedPlans.value = response.savedPlans || [];
     recipes.value = response.recipes;
     modifiers.value = response.modifiers;
-    // Connect up blueprints
-    for (const blueprint of blueprints.value) {
-        blueprint.recipe = recipes.value.find(x => x.name === blueprint.recipeName) || null;
-        if (!blueprint.recipe) console.warn(`Blueprint [${blueprint.name}]: Recipe [${blueprint.recipeName}] not found`);
-        blueprint.modifiers = [];
-        for (const modifierName of blueprint.modifierNames) {
+    // Connect up saved plans
+    for (const savedPlan of savedPlans.value) {
+        savedPlan.recipe = recipes.value.find(x => x.name === savedPlan.recipeName) || null;
+        if (!savedPlan.recipe) console.warn(`SavedPlan [${savedPlan.name}]: Recipe [${savedPlan.recipeName}] not found`);
+        savedPlan.modifiers = [];
+        for (const modifierName of savedPlan.modifierNames) {
             const modifier = modifiers.value.find(x => x.name === modifierName) || null;
-            if (modifier) blueprint.modifiers.push(modifier);
-            else console.warn(`Blueprint [${blueprint.name}]: Modifier [${modifierName}] not found`);
+            if (modifier) savedPlan.modifiers.push(modifier);
+            else console.warn(`SavedPlan [${savedPlan.name}]: Modifier [${modifierName}] not found`);
         }
     }
 })
@@ -81,13 +91,26 @@ onMounted(() => {
 </script>
 
 <template>
+
+    <!-- Legend -->
+    <div class="bg-secondary text-black p-1 rounded-4">
+    <!-- <h6 class="text-center">Legend</h6> -->
+        <div class="d-flex justify-content-evenly">
+            <div><i class="fas fa-shirt use-type-icon"></i> Equipment</div>
+            <div><i class="fas fa-toolbox use-type-icon"></i> Tool/Usable</div>
+            <div><i class="fas fa-utensils use-type-icon"></i> Consumable</div>
+        </div>
+    </div>
+
+
     <h2>Saved Plans</h2>
     <p>These are saved combinations of a recipe and any modifiers, so that they can be re-used later.</p>
-    <div v-for="blueprint in blueprints">
-        {{ blueprint.name }}
-        <span v-if="blueprint.recipe">{{ blueprint.recipe.name }}</span>
-        <span v-else>INVALID: {{ blueprint.recipeName }}</span>
+    <div v-if="savedPlans.length > 0" v-for="savedPlan in savedPlans">
+        {{ savedPlan.name }}
+        <span v-if="savedPlan.recipe">{{ savedPlan.recipe.name }}</span>
+        <span v-else>INVALID: {{ savedPlan.recipeName }}</span>
     </div>
+    <div v-else>You have no saved plans</div>
 
     <hr/>
     <h2>Present Plan</h2>
@@ -100,20 +123,26 @@ onMounted(() => {
     <div class="row mb-2">
         <div class="col-12 col-xl-6">
             <h3>Select Recipe</h3>
-            <div v-for="recipe in recipes" class="card mb-2"
+            <div v-for="recipe in recipes" class="card button mb-2" role="button"
                  v-bind:class="{ 'text-bg-primary': recipe.name == selectedRecipe }"
                  @click="selectRecipe(recipe)"
             >
                 <div class="card-body">
-                    <h5 class="card-title">{{ recipe.name }}</h5>
-                    <p v-if="showDescriptions" class="card-text">{{ recipe.description }}</p>
+                    <h5 class="card-title">
+                        <span class="d-flex">
+                            <span class="flex-md-grow-1">{{ recipe.name }}</span>
+                            <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
+                        </span>
+                    </h5>
+                    <h6 class="card-subtitle fst-italic">Test</h6>
+                    <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
                 </div>
 
             </div>
         </div>
         <div class="col-12 col-xl-6">
             <h3>Select Modifiers</h3>
-            <div v-for="modifier in modifiers" class="card mb-2"
+            <div v-for="modifier in modifiers" class="card mb-2" role="button"
                  v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
                  @click="toggleModifier(modifier)"
             >
@@ -140,5 +169,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+.use-type-icon {
+    width: 24px;
+}
 </style>

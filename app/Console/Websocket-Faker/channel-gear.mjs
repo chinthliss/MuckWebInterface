@@ -18,7 +18,8 @@ export default class ChannelGear extends Channel {
                 }
             },
             item: {
-
+                type: 'Something something something',
+                useType: 'consumable'
             }
         },
         {
@@ -36,7 +37,8 @@ export default class ChannelGear extends Channel {
                 }
             },
             item: {
-
+                type: 'Lots of words something equipment',
+                useType: 'equipment'
             }
         }
     ];
@@ -62,14 +64,14 @@ export default class ChannelGear extends Channel {
         }
     ];
 
-    blueprints = [
+    savedPlans = [
         {
-            name: 'Test Blueprint',
+            name: 'Test Saved Plan',
             recipeName: 'Test Recipe',
             modifierNames: ['Test Modifier']
         },
         {
-            name: 'Broken Blueprint',
+            name: 'Broken Saved Plan',
             recipeName: 'Broken Recipe',
             modifierNames: ['Broken Modifier']
         }
@@ -81,7 +83,7 @@ export default class ChannelGear extends Channel {
             let initialEnvironment = {
                 recipes: this.recipes,
                 modifiers: this.modifiers,
-                blueprints: this.blueprints
+                savedPlans: this.savedPlans
             };
 
             this.sendMessageToConnection(connection, 'bootCrafting', initialEnvironment);

@@ -14,6 +14,10 @@
 @section('content')
     <div class="container">
 
+        <div class="mt-2 mb-4 p-3 border rounded border-warning text-warning">
+            This page is extremely under-construction. Even more so than the rest of the site!
+        </div>
+
         <h1>Crafting</h1>
 
         <div class="lead">
