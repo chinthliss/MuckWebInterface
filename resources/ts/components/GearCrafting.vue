@@ -134,7 +134,7 @@ onMounted(() => {
                             <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
                         </span>
                     </h5>
-                    <h6 class="card-subtitle fst-italic">Test</h6>
+                    <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
                     <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
                 </div>
 
