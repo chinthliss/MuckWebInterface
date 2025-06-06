@@ -24,7 +24,28 @@ type SavedPlan = {
     modifiers: Modifier[]
 }
 
-type CraftPreview = {}
+type CraftPreview = {
+    buildcost: number,
+    "common salvage": {
+        [gradeAndType: string]: number
+    },
+    loadout: number,
+    money: number,
+    "other ingredient": {
+
+    },
+    quantity: number,
+    "quantity float": number,
+    scale: number,
+    skills: {
+        [skill: string]: number
+    },
+    "true salvage": {
+        [gradeAndType: string]: number
+    },
+    upkeep: number,
+    xp: number
+}
 
 const savedPlans: Ref<SavedPlan[]> = ref([]);
 const recipes: Ref<Recipe[]> = ref([]);
@@ -40,7 +61,7 @@ const channel = mwiWebsocket.channel('gear');
 
 const updatePreview = () => {
     preview.value = null;
-    channel.send('preview', {recipe: selectedRecipe.value, modifiers: selectedModifiers.value});
+    channel.send('craftPreview', {recipe: selectedRecipe.value, modifiers: selectedModifiers.value});
 }
 
 const selectRecipe = (recipe: Recipe) => {
@@ -63,7 +84,7 @@ const classForRecipeIcon = (recipe: Recipe) => {
     return 'fa-shirt'; // Default for equipment
 }
 
-channel.on('preview', (response: CraftPreview) => {
+channel.on('craftPreview', (response: CraftPreview) => {
     preview.value = response;
 })
 
@@ -181,6 +202,7 @@ onMounted(() => {
     <h3>Preview</h3>
     <div v-if="preview">
         You're making a thing!
+        <div>{{ JSON.stringify(preview, null, 2) }}</div>
     </div>
     <div v-else-if="selectedRecipe">
         Loading..
