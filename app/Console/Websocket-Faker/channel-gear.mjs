@@ -81,12 +81,20 @@ export default class ChannelGear extends Channel {
     handlers = {
         'bootCrafting': (connection, _data) => {
             let initialEnvironment = {
-                recipes: this.recipes,
-                modifiers: this.modifiers,
+                recipeCount: this.recipes.length,
+                modifierCount: this.modifiers.length,
                 savedPlans: this.savedPlans
             };
 
             this.sendMessageToConnection(connection, 'bootCrafting', initialEnvironment);
+
+            for (const recipe of this.recipes) {
+                this.sendMessageToConnection(connection, 'recipe', recipe);
+            }
+
+            for (const modifier of this.modifiers) {
+                this.sendMessageToConnection(connection, 'modifier', modifier);
+            }
         },
         'preview': (connection, data) => {
             // Data is 'recipe' and 'modifiers'

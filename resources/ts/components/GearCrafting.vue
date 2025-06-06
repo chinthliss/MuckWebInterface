@@ -33,12 +33,16 @@ const showDescriptions: Ref<boolean> = ref(false);
 const selectedRecipe: Ref<string> = ref('');
 const selectedModifiers: Ref<string[]> = ref([]);
 const preview: Ref<CraftPreview | null> = ref(null);
+const recipesToLoad: Ref<number | null> = ref(null); // If null, loading hasn't started. If 0, finished.
+const modifiersToLoad: Ref<number | null> = ref(null); // If null, loading hasn't started. If 0, finished.
+
 const channel = mwiWebsocket.channel('gear');
 
 const updatePreview = () => {
     preview.value = null;
     channel.send('preview', {recipe: selectedRecipe.value, modifiers: selectedModifiers.value});
 }
+
 const selectRecipe = (recipe: Recipe) => {
     selectedRecipe.value = recipe.name;
     updatePreview();
@@ -61,16 +65,27 @@ const classForRecipeIcon = (recipe: Recipe) => {
 
 channel.on('preview', (response: CraftPreview) => {
     preview.value = response;
-});
+})
+
+channel.on('recipe', (response: Recipe) => {
+    recipes.value.push(response);
+    if (recipesToLoad.value) recipesToLoad.value--;
+})
+
+channel.on('modifier', (response: Modifier) => {
+    modifiers.value.push(response);
+    if (modifiersToLoad.value) modifiersToLoad.value--;
+})
+
 
 channel.on('bootCrafting', (response: {
     savedPlans: SavedPlan[],
-    recipes: Recipe[],
-    modifiers: Modifier[]
+    recipeCount: number, // Sent separately otherwise it'll break the muck's reliable string length
+    modifierCount: number // Sent separately otherwise it'll break the muck's reliable string length
 }) => {
     savedPlans.value = response.savedPlans || [];
-    recipes.value = response.recipes;
-    modifiers.value = response.modifiers;
+    recipesToLoad.value = response.recipeCount;
+    modifiersToLoad.value = response.modifierCount;
     // Connect up saved plans
     for (const savedPlan of savedPlans.value) {
         savedPlan.recipe = recipes.value.find(x => x.name === savedPlan.recipeName) || null;
@@ -94,7 +109,7 @@ onMounted(() => {
 
     <!-- Legend -->
     <div class="bg-secondary text-black p-1 rounded-4">
-    <!-- <h6 class="text-center">Legend</h6> -->
+        <!-- <h6 class="text-center">Legend</h6> -->
         <div class="d-flex justify-content-evenly">
             <div><i class="fas fa-shirt use-type-icon"></i> Equipment</div>
             <div><i class="fas fa-toolbox use-type-icon"></i> Tool/Usable</div>
@@ -105,7 +120,7 @@ onMounted(() => {
 
     <h2>Saved Plans</h2>
     <p>These are saved combinations of a recipe and any modifiers, so that they can be re-used later.</p>
-    <div v-if="savedPlans.length > 0" v-for="savedPlan in savedPlans">
+    <div v-for="savedPlan in savedPlans" v-if="savedPlans.length > 0">
         {{ savedPlan.name }}
         <span v-if="savedPlan.recipe">{{ savedPlan.recipe.name }}</span>
         <span v-else>INVALID: {{ savedPlan.recipeName }}</span>
@@ -123,37 +138,45 @@ onMounted(() => {
     <div class="row mb-2">
         <div class="col-12 col-xl-6">
             <h3>Select Recipe</h3>
-            <div v-for="recipe in recipes" class="card button mb-2" role="button"
-                 v-bind:class="{ 'text-bg-primary': recipe.name == selectedRecipe }"
-                 @click="selectRecipe(recipe)"
-            >
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <span class="d-flex">
-                            <span class="flex-md-grow-1">{{ recipe.name }}</span>
-                            <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
-                        </span>
-                    </h5>
-                    <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
-                    <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
-                </div>
+            <template v-if="recipesToLoad == null">Starting up..</template>
+            <template v-else-if="recipesToLoad > 0">Loading Recipes ({{ recipesToLoad }} remain)</template>
+            <template v-else>
+                <div v-for="recipe in recipes" class="card button mb-2" role="button"
+                     v-bind:class="{ 'text-bg-primary': recipe.name == selectedRecipe }"
+                     @click="selectRecipe(recipe)"
+                >
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <span class="d-flex">
+                                <span class="flex-md-grow-1">{{ recipe.name }}</span>
+                                <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
+                            </span>
+                        </h5>
+                        <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
+                        <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
+                    </div>
 
-            </div>
+                </div>
+            </template>
         </div>
         <div class="col-12 col-xl-6">
             <h3>Select Modifiers</h3>
-            <div v-for="modifier in modifiers" class="card mb-2" role="button"
-                 v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
-                 @click="toggleModifier(modifier)"
-            >
-                <div class="card-body">
-                    <h5 class="card-title">{{ modifier.name }}</h5>
-                    <p v-if="showDescriptions" class="card-text">{{ modifier.description }}</p>
+            <template v-if="modifiersToLoad == null">Starting up..</template>
+            <template v-else-if="modifiersToLoad > 0">Loading Modifiers ({{ modifiersToLoad }} remain)</template>
+            <template v-else>
+                <div v-for="modifier in modifiers" class="card mb-2" role="button"
+                     v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
+                     @click="toggleModifier(modifier)"
+                >
+                    <div class="card-body">
+                        <h5 class="card-title">{{ modifier.name }}</h5>
+                        <p v-if="showDescriptions" class="card-text">{{ modifier.description }}</p>
+                    </div>
+
                 </div>
-
-            </div>
-
+            </template>
         </div>
+
     </div>
     <h3>Preview</h3>
     <div v-if="preview">
