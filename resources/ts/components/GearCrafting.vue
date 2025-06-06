@@ -26,21 +26,21 @@ type SavedPlan = {
 
 type CraftPreview = {
     buildcost: number,
-    "common salvage": {
+    commonSalvage: {
         [gradeAndType: string]: number
     },
     loadout: number,
     money: number,
-    "other ingredient": {
+    otherIngredients: {
 
     },
     quantity: number,
-    "quantity float": number,
+    quantityFloat: number,
     scale: number,
     skills: {
         [skill: string]: number
     },
-    "true salvage": {
+    trueSalvage: {
         [gradeAndType: string]: number
     },
     upkeep: number,

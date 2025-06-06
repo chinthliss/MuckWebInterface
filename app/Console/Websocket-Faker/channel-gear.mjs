@@ -96,9 +96,39 @@ export default class ChannelGear extends Channel {
                 this.sendMessageToConnection(connection, 'modifier', modifier);
             }
         },
-        'preview': (connection, data) => {
+        'craftPreview': (connection, data) => {
             // Data is 'recipe' and 'modifiers'
-            this.sendMessageToConnection(connection, 'preview', data);
+            // Not even going to try and imitate the calculations on the muck, everything is just additive here.
+            const preview = {
+                buildcost: 10,
+                commonSalvage: {
+                    chemical: 10,
+                    electronic: 10,
+                    energy: 10,
+                    food: 10
+                },
+                loadout: 10,
+                money: 10,
+                otherIngredients: {},
+                quantity: 1,
+                quantityFloat: 1.0,
+                scale: 0,
+                skills: {
+                    mechanical: 10
+                },
+                trueSalvage: {
+                    commonChemical: 10,
+                    commonElectronic: 10,
+                    commonEnergy: 10,
+                    commonFood: 10,
+                },
+                upkeep: 10,
+                xp: 10
+            };
+            // { "buildcost": 20, "common salvage": { "chemical": 15, "electronic": 15, "energy": 105 }, "loadout": 15, "money": 20000, "other ingredients": {}, "quantity": 1, "quantity float": 1, "scale": 0, "skills": { "electronic": 1 }, "true salvage": { "common chemical": 15, "common electronic": 15, "common energy": 5, "uncommon energy": 1 }, "upkeep": 3, "xp": 0 }
+
+
+            this.sendMessageToConnection(connection, 'craftPreview', preview);
         }
     };
 
