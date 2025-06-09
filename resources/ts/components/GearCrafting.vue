@@ -28,6 +28,7 @@ type SavedPlan = {
 type CraftPreview = {
     recipe: string,
     modifiers: string[],
+    error?: string,
     buildCost: number,
     commonSalvage: {
         [gradeAndType: string]: number
@@ -213,13 +214,15 @@ onMounted(() => {
     <hr/>
     <h3>Preview</h3>
     <div v-if="preview">
-        <dl class="row">
+        <div v-if="preview.error">{{ preview.error }}</div>
+        <dl v-else class="row">
 
             <dt class="col-sm-2">Recipe</dt>
             <dd class="col-sm-10">{{ preview.recipe }}</dd>
 
             <dt class="col-sm-2">Modifiers</dt>
             <dd class="col-sm-10">{{ arrayToList(preview.modifiers) }}</dd>
+
 
             <dt class="col-sm-2">Skills</dt>
             <dd class="col-sm-10">
