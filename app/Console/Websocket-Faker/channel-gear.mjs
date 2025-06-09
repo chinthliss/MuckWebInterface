@@ -98,9 +98,11 @@ export default class ChannelGear extends Channel {
         },
         'craftPreview': (connection, data) => {
             // Data is 'recipe' and 'modifiers'
-            // Not even going to try and imitate the calculations on the muck, everything is just additive here.
+            // Not even going to try and imitate the calculations on the muck!
             const preview = {
-                buildcost: 10,
+                recipe: data.recipe,
+                modifiers: data.modifiers,
+                buildCost: 10,
                 commonSalvage: {
                     chemical: 10,
                     electronic: 10,
@@ -109,7 +111,9 @@ export default class ChannelGear extends Channel {
                 },
                 loadout: 10,
                 money: 10,
-                otherIngredients: {},
+                otherIngredients: {
+                    something: 1
+                },
                 quantity: 1,
                 quantityFloat: 1.0,
                 scale: 0,
@@ -125,7 +129,7 @@ export default class ChannelGear extends Channel {
                 upkeep: 10,
                 xp: 10
             };
-            // { "buildcost": 20, "common salvage": { "chemical": 15, "electronic": 15, "energy": 105 }, "loadout": 15, "money": 20000, "other ingredients": {}, "quantity": 1, "quantity float": 1, "scale": 0, "skills": { "electronic": 1 }, "true salvage": { "common chemical": 15, "common electronic": 15, "common energy": 5, "uncommon energy": 1 }, "upkeep": 3, "xp": 0 }
+
 
 
             this.sendMessageToConnection(connection, 'craftPreview', preview);

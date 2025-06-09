@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref} from "vue";
+import {arrayToList} from "../formatting";
 
 type Recipe = {
     name: string,
@@ -25,14 +26,16 @@ type SavedPlan = {
 }
 
 type CraftPreview = {
-    buildcost: number,
+    recipe: string,
+    modifiers: string[],
+    buildCost: number,
     commonSalvage: {
         [gradeAndType: string]: number
     },
     loadout: number,
     money: number,
     otherIngredients: {
-
+        [ingredient: string]: number
     },
     quantity: number,
     quantityFloat: number,
@@ -105,7 +108,9 @@ channel.on('bootCrafting', (response: {
     modifierCount: number // Sent separately otherwise it'll break the muck's reliable string length
 }) => {
     savedPlans.value = response.savedPlans || [];
+    recipes.value = [];
     recipesToLoad.value = response.recipeCount;
+    modifiers.value = [];
     modifiersToLoad.value = response.modifierCount;
     // Connect up saved plans
     for (const savedPlan of savedPlans.value) {
@@ -159,50 +164,101 @@ onMounted(() => {
     <div class="row mb-2">
         <div class="col-12 col-xl-6">
             <h3>Select Recipe</h3>
-            <template v-if="recipesToLoad == null">Starting up..</template>
-            <template v-else-if="recipesToLoad > 0">Loading Recipes ({{ recipesToLoad }} remain)</template>
-            <template v-else>
-                <div v-for="recipe in recipes" class="card button mb-2" role="button"
-                     v-bind:class="{ 'text-bg-primary': recipe.name == selectedRecipe }"
-                     @click="selectRecipe(recipe)"
-                >
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <span class="d-flex">
-                                <span class="flex-md-grow-1">{{ recipe.name }}</span>
-                                <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
-                            </span>
-                        </h5>
-                        <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
-                        <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
-                    </div>
+            <div class="scrollable-area pe-2">
+                <template v-if="recipesToLoad == null">Starting up..</template>
+                <template v-else-if="recipesToLoad > 0">Loading Recipes ({{ recipesToLoad }} remain)</template>
+                <template v-else>
+                    <div v-for="recipe in recipes" class="card button mb-2" role="button"
+                         v-bind:class="{ 'text-bg-primary': recipe.name == selectedRecipe }"
+                         @click="selectRecipe(recipe)"
+                    >
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="d-flex">
+                                    <span class="flex-md-grow-1">{{ recipe.name }}</span>
+                                    <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
+                                </span>
+                            </h5>
+                            <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
+                            <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
+                        </div>
 
-                </div>
-            </template>
+                    </div>
+                </template>
+            </div>
         </div>
+
         <div class="col-12 col-xl-6">
             <h3>Select Modifiers</h3>
-            <template v-if="modifiersToLoad == null">Starting up..</template>
-            <template v-else-if="modifiersToLoad > 0">Loading Modifiers ({{ modifiersToLoad }} remain)</template>
-            <template v-else>
-                <div v-for="modifier in modifiers" class="card mb-2" role="button"
-                     v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
-                     @click="toggleModifier(modifier)"
-                >
-                    <div class="card-body">
-                        <h5 class="card-title">{{ modifier.name }}</h5>
-                        <p v-if="showDescriptions" class="card-text">{{ modifier.description }}</p>
-                    </div>
+            <div class="scrollable-area pe-2">
+                <template v-if="modifiersToLoad == null">Starting up..</template>
+                <template v-else-if="modifiersToLoad > 0">Loading Modifiers ({{ modifiersToLoad }} remain)</template>
+                <template v-else>
+                    <div v-for="modifier in modifiers" class="card mb-2" role="button"
+                         v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
+                         @click="toggleModifier(modifier)"
+                    >
+                        <div class="card-body">
+                            <h5 class="card-title">{{ modifier.name }}</h5>
+                            <p v-if="showDescriptions" class="card-text">{{ modifier.description }}</p>
+                        </div>
 
-                </div>
-            </template>
+                    </div>
+                </template>
+            </div>
         </div>
 
     </div>
+
+    <hr/>
     <h3>Preview</h3>
     <div v-if="preview">
-        You're making a thing!
-        <div>{{ JSON.stringify(preview, null, 2) }}</div>
+        <dl class="row">
+
+            <dt class="col-sm-2">Recipe</dt>
+            <dd class="col-sm-10">{{ preview.recipe }}</dd>
+
+            <dt class="col-sm-2">Modifiers</dt>
+            <dd class="col-sm-10">{{ arrayToList(preview.modifiers) }}</dd>
+
+            <dt class="col-sm-2">Skills</dt>
+            <dd class="col-sm-10">
+                <div v-for="(requirement, skill) in preview.skills">
+                    {{ skill }} of {{ requirement }}
+                </div>
+            </dd>
+
+
+            <dt class="col-sm-2">Salvage</dt>
+            <dd class="col-sm-10">
+                <div v-for="(quantity, salvage) in preview.trueSalvage">
+                    {{ quantity }} x {{ salvage }}
+                </div>
+            </dd>
+
+            <dt class="col-sm-2">Other Ingredients</dt>
+            <dd class="col-sm-10">
+                <div v-for="(quantity, ingredient) in preview.otherIngredients">
+                    {{ quantity }} x {{ ingredient }}
+                </div>
+            </dd>
+
+            <dt class="col-sm-2">Freecred</dt>
+            <dd class="col-sm-10">{{ preview.money }}</dd>
+
+            <dt class="col-sm-2">Nanites</dt>
+            <dd class="col-sm-10">{{ preview.buildCost }}ng</dd>
+
+            <dt class="col-sm-2">Upkeep</dt>
+            <dd class="col-sm-10">{{ preview.upkeep }}</dd>
+
+            <dt class="col-sm-2">Loadout</dt>
+            <dd class="col-sm-10">{{ preview.loadout }}</dd>
+
+            <dt class="col-sm-2">Quantity</dt>
+            <dd class="col-sm-10">{{ preview.quantity }}</dd>
+
+        </dl>
     </div>
     <div v-else-if="selectedRecipe">
         Loading..
@@ -216,5 +272,10 @@ onMounted(() => {
 <style scoped>
 .use-type-icon {
     width: 24px;
+}
+
+.scrollable-area {
+    height: 400px;
+    overflow-y: scroll;
 }
 </style>
