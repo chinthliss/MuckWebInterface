@@ -44,11 +44,13 @@ type CraftPreview = {
     skills: {
         [skill: string]: number
     },
-    trueSalvage: {
+    salvage: {
         [gradeAndType: string]: number
     },
     upkeep: number,
-    xp: number
+    xp: number,
+    notices?: string[],
+    warnings?: string[]
 }
 
 const savedPlans: Ref<SavedPlan[]> = ref([]);
@@ -234,7 +236,7 @@ onMounted(() => {
 
             <dt class="col-sm-2">Salvage</dt>
             <dd class="col-sm-10">
-                <div v-for="(quantity, salvage) in preview.trueSalvage">
+                <div v-for="(quantity, salvage) in preview.salvage">
                     {{ quantity }} x {{ salvage }}
                 </div>
             </dd>

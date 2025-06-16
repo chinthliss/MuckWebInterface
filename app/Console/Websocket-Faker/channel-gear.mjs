@@ -120,7 +120,7 @@ export default class ChannelGear extends Channel {
                 skills: {
                     mechanical: 10
                 },
-                trueSalvage: {
+                salvage: {
                     commonChemical: 10,
                     commonElectronic: 10,
                     commonEnergy: 10,
