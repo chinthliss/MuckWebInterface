@@ -30,22 +30,28 @@ type CraftPreview = {
     modifiers: string[],
     error?: string,
     buildCost: number,
-    commonSalvage: {
-        [gradeAndType: string]: number
-    },
     loadout: number,
     money: number,
     otherIngredients: {
         [ingredient: string]: number
     },
     quantity: number,
-    quantityFloat: number,
     scale: number,
     skills: {
-        [skill: string]: number
+        [skill: string]: {
+            min: number,
+            max: number
+        }
     },
     salvage: {
-        [gradeAndType: string]: number
+        [type: string]: {
+            min: {
+                [grade: string]: number
+            },
+            max: {
+                [grade: string]: number
+            }
+        }
     },
     upkeep: number,
     xp: number,
@@ -228,8 +234,8 @@ onMounted(() => {
 
             <dt class="col-sm-2">Skills</dt>
             <dd class="col-sm-10">
-                <div v-for="(requirement, skill) in preview.skills">
-                    {{ skill }} of {{ requirement }}
+                <div v-for="(range, skill) in preview.skills">
+                    {{ skill }} of {{ range.min }} to {{ range.max }}
                 </div>
             </dd>
 
