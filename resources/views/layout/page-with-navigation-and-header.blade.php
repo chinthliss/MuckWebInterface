@@ -11,7 +11,7 @@
     <a class="nav-link rounded" href="{{ route('multiplayer.guide.starting') }}">Getting Started</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.home') }}">Dashboard</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.character') }}">Character</a>
-    <a class="nav-link rounded" href="{{ route('multiplayer.gear') }}">Gear & Crafting</a>
+    <a class="nav-link rounded" href="{{ route('multiplayer.gear') }}">Gear</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.help') }}">Help</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.info') }}">Information</a>
     <a class="nav-link rounded" href="{{ route('multiplayer.contribute') }}">Contribute</a>
