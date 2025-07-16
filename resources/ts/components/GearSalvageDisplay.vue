@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
 import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
@@ -51,7 +51,10 @@ onMounted(() => {
         <tr v-for="type in types">
             <td>{{ capital(type) }}</td>
             <td>{{ skills[type] || 0 }}</td>
-            <td v-for="rank in ranks">{{ (owned[type][rank] || 0).toLocaleString() }}</td>
+            <td v-for="rank in ranks">{{
+                    (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString()
+                }}
+            </td>
         </tr>
         </tbody>
     </table>

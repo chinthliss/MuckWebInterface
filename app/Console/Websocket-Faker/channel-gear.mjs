@@ -139,8 +139,8 @@ export default class ChannelGear extends Channel {
             }
 
             this.sendMessageToConnection(connection, 'bootSalvageDisplay', {
-                types: ['waffle', 'banana'],
-                ranks: ['common', 'uncommon'],
+                types: ['waffle', 'banana', 'cookie'],
+                ranks: ['common', 'uncommon', 'rare'],
                 owned: owned,
                 skills: {}
             })
