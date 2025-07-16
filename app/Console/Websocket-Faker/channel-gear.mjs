@@ -130,9 +130,20 @@ export default class ChannelGear extends Channel {
                 xp: 10
             };
 
-
-
             this.sendMessageToConnection(connection, 'craftPreview', preview);
+        },
+        'bootSalvageDisplay': (connection, data) => {
+            let owned = {
+                'waffle': { 'common': 55555 },
+                'banana': { 'common': 7, 'uncommon': 9 },
+            }
+
+            this.sendMessageToConnection(connection, 'bootSalvageDisplay', {
+                types: ['waffle', 'banana'],
+                ranks: ['common', 'uncommon'],
+                owned: owned,
+                skills: {}
+            })
         }
     };
 

@@ -28,8 +28,7 @@
         <!-- TODO: Inventory component -->
 
         <h2>Salvage</h2>
-        <p>Not implemented yet, this is just to scaffold out the page.</p>
-        <!-- TODO: Salvage component -->
+        <gear-salvage-display></gear-salvage-display>
 
         <h2>Nanites</h2>
         <p>Not implemented yet, this is just to scaffold out the page.</p>
