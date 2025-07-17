@@ -44,6 +44,7 @@
 @section('links')
     <!-- TODO: Investigate and scaffold out the gear pages properly -->
     {{ PageLinks::render([
-        ['title' => 'Crafting', 'description' => 'Creating new gear, or request such from someone else,', 'url' => route('multiplayer.gear.crafting')],
+        ['title' => 'Crafting', 'description' => 'Creating new gear, or request such from someone else.', 'url' => route('multiplayer.gear.crafting')],
+        ['title' => 'Salvage Market', 'description' => 'Purchase or sell salvage. Also handles conversions and token exchange.', 'url' => route('multiplayer.gear.salvagemarket')],
     ]) }}
 @endsection

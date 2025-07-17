@@ -1,7 +1,9 @@
 import Channel from './channel.mjs';
 
-
 export default class ChannelGear extends Channel {
+
+    salvage_types = ['waffle', 'banana', 'cookie'];
+    salvage_ranks = ['common', 'uncommon', 'rare'];
     recipes = [
         {
             name: 'Test Recipe 1',
@@ -49,18 +51,14 @@ export default class ChannelGear extends Channel {
             description: 'This is a test modifier',
             costMoney: 200,
             costXp: 300,
-            item: {
-
-            }
+            item: {}
         },
         {
             name: 'Test Modifier 2',
             description: 'This is a second test modifier',
             costMoney: 200,
             costXp: 300,
-            item: {
-
-            }
+            item: {}
         }
     ];
 
@@ -132,17 +130,44 @@ export default class ChannelGear extends Channel {
 
             this.sendMessageToConnection(connection, 'craftPreview', preview);
         },
+
         'bootSalvageDisplay': (connection, data) => {
             let owned = {
-                'waffle': { 'common': 55555 },
-                'banana': { 'common': 7, 'uncommon': 9 },
+                'waffle': {'common': 55555},
+                'banana': {'common': 7, 'uncommon': 9},
             }
 
+            // Salvage display is a static widget, so takes a full state
             this.sendMessageToConnection(connection, 'bootSalvageDisplay', {
-                types: ['waffle', 'banana', 'cookie'],
-                ranks: ['common', 'uncommon', 'rare'],
+                types: this.salvage_types,
+                ranks: this.salvage_ranks,
                 owned: owned,
                 skills: {}
+            })
+        },
+
+        'bootSalvageMarket': (connection, data) => {
+            let owned = {
+                'waffle': {'common': 55555},
+                'banana': {'common': 7, 'uncommon': 9},
+            }
+
+            // Salvage market only takes types and ranks at boot up, everything else will refire as required.
+            this.sendMessageToConnection(connection, 'bootSalvageMarket', {
+                types: this.salvage_types,
+                ranks: this.salvage_ranks
+            })
+
+            this.sendMessageToConnection(connection, 'salvageOwned', owned)
+
+            this.sendMessageToConnection(connection, 'salvagePrices', {
+                'waffle': {'common': { 'buy': 1000, 'sell': 1000, 'demand': 0.5}}
+            })
+        },
+
+        'bootSalvageAutoPurchaseConfig': (connection, data) => {
+            this.sendMessageToConnection(connection, 'bootSalvageAutoPurchaseConfig', {
+                ranks: this.salvage_ranks
             })
         }
     };

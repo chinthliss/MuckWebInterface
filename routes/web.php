@@ -341,8 +341,8 @@ Route::prefix('/multiplayer/')->group(function () {
             ->name('multiplayer.gear');
         Route::get('crafting', [GearController::class, 'showCrafting'])
             ->name('multiplayer.gear.crafting');
-        Route::get('inventory', [GearController::class, 'showInventory'])
-            ->name('multiplayer.gear.inventory');
+        Route::get('salvagemarket', [GearController::class, 'showSalvageMarket'])
+            ->name('multiplayer.gear.salvagemarket');
 
         // Avatar functionality
         Route::get('avatar/gradients', [AvatarController::class, 'showUserAvatarGradients'])

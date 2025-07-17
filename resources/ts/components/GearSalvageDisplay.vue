@@ -3,7 +3,6 @@
 import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
 
-
 type SalvageOwned = {
     [type: string]: {
         [rank: string]: number

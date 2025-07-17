@@ -14,9 +14,9 @@ class GearController extends Controller
         return view('multiplayer.gear-hub');
     }
 
-    public function showInventory(): View
+    public function showSalvageMarket(): View
     {
-        return view('pending');
+        return view('multiplayer.gear-salvagemarket');
     }
 
     public function showCrafting(): View
