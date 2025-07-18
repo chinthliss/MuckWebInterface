@@ -31,16 +31,16 @@ channel.on('bootSalvageMarket', (response: {
     ranks: string[]
     owned: SalvageOwned
 }) => {
-    types.value = response.types;
-    ranks.value = response.ranks;
+    types.value = response.types || [];
+    ranks.value = response.ranks || [];
 })
 
 channel.on('salvageOwned', (response: SalvageOwned) => {
-    owned.value = response;
+    owned.value = response || {};
 })
 
 channel.on('salvagePrices', (response: SalvagePrices) => {
-    prices.value = response;
+    prices.value = response || {};
 })
 
 onMounted(() => {

@@ -38,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <table class="table table-dark table-hover table-striped table-responsive small">
+    <table class="table table-dark table-hover table-striped table-responsive w-auto">
         <thead>
         <tr>
             <th scope="col">Salvage Type</th>
