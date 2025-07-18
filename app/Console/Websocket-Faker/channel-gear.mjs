@@ -169,6 +169,10 @@ export default class ChannelGear extends Channel {
             this.sendMessageToConnection(connection, 'bootSalvageAutoPurchaseConfig', {
                 ranks: this.salvage_ranks
             })
+
+            this.sendMessageToConnection(connection, 'salvageAutoPurchaseLimits', {
+                'common': 4000
+            })
         }
     };
 
