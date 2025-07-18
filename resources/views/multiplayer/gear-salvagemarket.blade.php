@@ -1,6 +1,6 @@
 @extends('layout.page-with-navigation-and-header')
 
-@section('title', "Crafting")
+@section('title', "Salvage Market")
 
 @section('breadcrumbs')
     {{ Breadcrumbs::render([

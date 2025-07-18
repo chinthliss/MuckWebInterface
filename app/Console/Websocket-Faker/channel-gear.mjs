@@ -1,9 +1,90 @@
 import Channel from './channel.mjs';
 
+const SALVAGE_MARKET_CONFIG = {
+    'waffle': {
+        'common': {
+            'buy': 100,
+            'sell': 100,
+            'owned': 10
+        },
+        'uncommon': {
+            'buy': 1000,
+            'sell': 1000,
+            'downscale': '1 to 100 common',
+            'owned': 88,
+            'tokens': 5
+        }
+    },
+    'cookie': {
+        'common': {
+            'buy': 1000,
+            'sell': 1000,
+            'upscale': '1000 to 1 uncommon'
+        },
+        'uncommon': {
+            'buy': 1000,
+            'sell': 1000,
+            'downscale': '1 to 1000 common',
+            'tokens': 10
+        }
+    }
+}
+
+const SALVAGE_MARKET_DEMAND = {
+    'waffle': 0.5,
+    'cookie': 0.25
+}
+
+const salvageTypes = () => Object.keys(SALVAGE_MARKET_CONFIG);
+const salvageRanks = () => Object.keys(SALVAGE_MARKET_CONFIG['waffle']);
+
+const salvagePrices = () => {
+    let prices = {};
+    for (const type of salvageTypes()) {
+        let perType = {
+            demand: SALVAGE_MARKET_DEMAND[type] ?? 1.0,
+            prices: {}
+        };
+        for (const rank of salvageRanks()) {
+            perType.prices[rank] = {
+                buy: SALVAGE_MARKET_CONFIG[type][rank].buy ?? 0,
+                sell: SALVAGE_MARKET_CONFIG[type][rank].sell ?? 0
+            }
+        }
+        prices[type] = perType;
+    }
+    return prices;
+}
+
+const salvageConfig = () => {
+    let config = {};
+    for (const type of salvageTypes()) {
+        let perType = {};
+        for (const rank of salvageRanks()) {
+            perType[rank] = {};
+            if (SALVAGE_MARKET_CONFIG[type][rank].tokens) perType[rank].tokens = SALVAGE_MARKET_CONFIG[type][rank].tokens;
+            if (SALVAGE_MARKET_CONFIG[type][rank].upscale) perType[rank].upscale = SALVAGE_MARKET_CONFIG[type][rank].upscale;
+            if (SALVAGE_MARKET_CONFIG[type][rank].downscale) perType[rank].downscale = SALVAGE_MARKET_CONFIG[type][rank].downscale;
+        }
+        config[type] = perType;
+    }
+    return config;
+}
+
+const salvageOwned = () => {
+    let owned = {};
+    for (const type of salvageTypes()) {
+        let perType = {};
+        for (const rank of salvageRanks()) {
+            perType[rank] = SALVAGE_MARKET_CONFIG[type][rank].owned ?? 0;
+        }
+        owned[type] = perType;
+    }
+    return owned;
+}
+
 export default class ChannelGear extends Channel {
 
-    salvage_types = ['waffle', 'banana', 'cookie'];
-    salvage_ranks = ['common', 'uncommon', 'rare'];
     recipes = [
         {
             name: 'Test Recipe 1',
@@ -130,8 +211,7 @@ export default class ChannelGear extends Channel {
 
             this.sendMessageToConnection(connection, 'craftPreview', preview);
         },
-
-        'bootSalvageDisplay': (connection, data) => {
+        'bootSalvageDisplay': (connection, _data) => {
             let owned = {
                 'waffle': {'common': 55555},
                 'banana': {'common': 7, 'uncommon': 9},
@@ -139,35 +219,29 @@ export default class ChannelGear extends Channel {
 
             // Salvage display is a static widget, so takes a full state
             this.sendMessageToConnection(connection, 'bootSalvageDisplay', {
-                types: this.salvage_types,
-                ranks: this.salvage_ranks,
+                types: salvageTypes(),
+                ranks: salvageRanks(),
                 owned: owned,
                 skills: {}
             })
         },
 
-        'bootSalvageMarket': (connection, data) => {
-            let owned = {
-                'waffle': {'common': 55555},
-                'banana': {'common': 7, 'uncommon': 9},
-            }
-
+        'bootSalvageMarket': (connection, _data) => {
             // Salvage market only takes types and ranks at boot up, everything else will refire as required.
             this.sendMessageToConnection(connection, 'bootSalvageMarket', {
-                types: this.salvage_types,
-                ranks: this.salvage_ranks
+                types: salvageTypes(),
+                ranks: salvageRanks(),
+                config: salvageConfig()
             })
 
-            this.sendMessageToConnection(connection, 'salvageOwned', owned)
+            this.sendMessageToConnection(connection, 'salvageOwned', salvageOwned())
 
-            this.sendMessageToConnection(connection, 'salvagePrices', {
-                'waffle': {'common': { 'buy': 1000, 'sell': 1000, 'demand': 0.5}}
-            })
+            this.sendMessageToConnection(connection, 'salvagePrices', salvagePrices())
         },
 
-        'bootSalvageAutoPurchaseConfig': (connection, data) => {
+        'bootSalvageAutoPurchaseConfig': (connection, _data) => {
             this.sendMessageToConnection(connection, 'bootSalvageAutoPurchaseConfig', {
-                ranks: this.salvage_ranks
+                ranks: salvageRanks()
             })
 
             this.sendMessageToConnection(connection, 'salvageAutoPurchaseLimits', {
