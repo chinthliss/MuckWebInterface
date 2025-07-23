@@ -59,6 +59,20 @@ const startSellSalvage = (type: string, rank: string) => {
     throw ("Not implemented");
 }
 
+const renderBuyPriceFor = (type: string, rank: string): string => {
+    if (type in prices.value && rank in prices.value[type].prices)
+        return prices.value[type].prices[rank].buy.toLocaleString();
+    else
+        return 'Unknown';
+}
+
+const renderSellPriceFor = (type: string, rank: string): string => {
+    if (type in prices.value && rank in prices.value[type].prices)
+        return prices.value[type].prices[rank].sell.toLocaleString();
+    else
+        return 'Unknown';
+}
+
 channel.on('bootSalvageMarket', (response: {
     types: string[],
     ranks: string[]
@@ -85,17 +99,57 @@ onMounted(() => {
 
 <template>
     <template v-for="type in types">
-
+        <hr/>
         <div class="d-flex align-items-center">
             <div class="flex-grow-1"><h3>{{ capital(type) }}</h3></div>
             <div>Market demand: {{ (type in prices ? prices[type].demand : 1.0) * 100 }}%</div>
         </div>
 
         <div class="row">
-            <div class="col-3">Rarity</div>
-            <div class="col-3">Owned</div>
-            <div class="col-3">Buy</div>
-            <div class="col-3">Sell</div>
+            <div class="col-6 fw-bold">Rarity</div>
+            <div class="col-6 fw-bold">Owned</div>
+            <div class="col-6 fw-bold">Buy</div>
+            <div class="col-6 fw-bold">Sell</div>
+        </div>
+        <div v-for="rank in ranks" class="row">
+            <div class="col-6">{{ capital(rank) }}</div>
+            <div class="col-6">
+                {{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}
+            </div>
+            <div class="col-6">
+                <div class="fixedNumber">{{ renderBuyPriceFor(type, rank) }} </div>
+                <button class="btn btn-secondary ms-2" @click="startBuySalvage(type, rank)">
+                    <i class="fas fa-coins btn-icon-left"></i>Buy
+                </button>
+            </div>
+            <div class="col-6">
+                <div class="d-inline-block fixedNumber">{{ renderSellPriceFor(type, rank) }}</div>
+                <button class="btn btn-secondary ms-2" @click="startSellSalvage(type, rank)">
+                    <i class="fas fa-coins btn-icon-left"></i>Sell
+                </button>
+            </div>
+            <div class="col-12">
+                <template v-if="type in config && rank in config[type]">
+
+                    <button v-if="config[type][rank].downscale"
+                            class="btn btn-secondary ms-2" @click="requestDownscale(type, rank)">
+                        <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
+                            config[type][rank].downscale
+                        }}
+                    </button>
+
+                    <button v-if="config[type][rank].upscale"
+                            class="btn btn-secondary ms-2" @click="requestUpscale(type, rank)">
+                        <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
+                    </button>
+
+                    <button v-if="config[type][rank].tokens"
+                            class="btn btn-secondary ms-2" @click="startConvertToTokens(type, rank)">
+                        <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
+                        tokens
+                    </button>
+                </template>
+            </div>
         </div>
     </template>
 
@@ -117,11 +171,7 @@ onMounted(() => {
                 <tr v-for="rank in ranks" class="align-middle">
                     <td>{{ capital(rank) }}</td>
                     <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
-                    <td>{{
-                            type in prices && rank in prices[type].prices ? prices[type].prices[rank].buy.toLocaleString()
-                                : 'Unknown'
-                        }}
-                    </td>
+                    <td>{{ renderBuyPriceFor(type, rank) }}</td>
                     <td>
                         <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
                             <i class="fas fa-coins btn-icon-left"></i>Buy
@@ -167,5 +217,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+    .fixedNumber {
+        width: 15em;
+        text-align: right;
+        display: inline-block;
+    }
 </style>

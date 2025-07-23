@@ -4,12 +4,12 @@ const SALVAGE_MARKET_CONFIG = {
     'waffle': {
         'common': {
             'buy': 100,
-            'sell': 100,
+            'sell': 90,
             'owned': 10
         },
         'uncommon': {
             'buy': 1000,
-            'sell': 1000,
+            'sell': 920,
             'downscale': '1 to 100 common',
             'owned': 88,
             'tokens': 5
@@ -17,13 +17,13 @@ const SALVAGE_MARKET_CONFIG = {
     },
     'cookie': {
         'common': {
-            'buy': 1000,
-            'sell': 1000,
+            'buy': 200,
+            'sell': 150,
             'upscale': '1000 to 1 uncommon'
         },
         'uncommon': {
-            'buy': 1000,
-            'sell': 1000,
+            'buy': 2000,
+            'sell': 1700,
             'downscale': '1 to 1000 common',
             'tokens': 10
         }
