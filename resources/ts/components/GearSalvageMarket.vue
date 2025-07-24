@@ -59,6 +59,12 @@ const startSellSalvage = (type: string, rank: string) => {
     throw ("Not implemented");
 }
 
+const renderOwnedFor = (type: string, rank: string): string => {
+    if (type in owned.value && rank in owned.value[type])
+        return owned.value[type][rank].toLocaleString();
+    else
+        return '0';
+}
 const renderBuyPriceFor = (type: string, rank: string): string => {
     if (type in prices.value && rank in prices.value[type].prices)
         return prices.value[type].prices[rank].buy.toLocaleString();
@@ -98,128 +104,148 @@ onMounted(() => {
 </script>
 
 <template>
-    <template v-for="type in types">
+    <div v-for="type in types">
         <hr/>
         <div class="d-flex align-items-center">
             <div class="flex-grow-1"><h3>{{ capital(type) }}</h3></div>
             <div>Market demand: {{ (type in prices ? prices[type].demand : 1.0) * 100 }}%</div>
         </div>
 
-        <div class="row">
-            <div class="col-6 fw-bold">Rarity</div>
-            <div class="col-6 fw-bold">Owned</div>
-            <div class="col-6 fw-bold">Buy</div>
-            <div class="col-6 fw-bold">Sell</div>
-        </div>
-        <div v-for="rank in ranks" class="row">
-            <div class="col-6">{{ capital(rank) }}</div>
-            <div class="col-6">
-                {{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}
-            </div>
-            <div class="col-6">
-                <div class="fixedNumber">{{ renderBuyPriceFor(type, rank) }} </div>
-                <button class="btn btn-secondary ms-2" @click="startBuySalvage(type, rank)">
-                    <i class="fas fa-coins btn-icon-left"></i>Buy
-                </button>
-            </div>
-            <div class="col-6">
-                <div class="d-inline-block fixedNumber">{{ renderSellPriceFor(type, rank) }}</div>
-                <button class="btn btn-secondary ms-2" @click="startSellSalvage(type, rank)">
-                    <i class="fas fa-coins btn-icon-left"></i>Sell
-                </button>
-            </div>
-            <div class="col-12">
-                <template v-if="type in config && rank in config[type]">
+        <!-- We use two structures here
+            On a bigger screen we use a big table
+            On a smaller screen we use a table per what would have been a 'row' on the larger table
+        -->
 
+        <!-- Small screens -->
+        <div class="d-lg-none">
+            <div v-for="rank in ranks">
+
+                <table class="table table-dark table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-center" colspan="3" scope="col">{{ capital(rank) }} {{ capital(type) }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Owned -->
+                    <tr class="align-middle">
+                        <td>Owned</td>
+                        <td class="text-end">{{ renderOwnedFor(type, rank) }}</td>
+                        <td></td>
+                    </tr>
+
+                    <!-- Buy -->
+                    <tr class="align-middle">
+                        <td>Buy Price</td>
+                        <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-secondary ms-2" @click="startBuySalvage(type, rank)">
+                                <i class="fas fa-coins btn-icon-left"></i>Buy
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Sell -->
+                    <tr class="align-middle">
+                        <td>Sell Price</td>
+                        <td class="text-end">{{ renderSellPriceFor(type, rank) }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-secondary ms-2" @click="startSellSalvage(type, rank)">
+                                <i class="fas fa-coins btn-icon-left"></i>Sell
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!-- Other Controls -->
+                <div class="text-center">
                     <button v-if="config[type][rank].downscale"
-                            class="btn btn-secondary ms-2" @click="requestDownscale(type, rank)">
+                            class="btn btn-secondary ms-2 my-2" @click="requestDownscale(type, rank)">
                         <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
                             config[type][rank].downscale
                         }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
-                            class="btn btn-secondary ms-2" @click="requestUpscale(type, rank)">
+                            class="btn btn-secondary ms-2 my-1" @click="requestUpscale(type, rank)">
                         <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
-                            class="btn btn-secondary ms-2" @click="startConvertToTokens(type, rank)">
+                            class="btn btn-secondary ms-2 my-1" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
                         tokens
                     </button>
-                </template>
+                </div>
+
+
             </div>
         </div>
-    </template>
 
-    <template v-for="type in types">
-        <h3>{{ capital(type) }}</h3>
-        Market demand: {{ (type in prices ? prices[type].demand : 1.0) * 100 }}%
-        <div class="table-responsive">
-            <table class="table table-dark table-hover table-responsive">
-                <thead>
-                <tr>
-                    <th scope="col">Rarity</th>
-                    <th scope="col">Owned</th>
-                    <th colspan="2" scope="col">Buy Price</th>
-                    <th colspan="2" scope="col">Sell Price</th>
-                    <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="rank in ranks" class="align-middle">
-                    <td>{{ capital(rank) }}</td>
-                    <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
-                    <td>{{ renderBuyPriceFor(type, rank) }}</td>
-                    <td>
-                        <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
-                            <i class="fas fa-coins btn-icon-left"></i>Buy
+        <!-- Big screens -->
+        <table class="d-none d-lg-table table table-dark table-hover table-responsive">
+            <thead>
+            <tr>
+                <th scope="col">Rarity</th>
+                <th scope="col">Owned</th>
+                <th colspan="2" scope="col">Buy Price</th>
+                <th colspan="2" scope="col">Sell Price</th>
+                <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="rank in ranks" class="align-middle">
+                <td>{{ capital(rank) }}</td>
+                <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
+                <td>{{ renderBuyPriceFor(type, rank) }}</td>
+                <td>
+                    <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
+                        <i class="fas fa-coins btn-icon-left"></i>Buy
+                    </button>
+                </td>
+                <td>{{
+                        type in prices && rank in prices[type].prices ? prices[type].prices[rank].sell.toLocaleString()
+                            : 'Unknown'
+                    }}
+                </td>
+                <td>
+                    <button class="btn btn-secondary" @click="startSellSalvage(type, rank)">
+                        <i class="fas fa-coins btn-icon-left"></i>Sell
+                    </button>
+                </td>
+                <td>
+                    <template v-if="type in config && rank in config[type]">
+
+                        <button v-if="config[type][rank].downscale"
+                                class="btn btn-secondary ms-2 my-2" @click="requestDownscale(type, rank)">
+                            <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
+                                config[type][rank].downscale
+                            }}
                         </button>
-                    </td>
-                    <td>{{
-                            type in prices && rank in prices[type].prices ? prices[type].prices[rank].sell.toLocaleString()
-                                : 'Unknown'
-                        }}
-                    </td>
-                    <td>
-                        <button class="btn btn-secondary" @click="startSellSalvage(type, rank)">
-                            <i class="fas fa-coins btn-icon-left"></i>Sell
+
+                        <button v-if="config[type][rank].upscale"
+                                class="btn btn-secondary ms-2 my-2" @click="requestUpscale(type, rank)">
+                            <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                         </button>
-                    </td>
-                    <td>
-                        <template v-if="type in config && rank in config[type]">
 
-                            <button v-if="config[type][rank].downscale"
-                                    class="btn btn-secondary ms-2" @click="requestDownscale(type, rank)">
-                                <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
-                                    config[type][rank].downscale
-                                }}
-                            </button>
+                        <button v-if="config[type][rank].tokens"
+                                class="btn btn-secondary ms-2 my-2" @click="startConvertToTokens(type, rank)">
+                            <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
+                            tokens
+                        </button>
+                    </template>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-                            <button v-if="config[type][rank].upscale"
-                                    class="btn btn-secondary ms-2" @click="requestUpscale(type, rank)">
-                                <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
-                            </button>
+    </div>
 
-                            <button v-if="config[type][rank].tokens"
-                                    class="btn btn-secondary ms-2" @click="startConvertToTokens(type, rank)">
-                                <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
-                                tokens
-                            </button>
-                        </template>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
 </template>
 
 <style scoped>
-    .fixedNumber {
-        width: 15em;
-        text-align: right;
-        display: inline-block;
-    }
+.fixedButtonWidth {
+    width: 100px;
+}
+
 </style>

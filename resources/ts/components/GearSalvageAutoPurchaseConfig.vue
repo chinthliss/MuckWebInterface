@@ -54,7 +54,7 @@ onMounted(() => {
         <tbody>
         <tr v-for="rank in ranks">
             <td>{{ capital(rank) }}</td>
-            <td>{{ rank in limits ? limits[rank].toLocaleString() : "No auto-purchasing" }}</td>
+            <td>{{ rank in limits ? limits[rank].toLocaleString() : "Disabled" }}</td>
             <td>
                 <button class="btn btn-secondary ms-2" @click="startAutoPurchaseChange(rank)">
                     <i class="fas fa-wrench btn-icon-left"></i>Change
