@@ -2,6 +2,7 @@
 
 import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
+import ModalConfirmation from "./ModalConfirmation.vue";
 
 type SalvageOwned = {
     [type: string]: {
@@ -36,27 +37,49 @@ const ranks: Ref<string[]> = ref([]);
 const owned: Ref<SalvageOwned> = ref({})
 const prices: Ref<SalvagePrices> = ref({})
 const config: Ref<SalvageConfig> = ref({})
+const transactionModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const transactionType: Ref<string> = ref('');
+const transactionQuantity: Ref<number> = ref(0);
+const transactionSalvageType: Ref<string> = ref('');
+const transactionSalvageRank: Ref<string> = ref('');
+const transactionCost: Ref<number> = ref(0);
 
 const channel = mwiWebsocket.channel('gear');
 
+const startTransaction = (type: string, rank: string) => {
+    transactionQuantity.value = 1;
+    transactionCost.value = 1;
+    transactionSalvageType.value = type;
+    transactionSalvageRank.value = rank;
+    if (transactionModal.value) transactionModal.value.show();
+}
 const requestDownscale = (type: string, rank: string) => {
-    throw ("Not implemented");
+    transactionType.value = 'downscale';
+    startTransaction(type, rank);
 }
 
 const requestUpscale = (type: string, rank: string) => {
-    throw ("Not implemented");
+    transactionType.value = 'upscale';
+    startTransaction(type, rank);
 }
 
 const startConvertToTokens = (type: string, rank: string) => {
-    throw ("Not implemented");
+    transactionType.value = 'token';
+    startTransaction(type, rank);
 }
 
 const startBuySalvage = (type: string, rank: string) => {
-    throw ("Not implemented");
+    transactionType.value = 'buy';
+    startTransaction(type, rank);
 }
 
 const startSellSalvage = (type: string, rank: string) => {
-    throw ("Not implemented");
+    transactionType.value = 'sell';
+    startTransaction(type, rank);
+}
+
+const acceptTransaction = () => {
+    console.log("Not implemented");
 }
 
 const renderOwnedFor = (type: string, rank: string): string => {
@@ -139,7 +162,7 @@ onMounted(() => {
                         <td>Buy Price</td>
                         <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
                         <td class="text-center">
-                            <button class="btn btn-secondary ms-2" @click="startBuySalvage(type, rank)">
+                            <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
                                 <i class="fas fa-coins btn-icon-left"></i>Buy
                             </button>
                         </td>
@@ -150,7 +173,7 @@ onMounted(() => {
                         <td>Sell Price</td>
                         <td class="text-end">{{ renderSellPriceFor(type, rank) }}</td>
                         <td class="text-center">
-                            <button class="btn btn-secondary ms-2" @click="startSellSalvage(type, rank)">
+                            <button class="btn btn-secondary" @click="startSellSalvage(type, rank)">
                                 <i class="fas fa-coins btn-icon-left"></i>Sell
                             </button>
                         </td>
@@ -160,19 +183,19 @@ onMounted(() => {
                 <!-- Other Controls -->
                 <div class="text-center">
                     <button v-if="config[type][rank].downscale"
-                            class="btn btn-secondary ms-2 my-2" @click="requestDownscale(type, rank)">
+                            class="btn btn-secondary me-2 my-2" @click="requestDownscale(type, rank)">
                         <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
                             config[type][rank].downscale
                         }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
-                            class="btn btn-secondary ms-2 my-1" @click="requestUpscale(type, rank)">
+                            class="btn btn-secondary me-2 my-2" @click="requestUpscale(type, rank)">
                         <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
-                            class="btn btn-secondary ms-2 my-1" @click="startConvertToTokens(type, rank)">
+                            class="btn btn-secondary me-2 my-2" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
                         tokens
                     </button>
@@ -199,7 +222,7 @@ onMounted(() => {
                 <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
                 <td>{{ renderBuyPriceFor(type, rank) }}</td>
                 <td>
-                    <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
+                    <button class="btn btn-secondary my-2" @click="startBuySalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Buy
                     </button>
                 </td>
@@ -209,7 +232,7 @@ onMounted(() => {
                     }}
                 </td>
                 <td>
-                    <button class="btn btn-secondary" @click="startSellSalvage(type, rank)">
+                    <button class="btn btn-secondary my-2" @click="startSellSalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Sell
                     </button>
                 </td>
@@ -217,19 +240,19 @@ onMounted(() => {
                     <template v-if="type in config && rank in config[type]">
 
                         <button v-if="config[type][rank].downscale"
-                                class="btn btn-secondary ms-2 my-2" @click="requestDownscale(type, rank)">
+                                class="btn btn-secondary me-2 my-2" @click="requestDownscale(type, rank)">
                             <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
                                 config[type][rank].downscale
                             }}
                         </button>
 
                         <button v-if="config[type][rank].upscale"
-                                class="btn btn-secondary ms-2 my-2" @click="requestUpscale(type, rank)">
+                                class="btn btn-secondary me-2 my-2" @click="requestUpscale(type, rank)">
                             <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                         </button>
 
                         <button v-if="config[type][rank].tokens"
-                                class="btn btn-secondary ms-2 my-2" @click="startConvertToTokens(type, rank)">
+                                class="btn btn-secondary me-2 my-2" @click="startConvertToTokens(type, rank)">
                             <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
                             tokens
                         </button>
@@ -241,11 +264,17 @@ onMounted(() => {
 
     </div>
 
+    <modal-confirmation ref="transactionModal" title="Confirm Transaction"
+                        no-label="Cancel" yes-label="Purchase"
+                        @yes="acceptTransaction"
+    >
+        <p>Type: {{ transactionType }}</p>
+        <p>Salvage: {{ transactionSalvageRank }} {{ transactionSalvageType }}</p>
+        <p>Amount: {{ transactionQuantity }}</p>
+        <p>Cost: {{ transactionCost }}</p>
+    </modal-confirmation>
 </template>
 
 <style scoped>
-.fixedButtonWidth {
-    width: 100px;
-}
 
 </style>
