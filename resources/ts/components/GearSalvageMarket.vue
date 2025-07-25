@@ -211,8 +211,10 @@ onMounted(() => {
             <tr>
                 <th scope="col">Rarity</th>
                 <th scope="col" class="text-end">Owned</th>
-                <th colspan="2" scope="col">Buy Price</th>
-                <th colspan="2" scope="col">Sell Price</th>
+                <th scope="col" class="text-end">Buy Price</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-end">Sell Price</th>
+                <th scope="col"></th>
                 <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
             </tr>
             </thead>
