@@ -140,7 +140,7 @@ onMounted(() => {
         -->
 
         <!-- Small screens -->
-        <div class="d-lg-none">
+        <div class="d-xl-none">
             <div v-for="rank in ranks">
 
                 <table class="table table-dark table-hover">
@@ -183,19 +183,19 @@ onMounted(() => {
                 <!-- Other Controls -->
                 <div class="text-center">
                     <button v-if="config[type][rank].downscale"
-                            class="btn btn-secondary me-2 my-2" @click="requestDownscale(type, rank)">
+                            class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
                         <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
                             config[type][rank].downscale
                         }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
-                            class="btn btn-secondary me-2 my-2" @click="requestUpscale(type, rank)">
+                            class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
                         <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
-                            class="btn btn-secondary me-2 my-2" @click="startConvertToTokens(type, rank)">
+                            class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
                         tokens
                     </button>
@@ -206,7 +206,7 @@ onMounted(() => {
         </div>
 
         <!-- Big screens -->
-        <table class="d-none d-lg-table table table-dark table-hover table-responsive">
+        <table class="d-none d-xl-table table table-dark table-hover table-responsive">
             <thead>
             <tr>
                 <th scope="col">Rarity</th>
@@ -222,7 +222,7 @@ onMounted(() => {
                 <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
                 <td>{{ renderBuyPriceFor(type, rank) }}</td>
                 <td>
-                    <button class="btn btn-secondary my-2" @click="startBuySalvage(type, rank)">
+                    <button class="btn btn-secondary my-1" @click="startBuySalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Buy
                     </button>
                 </td>
@@ -232,7 +232,7 @@ onMounted(() => {
                     }}
                 </td>
                 <td>
-                    <button class="btn btn-secondary my-2" @click="startSellSalvage(type, rank)">
+                    <button class="btn btn-secondary my-1" @click="startSellSalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Sell
                     </button>
                 </td>
@@ -240,19 +240,19 @@ onMounted(() => {
                     <template v-if="type in config && rank in config[type]">
 
                         <button v-if="config[type][rank].downscale"
-                                class="btn btn-secondary me-2 my-2" @click="requestDownscale(type, rank)">
+                                class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
                             <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
                                 config[type][rank].downscale
                             }}
                         </button>
 
                         <button v-if="config[type][rank].upscale"
-                                class="btn btn-secondary me-2 my-2" @click="requestUpscale(type, rank)">
+                                class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
                             <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
                         </button>
 
                         <button v-if="config[type][rank].tokens"
-                                class="btn btn-secondary me-2 my-2" @click="startConvertToTokens(type, rank)">
+                                class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
                             <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
                             tokens
                         </button>
