@@ -131,7 +131,7 @@ onMounted(() => {
         <hr/>
         <div class="d-flex align-items-center">
             <div class="flex-grow-1"><h3>{{ capital(type) }}</h3></div>
-            <div>Market demand: {{ (type in prices ? prices[type].demand : 1.0) * 100 }}%</div>
+            <div>Market demand: {{ ((type in prices ? prices[type].demand : 1.0) * 100).toFixed(2) }}%</div>
         </div>
 
         <!-- We use two structures here

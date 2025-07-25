@@ -32,7 +32,7 @@ const SALVAGE_MARKET_CONFIG = {
 
 const SALVAGE_MARKET_DEMAND = {
     'waffle': 0.5,
-    'cookie': 0.25
+    'cookie': 0.2519191919
 }
 
 const salvageTypes = () => Object.keys(SALVAGE_MARKET_CONFIG);
