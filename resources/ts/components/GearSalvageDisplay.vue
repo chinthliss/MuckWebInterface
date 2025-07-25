@@ -42,15 +42,15 @@ onMounted(() => {
         <thead>
         <tr>
             <th scope="col">Salvage Type</th>
-            <th scope="col">Skill</th>
-            <th v-for="rank in ranks" scope="col">{{ capital(rank) }}</th>
+            <th scope="col" class="text-end">Skill</th>
+            <th v-for="rank in ranks" scope="col" class="text-end">{{ capital(rank) }}</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="type in types">
             <td>{{ capital(type) }}</td>
-            <td>{{ skills[type] || 0 }}</td>
-            <td v-for="rank in ranks">{{
+            <td class="text-end">{{ skills[type] || 0 }}</td>
+            <td v-for="rank in ranks" class="text-end">{{
                     (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString()
                 }}
             </td>
