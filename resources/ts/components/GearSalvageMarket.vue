@@ -210,7 +210,7 @@ onMounted(() => {
             <thead>
             <tr>
                 <th scope="col">Rarity</th>
-                <th scope="col">Owned</th>
+                <th scope="col" class="text-end">Owned</th>
                 <th colspan="2" scope="col">Buy Price</th>
                 <th colspan="2" scope="col">Sell Price</th>
                 <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
@@ -219,18 +219,14 @@ onMounted(() => {
             <tbody>
             <tr v-for="rank in ranks" class="align-middle">
                 <td>{{ capital(rank) }}</td>
-                <td>{{ (type in owned && rank in owned[type] ? owned[type][rank] : 0).toLocaleString() }}</td>
-                <td>{{ renderBuyPriceFor(type, rank) }}</td>
+                <td class="text-end">{{ renderOwnedFor(type, rank) }}</td>
+                <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
                 <td>
                     <button class="btn btn-secondary my-1" @click="startBuySalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Buy
                     </button>
                 </td>
-                <td>{{
-                        type in prices && rank in prices[type].prices ? prices[type].prices[rank].sell.toLocaleString()
-                            : 'Unknown'
-                    }}
-                </td>
+                <td class="text-end">{{ renderSellPriceFor(type, rank) }}</td>
                 <td>
                     <button class="btn btn-secondary my-1" @click="startSellSalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Sell
