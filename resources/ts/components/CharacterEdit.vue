@@ -64,11 +64,11 @@ const deleteCustomField = (field: CustomField) => {
     });
 }
 
-channel.on('customFields', (data) => {
+channel.on('customFields', (data: CustomField[]) => {
     customFields.value = data;
 });
 
-channel.on('shortDescription', (data) => {
+channel.on('shortDescription', (data: string) => {
     blockShortDescriptionEdit.value = false;
     shortDescription.value = data;
 });
@@ -98,7 +98,7 @@ channel.send('bootCharacterEdit', dbref);
         <h4>Custom Fields</h4>
         <p>These are shown on the character's profile and allow you to set any details you want, e.g. history, rumours,
             common knowledge, player availability, etc.</p>
-        <table v-if="customFields.length" class="table table-dark table-hover table-striped table-responsive">
+        <table v-if="customFields.length" class="table table-dark table-hover table-striped">
             <thead>
             <tr>
                 <th scope="col">Field</th>
@@ -110,12 +110,12 @@ channel.send('bootCharacterEdit', dbref);
             <tr v-for="field in customFields">
                 <td>{{ field.field }}</td>
                 <td>{{ field.value }}</td>
-                <td>
-                    <button class="btn btn-primary"
+                <td class="text-center">
+                    <button class="btn btn-primary my-1"
                             @click="startEditingCustomField(field)"
                     >Edit
                     </button>
-                    <button class="btn btn-secondary ms-2"
+                    <button class="btn btn-secondary my-1 ms-2"
                             @click="deleteCustomField(field)"
                     >Delete
                     </button>

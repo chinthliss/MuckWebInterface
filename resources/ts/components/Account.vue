@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
 import {Ref, ref} from 'vue';
 import ModalConfirmation from './ModalConfirmation.vue';
@@ -125,8 +125,8 @@ const subscriptionTableOptions: DataTableOptions = {
 
             <h2 class="mt-2">Subscriptions</h2>
 
-            <DataTable class="table table-dark table-hover table-striped"
-                       :options="subscriptionTableOptions" :data="account.subscriptions"
+            <DataTable :data="account.subscriptions"
+                       :options="subscriptionTableOptions" class="table table-dark table-hover table-striped"
             >
                 <thead>
                 <tr>
@@ -140,8 +140,8 @@ const subscriptionTableOptions: DataTableOptions = {
                 </thead>
                 <template #column-controls="dt: DataTablesNamedSlotProps">
                     <a :href="(dt.rowData as AccountSubscription).url"><i class="fas fa-search"></i></a>
-                    <button class="btn btn-secondary ms-2"
-                            v-if="(dt.rowData as AccountSubscription).status === 'active'"
+                    <button v-if="(dt.rowData as AccountSubscription).status === 'active'"
+                            class="btn btn-secondary ms-2"
                             @click="cancelSubscription(dt.rowData as AccountSubscription)"
                     >
                         Cancel
@@ -155,31 +155,34 @@ const subscriptionTableOptions: DataTableOptions = {
 
         <h2 class="mt-2">Emails</h2>
 
-        <DataTable class="table table-dark table-hover table-striped"
-                   :options="emailTableOptions" :data="account.emails"
-        >
-            <thead>
-            <tr>
-                <th>Email</th>
-                <th>Primary?</th>
-                <th>Registered</th>
-                <th>Verified</th>
-                <th></th>
-            </tr>
-            </thead>
-            <template #column-primary="dt: DataTablesNamedSlotProps">
-                <i class="fa-solid fa-check w-100 text-center"
-                   v-if="(dt.rowData as AccountEmail).isPrimary"
-                ></i>
-            </template>
-            <template #column-controls="dt: DataTablesNamedSlotProps">
-                <button class="btn btn-secondary" v-if="!(dt.rowData as AccountEmail).isPrimary"
-                        @click="confirmMakeEmailPrimary(dt.rowData)"
-                >
-                    Make Primary
-                </button>
-            </template>
-        </DataTable>
+        <div class="table-responsive-xl">
+            <DataTable :data="account.emails" :options="emailTableOptions"
+                       class="table table-dark table-hover table-striped"
+            >
+                <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Primary?</th>
+                    <th>Registered</th>
+                    <th>Verified</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <template #column-primary="dt: DataTablesNamedSlotProps">
+                    <i v-if="(dt.rowData as AccountEmail).isPrimary"
+                       class="fa-solid fa-check w-100 text-center"
+                    ></i>
+                </template>
+                <template #column-controls="dt: DataTablesNamedSlotProps">
+                    <button v-if="!(dt.rowData as AccountEmail).isPrimary" class="btn btn-secondary"
+                            @click="confirmMakeEmailPrimary(dt.rowData)"
+                    >
+                        Make Primary
+                    </button>
+                </template>
+            </DataTable>
+        </div>
+
         <div class="d-flex align-items-center">
             <a :href="links.newEmail">
                 <button class="btn btn-primary mt-2">Add new Email</button>
@@ -214,12 +217,12 @@ const subscriptionTableOptions: DataTableOptions = {
         </div>
 
         <!-- Change primary email modal -->
-        <modal-confirmation ref="confirmPrimaryEmailModal" @yes="makeEmailPrimary"
-                            title="Change Primary Email?" yes-label="Change" no-label="Cancel"
+        <modal-confirmation ref="confirmPrimaryEmailModal" no-label="Cancel"
+                            title="Change Primary Email?" yes-label="Change" @yes="makeEmailPrimary"
         >
             <form id="changeEmailForm" :action="links.changeEmail" method="POST">
-                <input type="hidden" name="_token" :value="csrf()">
-                <input type="hidden" name="email" :value="emailToMakePrimary">
+                <input :value="csrf()" name="_token" type="hidden">
+                <input :value="emailToMakePrimary" name="email" type="hidden">
             </form>
             <p>Your primary email is the one you use to login and where notifications are sent to.</p>
             <p>If it hasn't been verified, you'll be prompted to verify it after changing to it.</p>
