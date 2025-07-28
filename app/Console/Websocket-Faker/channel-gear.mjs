@@ -13,6 +13,12 @@ const SALVAGE_MARKET_CONFIG = {
             'downscale': '1 to 100 common',
             'owned': 88,
             'tokens': 5
+        },
+        'betterer': {
+            'buy': 4000,
+            'sell': 3200,
+            'downscale': '1 to 1000 common',
+            'tokens': 20
         }
     },
     'cookie': {
@@ -26,6 +32,12 @@ const SALVAGE_MARKET_CONFIG = {
             'sell': 1700,
             'downscale': '1 to 1000 common',
             'tokens': 10
+        },
+        'betterer': {
+            'buy': 4000,
+            'sell': 3200,
+            'downscale': '1 to 1000 common',
+            'tokens': 20
         }
     }
 }
@@ -214,7 +226,7 @@ export default class ChannelGear extends Channel {
         'bootSalvageDisplay': (connection, _data) => {
             let owned = {
                 'waffle': {'common': 55555},
-                'banana': {'common': 7, 'uncommon': 9},
+                'cookie': {'common': 7, 'uncommon': 9},
             }
 
             // Salvage display is a static widget, so takes a full state

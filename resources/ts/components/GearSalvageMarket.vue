@@ -88,6 +88,7 @@ const renderOwnedFor = (type: string, rank: string): string => {
     else
         return '0';
 }
+
 const renderBuyPriceFor = (type: string, rank: string): string => {
     if (type in prices.value && rank in prices.value[type].prices)
         return prices.value[type].prices[rank].buy.toLocaleString();
