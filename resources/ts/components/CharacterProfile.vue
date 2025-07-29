@@ -16,6 +16,21 @@ const props = defineProps<{
 
 type Badge = { name: string, description: string[], awarded: string }
 
+type CustomField = {
+    field: string,
+    value: string
+}
+
+type View = {
+    view: string,
+    content: string
+}
+
+type Equipment = {
+    name: string,
+    description: string
+}
+
 type CharacterProfile = {
     name?: string,
     alias?: string,
@@ -29,9 +44,9 @@ type CharacterProfile = {
     class: string | null,
     role: string | null,
     whatIs: string | null,
-    views: any[] | null,
-    custom?: any[] | null,
-    equipment?: any[] | null,
+    views: View[] | null,
+    custom?: CustomField[] | null,
+    equipment?: Equipment[] | null,
     badges?: Badge[] | null,
     birthday?: string,
     mailTotal?: number
@@ -119,23 +134,23 @@ channel.on('profile', (data: CharacterProfile) => {
     profileLoading.value = false;
 });
 
-channel.on('views', (data) => {
+channel.on('views', (data: View[]) => {
     profile.value.views = data;
 });
 
-channel.on('customFields', (data) => {
+channel.on('customFields', (data: CustomField[]) => {
     profile.value.custom = data;
 });
 
-channel.on('equipment', (data) => {
+channel.on('equipment', (data: Equipment[]) => {
     profile.value.equipment = data;
 });
 
-channel.on('badges', (_data) => {
+channel.on('badges', (_data: null) => {
     profile.value.badges = [];
 });
 
-channel.on('badge', (data) => {
+channel.on('badge', (data: Badge) => {
     if (profile.value.badges) profile.value.badges.push(data)
 });
 
