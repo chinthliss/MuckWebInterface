@@ -3,6 +3,7 @@
 import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
 import ModalConfirmation from "./ModalConfirmation.vue";
+import {lex} from "../siteutils";
 
 type SalvageOwned = {
     [type: string]: {
@@ -22,12 +23,18 @@ type SalvagePrices = {
     }
 }
 
+type ConversionDetails = {
+    cost: number,
+    quantity: number,
+    what: string
+}
+
 type SalvageConfig = {
     [type: string]: {
         [rank: string]: {
-            tokens?: number
-            upscale?: string,
-            downscale?: string
+            tokens?: ConversionDetails,
+            upscale?: ConversionDetails,
+            downscale?: ConversionDetails
         }
     }
 }
@@ -39,47 +46,65 @@ const prices: Ref<SalvagePrices> = ref({})
 const config: Ref<SalvageConfig> = ref({})
 const transactionModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const transactionType: Ref<string> = ref('');
-const transactionQuantity: Ref<number> = ref(0);
+const transactionConfig: Ref<ConversionDetails | null> = ref(null);
 const transactionSalvageType: Ref<string> = ref('');
 const transactionSalvageRank: Ref<string> = ref('');
-const transactionCost: Ref<number> = ref(0);
+const transactionQuantity: Ref<number> = ref(0);
+const transactionQuote: Ref<number | null> = ref(null);
 
 const channel = mwiWebsocket.channel('gear');
 
-const startTransaction = (type: string, rank: string) => {
+const acceptTransaction = () => {
+    console.log("Not implemented");
+}
+
+const startTransaction = (type: string, rank: string, conversion: ConversionDetails) => {
     transactionQuantity.value = 1;
-    transactionCost.value = 1;
+    transactionQuote.value = null;
     transactionSalvageType.value = type;
     transactionSalvageRank.value = rank;
+    transactionConfig.value = conversion;
     if (transactionModal.value) transactionModal.value.show();
 }
 const requestDownscale = (type: string, rank: string) => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank]?.downscale;
+    if (!conversion) throw `Couldn't find downscale details for ${rank} ${type}`;
     transactionType.value = 'downscale';
-    startTransaction(type, rank);
+    startTransaction(type, rank, conversion);
 }
 
 const requestUpscale = (type: string, rank: string) => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank]?.upscale;
+    if (!conversion) throw `Couldn't find upscale details for ${rank} ${type}`;
     transactionType.value = 'upscale';
-    startTransaction(type, rank);
+    startTransaction(type, rank, conversion);
 }
 
 const startConvertToTokens = (type: string, rank: string) => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank]?.tokens;
+    if (!conversion) throw `Couldn't find token reward details for ${rank} ${type}`;
     transactionType.value = 'token';
-    startTransaction(type, rank);
+    startTransaction(type, rank, conversion);
 }
 
 const startBuySalvage = (type: string, rank: string) => {
+    const conversion: ConversionDetails = {
+        cost: prices.value[type].prices[rank].buy,
+        quantity: 1,
+        what: capital(rank) + ' ' + capital(type)
+    }
     transactionType.value = 'buy';
-    startTransaction(type, rank);
+    startTransaction(type, rank, conversion);
 }
 
 const startSellSalvage = (type: string, rank: string) => {
+    const conversion: ConversionDetails = {
+        cost: 1,
+        quantity: prices.value[type].prices[rank].sell,
+        what: lex('money')
+    }
     transactionType.value = 'sell';
-    startTransaction(type, rank);
-}
-
-const acceptTransaction = () => {
-    console.log("Not implemented");
+    startTransaction(type, rank, conversion);
 }
 
 const renderOwnedFor = (type: string, rank: string): string => {
@@ -240,20 +265,23 @@ onMounted(() => {
 
                         <button v-if="config[type][rank].downscale"
                                 class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
-                            <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
-                                config[type][rank].downscale
-                            }}
+                            <i class="fas fa-down-long btn-icon-left"></i>Downscale
+                            {{ config[type][rank].downscale.cost }} to
+                            {{ config[type][rank].downscale.quantity }} {{ config[type][rank].downscale.what }}
                         </button>
 
                         <button v-if="config[type][rank].upscale"
                                 class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
-                            <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
+                            <i class="fas fa-up-long btn-icon-left"></i>Upscale
+                            {{ config[type][rank].upscale.cost }} to
+                            {{ config[type][rank].upscale.quantity }} {{ config[type][rank].upscale.what }}
                         </button>
 
                         <button v-if="config[type][rank].tokens"
                                 class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
-                            <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
-                            tokens
+                            <i class="fas fa-medal btn-icon-left"></i>Convert
+                            {{ config[type][rank].tokens.cost }} to
+                            {{ config[type][rank].tokens.quantity }} {{ config[type][rank].tokens.what }}
                         </button>
                     </template>
                 </td>
@@ -264,13 +292,17 @@ onMounted(() => {
     </div>
 
     <modal-confirmation ref="transactionModal" title="Confirm Transaction"
-                        no-label="Cancel" yes-label="Purchase"
+                        no-label="Cancel" yes-label="Confirm"
                         @yes="acceptTransaction"
     >
         <p>Type: {{ transactionType }}</p>
-        <p>Salvage: {{ transactionSalvageRank }} {{ transactionSalvageType }}</p>
-        <p>Amount: {{ transactionQuantity }}</p>
-        <p>Cost: {{ transactionCost }}</p>
+        <p>You Pay: {{ transactionConfig?.cost }} x
+            <span v-if="transactionType == 'buy'"> {{ lex('money') }}</span>
+            <span v-else> {{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }} </span>
+        </p>
+        <p>You get: {{ transactionConfig?.quantity }} x {{ transactionConfig?.what }} </p>
+        <p>Amount: {{ transactionQuantity  }}</p>
+        <p>Quote: {{ transactionQuote || 'Unknown' }}</p>
     </modal-confirmation>
 </template>
 

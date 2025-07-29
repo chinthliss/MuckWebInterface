@@ -10,34 +10,70 @@ const SALVAGE_MARKET_CONFIG = {
         'uncommon': {
             'buy': 1000,
             'sell': 920,
-            'downscale': '1 to 100 common',
+            'downscale': {
+                'cost': 1,
+                'quantity': 100,
+                'what': 'Common Waffle',
+            },
             'owned': 88,
-            'tokens': 5
+            'tokens': {
+                'cost': 1,
+                'quantity': 5,
+                'what': 'Reward Tokens',
+            }
+
         },
         'betterer': {
             'buy': 4000,
             'sell': 3200,
-            'downscale': '1 to 1000 common',
-            'tokens': 20
+            'downscale': {
+                'cost': 1,
+                'quantity': 4,
+                'what': 'Uncommon Waffle',
+
+            },
+            'tokens': {
+                'cost': 1,
+                'quantity': 20,
+                'what': 'Reward Tokens',
+            }
         }
     },
     'cookie': {
         'common': {
             'buy': 200,
             'sell': 150,
-            'upscale': '1000 to 1 uncommon'
+            'upscale': {
+                'cost': 1000,
+                'quantity': 1,
+                'what': 'Uncommon Waffle',
+
+            },
+
         },
         'uncommon': {
             'buy': 2000,
             'sell': 1700,
-            'downscale': '1 to 1000 common',
+            'downscale': {
+                'cost': 1,
+                'quantity': 1000,
+                'what': 'Common Cookie',
+            },
             'tokens': 10
         },
         'betterer': {
             'buy': 4000,
             'sell': 3200,
-            'downscale': '1 to 1000 common',
-            'tokens': 20
+            'downscale': {
+                'cost': 1,
+                'quantity': 200,
+                'what': 'Uncommon Waffle',
+            },
+            'tokens': {
+                'cost': 1,
+                'quantity': 20,
+                'what': 'Reward Tokens',
+            }
         }
     }
 }
