@@ -10,12 +10,12 @@ const SALVAGE_MARKET_CONFIG = {
         'uncommon': {
             'buy': 1000,
             'sell': 920,
+            'owned': 88,
             'downscale': {
                 'cost': 1,
                 'quantity': 100,
                 'what': 'Common Waffle',
             },
-            'owned': 88,
             'tokens': {
                 'cost': 1,
                 'quantity': 5,
@@ -54,12 +54,17 @@ const SALVAGE_MARKET_CONFIG = {
         'uncommon': {
             'buy': 2000,
             'sell': 1700,
+            'owned': 88,
             'downscale': {
                 'cost': 1,
                 'quantity': 1000,
                 'what': 'Common Cookie',
             },
-            'tokens': 10
+            'tokens': {
+                'cost': 1,
+                'quantity': 10,
+                'what': 'Reward Tokens',
+            }
         },
         'betterer': {
             'buy': 4000,
@@ -285,6 +290,27 @@ export default class ChannelGear extends Channel {
             this.sendMessageToConnection(connection, 'salvageOwned', salvageOwned())
 
             this.sendMessageToConnection(connection, 'salvagePrices', salvagePrices())
+        },
+
+        // Data is in the form {type, salvageType, salvageRank, quantity}
+        // Expects response of {text, value}
+        'salvageMarketQuote': (connection, data) => {
+            const response = {
+                text: 'This is a test, for the value of ' + 500 * data.quantity,
+                value: 500 * data.quantity
+            }
+            this.sendMessageToConnection(connection, 'salvageMarketQuote', response)
+        },
+
+        // Data is in the form {type, salvageType, salvageRange, quote}
+        // Expects response of 'OK' for success otherwise a more detailed error
+        // In the case of success, should send renewed prices/owned if appropriate
+        'salvageMarketTransaction': (connection, data) => {
+            let response = 'OK';
+            if (data.salvageRank === 'betterer') {
+                response = 'Betterer always fails';
+            }
+            this.sendMessageToConnection(connection, 'salvageMarketTransaction', response)
         },
 
         'bootSalvageAutoPurchaseConfig': (connection, _data) => {

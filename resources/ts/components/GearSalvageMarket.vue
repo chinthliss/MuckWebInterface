@@ -4,6 +4,7 @@ import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
 import ModalConfirmation from "./ModalConfirmation.vue";
 import {lex} from "../siteutils";
+import ModalMessage from "./ModalMessage.vue";
 
 type SalvageOwned = {
     [type: string]: {
@@ -45,25 +46,45 @@ const owned: Ref<SalvageOwned> = ref({})
 const prices: Ref<SalvagePrices> = ref({})
 const config: Ref<SalvageConfig> = ref({})
 const transactionModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
+const transactionResultModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 const transactionType: Ref<string> = ref('');
 const transactionConfig: Ref<ConversionDetails | null> = ref(null);
 const transactionSalvageType: Ref<string> = ref('');
 const transactionSalvageRank: Ref<string> = ref('');
 const transactionQuantity: Ref<number> = ref(0);
-const transactionQuote: Ref<number | null> = ref(null);
+const transactionQuoteText: Ref<string | null> = ref(null);
+const transactionQuoteValue: Ref<number | null> = ref(null);
+
+const transactionResultText: Ref<string | null> = ref(null);
 
 const channel = mwiWebsocket.channel('gear');
 
 const acceptTransaction = () => {
-    console.log("Not implemented");
+    channel.send('salvageMarketTransaction', {
+        'type': transactionType.value,
+        'salvageType': transactionSalvageType.value,
+        'salvageRank': transactionSalvageRank.value,
+        'quote': transactionQuoteValue.value,
+    });
+}
+
+const getQuoteForTransaction = () => {
+    transactionQuoteText.value = null;
+    transactionQuoteValue.value = null;
+    channel.send('salvageMarketQuote', {
+        'type': transactionType.value,
+        'salvageType': transactionSalvageType.value,
+        'salvageRank': transactionSalvageRank.value,
+        'quantity': transactionQuantity.value,
+    })
 }
 
 const startTransaction = (type: string, rank: string, conversion: ConversionDetails) => {
     transactionQuantity.value = 1;
-    transactionQuote.value = null;
     transactionSalvageType.value = type;
     transactionSalvageRank.value = rank;
     transactionConfig.value = conversion;
+    getQuoteForTransaction();
     if (transactionModal.value) transactionModal.value.show();
 }
 const requestDownscale = (type: string, rank: string) => {
@@ -128,6 +149,30 @@ const renderSellPriceFor = (type: string, rank: string): string => {
         return 'Unknown';
 }
 
+const titleForTransaction = (): string => {
+    let activeWord: string | null = null;
+    const what: string = capital(transactionSalvageRank.value) + ' ' + capital(transactionSalvageType.value);
+    switch (transactionType.value) {
+        case 'buy':
+            activeWord = 'Buy';
+            break;
+        case 'sell':
+            activeWord = 'Sell';
+            break;
+        case 'upscale':
+            activeWord = 'Upscale';
+            break;
+        case 'downscale':
+            activeWord = 'Downscale';
+            break;
+        case 'token':
+            activeWord = 'Tokenize';
+            break;
+
+    }
+    return activeWord ? activeWord + ' ' + what : 'Unknown';
+}
+
 channel.on('bootSalvageMarket', (response: {
     types: string[],
     ranks: string[]
@@ -144,6 +189,19 @@ channel.on('salvageOwned', (response: SalvageOwned) => {
 
 channel.on('salvagePrices', (response: SalvagePrices) => {
     prices.value = response || {};
+})
+
+channel.on('salvageMarketQuote', (response: {text: string, value: number}) => {
+    transactionQuoteText.value = response.text;
+    transactionQuoteValue.value = response.value;
+})
+
+channel.on('salvageMarketTransaction', (response: string) => {
+    if (response == 'OK')
+        transactionResultText.value = 'The transaction succeeded!';
+    else
+        transactionResultText.value = 'The transaction failed: ' + response;
+    if (transactionResultModal.value) transactionResultModal.value.show();
 })
 
 onMounted(() => {
@@ -236,10 +294,10 @@ onMounted(() => {
             <thead>
             <tr>
                 <th scope="col">Rarity</th>
-                <th scope="col" class="text-end">Owned</th>
-                <th scope="col" class="text-end">Buy Price</th>
+                <th class="text-end" scope="col">Owned</th>
+                <th class="text-end" scope="col">Buy Price</th>
                 <th scope="col"></th>
-                <th scope="col" class="text-end">Sell Price</th>
+                <th class="text-end" scope="col">Sell Price</th>
                 <th scope="col"></th>
                 <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
             </tr>
@@ -291,19 +349,37 @@ onMounted(() => {
 
     </div>
 
-    <modal-confirmation ref="transactionModal" title="Confirm Transaction"
+    <modal-confirmation ref="transactionModal" :title="titleForTransaction()"
                         no-label="Cancel" yes-label="Confirm"
                         @yes="acceptTransaction"
     >
-        <p>Type: {{ transactionType }}</p>
-        <p>You Pay: {{ transactionConfig?.cost }} x
+        <p>You pay: {{ transactionConfig?.cost }} x
             <span v-if="transactionType == 'buy'"> {{ lex('money') }}</span>
-            <span v-else> {{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }} </span>
+            <span v-else>{{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }}</span>
         </p>
-        <p>You get: {{ transactionConfig?.quantity }} x {{ transactionConfig?.what }} </p>
-        <p>Amount: {{ transactionQuantity  }}</p>
-        <p>Quote: {{ transactionQuote || 'Unknown' }}</p>
+        <p>You get: {{ transactionConfig?.quantity }} x {{ transactionConfig?.what }}</p>
+        <div class="mb-2">
+            <label class="form-label" for="transactionAmount">How many times do you want to do this?</label>
+            <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
+                   type="number" @input="getQuoteForTransaction">
+        </div>
+        <p v-if="transactionType == 'buy'" class="border-warning border p-2 rounded">
+            The buying price may increase for every transaction.
+            The quote below accounts for this and if the price ends up higher
+            (because of another player using the market) the transaction will abort.
+        </p>
+        <p v-if="transactionType == 'sell'">
+            The selling price may decrease for every transaction.
+            The quote below accounts for this and if the price ends up lower
+            (because of another player using the market) the transaction will abort.
+        </p>
+
+        <p>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
     </modal-confirmation>
+
+    <modal-message ref="transactionResultModal" title="Transaction Result">
+        <p>{{ transactionResultText }}</p>
+    </modal-message>
 </template>
 
 <style scoped>
