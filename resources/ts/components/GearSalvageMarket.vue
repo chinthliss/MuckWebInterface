@@ -291,17 +291,17 @@ onMounted(() => {
                 <!-- Other Controls -->
                 <div class="text-center">
                     <button v-if="config[type][rank].downscale"
-                            class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
+                            class="btn btn-secondary me-2 my-1 w-100" @click="requestDownscale(type, rank)">
                         <i class="fas fa-down-long btn-icon-left"></i>{{ renderDownscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
-                            class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
+                            class="btn btn-secondary me-2 my-1 w-100" @click="requestUpscale(type, rank)">
                         <i class="fas fa-up-long btn-icon-left"></i>{{ renderUpscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
-                            class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
+                            class="btn btn-secondary me-2 my-1 w-100" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>{{ renderTokenizeLabelFor(type, rank) }}
                     </button>
                 </div>
