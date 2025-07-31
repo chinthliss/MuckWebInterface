@@ -21,6 +21,12 @@
         </div>
         <!-- TODO Write better intro to salvage market -->
 
+        <p class="bg-warning text-bg-warning rounded p-2">
+            This page is still under initial development and unfinished.
+            <br/>The final purchase is presently not implemented.
+        </p>
+
+
         <div class="mt-2">
             <gear-salvage-market></gear-salvage-market>
         </div>

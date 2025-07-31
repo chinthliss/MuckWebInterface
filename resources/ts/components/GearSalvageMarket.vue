@@ -128,6 +128,8 @@ const startSellSalvage = (type: string, rank: string) => {
     startTransaction(type, rank, conversion);
 }
 
+//#region Shared Rendering
+
 const renderOwnedFor = (type: string, rank: string): string => {
     if (type in owned.value && rank in owned.value[type])
         return owned.value[type][rank].toLocaleString();
@@ -148,6 +150,26 @@ const renderSellPriceFor = (type: string, rank: string): string => {
     else
         return 'Unknown';
 }
+
+const renderUpscaleLabelFor = (type: string, rank: string): string => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank].upscale;
+    if (!conversion) throw `Couldn't render upscale details for ${rank} ${type}`;
+    return `Upscale ${conversion.cost} to ${conversion.quantity} ${conversion.what}`;
+}
+
+const renderDownscaleLabelFor = (type: string, rank: string): string => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank].downscale;
+    if (!conversion) throw `Couldn't render downscale details for ${rank} ${type}`;
+    return `Downscale ${conversion.cost} to ${conversion.quantity} ${conversion.what}`;
+}
+
+const renderTokenizeLabelFor = (type: string, rank: string): string => {
+    const conversion: ConversionDetails | undefined = config.value[type][rank].tokens;
+    if (!conversion) throw `Couldn't render token details for ${rank} ${type}`;
+    return `Convert ${conversion.cost} to ${conversion.quantity} ${conversion.what}`;
+}
+
+//#endregion
 
 const titleForTransaction = (): string => {
     let activeWord: string | null = null;
@@ -264,24 +286,22 @@ onMounted(() => {
                     </tr>
                     </tbody>
                 </table>
+
                 <!-- Other Controls -->
                 <div class="text-center">
                     <button v-if="config[type][rank].downscale"
                             class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
-                        <i class="fas fa-down-long btn-icon-left"></i>Downscale {{
-                            config[type][rank].downscale
-                        }}
+                        <i class="fas fa-down-long btn-icon-left"></i>{{ renderDownscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
                             class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
-                        <i class="fas fa-up-long btn-icon-left"></i>Upscale {{ config[type][rank].upscale }}
+                        <i class="fas fa-up-long btn-icon-left"></i>{{ renderUpscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
                             class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
-                        <i class="fas fa-medal btn-icon-left"></i>Convert to {{ config[type][rank].tokens }}
-                        tokens
+                        <i class="fas fa-medal btn-icon-left"></i>{{ renderTokenizeLabelFor(type, rank) }}
                     </button>
                 </div>
 
@@ -299,12 +319,13 @@ onMounted(() => {
                 <th scope="col"></th>
                 <th class="text-end" scope="col">Sell Price</th>
                 <th scope="col"></th>
-                <th scope="col">Conversions</th><!-- Convert to reward tokens and upscale/downscale -->
+                <th scope="col" class="text-center">Convert</th><!-- Upscale/Downscale -->
+                <th scope="col" class="text-center">Tokenize</th><!-- Upscale/Downscale -->
             </tr>
             </thead>
             <tbody>
             <tr v-for="rank in ranks" class="align-middle">
-                <td>{{ capital(rank) }}</td>
+                <th scope="row">{{ capital(rank) }}</th>
                 <td class="text-end">{{ renderOwnedFor(type, rank) }}</td>
                 <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
                 <td>
@@ -320,28 +341,21 @@ onMounted(() => {
                 </td>
                 <td>
                     <template v-if="type in config && rank in config[type]">
-
-                        <button v-if="config[type][rank].downscale"
-                                class="btn btn-secondary me-2 my-1" @click="requestDownscale(type, rank)">
-                            <i class="fas fa-down-long btn-icon-left"></i>Downscale
-                            {{ config[type][rank].downscale.cost }} to
-                            {{ config[type][rank].downscale.quantity }} {{ config[type][rank].downscale.what }}
-                        </button>
-
                         <button v-if="config[type][rank].upscale"
-                                class="btn btn-secondary me-2 my-1" @click="requestUpscale(type, rank)">
-                            <i class="fas fa-up-long btn-icon-left"></i>Upscale
-                            {{ config[type][rank].upscale.cost }} to
-                            {{ config[type][rank].upscale.quantity }} {{ config[type][rank].upscale.what }}
+                                class="btn btn-secondary my-1 d-block w-100" @click="requestUpscale(type, rank)">
+                            <i class="fas fa-up-long btn-icon-left"></i>{{ renderUpscaleLabelFor(type, rank) }}
                         </button>
-
-                        <button v-if="config[type][rank].tokens"
-                                class="btn btn-secondary me-2 my-1" @click="startConvertToTokens(type, rank)">
-                            <i class="fas fa-medal btn-icon-left"></i>Convert
-                            {{ config[type][rank].tokens.cost }} to
-                            {{ config[type][rank].tokens.quantity }} {{ config[type][rank].tokens.what }}
+                        <button v-if="config[type][rank].downscale"
+                                class="btn btn-secondary my-1 d-block w-100" @click="requestDownscale(type, rank)">
+                            <i class="fas fa-down-long btn-icon-left"></i>{{ renderDownscaleLabelFor(type, rank) }}
                         </button>
                     </template>
+                </td>
+                <td>
+                    <button v-if="config[type][rank].tokens"
+                            class="btn btn-secondary my-1 d-block w-100" @click="startConvertToTokens(type, rank)">
+                        <i class="fas fa-medal btn-icon-left"></i>{{ renderTokenizeLabelFor(type, rank) }}
+                    </button>
                 </td>
             </tr>
             </tbody>

@@ -16,6 +16,11 @@ const SALVAGE_MARKET_CONFIG = {
                 'quantity': 100,
                 'what': 'Common Waffle',
             },
+            'upscale': {
+                'cost': 4,
+                'quantity': 1,
+                'what': 'Betterer Waffle',
+            },
             'tokens': {
                 'cost': 1,
                 'quantity': 5,
