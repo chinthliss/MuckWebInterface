@@ -22,8 +22,10 @@
         <!-- TODO Write better intro to salvage market -->
 
         <p class="bg-warning text-bg-warning rounded p-2">
-            This page is still under initial development and unfinished.
-            <br/>The final purchase is presently not implemented.
+            This page is still under initial development and unfinished. Missing:
+            <br/>Final purchase is unimplemented
+            <br/>Disabling buttons if player can't perform the action at all
+            <br/>Showing current owned quantity in the transaction dialog
         </p>
 
 
