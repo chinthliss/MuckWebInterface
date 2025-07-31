@@ -214,7 +214,7 @@ channel.on('salvagePrices', (response: SalvagePrices) => {
     prices.value = response || {};
 })
 
-channel.on('salvageMarketQuote', (response: {text: string, value: number}) => {
+channel.on('salvageMarketQuote', (response: { text: string, value: number }) => {
     transactionQuoteText.value = response.text;
     transactionQuoteValue.value = response.value;
 })
@@ -320,8 +320,8 @@ onMounted(() => {
                 <th scope="col"></th>
                 <th class="text-end" scope="col">Sell Price</th>
                 <th scope="col"></th>
-                <th scope="col" class="text-center">Convert</th><!-- Upscale/Downscale -->
-                <th scope="col" class="text-center">Tokenize</th><!-- Upscale/Downscale -->
+                <th class="text-center" scope="col">Convert</th><!-- Upscale/Downscale -->
+                <th class="text-center" scope="col">Tokenize</th><!-- Upscale/Downscale -->
             </tr>
             </thead>
             <tbody>
@@ -376,7 +376,7 @@ onMounted(() => {
         <div class="mb-2">
             <label class="form-label" for="transactionAmount">How many times do you want to do this?</label>
             <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
-                   type="number" @input="getQuoteForTransaction">
+                   max="50000" min="1" type="number" @input="getQuoteForTransaction">
         </div>
         <p v-if="transactionType == 'buy'" class="border-warning border p-2 rounded">
             The buying price may increase for every transaction.
