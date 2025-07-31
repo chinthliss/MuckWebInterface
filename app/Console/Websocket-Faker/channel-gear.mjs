@@ -307,7 +307,7 @@ export default class ChannelGear extends Channel {
             this.sendMessageToConnection(connection, 'salvageMarketQuote', response)
         },
 
-        // Data is in the form {type, salvageType, salvageRange, quote}
+        // Data is in the form {type, salvageType, salvageRange, quantity, quote}
         // Expects response of 'OK' for success otherwise a more detailed error
         // In the case of success, should send renewed prices/owned if appropriate
         'salvageMarketTransaction': (connection, data) => {

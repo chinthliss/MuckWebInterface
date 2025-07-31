@@ -64,6 +64,7 @@ const acceptTransaction = () => {
         'type': transactionType.value,
         'salvageType': transactionSalvageType.value,
         'salvageRank': transactionSalvageRank.value,
+        'quantity': transactionQuantity.value,
         'quote': transactionQuoteValue.value,
     });
 }
