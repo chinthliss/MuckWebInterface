@@ -376,7 +376,7 @@ onMounted(() => {
         <div class="mb-2">
             <label class="form-label" for="transactionAmount">How many times do you want to do this?</label>
             <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
-                   max="50000" min="1" type="number" @input="getQuoteForTransaction">
+                   max="5000" min="1" type="number" @input="getQuoteForTransaction">
         </div>
         <p v-if="transactionType == 'buy'" class="border-warning border p-2 rounded">
             The buying price may increase for every transaction.
