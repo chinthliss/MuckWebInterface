@@ -295,6 +295,8 @@ export default class ChannelGear extends Channel {
             this.sendMessageToConnection(connection, 'salvageOwned', salvageOwned())
 
             this.sendMessageToConnection(connection, 'salvagePrices', salvagePrices())
+
+            this.sendMessageToConnection(connection, 'money', 5000)
         },
 
         // Data is in the form {type, salvageType, salvageRank, quantity}

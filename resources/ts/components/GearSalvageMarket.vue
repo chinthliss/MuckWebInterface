@@ -2,9 +2,12 @@
 
 import {onMounted, Ref, ref} from "vue";
 import {capital} from "../formatting";
-import ModalConfirmation from "./ModalConfirmation.vue";
 import {lex} from "../siteutils";
+import ModalConfirmation from "./ModalConfirmation.vue";
 import ModalMessage from "./ModalMessage.vue";
+import Callout from "./Callout.vue";
+
+type TransactionType = 'buy' | 'sell' | 'upscale' | 'downscale' | 'token';
 
 type SalvageOwned = {
     [type: string]: {
@@ -45,9 +48,10 @@ const ranks: Ref<string[]> = ref([]);
 const owned: Ref<SalvageOwned> = ref({})
 const prices: Ref<SalvagePrices> = ref({})
 const config: Ref<SalvageConfig> = ref({})
+const money: Ref<number> = ref(0);
 const transactionModal: Ref<InstanceType<typeof ModalConfirmation> | null> = ref(null);
 const transactionResultModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
-const transactionType: Ref<string> = ref('');
+const transactionType: Ref<TransactionType> = ref('buy');
 const transactionConfig: Ref<ConversionDetails | null> = ref(null);
 const transactionSalvageType: Ref<string> = ref('');
 const transactionSalvageRank: Ref<string> = ref('');
@@ -191,9 +195,45 @@ const titleForTransaction = (): string => {
         case 'token':
             activeWord = 'Tokenize';
             break;
-
     }
     return activeWord ? activeWord + ' ' + what : 'Unknown';
+}
+
+/**
+ * This is whether the player can at least consider doing a transaction
+ */
+const canDoPossibleTransaction = (transactionType: TransactionType, salvageType: string, salvageRank: string): boolean => {
+    let result = false; // Until we find otherwise!
+    let conversion: ConversionDetails | undefined;
+    switch (transactionType) {
+        case 'buy':
+            if (salvageType in prices.value && salvageRank in prices.value[salvageType].prices)
+                result = money.value >= prices.value[salvageType].prices[salvageRank].buy;
+            break;
+        case 'sell':
+            if (salvageType in owned.value && salvageRank in owned.value[salvageType])
+                result = owned.value[salvageType][salvageRank] > 0;
+            break;
+        case 'upscale':
+            if (salvageType in config.value && salvageRank in config.value[salvageType])
+                conversion = config.value[salvageType][salvageRank].upscale;
+            if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
+                result = owned.value[salvageType][salvageRank] > conversion.cost;
+            break;
+        case 'downscale':
+            if (salvageType in config.value && salvageRank in config.value[salvageType])
+                conversion = config.value[salvageType][salvageRank].downscale;
+            if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
+                result = owned.value[salvageType][salvageRank] > conversion.cost;
+            break;
+        case 'token':
+            if (salvageType in config.value && salvageRank in config.value[salvageType])
+                conversion = config.value[salvageType][salvageRank].tokens;
+            if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
+                result = owned.value[salvageType][salvageRank] > conversion.cost;
+            break;
+    }
+    return result;
 }
 
 channel.on('bootSalvageMarket', (response: {
@@ -205,6 +245,10 @@ channel.on('bootSalvageMarket', (response: {
     ranks.value = response.ranks || [];
     config.value = response.config || {};
 })
+
+channel.on('money', (amount: number) => {
+    money.value = amount;
+});
 
 channel.on('salvageOwned', (response: SalvageOwned) => {
     owned.value = response || {};
@@ -234,6 +278,10 @@ onMounted(() => {
 </script>
 
 <template>
+    <div class="text-center">
+        <span class="text-primary">Owned {{ lex('money') }}: </span>
+        <span>{{ money.toLocaleString() }}</span>
+    </div>
     <div v-for="type in types">
         <hr/>
         <div class="d-flex align-items-center">
@@ -269,7 +317,9 @@ onMounted(() => {
                         <td>Buy Price</td>
                         <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
                         <td class="text-center">
-                            <button class="btn btn-secondary" @click="startBuySalvage(type, rank)">
+                            <button :disabled="!canDoPossibleTransaction('buy', type, rank)" class="btn btn-secondary"
+                                    @click="startBuySalvage(type, rank)"
+                            >
                                 <i class="fas fa-coins btn-icon-left"></i>Buy
                             </button>
                         </td>
@@ -280,7 +330,9 @@ onMounted(() => {
                         <td>Sell Price</td>
                         <td class="text-end">{{ renderSellPriceFor(type, rank) }}</td>
                         <td class="text-center">
-                            <button class="btn btn-secondary" @click="startSellSalvage(type, rank)">
+                            <button :disabled="!canDoPossibleTransaction('sell', type, rank)" class="btn btn-secondary"
+                                    @click="startSellSalvage(type, rank)"
+                            >
                                 <i class="fas fa-coins btn-icon-left"></i>Sell
                             </button>
                         </td>
@@ -291,16 +343,19 @@ onMounted(() => {
                 <!-- Other Controls -->
                 <div class="text-center">
                     <button v-if="config[type][rank].downscale"
+                            :disabled="!canDoPossibleTransaction('downscale', type, rank)"
                             class="btn btn-secondary me-2 my-1 w-100" @click="requestDownscale(type, rank)">
                         <i class="fas fa-down-long btn-icon-left"></i>{{ renderDownscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].upscale"
+                            :disabled="!canDoPossibleTransaction('upscale', type, rank)"
                             class="btn btn-secondary me-2 my-1 w-100" @click="requestUpscale(type, rank)">
                         <i class="fas fa-up-long btn-icon-left"></i>{{ renderUpscaleLabelFor(type, rank) }}
                     </button>
 
                     <button v-if="config[type][rank].tokens"
+                            :disabled="!canDoPossibleTransaction('token', type, rank)"
                             class="btn btn-secondary me-2 my-1 w-100" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>{{ renderTokenizeLabelFor(type, rank) }}
                     </button>
@@ -330,23 +385,27 @@ onMounted(() => {
                 <td class="text-end">{{ renderOwnedFor(type, rank) }}</td>
                 <td class="text-end">{{ renderBuyPriceFor(type, rank) }}</td>
                 <td>
-                    <button class="btn btn-secondary my-1" @click="startBuySalvage(type, rank)">
+                    <button :disabled="!canDoPossibleTransaction('buy', type, rank)" class="btn btn-secondary my-1"
+                            @click="startBuySalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Buy
                     </button>
                 </td>
                 <td class="text-end">{{ renderSellPriceFor(type, rank) }}</td>
                 <td>
-                    <button class="btn btn-secondary my-1" @click="startSellSalvage(type, rank)">
+                    <button :disabled="!canDoPossibleTransaction('sell', type, rank)" class="btn btn-secondary my-1"
+                            @click="startSellSalvage(type, rank)">
                         <i class="fas fa-coins btn-icon-left"></i>Sell
                     </button>
                 </td>
                 <td>
                     <template v-if="type in config && rank in config[type]">
                         <button v-if="config[type][rank].upscale"
+                                :disabled="!canDoPossibleTransaction('upscale', type, rank)"
                                 class="btn btn-secondary my-1 d-block w-100" @click="requestUpscale(type, rank)">
                             <i class="fas fa-up-long btn-icon-left"></i>{{ renderUpscaleLabelFor(type, rank) }}
                         </button>
                         <button v-if="config[type][rank].downscale"
+                                :disabled="!canDoPossibleTransaction('downscale', type, rank)"
                                 class="btn btn-secondary my-1 d-block w-100" @click="requestDownscale(type, rank)">
                             <i class="fas fa-down-long btn-icon-left"></i>{{ renderDownscaleLabelFor(type, rank) }}
                         </button>
@@ -354,6 +413,7 @@ onMounted(() => {
                 </td>
                 <td>
                     <button v-if="config[type][rank].tokens"
+                            :disabled="!canDoPossibleTransaction('token', type, rank)"
                             class="btn btn-secondary my-1 d-block w-100" @click="startConvertToTokens(type, rank)">
                         <i class="fas fa-medal btn-icon-left"></i>{{ renderTokenizeLabelFor(type, rank) }}
                     </button>
@@ -378,16 +438,16 @@ onMounted(() => {
             <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
                    max="5000" min="1" type="number" @input="getQuoteForTransaction">
         </div>
-        <p v-if="transactionType == 'buy'" class="border-warning border p-2 rounded">
+        <callout v-if="transactionType == 'buy'">
             The buying price may increase for every transaction.
             The quote below accounts for this and if the price ends up higher
             (because of another player using the market) the transaction will abort.
-        </p>
-        <p v-if="transactionType == 'sell'">
+        </callout>
+        <callout v-if="transactionType == 'sell'">
             The selling price may decrease for every transaction.
             The quote below accounts for this and if the price ends up lower
             (because of another player using the market) the transaction will abort.
-        </p>
+        </callout>
 
         <p>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
     </modal-confirmation>
