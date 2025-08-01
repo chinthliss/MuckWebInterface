@@ -218,19 +218,19 @@ const canDoPossibleTransaction = (transactionType: TransactionType, salvageType:
             if (salvageType in config.value && salvageRank in config.value[salvageType])
                 conversion = config.value[salvageType][salvageRank].upscale;
             if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
-                result = owned.value[salvageType][salvageRank] > conversion.cost;
+                result = owned.value[salvageType][salvageRank] >= conversion.cost;
             break;
         case 'downscale':
             if (salvageType in config.value && salvageRank in config.value[salvageType])
                 conversion = config.value[salvageType][salvageRank].downscale;
             if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
-                result = owned.value[salvageType][salvageRank] > conversion.cost;
+                result = owned.value[salvageType][salvageRank] >= conversion.cost;
             break;
         case 'token':
             if (salvageType in config.value && salvageRank in config.value[salvageType])
                 conversion = config.value[salvageType][salvageRank].tokens;
             if (conversion && salvageType in owned.value && salvageRank in owned.value[salvageType])
-                result = owned.value[salvageType][salvageRank] > conversion.cost;
+                result = owned.value[salvageType][salvageRank] >= conversion.cost;
             break;
     }
     return result;
