@@ -21,12 +21,12 @@
         </div>
         <!-- TODO Write better intro to salvage market -->
 
-        <p class="bg-warning text-bg-warning rounded p-2 my-2">
+        <callout class="my-2" type="warning">
             This page is still under initial development and unfinished. Missing:
             <br/>Final purchase is unimplemented
             <br/>Disabling buttons if player can't perform the action at all
             <br/>Showing current owned quantity in the transaction dialog and dynamically changing max transactions
-        </p>
+        </callout>
 
 
         <div class="mt-2">
