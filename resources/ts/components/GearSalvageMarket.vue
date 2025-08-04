@@ -263,7 +263,10 @@ channel.on('salvagePrices', (response: SalvagePrices) => {
 channel.on('salvageMarketQuote', (quote: { text: string, value: number, error?: string }) => {
     if(quote.error) {
         transactionQuoteError.value = quote.error;
+        transactionQuoteText.value = null;
+        transactionQuoteValue.value = null;
     } else {
+        transactionQuoteError.value = null;
         transactionQuoteText.value = quote.text;
         transactionQuoteValue.value = quote.value;
     }
