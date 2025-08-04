@@ -24,7 +24,6 @@
         <callout class="my-2" type="warning">
             This page is still under initial development and unfinished. Missing:
             <br/>Final purchase is unimplemented
-            <br/>Showing current owned quantity in the transaction dialog and dynamically changing max transactions
         </callout>
 
 

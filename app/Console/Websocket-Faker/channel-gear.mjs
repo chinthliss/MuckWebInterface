@@ -303,7 +303,7 @@ export default class ChannelGear extends Channel {
         // Expects response of {text, value}
         'salvageMarketQuote': (connection, data) => {
             const response = {
-                text: 'This is a test, for the value of ' + 500 * data.quantity,
+                text: `For ${data.quantity} x ${data.salvageRank} ${data.salvageType}, you'll get ${500 * data.quantity}`,
                 value: 500 * data.quantity
             }
             this.sendMessageToConnection(connection, 'salvageMarketQuote', response)
