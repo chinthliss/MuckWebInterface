@@ -57,6 +57,7 @@ const transactionSalvageType: Ref<string> = ref('');
 const transactionSalvageRank: Ref<string> = ref('');
 const transactionQuantity: Ref<number> = ref(0);
 const transactionQuoteText: Ref<string | null> = ref(null);
+const transactionQuoteError: Ref<string | null> = ref(null);
 const transactionQuoteValue: Ref<number | null> = ref(null);
 
 const transactionResultText: Ref<string | null> = ref(null);
@@ -75,6 +76,7 @@ const acceptTransaction = () => {
 
 const getQuoteForTransaction = () => {
     transactionQuoteText.value = null;
+    transactionQuoteError.value = null;
     transactionQuoteValue.value = null;
     channel.send('salvageMarketQuote', {
         'type': transactionType.value,
@@ -258,9 +260,13 @@ channel.on('salvagePrices', (response: SalvagePrices) => {
     prices.value = response || {};
 })
 
-channel.on('salvageMarketQuote', (response: { text: string, value: number }) => {
-    transactionQuoteText.value = response.text;
-    transactionQuoteValue.value = response.value;
+channel.on('salvageMarketQuote', (quote: { text: string, value: number, error?: string }) => {
+    if(quote.error) {
+        transactionQuoteError.value = quote.error;
+    } else {
+        transactionQuoteText.value = quote.text;
+        transactionQuoteValue.value = quote.value;
+    }
 })
 
 channel.on('salvageMarketTransaction', (response: string) => {
@@ -448,18 +454,19 @@ onMounted(() => {
             <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
                    max="5000" min="1" type="number" @input="getQuoteForTransaction">
         </div>
-        <callout v-if="transactionType == 'buy'">
+        <callout v-if="transactionType == 'buy'" class="my-2">
             The buying price may increase for every transaction.
             The quote below accounts for this and if the price ends up higher
             (because of another player using the market) the transaction will abort.
         </callout>
-        <callout v-if="transactionType == 'sell'">
+        <callout v-if="transactionType == 'sell'" class="my-2">
             The selling price may decrease for every transaction.
             The quote below accounts for this and if the price ends up lower
             (because of another player using the market) the transaction will abort.
         </callout>
 
-        <p>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
+        <callout v-if="transactionQuoteError" type="danger">{{ transactionQuoteError }}</callout>
+        <p v-else>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
     </modal-confirmation>
 
     <modal-message ref="transactionResultModal" title="Transaction Result">

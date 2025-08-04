@@ -300,12 +300,15 @@ export default class ChannelGear extends Channel {
         },
 
         // Data is in the form {type, salvageType, salvageRank, quantity}
-        // Expects response of {text, value}
+        // Expects response of {text, value} or {error}
         'salvageMarketQuote': (connection, data) => {
-            const response = {
-                text: `For ${data.quantity} x ${data.salvageRank} ${data.salvageType}, you'll get ${500 * data.quantity}`,
-                value: 500 * data.quantity
-            }
+            let response;
+            if (data.quantity)
+                response = {
+                    text: `For ${data.quantity} x ${data.salvageRank} ${data.salvageType}, you'll get ${500 * data.quantity}`,
+                    value: 500 * data.quantity
+                }
+            else response = {error: 'Quantity must be a positive integer'};
             this.sendMessageToConnection(connection, 'salvageMarketQuote', response)
         },
 
