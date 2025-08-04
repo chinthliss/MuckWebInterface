@@ -432,7 +432,17 @@ onMounted(() => {
             <span v-if="transactionType == 'buy'"> {{ lex('money') }}</span>
             <span v-else>{{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }}</span>
         </p>
+
         <p>You get: {{ transactionConfig?.quantity }} x {{ transactionConfig?.what }}</p>
+
+        <hr/>
+
+        <p>You currently have:
+            <span v-if="transactionType == 'buy'">{{ money }} {{ lex('money') }}</span>
+            <span v-else>{{ renderOwnedFor(transactionSalvageType, transactionSalvageRank) }}
+                {{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }}</span>
+        </p>
+
         <div class="mb-2">
             <label class="form-label" for="transactionAmount">How many times do you want to do this?</label>
             <input id="transactionAmount" v-model="transactionQuantity" class="form-control"
