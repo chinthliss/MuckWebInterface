@@ -43,6 +43,13 @@ type SalvageConfig = {
     }
 }
 
+type Transaction = {
+    what: string
+    cost: string,
+    value: number,
+    error?: string
+}
+
 const types: Ref<string[]> = ref([]);
 const ranks: Ref<string[]> = ref([]);
 const owned: Ref<SalvageOwned> = ref({})
@@ -56,9 +63,7 @@ const transactionConfig: Ref<ConversionDetails | null> = ref(null);
 const transactionSalvageType: Ref<string> = ref('');
 const transactionSalvageRank: Ref<string> = ref('');
 const transactionQuantity: Ref<number> = ref(0);
-const transactionQuoteText: Ref<string | null> = ref(null);
-const transactionQuoteError: Ref<string | null> = ref(null);
-const transactionQuoteValue: Ref<number | null> = ref(null);
+const transactionQuote: Ref<Transaction | null> = ref(null);
 
 const transactionResultTitle: Ref<string> = ref('Transaction Failed');
 const transactionResultText: Ref<string | null> = ref(null);
@@ -71,14 +76,12 @@ const acceptTransaction = () => {
         'salvageType': transactionSalvageType.value,
         'salvageRank': transactionSalvageRank.value,
         'quantity': transactionQuantity.value,
-        'quote': transactionQuoteValue.value,
+        'quote': transactionQuote.value?.value,
     });
 }
 
 const getQuoteForTransaction = () => {
-    transactionQuoteText.value = null;
-    transactionQuoteError.value = null;
-    transactionQuoteValue.value = null;
+    transactionQuote.value = null;
     channel.send('salvageMarketQuote', {
         'type': transactionType.value,
         'salvageType': transactionSalvageType.value,
@@ -261,16 +264,8 @@ channel.on('salvagePrices', (response: SalvagePrices) => {
     prices.value = response || {};
 })
 
-channel.on('salvageMarketQuote', (quote: { text: string, value: number, error?: string }) => {
-    if (quote.error) {
-        transactionQuoteError.value = quote.error;
-        transactionQuoteText.value = null;
-        transactionQuoteValue.value = null;
-    } else {
-        transactionQuoteError.value = null;
-        transactionQuoteText.value = quote.text;
-        transactionQuoteValue.value = quote.value;
-    }
+channel.on('salvageMarketQuote', (quote: Transaction) => {
+    transactionQuote.value = quote;
 })
 
 channel.on('salvageMarketTransaction', (response: { success: boolean, text: string }) => {
@@ -436,7 +431,7 @@ onMounted(() => {
                         no-label="Cancel" yes-label="Confirm"
                         @yes="acceptTransaction"
     >
-        <p>You pay: {{ transactionConfig?.cost }} x
+        <p>For each: {{ transactionConfig?.cost }} x
             <span v-if="transactionType == 'buy'"> {{ lex('money') }}</span>
             <span v-else>{{ capital(transactionSalvageRank) }} {{ capital(transactionSalvageType) }}</span>
         </p>
@@ -467,8 +462,12 @@ onMounted(() => {
             (because of another player using the market) the transaction will abort.
         </callout>
 
-        <callout v-if="transactionQuoteError" type="danger">{{ transactionQuoteError }}</callout>
-        <p v-else>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
+        <div v-if="!transactionQuote">Updating quote..</div>
+        <callout v-else-if="transactionQuote.error" type="danger">{{ transactionQuote.error }}</callout>
+        <callout v-else type="info">
+            Pay: {{ transactionQuote.cost || 'Updating Quote..' }}
+            Pay: {{ transactionQuote.what || 'Updating Quote..' }}
+        </callout>
     </modal-confirmation>
 
     <modal-message ref="transactionResultModal" :title="transactionResultTitle">

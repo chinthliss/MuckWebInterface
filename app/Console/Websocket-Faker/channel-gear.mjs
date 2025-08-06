@@ -305,7 +305,8 @@ export default class ChannelGear extends Channel {
             let response;
             if (data.quantity)
                 response = {
-                    text: `For ${data.quantity} x ${data.salvageRank} ${data.salvageType}, you'll get ${500 * data.quantity}`,
+                    what: `${500 * data.quantity}`,
+                    cost: `${data.quantity} x ${data.salvageRank} ${data.salvageType}`,
                     value: 500 * data.quantity
                 }
             else response = {error: 'Quantity must be a positive integer'};
