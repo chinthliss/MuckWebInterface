@@ -465,8 +465,8 @@ onMounted(() => {
         <div v-if="!transactionQuote">Updating quote..</div>
         <callout v-else-if="transactionQuote.error" type="danger">{{ transactionQuote.error }}</callout>
         <callout v-else type="info">
-            Pay: {{ transactionQuote.cost || 'Updating Quote..' }}
-            Pay: {{ transactionQuote.what || 'Updating Quote..' }}
+            <div>Pay: {{ transactionQuote.cost || 'ERROR - no cost' }}</div>
+            <div>For: {{ transactionQuote.what || 'ERROR - no purchase description' }}</div>
         </callout>
     </modal-confirmation>
 
