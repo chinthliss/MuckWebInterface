@@ -60,6 +60,7 @@ const transactionQuoteText: Ref<string | null> = ref(null);
 const transactionQuoteError: Ref<string | null> = ref(null);
 const transactionQuoteValue: Ref<number | null> = ref(null);
 
+const transactionResultTitle: Ref<string> = ref('Transaction Failed');
 const transactionResultText: Ref<string | null> = ref(null);
 
 const channel = mwiWebsocket.channel('gear');
@@ -261,7 +262,7 @@ channel.on('salvagePrices', (response: SalvagePrices) => {
 })
 
 channel.on('salvageMarketQuote', (quote: { text: string, value: number, error?: string }) => {
-    if(quote.error) {
+    if (quote.error) {
         transactionQuoteError.value = quote.error;
         transactionQuoteText.value = null;
         transactionQuoteValue.value = null;
@@ -272,11 +273,9 @@ channel.on('salvageMarketQuote', (quote: { text: string, value: number, error?: 
     }
 })
 
-channel.on('salvageMarketTransaction', (response: string) => {
-    if (response == 'OK')
-        transactionResultText.value = 'The transaction succeeded!';
-    else
-        transactionResultText.value = 'The transaction failed: ' + response;
+channel.on('salvageMarketTransaction', (response: { success: boolean, text: string }) => {
+    transactionResultTitle.value = response.success ? 'Transaction Successful' : 'Transaction failed';
+    transactionResultText.value = response.text;
     if (transactionResultModal.value) transactionResultModal.value.show();
 })
 
@@ -472,7 +471,7 @@ onMounted(() => {
         <p v-else>Quote: {{ transactionQuoteText || 'Updating Quote..' }}</p>
     </modal-confirmation>
 
-    <modal-message ref="transactionResultModal" title="Transaction Result">
+    <modal-message ref="transactionResultModal" :title="transactionResultTitle">
         <p>{{ transactionResultText }}</p>
     </modal-message>
 </template>

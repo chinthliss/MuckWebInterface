@@ -313,12 +313,16 @@ export default class ChannelGear extends Channel {
         },
 
         // Data is in the form {type, salvageType, salvageRange, quantity, quote}
-        // Expects response of 'OK' for success otherwise a more detailed error
-        // In the case of success, should send renewed prices/owned if appropriate
+        // Expects response of {success, text} with successful being a boolean.
+        // In the case of success, should also then trigger renewed prices/owned as appropriate
         'salvageMarketTransaction': (connection, data) => {
-            let response = 'OK';
+            let response = {
+                success: true,
+                text: 'Transaction successful'
+            }
             if (data.salvageRank === 'betterer') {
-                response = 'Betterer always fails';
+                response.success = false;
+                response.text = 'Betterer always fails';
             }
             this.sendMessageToConnection(connection, 'salvageMarketTransaction', response)
         },
