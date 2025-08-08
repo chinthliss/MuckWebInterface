@@ -17,14 +17,9 @@
         <h1>Salvage Market</h1>
 
         <div class="lead">
-            Salvage Market. Which needs a better opening and is a work in progress.
+            Salvage Market. Which needs a better opening.
         </div>
         <!-- TODO Write better intro to salvage market -->
-
-        <callout class="my-2" type="warning">
-            This page is still under development and only buying and selling works so far.
-        </callout>
-
 
         <div class="mt-2">
             <gear-salvage-market></gear-salvage-market>
