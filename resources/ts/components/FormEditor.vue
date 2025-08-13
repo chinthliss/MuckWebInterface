@@ -487,14 +487,14 @@ channel.on('publishedForm', (response: Form) => {
     publishedForm.value = response;
 });
 
-channel.on('updateFormFailed', (response) => {
+channel.on('updateFormFailed', (response: {propName: string, propValue: string, error?: string} ) => {
     error.value = `Update failed or rejected by the game when setting '${response.propName}' to '${response.propValue}.'`;
     error.value += "\n\nThis means your changes weren't saved, so you may wish to keep a record elsewhere.";
     if (response.error) error.value += "\n\nActual error returned: " + response.error;
     if (errorModal.value) errorModal.value.show();
 });
 
-channel.on('formStateUpdate', (response) => {
+channel.on('formStateUpdate', (response: { form:string, error?: string} ) => {
     if (response.error) {
         // The error from the muck should be more specifically tailored here, so use that.
         error.value = response.error;
@@ -507,7 +507,7 @@ channel.on('formStateUpdate', (response) => {
     if (presentFormId.value) loadForm(presentFormId.value);
 });
 
-channel.on('formApproved', (response) => {
+channel.on('formApproved', (response: {form: string, error?: string}) => {
     if (response.error) {
         // The error from the muck should be more specifically tailored here, so use that.
         error.value = response.error;
