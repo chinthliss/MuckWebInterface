@@ -17,7 +17,7 @@ const clicked = () => {
     if (props.onClick)
         props.onClick();
     else
-        window.location = '/c/' + props.character.name;
+        (window as Window).location = '/c/' + props.character.name;
 };
 </script>
 

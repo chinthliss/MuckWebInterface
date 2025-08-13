@@ -84,7 +84,7 @@ const doAccountSearch = () => {
 }
 
 const jumpToAccount = () => {
-    window.location = props.accountRoot.replace('DUMMY', quickOpen.value);
+    (window as Window).location = props.accountRoot.replace('DUMMY', quickOpen.value);
 };
 
 </script>

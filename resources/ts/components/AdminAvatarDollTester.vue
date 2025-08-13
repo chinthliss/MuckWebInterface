@@ -109,7 +109,7 @@ const updateAndRefresh = () => {
     if (Object.keys(setColors).length > 0) newJson.colors = setColors;
 
     let newCode = btoa(JSON.stringify(newJson));
-    window.location = props.baseUrl + '/' + newCode;
+    (window as Window).location = props.baseUrl + '/' + newCode;
 }
 
 const layerListToString = (unparsed: DrawingStepLayer[]): string => {

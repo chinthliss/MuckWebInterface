@@ -223,7 +223,7 @@ channel.on('badge', (data: Badge) => {
                         </div>
                     </div>
 
-                    <!-- Mail status and Laston  -->
+                    <!-- Mail status and LastOn  -->
                     <div class="mt-2 d-flex">
                         <div>
                             <div class="label">Mail (Unread)</div>
