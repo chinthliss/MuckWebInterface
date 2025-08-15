@@ -1,8 +1,8 @@
 <?php
 
+namespace Tests\Feature;
 
 use App\Payment\PaymentTransactionItem;
-use App\Payment\PaymentTransactionItemCatalogue;
 use App\Payment\PaymentTransactionManager;
 use Database\Factories\UserFactory;
 use Database\Factories\BillingFactory;

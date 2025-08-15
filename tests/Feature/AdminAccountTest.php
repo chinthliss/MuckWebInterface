@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;

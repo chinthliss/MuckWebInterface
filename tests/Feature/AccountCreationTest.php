@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
-use App\User;
 use Database\Factories\UserFactory;
 
 class AccountCreationTest extends TestCase

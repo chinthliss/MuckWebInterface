@@ -1,12 +1,13 @@
 <?php
 
+namespace Tests\Unit;
 
-use App\Muck\MuckConnection;
 use App\Muck\MuckDbref;
 use App\Muck\MuckObjectService;
-use App\Muck\MuckService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Database\Factories\MuckObjectFactory;
 

@@ -1,10 +1,13 @@
 <?php
 
+namespace Tests\Feature;
 
 use App\AccountNotificationManager;
 use App\Notifications\MuckWebInterfaceNotification;
 use App\User;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Factories\UserFactory;

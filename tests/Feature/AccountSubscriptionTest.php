@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Feature;
 
 use App\Payment\PaymentSubscriptionManager;
 use Database\Factories\UserFactory;

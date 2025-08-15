@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Unit;
 
 use App\Payment\Card;
 use Illuminate\Support\Carbon;

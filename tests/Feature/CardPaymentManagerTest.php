@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Feature;
 
 use App\Payment\CardPaymentManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;

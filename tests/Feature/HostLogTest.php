@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\HostLogManager;
 use Database\Factories\UserFactory;
-use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
