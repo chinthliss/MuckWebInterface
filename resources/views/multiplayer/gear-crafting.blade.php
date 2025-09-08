@@ -14,9 +14,18 @@
 @section('content')
     <div class="container">
 
-        <div class="mt-2 mb-4 p-3 border rounded border-warning text-warning">
-            This page is extremely under-construction. Even more so than the rest of the site!
-        </div>
+        <callout>
+            <p>This page is extremely under-construction. Even more so than the rest of the site!</p>
+            <div>Missing content:</div>
+            <ul>
+                <li>The actual crafting! At the moment this page is just testing the preview functionality</li>
+                <li>Most of the constructive warning messages (e.g. 'this could be crafted if ..')</li>
+                <li>Saved Plan functionality</li>
+                <li>History functionality</li>
+                <li>Commissioning functionality</li>
+
+            </ul>
+        </callout>
 
         <h1>Crafting</h1>
 
