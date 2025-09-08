@@ -235,16 +235,24 @@ export default class ChannelGear extends Channel {
         },
         'craftPreview': (connection, data) => {
             // Data is 'recipe' and 'modifiers'
-            // Not even going to try and imitate the calculations on the muck!
+            // Not even going to try and imitate the calculations the muck does!
             const preview = {
+                result: 'SUCCESS',
                 recipe: data.recipe,
                 modifiers: data.modifiers,
                 buildCost: 10,
-                commonSalvage: {
-                    chemical: 10,
-                    electronic: 10,
-                    energy: 10,
-                    food: 10
+                salvage: {
+                    chemical: {
+                        best: {
+                            common: 5
+                        },
+                        worst: {
+                            common: 10
+                        },
+                        crafter: {
+                            common: 8
+                        }
+                    }
                 },
                 loadout: 10,
                 money: 10,
@@ -252,19 +260,22 @@ export default class ChannelGear extends Channel {
                     something: 1
                 },
                 quantity: 1,
-                quantityFloat: 1.0,
                 scale: 0,
                 skills: {
-                    mechanical: 10
-                },
-                salvage: {
-                    commonChemical: 10,
-                    commonElectronic: 10,
-                    commonEnergy: 10,
-                    commonFood: 10,
+                    mechanical: {
+                        best: 5,
+                        worst: 1
+                    }
                 },
                 upkeep: 10,
-                xp: 10
+                xp: 10,
+                feedback: {
+                    difficultyTier: 2.00,
+                    difficultyLabel: 'Weird',
+                    modifiers: {
+                        chemical: 4.00
+                    }
+                }
             };
 
             this.sendMessageToConnection(connection, 'craftPreview', preview);

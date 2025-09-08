@@ -1,6 +1,12 @@
 /**
  * Type Definitions that are used on multiple pages
  */
+
+export type ResponseError = {
+    result: 'ERROR',
+    error: string
+}
+
 export type Account = {
     id: number
     createdAt: string

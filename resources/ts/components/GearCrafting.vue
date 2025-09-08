@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref} from "vue";
-import {arrayToList} from "../formatting";
+import {arrayToList, capital} from "../formatting";
+import {ResponseError} from "../defs";
+import {lex} from "../siteutils";
 
 type Recipe = {
     name: string,
@@ -26,9 +28,14 @@ type SavedPlan = {
 }
 
 type CraftPreview = {
+    result: 'SUCCESS',
     recipe: string,
     modifiers: string[],
-    error?: string,
+    feedback: {
+        difficultyTier: number,
+        difficultyLabel: string,
+        modifiers: {[salvageType: string]: string}
+    },
     buildCost: number,
     loadout: number,
     money: number,
@@ -39,16 +46,19 @@ type CraftPreview = {
     scale: number,
     skills: {
         [skill: string]: {
-            min: number,
-            max: number
+            best: number,
+            worst: number
         }
     },
     salvage: {
         [type: string]: {
-            min: {
+            best: {
                 [grade: string]: number
             },
-            max: {
+            worst: {
+                [grade: string]: number
+            },
+            crafter: {
                 [grade: string]: number
             }
         }
@@ -57,7 +67,7 @@ type CraftPreview = {
     xp: number,
     notices?: string[],
     warnings?: string[]
-}
+} | ResponseError
 
 const savedPlans: Ref<SavedPlan[]> = ref([]);
 const recipes: Ref<Recipe[]> = ref([]);
@@ -94,6 +104,14 @@ const classForRecipeIcon = (recipe: Recipe) => {
     if (recipe.item.useType == 'consumable') return 'fa-utensils';
     if (recipe.item.useType == 'tool') return 'fa-toolbox';
     return 'fa-shirt'; // Default for equipment
+}
+
+const outputSalvageRange = (range: {[rank: string]: number}): string => {
+    let fragments: string[] = [];
+    for (const rank in range) {
+        fragments.push(`${capital(rank)} x ${range[rank]}`);
+    }
+    return fragments.join(', ');
 }
 
 channel.on('craftPreview', (response: CraftPreview) => {
@@ -222,39 +240,45 @@ onMounted(() => {
     <hr/>
     <h3>Preview</h3>
     <div v-if="preview">
-        <div v-if="preview.error">{{ preview.error }}</div>
+        <div v-if="preview.result == 'ERROR'">{{ preview.error }}</div>
         <dl v-else class="row">
 
             <dt class="col-sm-2">Recipe</dt>
             <dd class="col-sm-10">{{ preview.recipe }}</dd>
 
             <dt class="col-sm-2">Modifiers</dt>
-            <dd class="col-sm-10">{{ arrayToList(preview.modifiers) }}</dd>
+            <dd class="col-sm-10">{{ arrayToList(preview.modifiers) || 'None' }}</dd>
 
+            <dt class="col-sm-2">Difficulty</dt>
+            <dd class="col-sm-10">{{ preview.feedback.difficultyTier }} - {{ preview.feedback.difficultyLabel }}</dd>
 
             <dt class="col-sm-2">Skills</dt>
             <dd class="col-sm-10">
                 <div v-for="(range, skill) in preview.skills">
-                    {{ skill }} of {{ range.min }} to {{ range.max }}
+                    {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
                 </div>
             </dd>
 
 
             <dt class="col-sm-2">Salvage</dt>
             <dd class="col-sm-10">
-                <div v-for="(quantity, salvage) in preview.salvage">
-                    {{ quantity }} x {{ salvage }}
+                <div v-for="(range, salvage) in preview.salvage">
+                    <b>{{ capital(salvage as string) }}</b>:
+                    <div>Best: {{ outputSalvageRange(range.best) }}</div>
+                    <div>Worst: {{ outputSalvageRange(range.worst) }}</div>
+                    <div>Crafter: {{ outputSalvageRange(range.crafter) }}</div>
+                    <div>Modifier: {{ preview.feedback.modifiers[salvage] }}x</div>
                 </div>
             </dd>
 
             <dt class="col-sm-2">Other Ingredients</dt>
             <dd class="col-sm-10">
                 <div v-for="(quantity, ingredient) in preview.otherIngredients">
-                    {{ quantity }} x {{ ingredient }}
+                    {{ quantity }} x {{ capital(ingredient as string) }}
                 </div>
             </dd>
 
-            <dt class="col-sm-2">Freecred</dt>
+            <dt class="col-sm-2">{{ lex('money') }}</dt>
             <dd class="col-sm-10">{{ preview.money }}</dd>
 
             <dt class="col-sm-2">Nanites</dt>
