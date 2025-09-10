@@ -4,8 +4,9 @@ import {onMounted, Ref, ref} from "vue";
 import {arrayToList, capital} from "../formatting";
 import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
+import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
 
-type Recipe = {
+export type Recipe = {
     name: string,
     description: string,
     item: {
@@ -14,17 +15,19 @@ type Recipe = {
     }
 }
 
-type Modifier = {
+export type Modifier = {
     name: string,
     description: string
 }
 
-type SavedPlan = {
+// Represents a previous instance of either saved plans or history
+export type RecipeAndModifiers = {
     name: string,
     recipeName: string,
     recipe: Recipe | null, // Might be null if invalid
     modifierNames: string[]
     modifiers: Modifier[]
+    valid: boolean
 }
 
 type CraftPreview = {
@@ -34,7 +37,7 @@ type CraftPreview = {
     feedback: {
         difficultyTier: number,
         difficultyLabel: string,
-        modifiers: {[salvageType: string]: string}
+        modifiers: { [salvageType: string]: string }
     },
     buildCost: number,
     loadout: number,
@@ -69,7 +72,6 @@ type CraftPreview = {
     warnings?: string[]
 } | ResponseError
 
-const savedPlans: Ref<SavedPlan[]> = ref([]);
 const recipes: Ref<Recipe[]> = ref([]);
 const modifiers: Ref<Modifier[]> = ref([]);
 const showDescriptions: Ref<boolean> = ref(false);
@@ -78,6 +80,9 @@ const selectedModifiers: Ref<string[]> = ref([]);
 const preview: Ref<CraftPreview | null> = ref(null);
 const recipesToLoad: Ref<number | null> = ref(null); // If null, loading hasn't started. If 0, finished.
 const modifiersToLoad: Ref<number | null> = ref(null); // If null, loading hasn't started. If 0, finished.
+const savedPlans: Ref<RecipeAndModifiers[]> = ref([]); // Used by the recipe selector
+const history: Ref<RecipeAndModifiers[]> = ref([]); // Used by the recipe selector
+
 
 const channel = mwiWebsocket.channel('gear');
 
@@ -106,7 +111,7 @@ const classForRecipeIcon = (recipe: Recipe) => {
     return 'fa-shirt'; // Default for equipment
 }
 
-const outputSalvageRange = (range: {[rank: string]: number}): string => {
+const outputSalvageRange = (range: { [rank: string]: number }): string => {
     let fragments: string[] = [];
     for (const rank in range) {
         fragments.push(`${capital(rank)} x ${range[rank]}`);
@@ -130,11 +135,13 @@ channel.on('modifier', (response: Modifier) => {
 
 
 channel.on('bootCrafting', (response: {
-    savedPlans: SavedPlan[],
-    recipeCount: number, // Sent separately otherwise it'll break the muck's reliable string length
-    modifierCount: number // Sent separately otherwise it'll break the muck's reliable string length
+    savedPlans: RecipeAndModifiers[],
+    history: RecipeAndModifiers[],
+    recipeCount: number, // Individual entries are sent separately otherwise it'll break the muck's reliable string length
+    modifierCount: number // Individual entries are sent separately otherwise it'll break the muck's reliable string length
 }) => {
     savedPlans.value = response.savedPlans || [];
+    history.value = response.history || [];
     recipes.value = [];
     recipesToLoad.value = response.recipeCount;
     modifiers.value = [];
@@ -160,17 +167,15 @@ onMounted(() => {
 
 <template>
 
-    <!-- Legend -->
-    <div class="bg-secondary text-black p-1 rounded-4">
-        <!-- <h6 class="text-center">Legend</h6> -->
-        <div class="d-flex justify-content-evenly">
-            <div><i class="fas fa-shirt use-type-icon"></i> Equipment</div>
-            <div><i class="fas fa-toolbox use-type-icon"></i> Tool/Usable</div>
-            <div><i class="fas fa-utensils use-type-icon"></i> Consumable</div>
-        </div>
-    </div>
+    <gear-crafting-recipe-selector
+        :expanded = "true"
+        :recipes = "recipes"
+        :modifiers = "modifiers"
+        :saved-plans = "savedPlans"
+        :history = "history"
+    >
 
-
+    </gear-crafting-recipe-selector>
     <h2>Saved Plans</h2>
     <p>These are saved combinations of a recipe and any modifiers, so that they can be re-used later.</p>
     <div v-for="savedPlan in savedPlans" v-if="savedPlans.length > 0">
