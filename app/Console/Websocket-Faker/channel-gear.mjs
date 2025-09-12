@@ -161,7 +161,8 @@ export default class ChannelGear extends Channel {
             item: {
                 type: 'Something something something',
                 useType: 'consumable'
-            }
+            },
+            known: true
         },
         {
             name: 'Test Recipe 2',
@@ -180,7 +181,8 @@ export default class ChannelGear extends Channel {
             item: {
                 type: 'Lots of words something equipment',
                 useType: 'equipment'
-            }
+            },
+            known: false
         }
     ];
 
