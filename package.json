@@ -33,6 +33,6 @@
         "datatables.net-fixedcolumns-bs5": "^5.0.4",
         "datatables.net-vue3": "3.0.2",
         "muckwebinterface-websocket": "github:chinthliss/MuckWebInterface-Websocket",
-        "vue": "^3.2.37"
+        "vue": "^3.5.0"
     }
 }
