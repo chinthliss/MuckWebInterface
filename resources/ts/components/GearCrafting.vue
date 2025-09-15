@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import {onMounted, useTemplateRef, Ref, ref} from "vue";
+import {onMounted, Ref, ref, useTemplateRef} from "vue";
 import {arrayToList, capital} from "../formatting";
 import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
@@ -11,7 +11,8 @@ export type Recipe = {
     description: string,
     item: {
         type: string,
-        useType: string
+        useType: string,
+        slot: string
     },
     known: boolean
 }
@@ -173,24 +174,24 @@ onMounted(() => {
     <template v-else>
 
         <!-- Recipe -->
-        <gear-crafting-recipe-selector ref="recipe-selector" @update="recipeSelected" @mounted="recipeSelectorMounted"
-            :history="history"
-            :modifiers="modifiers"
-            :recipes="recipes"
-            :saved-plans="savedPlans"
+        <hr/>
+        <h3>Recipe</h3>
+        <gear-crafting-recipe-selector ref="recipe-selector" :history="history" :modifiers="modifiers"
+                                       :recipes="recipes"
+                                       :saved-plans="savedPlans"
+                                       @mounted="recipeSelectorMounted"
+                                       @update="recipeSelected"
         >
         </gear-crafting-recipe-selector>
         <div v-if="!selectedRecipe">You need to select a recipe to continue.</div>
-        <div v-else>Current Recipe: {{ selectedRecipe }}</div>
+        <div v-else class="fw-bold"><span class="text-primary">Selected Recipe:</span> {{ selectedRecipe }}</div>
 
 
-        <hr/>
-        <h3>Select Modifiers</h3>
-        <div class="scrollable-area pe-2">
-            <template v-if="modifiersToLoad == null">Starting up..</template>
-            <template v-else-if="modifiersToLoad > 0">Loading Modifiers ({{ modifiersToLoad }} remain)
-            </template>
-            <template v-else>
+        <!-- Modifiers selection -->
+        <template v-if="selectedRecipe">
+            <hr/>
+            <h3>Modifiers</h3>
+            <div class="scrollable-area pe-2">
                 <div v-for="modifier in modifiers" class="card mb-2" role="button"
                      v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
                      @click="toggleModifier(modifier)"
@@ -199,80 +200,118 @@ onMounted(() => {
                         <h5 class="card-title">{{ modifier.name }}</h5>
                         <p class="card-text">{{ modifier.description }}</p>
                     </div>
-
                 </div>
-            </template>
-        </div>
+            </div>
+            <div class="fw-bold"><span class="text-primary">Selected Modifiers:</span> {{
+                    arrayToList(selectedModifiers) || 'None'
+                }}
+            </div>
+        </template>
 
-        <hr/>
-        <h3>Preview</h3>
-        <div v-if="preview">
-            <div v-if="preview.result == 'ERROR'">{{ preview.error }}</div>
-            <dl v-else class="row">
+        <!-- Preview -->
+        <template v-if="selectedRecipe">
+            <hr/>
+            <h3>Preview</h3>
+            <div v-if="preview">
+                <div v-if="preview.result == 'ERROR'">{{ preview.error }}</div>
+                <dl v-else class="row">
 
-                <dt class="col-sm-2">Recipe</dt>
-                <dd class="col-sm-10">{{ preview.recipe }}</dd>
+                    <dt class="col-sm-2">Recipe</dt>
+                    <dd class="col-sm-10">{{ preview.recipe }}</dd>
 
-                <dt class="col-sm-2">Modifiers</dt>
-                <dd class="col-sm-10">{{ arrayToList(preview.modifiers) || 'None' }}</dd>
+                    <dt class="col-sm-2">Modifiers</dt>
+                    <dd class="col-sm-10">{{ arrayToList(preview.modifiers) || 'None' }}</dd>
 
-                <dt class="col-sm-2">Difficulty</dt>
-                <dd class="col-sm-10">{{ preview.feedback.difficultyTier }} - {{
-                        preview.feedback.difficultyLabel
-                    }}
-                </dd>
+                    <dt class="col-sm-2">Difficulty</dt>
+                    <dd class="col-sm-10">
+                        <div :class="{ d1: preview.feedback.difficultyTier >= 1}" class="difficultyContainer"></div>
+                        <div :class="{ d2: preview.feedback.difficultyTier >= 2}" class="difficultyContainer"></div>
+                        <div :class="{ d3: preview.feedback.difficultyTier >= 3}" class="difficultyContainer"></div>
+                        <div :class="{ d4: preview.feedback.difficultyTier >= 4}" class="difficultyContainer"></div>
+                        <div :class="{ d5: preview.feedback.difficultyTier >= 5}" class="difficultyContainer"></div>
+                        {{ preview.feedback.difficultyTier }} - {{ preview.feedback.difficultyLabel }}
+                    </dd>
 
-                <dt class="col-sm-2">Skills</dt>
-                <dd class="col-sm-10">
-                    <div v-for="(range, skill) in preview.skills">
-                        {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
-                    </div>
-                </dd>
+                    <dt class="col-sm-2">Skills</dt>
+                    <dd class="col-sm-10">
+                        <div v-for="(range, skill) in preview.skills">
+                            {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
+                        </div>
+                    </dd>
 
 
-                <dt class="col-sm-2">Salvage</dt>
-                <dd class="col-sm-10">
-                    <div v-for="(range, salvage) in preview.salvage">
-                        <b>{{ capital(salvage as string) }}</b>:
-                        <div>Best: {{ outputSalvageRange(range.best) }}</div>
-                        <div>Worst: {{ outputSalvageRange(range.worst) }}</div>
-                        <div>Crafter: {{ outputSalvageRange(range.crafter) }}</div>
-                        <div>Modifier: {{ preview.feedback.modifiers[salvage] }}x</div>
-                    </div>
-                </dd>
+                    <dt class="col-sm-2">Salvage</dt>
+                    <dd class="col-sm-10">
+                        <div v-for="(range, salvage) in preview.salvage">
+                            <b>{{ capital(salvage as string) }}</b>:
+                            <div>Best: {{ outputSalvageRange(range.best) }}</div>
+                            <div>Worst: {{ outputSalvageRange(range.worst) }}</div>
+                            <div>
+                                Crafter: {{ outputSalvageRange(range.crafter) }}
+                                <span class="text-muted">({{ preview.feedback.modifiers[salvage] * 100 }}% cost)</span>
+                            </div>
 
-                <dt class="col-sm-2">Other Ingredients</dt>
-                <dd class="col-sm-10">
-                    <div v-for="(quantity, ingredient) in preview.otherIngredients">
-                        {{ quantity }} x {{ capital(ingredient as string) }}
-                    </div>
-                </dd>
+                        </div>
+                    </dd>
 
-                <dt class="col-sm-2">{{ lex('money') }}</dt>
-                <dd class="col-sm-10">{{ preview.money }}</dd>
+                    <dt class="col-sm-2">Other Ingredients</dt>
+                    <dd class="col-sm-10">
+                        <div v-for="(quantity, ingredient) in preview.otherIngredients">
+                            {{ quantity }} x {{ capital(ingredient as string) }}
+                        </div>
+                    </dd>
 
-                <dt class="col-sm-2">Nanites</dt>
-                <dd class="col-sm-10">{{ preview.buildCost }}ng</dd>
+                    <dt class="col-sm-2">{{ lex('money') }}</dt>
+                    <dd class="col-sm-10">{{ preview.money }}</dd>
 
-                <dt class="col-sm-2">Upkeep</dt>
-                <dd class="col-sm-10">{{ preview.upkeep }}</dd>
+                    <dt class="col-sm-2">Nanites</dt>
+                    <dd class="col-sm-10">{{ preview.buildCost }}ng</dd>
 
-                <dt class="col-sm-2">Loadout</dt>
-                <dd class="col-sm-10">{{ preview.loadout }}</dd>
+                    <dt class="col-sm-2">Upkeep</dt>
+                    <dd class="col-sm-10">{{ preview.upkeep }}</dd>
 
-                <dt class="col-sm-2">Quantity</dt>
-                <dd class="col-sm-10">{{ preview.quantity }}</dd>
+                    <dt class="col-sm-2">Loadout</dt>
+                    <dd class="col-sm-10">{{ preview.loadout }}</dd>
 
-            </dl>
-        </div>
-        <div v-else-if="selectedRecipe">
-            Loading..
-        </div>
-        <div v-else>
-            You need to at least select a recipe.
-        </div>
+                    <dt class="col-sm-2">Quantity</dt>
+                    <dd class="col-sm-10">{{ preview.quantity }}</dd>
+
+                </dl>
+            </div>
+            <div v-else>
+                Loading..
+            </div>
+        </template>
     </template>
 </template>
 
 <style scoped>
+.difficultyContainer {
+    border: 1px solid #ccc;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 2px;
+}
+
+.d1 {
+    background-color: #2b83ba;
+}
+
+.d2 {
+    background-color: #abdda4;
+}
+
+.d3 {
+    background-color: #ffffbf;
+}
+
+.d4 {
+    background-color: #fdae61;
+}
+
+.d5 {
+    background-color: #d7191c;
+}
+
 </style>

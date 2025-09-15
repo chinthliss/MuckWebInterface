@@ -160,7 +160,8 @@ export default class ChannelGear extends Channel {
             },
             item: {
                 type: 'Something something something',
-                useType: 'consumable'
+                useType: 'consumable',
+                slot: 'neck'
             },
             known: true
         },

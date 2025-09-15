@@ -3,6 +3,7 @@
 import type {Modifier, Recipe, RecipeAndModifiers} from "./GearCrafting.vue"
 import {onMounted, ref, Ref, useTemplateRef} from "vue";
 import Collapse from "./Collapse.vue";
+import {capital} from "../formatting";
 
 const {
     recipes = [],
@@ -97,19 +98,19 @@ onMounted(() => {
 
                             <input id="btn-equipment" v-model="showEquipment" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary" for="btn-equipment">
+                            <label class="btn btn-outline-primary w-100 me-2" for="btn-equipment">
                                 <i class="fas fa-shirt use-type-icon"></i> Equipment
                             </label>
 
                             <input id="btn-usable" v-model="showUsable" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary" for="btn-usable">
+                            <label class="btn btn-outline-primary w-100 me-2" for="btn-usable">
                                 <i class="fas fa-toolbox use-type-icon"></i> Tool/Usable
                             </label>
 
                             <input id="btn-consumable" v-model="showConsumable" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary" for="btn-consumable">
+                            <label class="btn btn-outline-primary w-100" for="btn-consumable">
                                 <i class="fas fa-utensils use-type-icon"></i> Consumable
                             </label>
 
@@ -120,7 +121,8 @@ onMounted(() => {
                         <!-- Name toggle -->
                         <div class="col-12 col-xl-6 d-flex mb-2">
                             <label class="col-form-label me-2" for="nameFilter">Name</label>
-                            <input id="nameFilter" v-model="nameFilter" class="form-control" placeholder="Filter by name"
+                            <input id="nameFilter" v-model="nameFilter" class="form-control"
+                                   placeholder="Filter by name"
                                    type="text">
                         </div>
                         <!-- Description toggle -->
@@ -151,7 +153,8 @@ onMounted(() => {
                                 <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
                             </span>
                                 </h5>
-                                <h6 class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</h6>
+                                <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
+                                <div v-if="recipe.item.slot" class="card-text">Slot: {{ capital(recipe.item.slot) }}</div>
                                 <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
                             </div>
 
@@ -163,7 +166,7 @@ onMounted(() => {
 
             <!-- Select from saved plans -->
             <div id="saved-plans-pane" aria-labelledby="saved-plans-tab" class="tab-pane" role="tabpanel" tabindex="0">
-                <div>SAVED PLANS</div>
+                <div>SAVED PLANS GO HERE</div>
                 <div v-for="plan in savedPlans" class="card button mb-2" role="button">
                     <div class="card-body">
                         <h5 class="card-title">{{ plan.name }}</h5>
@@ -174,7 +177,7 @@ onMounted(() => {
 
             <!-- Select from history -->
             <div id="history-pane" aria-labelledby="history-tab" class="tab-pane" role="tabpanel" tabindex="0">
-                <div>HISTORY</div>
+                <div>RECENT HISTORY GOES HERE</div>
                 <div v-for="entry in history" class="card button mb-2" role="button">
                     <div class="card-body">
                         <h5 class="card-title">{{ entry.name || entry.recipeName }}</h5>
