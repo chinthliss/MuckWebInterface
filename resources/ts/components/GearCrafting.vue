@@ -20,6 +20,7 @@ export type Recipe = {
 export type Modifier = {
     name: string,
     description: string,
+    slot: string,
     known: boolean
 }
 
@@ -40,7 +41,7 @@ type CraftPreview = {
     feedback: {
         difficultyTier: number,
         difficultyLabel: string,
-        modifiers: { [salvageType: string]: string }
+        modifiers: { [salvageType: string]: number }
     },
     buildCost: number,
     loadout: number,
@@ -198,6 +199,7 @@ onMounted(() => {
                 >
                     <div class="card-body">
                         <h5 class="card-title">{{ modifier.name }}</h5>
+                        <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
                         <p class="card-text">{{ modifier.description }}</p>
                     </div>
                 </div>
