@@ -224,11 +224,13 @@ onMounted(() => {
 
                     <dt class="col-sm-2">Difficulty</dt>
                     <dd class="col-sm-10">
-                        <div :class="{ d1: preview.feedback.difficultyTier >= 1}" class="difficultyContainer"></div>
-                        <div :class="{ d2: preview.feedback.difficultyTier >= 2}" class="difficultyContainer"></div>
-                        <div :class="{ d3: preview.feedback.difficultyTier >= 3}" class="difficultyContainer"></div>
-                        <div :class="{ d4: preview.feedback.difficultyTier >= 4}" class="difficultyContainer"></div>
-                        <div :class="{ d5: preview.feedback.difficultyTier >= 5}" class="difficultyContainer"></div>
+                        <div aria-hidden="true" class="d-inline-block">
+                            <div :class="{ d1: preview.feedback.difficultyTier >= 1}" class="difficultyContainer"></div>
+                            <div :class="{ d2: preview.feedback.difficultyTier >= 2}" class="difficultyContainer"></div>
+                            <div :class="{ d3: preview.feedback.difficultyTier >= 3}" class="difficultyContainer"></div>
+                            <div :class="{ d4: preview.feedback.difficultyTier >= 4}" class="difficultyContainer"></div>
+                            <div :class="{ d5: preview.feedback.difficultyTier >= 5}" class="difficultyContainer"></div>
+                        </div>
                         {{ preview.feedback.difficultyTier }} - {{ preview.feedback.difficultyLabel }}
                     </dd>
 
@@ -295,23 +297,23 @@ onMounted(() => {
 }
 
 .d1 {
-    background-color: #2b83ba;
+    background-color: #FFEC19;
 }
 
 .d2 {
-    background-color: #abdda4;
+    background-color: #FFC100;
 }
 
 .d3 {
-    background-color: #ffffbf;
+    background-color: #FF9800;
 }
 
 .d4 {
-    background-color: #fdae61;
+    background-color: #FF5607;
 }
 
 .d5 {
-    background-color: #d7191c;
+    background-color: #F6412D;
 }
 
 </style>
