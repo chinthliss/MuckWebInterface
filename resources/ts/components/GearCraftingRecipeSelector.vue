@@ -98,19 +98,19 @@ onMounted(() => {
 
                             <input id="btn-equipment" v-model="showEquipment" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary w-100 me-2" for="btn-equipment">
+                            <label class="btn btn-outline-primary w-100 me-2 mb-2" for="btn-equipment">
                                 <i class="fas fa-shirt use-type-icon"></i> Equipment
                             </label>
 
                             <input id="btn-usable" v-model="showUsable" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary w-100 me-2" for="btn-usable">
+                            <label class="btn btn-outline-primary w-100 me-2 mb-2" for="btn-usable">
                                 <i class="fas fa-toolbox use-type-icon"></i> Tool/Usable
                             </label>
 
                             <input id="btn-consumable" v-model="showConsumable" autocomplete="off" class="btn-check"
                                    type="checkbox">
-                            <label class="btn btn-outline-primary w-100" for="btn-consumable">
+                            <label class="btn btn-outline-primary w-100 mb-2" for="btn-consumable">
                                 <i class="fas fa-utensils use-type-icon"></i> Consumable
                             </label>
 
@@ -148,13 +148,17 @@ onMounted(() => {
                         >
                             <div class="card-body">
                                 <h5 class="card-title">
-                            <span class="d-flex">
-                                <span class="flex-md-grow-1">{{ recipe.name }}</span>
-                                <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
-                            </span>
+                                    <span class="d-flex align-items-center">
+                                        <span class="flex-grow-1">{{ recipe.name }}</span>
+                                        <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
+                                    </span>
                                 </h5>
+
                                 <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
-                                <div v-if="recipe.item.slot" class="card-text">Slot: {{ capital(recipe.item.slot) }}</div>
+                                <div v-if="recipe.item.slot" class="card-text">Slot: {{
+                                        capital(recipe.item.slot)
+                                    }}
+                                </div>
                                 <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
                             </div>
 
