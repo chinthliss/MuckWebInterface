@@ -2,6 +2,10 @@
 
 import {ref} from "vue";
 
+defineOptions({
+    inheritAttrs: false
+})
+
 defineProps<{
     title?: string,
 }>();
@@ -45,7 +49,7 @@ defineExpose({show, hide});
         </div>
         <div id="content-title">{{ title || 'Collapse' }}</div>
     </div>
-    <div v-if="expanded" id="content" :class="$attrs.class"
+    <div v-if="expanded" id="content" v-bind="$attrs"
          aria-labelledby="content-title"
          class="border-primary-subtle border rounded-bottom bg-body"
     >
