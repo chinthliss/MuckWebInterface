@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref, useTemplateRef} from "vue";
-import {ansiToHtml, arrayToList, capital} from "../formatting";
+import {ansiToHtml, arrayToList, capital, rankedSalvageListToHtml} from "../formatting";
 import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
 import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
@@ -102,14 +102,6 @@ const toggleModifier = (modifier: Modifier) => {
     else
         selectedModifiers.value.push(modifier.name);
     updatePreview();
-}
-
-const outputSalvageRange = (range: { [rank: string]: number }): string => {
-    let fragments: string[] = [];
-    for (const rank in range) {
-        fragments.push(`${capital(rank)} x ${range[rank]}`);
-    }
-    return fragments.join(', ');
 }
 
 const recipeSelectorMounted = () => {
@@ -248,11 +240,11 @@ onMounted(() => {
                     <dd class="col-sm-10">
                         <div v-for="(range, salvage) in preview.salvage">
                             <b>{{ capital(salvage as string) }}</b>:
-                            <div>Best: {{ outputSalvageRange(range.best) }}</div>
-                            <div>Worst: {{ outputSalvageRange(range.worst) }}</div>
+                            <div>Best: <span v-html="rankedSalvageListToHtml(range.best)"></span></div>
+                            <div>Worst: <span v-html="rankedSalvageListToHtml(range.worst)"></span></div>
                             <div>
-                                Crafter: {{ outputSalvageRange(range.crafter) }}
-                                <span class="text-muted">({{ preview.feedback.modifiers[salvage] * 100 }}% cost)</span>
+                                Crafter:  <span v-html="rankedSalvageListToHtml(range.crafter)"></span>
+                                <span class="text-muted"> ({{ preview.feedback.modifiers[salvage] * 100 }}% cost)</span>
                             </div>
 
                         </div>

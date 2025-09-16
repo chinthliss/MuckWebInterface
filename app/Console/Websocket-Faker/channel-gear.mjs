@@ -250,7 +250,8 @@ export default class ChannelGear extends Channel {
                             common: 5
                         },
                         worst: {
-                            common: 10
+                            uncommon: 1,
+                            common: 2
                         },
                         crafter: {
                             common: 8

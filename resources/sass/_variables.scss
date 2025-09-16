@@ -1,6 +1,9 @@
 @use 'sass:color';
 
-// Our colours
+// *************************
+// Site colors
+// *************************
+
 $primary: #caFF80;
 $secondary: #2BAB5C;
 $tertiary: #7FC7C7;
@@ -9,6 +12,17 @@ $site-navigation-background: #2a451c;
 $page-background: #0e1e0e;
 $content-background: #1e1e1e;
 $content-foreground: #f8fafc;
+
+// *************************
+// Game specific colors
+// *************************
+
+$salvage-rank-colors: (
+    "common": #47ff00,
+    "uncommon": #7595FF,
+    "rare": #FF6161,
+    "elite": #FE7CFE
+);
 
 // *************************
 // Bootstrap overrides

@@ -3,6 +3,7 @@
  */
 
 import {AnsiUp} from "ansi_up";
+
 const ansi_up = new AnsiUp();
 
 /**
@@ -41,7 +42,7 @@ export const usdToString = (usd: number | string | null): string => {
 };
 
 /**
- * Converts the first letter of a string to be a capital one
+ * Converts the first letter of a string to be a capital
  */
 export const capital = (text: string | null | undefined): string => {
     if (!text) return '';
@@ -51,7 +52,7 @@ export const capital = (text: string | null | undefined): string => {
 /**
  * Joins an array of strings into one string
  */
-export const arrayToList = (arrayToParse: string[], emptyWord: string = '', joinString:string = ', '): string => {
+export const arrayToList = (arrayToParse: string[], emptyWord: string = '', joinString: string = ', '): string => {
     if (!arrayToParse?.length) return emptyWord;
     return arrayToParse.join(joinString);
 };
@@ -73,7 +74,7 @@ export const arrayToStringWithBreaks = (arrayToParse: string[], emptyWord: strin
 /**
  * Replaces key parts of HTML so that it can be used without being parsed
  */
-export const escapeHTML = (text: string): string  => {
+export const escapeHTML = (text: string): string => {
     return text.replace(
         /[&<>'"]/g,
         found =>
@@ -94,3 +95,22 @@ export const escapeHTML = (text: string): string  => {
 export const ansiToHtml = (ansi: string): string => {
     return ansi_up.ansi_to_html(ansi);
 }
+
+export const rankedSalvageListToHtml = (list: { [grade: string]: number }): string => {
+    let result = '';
+    // Not great having this hard coded, but don't want to be constantly pulling it form the game
+    const order = ['elite', 'rare', 'uncommon', 'common'];
+    for (const rank in order) {
+        if (rank in list) {
+            result += `<span class="badge rounded-pill text-dark bg-salvage-${rank}-rank me-1">${rank} x ${list[rank]}</span>`;
+        }
+    }
+    // Look for any extras because of weirdness
+    for (const rank in list) {
+        if (!(rank in order)) {
+            result += `<span class="badge rounded-pill text-dark bg-salvage-${rank}-rank me-1">${rank} x ${list[rank]}</span>`;
+
+        }
+    }
+    return result;
+};
