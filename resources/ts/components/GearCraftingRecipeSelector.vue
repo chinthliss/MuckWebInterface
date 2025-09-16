@@ -3,7 +3,7 @@
 import type {Modifier, Recipe, RecipeAndModifiers} from "./GearCrafting.vue"
 import {onMounted, ref, Ref, useTemplateRef} from "vue";
 import Collapse from "./Collapse.vue";
-import {capital} from "../formatting";
+import {ansiToHtml, capital} from "../formatting";
 
 const {
     recipes = [],
@@ -159,7 +159,7 @@ onMounted(() => {
                                         capital(recipe.item.slot)
                                     }}
                                 </div>
-                                <p v-if="showDescriptions" class="card-text mt-2">{{ recipe.description }}</p>
+                                <p v-if="showDescriptions" class="card-text mt-2">{{ ansiToHtml(recipe.description) }}</p>
                             </div>
 
                         </div>

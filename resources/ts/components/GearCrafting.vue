@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref, useTemplateRef} from "vue";
-import {arrayToList, capital} from "../formatting";
+import {ansiToHtml, arrayToList, capital} from "../formatting";
 import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
 import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
@@ -200,7 +200,7 @@ onMounted(() => {
                     <div class="card-body">
                         <h5 class="card-title">{{ modifier.name }}</h5>
                         <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
-                        <p class="card-text">{{ modifier.description }}</p>
+                        <p class="card-text">{{ ansiToHtml(modifier.description) }}</p>
                     </div>
                 </div>
             </div>
