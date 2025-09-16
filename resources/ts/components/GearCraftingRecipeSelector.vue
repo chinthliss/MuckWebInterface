@@ -159,7 +159,7 @@ onMounted(() => {
                                         capital(recipe.item.slot)
                                     }}
                                 </div>
-                                <p v-if="showDescriptions" class="card-text mt-2">{{ ansiToHtml(recipe.description) }}</p>
+                                <p v-if="showDescriptions" class="card-text mt-2" v-html="ansiToHtml(recipe.description)"></p>
                             </div>
 
                         </div>

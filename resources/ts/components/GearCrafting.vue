@@ -192,7 +192,7 @@ onMounted(() => {
                     <div class="card-body">
                         <h5 class="card-title">{{ modifier.name }}</h5>
                         <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
-                        <p class="card-text">{{ ansiToHtml(modifier.description) }}</p>
+                        <p class="card-text" v-html="ansiToHtml(modifier.description)"></p>
                     </div>
                 </div>
             </div>
