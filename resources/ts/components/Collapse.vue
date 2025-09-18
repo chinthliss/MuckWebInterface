@@ -2,10 +2,6 @@
 
 import {ref} from "vue";
 
-defineOptions({
-    inheritAttrs: false
-})
-
 defineProps<{
     title?: string,
 }>();
@@ -35,27 +31,29 @@ defineExpose({show, hide});
 </script>
 
 <template>
-    <div id="collapse-toggle" :class="{
-            'rounded-top': expanded,
-            'rounded': !expanded,
-            'border-bottom-0': expanded
-         }" aria-controls="content"
-         class="d-flex align-items-center border-primary-subtle border p-1 "
-         @click="toggle"
-    >
-        <div :aria-expanded="expanded" aria-hidden="true" class="btn btn-primary me-2">
-            <i v-if="expanded" class="fa fa-chevron-up"></i>
-            <i v-else class="fa fa-chevron-down"></i>
+    <div>
+        <div id="collapse-toggle" :class="{
+                'rounded-top': expanded,
+                'rounded': !expanded,
+                'border-bottom-0': expanded
+             }" aria-controls="content"
+             class="d-flex align-items-center border-primary-subtle border p-1 "
+             @click="toggle"
+        >
+            <div :aria-expanded="expanded" aria-hidden="true" class="btn btn-primary me-2">
+                <i v-if="expanded" class="fa fa-chevron-up"></i>
+                <i v-else class="fa fa-chevron-down"></i>
+            </div>
+            <div id="content-title">{{ title || 'Collapse' }}</div>
         </div>
-        <div id="content-title">{{ title || 'Collapse' }}</div>
-    </div>
-    <div v-if="expanded" id="content" v-bind="$attrs"
-         aria-labelledby="content-title"
-         class="border-primary-subtle border rounded-bottom bg-body"
-    >
-        <slot>
-            No content provided for collapse
-        </slot>
+        <div v-if="expanded" id="content"
+             aria-labelledby="content-title"
+             class="border-primary-subtle border rounded-bottom bg-body"
+        >
+            <slot>
+                No content provided for collapse
+            </slot>
+        </div>
     </div>
 </template>
 
