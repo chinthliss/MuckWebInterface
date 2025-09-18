@@ -32,9 +32,29 @@ const toggleModifier = (modifier: Modifier) => {
 </script>
 
 <template>
+    <div class="row">
+        <!-- Name filter -->
+        <div class="col-12 col-xl-6 d-flex mb-2">
+            <label class="col-form-label me-2" for="nameFilter">Name</label>
+            <input id="nameFilter" v-model="nameFilter" class="form-control"
+                   placeholder="Filter by name"
+                   type="text">
+        </div>
+        <!-- Description toggle -->
+        <div
+            class="col-12 col-xl-6 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
+            <input id="showDescriptionsSwitch" v-model="showDescriptions"
+                   class="form-check-input me-2"
+                   role="switch"
+                   type="checkbox"
+            >
+            <label class="form-check-label" for="showDescriptionsSwitch">Show Descriptions?</label>
+        </div>
+    </div>
+    <div class="row">
     <template v-for="modifier in modifiers" :key="modifier.name">
 
-        <div v-if="shouldShow(modifier)" class="card mb-2" role="button"
+        <div v-if="shouldShow(modifier)" class="card mb-2 col-4" role="button"
              v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
              @click="toggleModifier(modifier)"
         >
@@ -45,6 +65,7 @@ const toggleModifier = (modifier: Modifier) => {
             </div>
         </div>
     </template>
+    </div>
     <div class="fw-bold"><span class="text-primary">Selected Modifiers:</span> {{
             arrayToList(selectedModifiers) || 'None'
         }}

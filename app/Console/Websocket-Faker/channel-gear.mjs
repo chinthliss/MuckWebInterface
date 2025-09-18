@@ -201,6 +201,27 @@ export default class ChannelGear extends Channel {
             costMoney: 200,
             costXp: 300,
             item: {}
+        },
+        {
+            name: 'Test Modifier 3',
+            description: 'This is a third test modifier',
+            costMoney: 200,
+            costXp: 300,
+            item: {}
+        },
+        {
+            name: 'Test Modifier 4',
+            description: 'This is a fourth test modifier',
+            costMoney: 200,
+            costXp: 300,
+            item: {}
+        },
+        {
+            name: 'Test Modifier 5',
+            description: 'This is a fifth test modifier',
+            costMoney: 200,
+            costXp: 300,
+            item: {}
         }
     ];
 

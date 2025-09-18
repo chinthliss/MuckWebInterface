@@ -119,7 +119,7 @@ onMounted(() => {
                         </div>
 
                         <div class="row">
-                            <!-- Name toggle -->
+                            <!-- Name filter -->
                             <div class="col-12 col-xl-6 d-flex mb-2">
                                 <label class="col-form-label me-2" for="nameFilter">Name</label>
                                 <input id="nameFilter" v-model="nameFilter" class="form-control"
@@ -136,8 +136,6 @@ onMounted(() => {
                                 >
                                 <label class="form-check-label" for="showDescriptionsSwitch">Show Descriptions?</label>
                             </div>
-
-
                         </div>
                     </div>
 
