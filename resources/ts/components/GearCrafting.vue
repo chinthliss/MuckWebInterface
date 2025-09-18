@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref, useTemplateRef} from "vue";
-import {ansiToHtml, arrayToList, capital, rankedSalvageListToHtml} from "../formatting";
+import {arrayToList, capital, rankedSalvageListToHtml} from "../formatting";
 import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
 import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
+import GearCraftingModifierSelector from "./GearCraftingModifierSelector.vue";
 
 export type Recipe = {
     name: string,
@@ -95,15 +96,6 @@ const updatePreview = () => {
     channel.send('craftPreview', {recipe: selectedRecipe.value, modifiers: selectedModifiers.value});
 }
 
-const toggleModifier = (modifier: Modifier) => {
-    console.log("Toggled: ", modifier);
-    if (selectedModifiers.value.includes(modifier.name))
-        selectedModifiers.value.splice(selectedModifiers.value.indexOf(modifier.name), 1);
-    else
-        selectedModifiers.value.push(modifier.name);
-    updatePreview();
-}
-
 const recipeSelectorMounted = () => {
     if (recipeSelector.value) recipeSelector.value.show();
 }
@@ -111,6 +103,12 @@ const recipeSelectorMounted = () => {
 const recipeSelected = (recipeName: string) => {
     selectedRecipe.value = recipeName;
     updatePreview();
+}
+
+const modifiersChanged = (modifiers: string[]) => {
+    selectedModifiers.value = modifiers;
+    updatePreview();
+
 }
 
 channel.on('craftPreview', (response: CraftPreview) => {
@@ -184,22 +182,11 @@ onMounted(() => {
         <template v-if="selectedRecipe">
             <hr/>
             <h3>Modifiers</h3>
-            <div class="scrollable-area pe-2">
-                <div v-for="modifier in modifiers" class="card mb-2" role="button"
-                     v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
-                     @click="toggleModifier(modifier)"
-                >
-                    <div class="card-body">
-                        <h5 class="card-title">{{ modifier.name }}</h5>
-                        <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
-                        <p class="card-text" v-html="ansiToHtml(modifier.description)"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="fw-bold"><span class="text-primary">Selected Modifiers:</span> {{
-                    arrayToList(selectedModifiers) || 'None'
-                }}
-            </div>
+            <gear-crafting-modifier-selector
+                :modifiers="modifiers"
+                @update="modifiersChanged"
+            >
+            </gear-crafting-modifier-selector>
         </template>
 
         <!-- Preview -->
