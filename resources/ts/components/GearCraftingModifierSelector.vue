@@ -52,19 +52,21 @@ const toggleModifier = (modifier: Modifier) => {
         </div>
     </div>
     <div class="row">
-    <template v-for="modifier in modifiers" :key="modifier.name">
-
-        <div v-if="shouldShow(modifier)" class="card mb-2 col-4" role="button"
-             v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
-             @click="toggleModifier(modifier)"
-        >
-            <div class="card-body">
-                <h5 class="card-title">{{ modifier.name }}</h5>
-                <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
-                <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
+        <template v-for="modifier in modifiers" :key="modifier.name">
+            <div v-if="shouldShow(modifier)" class="col-12 col-xxl-4 col-xl-6 mb-2">
+                <div class="card h-100" role="button"
+                     v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
+                     @click="toggleModifier(modifier)"
+                >
+                    <div class="card-body">
+                        <h5 class="card-title">{{ modifier.name }}</h5>
+                        <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
+                        <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </template>
+
+        </template>
     </div>
     <div class="fw-bold"><span class="text-primary">Selected Modifiers:</span> {{
             arrayToList(selectedModifiers) || 'None'

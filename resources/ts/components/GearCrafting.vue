@@ -193,15 +193,24 @@ onMounted(() => {
         <template v-if="selectedRecipe">
             <hr/>
             <h3>Preview</h3>
-            <div v-if="preview">
-                <div v-if="preview.result == 'ERROR'">{{ preview.error }}</div>
-                <dl v-else class="row">
+            <div v-if="!preview" class="preview-placeholder">Loading..</div>
+            <div v-else-if="preview.result == 'ERROR'">{{ preview.error }}</div>
+            <div v-else class="row">
+                <!-- Part 1 / Left side on big screens -->
+                <div class="col-6">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th scope="row">Recipe</th>
+                            <td>{{ preview.recipe }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Modifiers</th>
+                            <td>{{ arrayToList(preview.modifiers) || 'None' }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-                    <dt class="col-sm-2">Recipe</dt>
-                    <dd class="col-sm-10">{{ preview.recipe }}</dd>
-
-                    <dt class="col-sm-2">Modifiers</dt>
-                    <dd class="col-sm-10">{{ arrayToList(preview.modifiers) || 'None' }}</dd>
 
                     <dt class="col-sm-2">Difficulty</dt>
                     <dd class="col-sm-10">
@@ -236,6 +245,8 @@ onMounted(() => {
 
                         </div>
                     </dd>
+                </div>
+                <dl class="col-6 row">
 
                     <dt class="col-sm-2">Other Ingredients</dt>
                     <dd class="col-sm-10">
@@ -260,9 +271,6 @@ onMounted(() => {
                     <dd class="col-sm-10">{{ preview.quantity }}</dd>
 
                 </dl>
-            </div>
-            <div v-else>
-                Loading..
             </div>
         </template>
     </template>
@@ -297,4 +305,7 @@ onMounted(() => {
     background-color: #F6412D;
 }
 
+.preview-placeholder {
+    min-height: 640px;
+}
 </style>

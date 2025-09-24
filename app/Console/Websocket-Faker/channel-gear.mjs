@@ -204,7 +204,7 @@ export default class ChannelGear extends Channel {
         },
         {
             name: 'Test Modifier 3',
-            description: 'This is a third test modifier',
+            description: 'This is a third test modifier. And out of all of them, this one has the longest description.',
             costMoney: 200,
             costXp: 300,
             item: {}
