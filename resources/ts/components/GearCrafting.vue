@@ -197,80 +197,108 @@ onMounted(() => {
             <div v-else-if="preview.result == 'ERROR'">{{ preview.error }}</div>
             <div v-else class="row">
                 <!-- Part 1 / Left side on big screens -->
-                <div class="col-6">
+                <div class="col-xl-6">
                     <table>
                         <tbody>
+
                         <tr>
-                            <th scope="row">Recipe</th>
+                            <th class="pe-2" scope="row">Recipe</th>
                             <td>{{ preview.recipe }}</td>
                         </tr>
+
                         <tr>
-                            <th scope="row">Modifiers</th>
+                            <th class="pe-2" scope="row">Modifiers</th>
                             <td>{{ arrayToList(preview.modifiers) || 'None' }}</td>
                         </tr>
+
+                        <tr>
+                            <th class="pe-2" scope="row">Difficulty</th>
+                            <td>
+                                <div aria-hidden="true" class="d-inline-block">
+                                    <div :class="{ d1: preview.feedback.difficultyTier >= 1}"
+                                         class="difficultyContainer"></div>
+                                    <div :class="{ d2: preview.feedback.difficultyTier >= 2}"
+                                         class="difficultyContainer"></div>
+                                    <div :class="{ d3: preview.feedback.difficultyTier >= 3}"
+                                         class="difficultyContainer"></div>
+                                    <div :class="{ d4: preview.feedback.difficultyTier >= 4}"
+                                         class="difficultyContainer"></div>
+                                    <div :class="{ d5: preview.feedback.difficultyTier >= 5}"
+                                         class="difficultyContainer"></div>
+                                </div>
+                                {{ preview.feedback.difficultyTier }} - {{ preview.feedback.difficultyLabel }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="pe-2" scope="row">Skills</th>
+                            <td>
+                                <div v-for="(range, skill) in preview.skills">
+                                    {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="pe-2" scope="row">Salvage</th>
+                            <td>
+                                <div v-for="(range, salvage) in preview.salvage">
+                                    <b>{{ capital(salvage as string) }}</b>:
+                                    <div>Best: <span v-html="rankedSalvageListToHtml(range.best)"></span></div>
+                                    <div>Worst: <span v-html="rankedSalvageListToHtml(range.worst)"></span></div>
+                                    <div>
+                                        Crafter: <span v-html="rankedSalvageListToHtml(range.crafter)"></span>
+                                        <span class="text-muted"> ({{ preview.feedback.modifiers[salvage] * 100 }}% cost)</span>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+
                         </tbody>
                     </table>
-
-
-                    <dt class="col-sm-2">Difficulty</dt>
-                    <dd class="col-sm-10">
-                        <div aria-hidden="true" class="d-inline-block">
-                            <div :class="{ d1: preview.feedback.difficultyTier >= 1}" class="difficultyContainer"></div>
-                            <div :class="{ d2: preview.feedback.difficultyTier >= 2}" class="difficultyContainer"></div>
-                            <div :class="{ d3: preview.feedback.difficultyTier >= 3}" class="difficultyContainer"></div>
-                            <div :class="{ d4: preview.feedback.difficultyTier >= 4}" class="difficultyContainer"></div>
-                            <div :class="{ d5: preview.feedback.difficultyTier >= 5}" class="difficultyContainer"></div>
-                        </div>
-                        {{ preview.feedback.difficultyTier }} - {{ preview.feedback.difficultyLabel }}
-                    </dd>
-
-                    <dt class="col-sm-2">Skills</dt>
-                    <dd class="col-sm-10">
-                        <div v-for="(range, skill) in preview.skills">
-                            {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
-                        </div>
-                    </dd>
-
-
-                    <dt class="col-sm-2">Salvage</dt>
-                    <dd class="col-sm-10">
-                        <div v-for="(range, salvage) in preview.salvage">
-                            <b>{{ capital(salvage as string) }}</b>:
-                            <div>Best: <span v-html="rankedSalvageListToHtml(range.best)"></span></div>
-                            <div>Worst: <span v-html="rankedSalvageListToHtml(range.worst)"></span></div>
-                            <div>
-                                Crafter:  <span v-html="rankedSalvageListToHtml(range.crafter)"></span>
-                                <span class="text-muted"> ({{ preview.feedback.modifiers[salvage] * 100 }}% cost)</span>
-                            </div>
-
-                        </div>
-                    </dd>
                 </div>
-                <dl class="col-6 row">
+                <div class="col-xl-6">
+                    <table>
+                        <tbody>
 
-                    <dt class="col-sm-2">Other Ingredients</dt>
-                    <dd class="col-sm-10">
-                        <div v-for="(quantity, ingredient) in preview.otherIngredients">
-                            {{ quantity }} x {{ capital(ingredient as string) }}
-                        </div>
-                    </dd>
+                        <tr>
+                            <th class="pe-2" scope="row">Other Ingredients</th>
+                            <td>
+                                <div v-for="(quantity, ingredient) in preview.otherIngredients">
+                                    {{ quantity }} x {{ capital(ingredient as string) }}
+                                </div>
+                            </td>
+                        </tr>
 
-                    <dt class="col-sm-2">{{ lex('money') }}</dt>
-                    <dd class="col-sm-10">{{ preview.money }}</dd>
+                        <tr>
+                            <th class="pe-2" scope="row">{{ lex('money') }}</th>
+                            <td>{{ preview.money.toLocaleString() }}</td>
+                        </tr>
 
-                    <dt class="col-sm-2">Nanites</dt>
-                    <dd class="col-sm-10">{{ preview.buildCost }}ng</dd>
+                        <tr>
+                            <th class="pe-2" scope="row">Nanites</th>
+                            <td>{{ preview.buildCost.toLocaleString() }}ng</td>
+                        </tr>
 
-                    <dt class="col-sm-2">Upkeep</dt>
-                    <dd class="col-sm-10">{{ preview.upkeep }}</dd>
+                        <tr>
+                            <th class="pe-2" scope="row">Upkeep</th>
+                            <td>{{ preview.upkeep }}</td>
+                        </tr>
 
-                    <dt class="col-sm-2">Loadout</dt>
-                    <dd class="col-sm-10">{{ preview.loadout }}</dd>
+                        <tr>
+                            <th class="pe-2" scope="row">Loadout</th>
+                            <td>{{ preview.loadout }}</td>
+                        </tr>
 
-                    <dt class="col-sm-2">Quantity</dt>
-                    <dd class="col-sm-10">{{ preview.quantity }}</dd>
+                        <tr>
+                            <th class="pe-2" scope="row">Quantity</th>
+                            <td>{{ preview.quantity }}</td>
+                        </tr>
 
-                </dl>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </template>
     </template>

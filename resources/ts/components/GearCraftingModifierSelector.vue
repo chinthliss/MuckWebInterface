@@ -58,10 +58,17 @@ const toggleModifier = (modifier: Modifier) => {
                      v-bind:class="{ 'text-bg-primary': selectedModifiers.includes(modifier.name) }"
                      @click="toggleModifier(modifier)"
                 >
-                    <div class="card-body">
-                        <h5 class="card-title">{{ modifier.name }}</h5>
-                        <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
-                        <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
+                    <div class="d-flex align-items-center p-2">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">{{ modifier.name }}</h5>
+                            <div v-if="modifier.slot" class="card-text">Slot: {{ capital(modifier.slot) }}</div>
+                            <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-info rounded-5" type="button">
+                                <i class="fas fa-question btn-icon-left"></i>Rpinfo
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

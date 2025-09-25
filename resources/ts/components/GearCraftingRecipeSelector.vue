@@ -100,19 +100,19 @@ onMounted(() => {
                                 <input id="btn-equipment" v-model="showEquipment" autocomplete="off" class="btn-check"
                                        type="checkbox">
                                 <label class="btn btn-outline-primary w-100 me-2 mb-2" for="btn-equipment">
-                                    <i class="fas fa-shirt use-type-icon"></i> Equipment
+                                    <i class="fas fa-shirt"></i> Equipment
                                 </label>
 
                                 <input id="btn-usable" v-model="showUsable" autocomplete="off" class="btn-check"
                                        type="checkbox">
                                 <label class="btn btn-outline-primary w-100 me-2 mb-2" for="btn-usable">
-                                    <i class="fas fa-toolbox use-type-icon"></i> Tool/Usable
+                                    <i class="fas fa-toolbox"></i> Tool/Usable
                                 </label>
 
                                 <input id="btn-consumable" v-model="showConsumable" autocomplete="off" class="btn-check"
                                        type="checkbox">
                                 <label class="btn btn-outline-primary w-100 mb-2" for="btn-consumable">
-                                    <i class="fas fa-utensils use-type-icon"></i> Consumable
+                                    <i class="fas fa-utensils"></i> Consumable
                                 </label>
 
                             </div>
@@ -146,23 +146,30 @@ onMounted(() => {
                                  role="button"
                                  @click="selectRecipe(recipe.name)"
                             >
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                    <span class="d-flex align-items-center">
-                                        <span class="flex-grow-1">{{ recipe.name }}</span>
+                                <div class="d-flex">
+                                    <div class="card-side-icon align-self-center text-center px-2 display-6">
                                         <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
-                                    </span>
-                                    </h5>
-
-                                    <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
-                                    <div v-if="recipe.item.slot" class="card-text">Slot: {{
-                                            capital(recipe.item.slot)
-                                        }}
                                     </div>
-                                    <p v-if="showDescriptions" class="card-text mt-2"
-                                       v-html="ansiToHtml(recipe.description)"></p>
-                                </div>
 
+                                    <div class="flex-grow-1 py-2">
+                                        <h5 class="card-title">{{ recipe.name }}</h5>
+
+                                        <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
+                                        <div v-if="recipe.item.slot" class="card-text">Slot: {{
+                                                capital(recipe.item.slot)
+                                            }}
+                                        </div>
+                                        <p v-if="showDescriptions" class="card-text mt-2"
+                                           v-html="ansiToHtml(recipe.description)"></p>
+                                    </div>
+
+                                    <div class="align-self-center text-center px-3">
+                                        <button class="btn btn-info rounded-5" type="button">
+                                            <i class="fas fa-question btn-icon-left"></i>Rpinfo
+                                        </button>
+                                    </div>
+
+                                </div>
                             </div>
                         </template>
                     </div>
@@ -198,7 +205,10 @@ onMounted(() => {
 
 <style scoped>
 .use-type-icon {
-    width: 24px;
+    width: 48px;
 }
 
+.card-side-icon {
+    min-width: 32px;
+}
 </style>

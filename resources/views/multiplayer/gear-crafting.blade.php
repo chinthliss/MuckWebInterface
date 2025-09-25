@@ -16,14 +16,16 @@
 
         <callout>
             <p>This page is extremely under-construction. Even more so than the rest of the site!</p>
+            <p>At the moment this page is just testing the requirements preview.</p>
             <div>Missing content:</div>
             <ul>
-                <li>The actual crafting! At the moment this page is just testing the preview functionality</li>
+                <li>Previewing the actual item produced</li>
                 <li>Most of the constructive warning messages (e.g. 'this could be crafted if ..')</li>
                 <li>Saved Plan functionality</li>
                 <li>History functionality</li>
                 <li>Commissioning functionality</li>
-
+                <li>The rpinfo button</li>
+                <li>Any actual crafting..</li>
             </ul>
         </callout>
 
