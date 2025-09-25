@@ -147,8 +147,8 @@ onMounted(() => {
                                  @click="selectRecipe(recipe.name)"
                             >
                                 <div class="d-flex">
-                                    <div class="card-side-icon align-self-center text-center px-2 display-6">
-                                        <i :class="['fas', 'use-type-icon', classForRecipeIcon(recipe)]"></i>
+                                    <div class="card-side-icon align-self-center text-center px-2 display-6 flex-shrink-0">
+                                        <i :class="['fas', classForRecipeIcon(recipe)]"></i>
                                     </div>
 
                                     <div class="flex-grow-1 py-2">
@@ -163,7 +163,7 @@ onMounted(() => {
                                            v-html="ansiToHtml(recipe.description)"></p>
                                     </div>
 
-                                    <div class="align-self-center text-center px-3">
+                                    <div class="align-self-center text-center px-3 flex-shrink-0">
                                         <button class="btn btn-info rounded-5" type="button">
                                             <i class="fas fa-question btn-icon-left"></i>Rpinfo
                                         </button>
@@ -204,11 +204,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.use-type-icon {
-    width: 48px;
-}
-
-.card-side-icon {
-    min-width: 32px;
-}
+    .card-side-icon {
+        width: 64px;
+    }
 </style>

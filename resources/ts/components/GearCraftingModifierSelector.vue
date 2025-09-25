@@ -65,7 +65,7 @@ const toggleModifier = (modifier: Modifier) => {
                             <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
                         </div>
                         <div>
-                            <button class="btn btn-info rounded-5" type="button">
+                            <button class="btn btn-info rounded-5 rpinfo-button" type="button">
                                 <i class="fas fa-question btn-icon-left"></i>Rpinfo
                             </button>
                         </div>
@@ -82,5 +82,7 @@ const toggleModifier = (modifier: Modifier) => {
 </template>
 
 <style scoped>
-
+.rpinfo-button {
+    min-width: 96px;
+}
 </style>

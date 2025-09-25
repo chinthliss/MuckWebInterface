@@ -184,6 +184,26 @@ export default class ChannelGear extends Channel {
                 useType: 'equipment'
             },
             known: false
+        },
+        {
+            name: 'Test Recipe 3 - The revenge',
+            description: "This is the 3rd test recipe and has a lot more text in the description to check how well this flows. That and make sure it doesn't get mangled. No really, there just needs to be a lot more text here to reflect a longer item description from the muck.",
+            availability: 'somewhere',
+            costMoney: 100,
+            costXp: 200,
+            skills: {
+                mechanical: 20
+            },
+            salvage: {
+                food: {
+                    common: 1
+                }
+            },
+            item: {
+                type: "Lots of words something equipment. Along with a lot more text to make sure things don't misbehave",
+                useType: 'consumable'
+            },
+            known: true
         }
     ];
 
