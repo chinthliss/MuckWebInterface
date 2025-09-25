@@ -265,9 +265,10 @@ onMounted(() => {
                         <tr>
                             <th class="pe-2" scope="row">Other Ingredients</th>
                             <td>
-                                <div v-for="(quantity, ingredient) in preview.otherIngredients">
+                                <div v-if="preview.otherIngredients" v-for="(quantity, ingredient) in preview.otherIngredients">
                                     {{ quantity }} x {{ capital(ingredient as string) }}
                                 </div>
+                                <div v-else>None</div>
                             </td>
                         </tr>
 
