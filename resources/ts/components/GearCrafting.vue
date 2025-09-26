@@ -6,6 +6,7 @@ import {ResponseError} from "../defs";
 import {lex} from "../siteutils";
 import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
 import GearCraftingModifierSelector from "./GearCraftingModifierSelector.vue";
+import Callout from "./Callout.vue";
 
 export type Recipe = {
     name: string,
@@ -194,7 +195,12 @@ onMounted(() => {
             <hr/>
             <h3>Preview</h3>
             <div v-if="!preview" class="preview-placeholder">Loading..</div>
-            <div v-else-if="preview.result == 'ERROR'">{{ preview.error }}</div>
+            <div v-else-if="preview.result == 'ERROR'">
+                <callout type="danger">
+                    <div>Generating a preview failed.</div>
+                    <div>{{ preview.error }}</div>
+                </callout>
+            </div>
             <div v-else class="row">
                 <!-- Part 1 / Left side on big screens -->
                 <div class="col-xl-6">

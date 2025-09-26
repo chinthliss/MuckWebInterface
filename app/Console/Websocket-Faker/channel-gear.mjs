@@ -213,35 +213,38 @@ export default class ChannelGear extends Channel {
             description: 'This is a test modifier',
             costMoney: 200,
             costXp: 300,
-            item: {}
+            slot: 'neck'
         },
         {
             name: 'Test Modifier 2',
             description: 'This is a second test modifier',
             costMoney: 200,
-            costXp: 300,
-            item: {}
+            costXp: 300
         },
         {
             name: 'Test Modifier 3',
             description: 'This is a third test modifier. And out of all of them, this one has the longest description.',
             costMoney: 200,
-            costXp: 300,
-            item: {}
+            costXp: 300
         },
         {
             name: 'Test Modifier 4',
             description: 'This is a fourth test modifier',
             costMoney: 200,
             costXp: 300,
-            item: {}
+            slot: 'neck'
         },
         {
             name: 'Test Modifier 5',
             description: 'This is a fifth test modifier',
             costMoney: 200,
-            costXp: 300,
-            item: {}
+            costXp: 300
+        },
+        {
+            name: 'Test Modifier Error',
+            description: 'This one will always throw an error',
+            costMoney: 10,
+            costXp: 10
         }
     ];
 
@@ -278,6 +281,13 @@ export default class ChannelGear extends Channel {
             }
         },
         'craftPreview': (connection, data) => {
+            if (data.modifiers.includes('Test Modifier Error')) {
+                this.sendMessageToConnection(connection, 'craftPreview', {
+                    result: 'ERROR',
+                    error: 'The error modifier was used!'
+                });
+                return;
+            }
             // Data is 'recipe' and 'modifiers'
             // Not even going to try and imitate the calculations the muck does!
             const preview = {
