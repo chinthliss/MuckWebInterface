@@ -4,6 +4,7 @@ import type {Modifier, Recipe, RecipeAndModifiers} from "./GearCrafting.vue"
 import {onMounted, ref, Ref, useTemplateRef} from "vue";
 import Collapse from "./Collapse.vue";
 import {ansiToHtml, capital} from "../formatting";
+import RpinfoButton from "./RpinfoButton.vue";
 
 const {
     recipes = [],
@@ -164,9 +165,7 @@ onMounted(() => {
                                     </div>
 
                                     <div class="align-self-center text-center px-3 flex-shrink-0">
-                                        <button class="btn btn-info rounded-5" type="button">
-                                            <i class="fas fa-question btn-icon-left"></i>Rpinfo
-                                        </button>
+                                        <rpinfo-button category="Recipe" :item="recipe.name"></rpinfo-button>
                                     </div>
 
                                 </div>

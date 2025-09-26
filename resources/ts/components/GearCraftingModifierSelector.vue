@@ -3,6 +3,7 @@
 import type {Modifier} from "./GearCrafting.vue"
 import {ref, Ref} from "vue";
 import {ansiToHtml, arrayToList, capital} from "../formatting";
+import RpinfoButton from "./RpinfoButton.vue";
 
 const {
     modifiers = []
@@ -65,9 +66,7 @@ const toggleModifier = (modifier: Modifier) => {
                             <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
                         </div>
                         <div>
-                            <button class="btn btn-info rounded-5 rpinfo-button" type="button">
-                                <i class="fas fa-question btn-icon-left"></i>Rpinfo
-                            </button>
+                            <rpinfo-button category="RecipeModifier" :item="modifier.name"></rpinfo-button>
                         </div>
                     </div>
                 </div>
@@ -82,7 +81,4 @@ const toggleModifier = (modifier: Modifier) => {
 </template>
 
 <style scoped>
-.rpinfo-button {
-    min-width: 96px;
-}
 </style>
