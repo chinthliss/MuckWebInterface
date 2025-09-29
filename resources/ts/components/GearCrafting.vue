@@ -7,6 +7,8 @@ import {lex} from "../siteutils";
 import GearCraftingRecipeSelector from "./GearCraftingRecipeSelector.vue";
 import GearCraftingModifierSelector from "./GearCraftingModifierSelector.vue";
 import Callout from "./Callout.vue";
+import ModalMessage from "./ModalMessage.vue";
+import RpinfoViewer from "./RpinfoViewer.vue";
 
 export type Recipe = {
     name: string,
@@ -90,6 +92,10 @@ const history: Ref<RecipeAndModifiers[]> = ref([]); // Used by the recipe select
 
 const recipeSelector: Ref<InstanceType<typeof GearCraftingRecipeSelector> | null> = useTemplateRef('recipe-selector');
 
+const rpInfoCategory: Ref<string | null> = ref(null);
+const rpInfoItem: Ref<string | null> = ref(null);
+const rpInfoModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
+
 const channel = mwiWebsocket.channel('gear');
 
 const updatePreview = () => {
@@ -110,6 +116,12 @@ const modifiersChanged = (modifiers: string[]) => {
     selectedModifiers.value = modifiers;
     updatePreview();
 
+}
+
+const rpinfoRequest = (request: { category: string, item: string }) => {
+    rpInfoCategory.value = request.category;
+    rpInfoItem.value = request.item;
+    if (rpInfoModal.value) rpInfoModal.value.show();
 }
 
 channel.on('craftPreview', (response: CraftPreview) => {
@@ -172,6 +184,7 @@ onMounted(() => {
                                        :recipes="recipes"
                                        :saved-plans="savedPlans"
                                        @mounted="recipeSelectorMounted"
+                                       @rpinfo="rpinfoRequest"
                                        @update="recipeSelected"
         >
         </gear-crafting-recipe-selector>
@@ -186,6 +199,7 @@ onMounted(() => {
             <gear-crafting-modifier-selector
                 :modifiers="modifiers"
                 @update="modifiersChanged"
+                @rpinfo="rpinfoRequest"
             >
             </gear-crafting-modifier-selector>
         </template>
@@ -271,7 +285,8 @@ onMounted(() => {
                         <tr>
                             <th class="pe-2" scope="row">Other Ingredients</th>
                             <td>
-                                <div v-if="preview.otherIngredients" v-for="(quantity, ingredient) in preview.otherIngredients">
+                                <div v-for="(quantity, ingredient) in preview.otherIngredients"
+                                     v-if="preview.otherIngredients">
                                     {{ quantity }} x {{ capital(ingredient as string) }}
                                 </div>
                                 <div v-else>None</div>
@@ -309,6 +324,9 @@ onMounted(() => {
             </div>
         </template>
     </template>
+    <modal-message ref="rpInfoModal" title="RP-Info">
+        <rpinfo-viewer v-model:category="rpInfoCategory" v-model:item="rpInfoItem"></rpinfo-viewer>
+    </modal-message>
 </template>
 
 <style scoped>

@@ -6,18 +6,18 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    rpinfo: [{category: string, item: string}]
+    rpinfo: {category: string, item: string}
 }>()
 
-const launchRpInfo = () => {
+const rpinfo = () => {
     emit("rpinfo", {category: props.category, item: props.item});
 }
 
 </script>
 
 <template>
-    <button class="btn btn-info rounded-5 rpinfo-button" type="button" @click.stop="launchRpInfo">
-        <i class="fas fa-question btn-icon-left"></i>Rpinfo
+    <button class="btn btn-info rounded-5 rpinfo-button" type="button" @click.stop="rpinfo">
+        <i class="fas fa-info-circle btn-icon-left"></i>RP-Info
     </button>
 </template>
 

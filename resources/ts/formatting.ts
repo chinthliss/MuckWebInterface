@@ -49,6 +49,14 @@ export const capital = (text: string | null | undefined): string => {
     return text.substring(0, 1).toUpperCase() + text.slice(1);
 };
 
+export const capitalOnEveryWord = (text: string | null | undefined): string => {
+    if (!text) return '';
+    return text
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+};
+
 /**
  * Joins an array of strings into one string
  */

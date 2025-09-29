@@ -15,7 +15,10 @@ const selectedModifiers: Ref<string[]> = ref([]);
 const showDescriptions: Ref<boolean> = ref(false);
 const nameFilter: Ref<string> = ref('');
 
-const emit = defineEmits(['update'])
+const emit = defineEmits<{
+    (e: 'update', recipeName: string): void,
+    (e: 'rpinfo', {category: string, item: string}): void,
+}>()
 
 const shouldShow = (modifier: Modifier): boolean => {
     if (!nameFilter.value) return true;
@@ -28,6 +31,11 @@ const toggleModifier = (modifier: Modifier) => {
     else
         selectedModifiers.value.push(modifier.name);
     emit('update', selectedModifiers.value);
+}
+
+const rpinfo = (request: { category: string, item: string }) => {
+    // Parent has the rpinfo container, so these are just trickled up
+    emit('rpinfo', request);
 }
 
 </script>
@@ -66,7 +74,8 @@ const toggleModifier = (modifier: Modifier) => {
                             <p v-if="showDescriptions" class="card-text" v-html="ansiToHtml(modifier.description)"></p>
                         </div>
                         <div>
-                            <rpinfo-button category="RecipeModifier" :item="modifier.name"></rpinfo-button>
+                            <rpinfo-button :item="modifier.name" category="recipe modifier"
+                                           @rpinfo="rpinfo"></rpinfo-button>
                         </div>
                     </div>
                 </div>
@@ -76,7 +85,7 @@ const toggleModifier = (modifier: Modifier) => {
     </div>
     <div class="fw-bold"><span class="text-primary">Selected Modifiers:</span> {{
             arrayToList(selectedModifiers) || 'None'
-        }}
+                                                                               }}
     </div>
 </template>
 

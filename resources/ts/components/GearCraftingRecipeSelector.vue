@@ -34,7 +34,13 @@ const hide = () => {
     if (collapseControl.value) collapseControl.value.hide();
 }
 
-const emit = defineEmits(['update', 'mounted'])
+const emit = defineEmits<{
+    (e: 'update', recipeName: string): void,
+    (e: 'mounted'): void,
+    (e: 'rpinfo', {category: string, item: string}): void,
+}>()
+
+//const emit = defineEmits(['update', 'mounted', 'rpinfo'])
 
 const classForRecipeIcon = (recipe: Recipe) => {
     if (recipe.item.useType == 'consumable') return 'fa-utensils';
@@ -53,6 +59,11 @@ const shouldShow = (recipe: Recipe): boolean => {
     if (!showConsumable.value && recipe.item.useType == 'consumable') return false;
     if (!nameFilter.value) return true;
     return (recipe.name.toLowerCase().includes(nameFilter.value.toLowerCase()))
+}
+
+const rpinfo = (request: { category: string, item: string }) => {
+    // Parent has the rpinfo container, so these are just trickled up
+    emit('rpinfo', request);
 }
 
 onMounted(() => {
@@ -148,7 +159,8 @@ onMounted(() => {
                                  @click="selectRecipe(recipe.name)"
                             >
                                 <div class="d-flex">
-                                    <div class="card-side-icon align-self-center text-center px-2 display-6 flex-shrink-0">
+                                    <div
+                                        class="card-side-icon align-self-center text-center px-2 display-6 flex-shrink-0">
                                         <i :class="['fas', classForRecipeIcon(recipe)]"></i>
                                     </div>
 
@@ -158,14 +170,15 @@ onMounted(() => {
                                         <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
                                         <div v-if="recipe.item.slot" class="card-text">Slot: {{
                                                 capital(recipe.item.slot)
-                                            }}
+                                                                                       }}
                                         </div>
                                         <p v-if="showDescriptions" class="card-text mt-2"
                                            v-html="ansiToHtml(recipe.description)"></p>
                                     </div>
 
                                     <div class="align-self-center text-center px-3 flex-shrink-0">
-                                        <rpinfo-button category="Recipe" :item="recipe.name"></rpinfo-button>
+                                        <rpinfo-button :item="recipe.name" category="recipe"
+                                                       @rpinfo="rpinfo"></rpinfo-button>
                                     </div>
 
                                 </div>
@@ -203,7 +216,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-    .card-side-icon {
-        width: 64px;
-    }
+.card-side-icon {
+    width: 64px;
+}
 </style>
