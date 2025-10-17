@@ -198,7 +198,10 @@ onMounted(() => {
                 <!-- Select from saved plans -->
                 <div id="saved-plans-pane" aria-labelledby="saved-plans-tab" class="tab-pane" role="tabpanel"
                      tabindex="0">
-                    <div v-for="plan in savedPlans" class="card button mb-2" role="button" @click="selectPlan(plan)">
+                    <div v-if="savedPlans.length == 0">
+                        You have no saved plans.
+                    </div>
+                    <div v-else v-for="plan in savedPlans" class="card button mb-2" role="button" @click="selectPlan(plan)">
                         <div class="card-body">
                             <h5 class="card-title">{{ plan.name }}</h5>
                             <div class="card-subtitle fst-italic">Recipe: {{ plan.recipeName }}</div>
