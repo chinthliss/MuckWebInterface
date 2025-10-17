@@ -22,7 +22,6 @@
                 <li>Previewing the actual item produced</li>
                 <li>Most of the constructive warning messages (e.g. 'this could be crafted if ..')</li>
                 <li>Slot filters</li>
-                <li>Saved Plan functionality</li>
                 <li>History functionality</li>
                 <li>Commissioning functionality</li>
                 <li>Any actual crafting..</li>

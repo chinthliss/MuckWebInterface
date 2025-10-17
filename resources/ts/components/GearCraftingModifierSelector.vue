@@ -11,13 +11,13 @@ const {
     modifiers: Modifier[],
 }>();
 
-const selectedModifiers: Ref<string[]> = ref([]);
+const selectedModifiers = defineModel<string[]>('selected', {required: true});
 const showDescriptions: Ref<boolean> = ref(false);
 const nameFilter: Ref<string> = ref('');
 
 const emit = defineEmits<{
-    (e: 'update', recipeName: string): void,
-    (e: 'rpinfo', {category: string, item: string}): void,
+    update: []
+    rpinfo: [{category: string, item: string}]
 }>()
 
 const shouldShow = (modifier: Modifier): boolean => {
@@ -30,7 +30,7 @@ const toggleModifier = (modifier: Modifier) => {
         selectedModifiers.value.splice(selectedModifiers.value.indexOf(modifier.name), 1);
     else
         selectedModifiers.value.push(modifier.name);
-    emit('update', selectedModifiers.value);
+    emit('update')
 }
 
 const rpinfo = (request: { category: string, item: string }) => {

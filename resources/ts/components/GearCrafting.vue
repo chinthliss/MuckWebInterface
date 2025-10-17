@@ -112,10 +112,15 @@ const recipeSelected = (recipeName: string) => {
     updatePreview();
 }
 
-const modifiersChanged = (modifiers: string[]) => {
+const recipeAndModifiersSelected = (recipeName: string, modifiers: string[]) => {
+    selectedRecipe.value = recipeName;
     selectedModifiers.value = modifiers;
     updatePreview();
+}
 
+const modifiersChanged = () => {
+    // selectedModifiers is two-way bound, so doesn't need updating, but still need to update preview
+    updatePreview();
 }
 
 const rpinfoRequest = (request: { category: string, item: string }) => {
@@ -185,7 +190,8 @@ onMounted(() => {
                                        :saved-plans="savedPlans"
                                        @mounted="recipeSelectorMounted"
                                        @rpinfo="rpinfoRequest"
-                                       @update="recipeSelected"
+                                       @recipe-selected="recipeSelected"
+                                       @recipe-and-modifiers-selected="recipeAndModifiersSelected"
         >
         </gear-crafting-recipe-selector>
         <div v-if="!selectedRecipe">You need to select a recipe to continue.</div>
@@ -197,6 +203,7 @@ onMounted(() => {
             <hr/>
             <h3>Modifiers</h3>
             <gear-crafting-modifier-selector
+                v-model:selected="selectedModifiers"
                 :modifiers="modifiers"
                 @update="modifiersChanged"
                 @rpinfo="rpinfoRequest"

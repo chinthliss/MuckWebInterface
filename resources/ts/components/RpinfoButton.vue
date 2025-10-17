@@ -6,7 +6,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    rpinfo: {category: string, item: string}
+    rpinfo: [{category: string, item: string}]
 }>()
 
 const rpinfo = () => {

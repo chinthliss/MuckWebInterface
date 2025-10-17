@@ -2,8 +2,8 @@
 
 import Callout from "./Callout.vue";
 
-const category = defineModel('category', {type: String, required: true});
-const item = defineModel('item', {type: String, required: true});
+const category = defineModel<string>('category', {required: true});
+const item = defineModel<string>('item', {required: true});
 import {capitalOnEveryWord} from "../formatting";
 </script>
 

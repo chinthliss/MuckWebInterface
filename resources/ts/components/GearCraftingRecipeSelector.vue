@@ -3,8 +3,9 @@
 import type {Modifier, Recipe, RecipeAndModifiers} from "./GearCrafting.vue"
 import {onMounted, ref, Ref, useTemplateRef} from "vue";
 import Collapse from "./Collapse.vue";
-import {ansiToHtml, capital} from "../formatting";
+import {ansiToHtml, arrayToList, capital} from "../formatting";
 import RpinfoButton from "./RpinfoButton.vue";
+import Callout from "./Callout.vue";
 
 const {
     recipes = [],
@@ -35,9 +36,10 @@ const hide = () => {
 }
 
 const emit = defineEmits<{
-    (e: 'update', recipeName: string): void,
-    (e: 'mounted'): void,
-    (e: 'rpinfo', {category: string, item: string}): void,
+    recipeSelected: [recipeName: string]
+    recipeAndModifiersSelected: [recipeName: string, modifiers:string[]]
+    mounted: []
+    rpinfo: [{category: string, item: string}]
 }>()
 
 //const emit = defineEmits(['update', 'mounted', 'rpinfo'])
@@ -49,7 +51,12 @@ const classForRecipeIcon = (recipe: Recipe) => {
 }
 
 const selectRecipe = (recipeName: string) => {
-    emit('update', recipeName);
+    emit('recipeSelected', recipeName);
+    hide();
+}
+
+const selectPlan = (plan: RecipeAndModifiers) => {
+    emit('recipeAndModifiersSelected', plan.recipeName, plan.modifierNames);
     hide();
 }
 
@@ -191,18 +198,19 @@ onMounted(() => {
                 <!-- Select from saved plans -->
                 <div id="saved-plans-pane" aria-labelledby="saved-plans-tab" class="tab-pane" role="tabpanel"
                      tabindex="0">
-                    <div>SAVED PLANS GO HERE</div>
-                    <div v-for="plan in savedPlans" class="card button mb-2" role="button">
+                    <div v-for="plan in savedPlans" class="card button mb-2" role="button" @click="selectPlan(plan)">
                         <div class="card-body">
                             <h5 class="card-title">{{ plan.name }}</h5>
-                            <h6 class="card-subtitle fst-italic">{{ plan.recipeName }}</h6>
+                            <div class="card-subtitle fst-italic">Recipe: {{ plan.recipeName }}</div>
+                            <div class="card-subtitle fst-italic">Modifiers: {{ arrayToList(plan.modifierNames) }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Select from history -->
                 <div id="history-pane" aria-labelledby="history-tab" class="tab-pane" role="tabpanel" tabindex="0">
-                    <div>RECENT HISTORY GOES HERE</div>
+                    <div>This is where recently crafting items will go, so they can be re-crafted.</div>
+                    <callout>TODO: Implement crafting history</callout>
                     <div v-for="entry in history" class="card button mb-2" role="button">
                         <div class="card-body">
                             <h5 class="card-title">{{ entry.name || entry.recipeName }}</h5>
