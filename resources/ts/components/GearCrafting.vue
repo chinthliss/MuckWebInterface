@@ -89,11 +89,12 @@ const recipesToLoad: Ref<number | null> = ref(null); // If null, loading hasn't 
 const modifiersToLoad: Ref<number | null> = ref(null); // If null, loading hasn't started. If 0, finished.
 const savedPlans: Ref<RecipeAndModifiers[]> = ref([]); // Used by the recipe selector
 const history: Ref<RecipeAndModifiers[]> = ref([]); // Used by the recipe selector
-
+const newSavedPlanName: Ref<string> = ref('');
+const newSavedPlanResponse: Ref<string> = ref('');
 const recipeSelector: Ref<InstanceType<typeof GearCraftingRecipeSelector> | null> = useTemplateRef('recipe-selector');
 
-const rpInfoCategory: Ref<string | null> = ref(null);
-const rpInfoItem: Ref<string | null> = ref(null);
+const rpInfoCategory: Ref<string> = ref('');
+const rpInfoItem: Ref<string> = ref('');
 const rpInfoModal: Ref<InstanceType<typeof ModalMessage> | null> = ref(null);
 
 const channel = mwiWebsocket.channel('gear');
@@ -121,6 +122,16 @@ const recipeAndModifiersSelected = (recipeName: string, modifiers: string[]) => 
 const modifiersChanged = () => {
     // selectedModifiers is two-way bound, so doesn't need updating, but still need to update preview
     updatePreview();
+}
+
+const saveSavedPlan = () => {
+    channel.send('saveSavedPlan', {
+        name: newSavedPlanName.value,
+        recipe: selectedRecipe.value,
+        modifiers: selectedModifiers.value
+    });
+    newSavedPlanResponse.value = 'Saved!';
+    setTimeout(() => newSavedPlanResponse.value = '', 2000);
 }
 
 const rpinfoRequest = (request: { category: string, item: string }) => {
@@ -211,8 +222,10 @@ onMounted(() => {
             </gear-crafting-modifier-selector>
         </template>
 
-        <!-- Preview -->
+
         <template v-if="selectedRecipe">
+
+            <!-- Preview -->
             <hr/>
             <h3>Preview</h3>
             <div v-if="!preview" class="preview-placeholder">Loading..</div>
@@ -329,6 +342,25 @@ onMounted(() => {
                     </table>
                 </div>
             </div>
+
+            <!-- Create new saved plan -->
+            <h3 class="mt-2">Create New Saved Plan</h3>
+            <div class="d-flex align-items-xl-end flex-column flex-xl-row">
+                <div>
+                    Want to save this combination so you can use it again quickly in the future?<br/>
+                    If so, give it a name and hit Save Plan.<br/>
+                    Using an existing saved plan name will overwrite it.
+                </div>
+                <div class="flex-grow-1 ms-2 ms-xl-4 me-2 mb-2 mb-xl-0">
+                    <label class="col-form-label" for="newSavedPlanName">New Saved Plan Name</label>
+                    <input id="newSavedPlanName" v-model="newSavedPlanName" class="form-control"
+                           placeholder="New Saved Plan Name"
+                           type="text">
+                </div>
+                <button class="btn btn-primary" @click="saveSavedPlan">Save Plan</button>
+            </div>
+            <div v-if="newSavedPlanResponse" class="alert alert-info mt-2">{{ newSavedPlanResponse }}</div>
+
         </template>
     </template>
     <modal-message ref="rpInfoModal" title="RP-Info">
