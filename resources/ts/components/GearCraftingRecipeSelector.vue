@@ -37,9 +37,9 @@ const hide = () => {
 
 const emit = defineEmits<{
     recipeSelected: [recipeName: string]
-    recipeAndModifiersSelected: [recipeName: string, modifiers:string[]]
+    recipeAndModifiersSelected: [recipeName: string, modifiers: string[]]
     mounted: []
-    rpinfo: [{category: string, item: string}]
+    rpinfo: [{ category: string, item: string }]
 }>()
 
 //const emit = defineEmits(['update', 'mounted', 'rpinfo'])
@@ -165,30 +165,37 @@ onMounted(() => {
                                  role="button"
                                  @click="selectRecipe(recipe.name)"
                             >
-                                <div class="d-flex">
-                                    <div
-                                        class="card-side-icon align-self-center text-center px-2 display-6 flex-shrink-0">
-                                        <i :class="['fas', classForRecipeIcon(recipe)]"></i>
-                                    </div>
 
-                                    <div class="flex-grow-1 py-2">
-                                        <h5 class="card-title">{{ recipe.name }}</h5>
-
-                                        <div class="card-subtitle fst-italic">{{ recipe.item.type || 'Unset' }}</div>
-                                        <div v-if="recipe.item.slot" class="card-text">Slot: {{
-                                                capital(recipe.item.slot)
-                                                                                       }}
+                                <div class="d-flex flex-column flex-xl-row">
+                                    <!-- Icon and name/description which stay together-->
+                                    <div class="d-flex flex-grow-1">
+                                        <div
+                                            class="card-side-icon align-self-center text-center px-2 display-6 flex-shrink-0">
+                                            <i :class="['fas', classForRecipeIcon(recipe)]"></i>
                                         </div>
-                                        <p v-if="showDescriptions" class="card-text mt-2"
-                                           v-html="ansiToHtml(recipe.description)"></p>
-                                    </div>
 
+                                        <div class="flex-grow-1 py-2">
+                                            <h5 class="card-title">{{ recipe.name }}</h5>
+
+                                            <div class="card-subtitle fst-italic">{{
+                                                    recipe.item.type || 'Unset'
+                                                                                  }}
+                                            </div>
+                                            <div v-if="recipe.item.slot" class="card-text">Slot: {{
+                                                    capital(recipe.item.slot)
+                                                                                           }}
+                                            </div>
+                                            <p v-if="showDescriptions" class="card-text mt-2"
+                                               v-html="ansiToHtml(recipe.description)"></p>
+                                        </div>
+                                    </div>
                                     <div class="align-self-center text-center px-3 flex-shrink-0">
-                                        <rpinfo-button :item="recipe.name" category="recipe"
+                                        <rpinfo-button :item="recipe.name" category="recipe" class="mb-2 mb-xl-0"
                                                        @rpinfo="rpinfo"></rpinfo-button>
                                     </div>
 
                                 </div>
+
                             </div>
                         </template>
                     </div>
@@ -201,7 +208,8 @@ onMounted(() => {
                     <div v-if="savedPlans.length == 0">
                         You have no saved plans.
                     </div>
-                    <div v-else v-for="plan in savedPlans" class="card button mb-2" role="button" @click="selectPlan(plan)">
+                    <div v-for="plan in savedPlans" v-else class="card button mb-2" role="button"
+                         @click="selectPlan(plan)">
                         <div class="card-body">
                             <h5 class="card-title">{{ plan.name }}</h5>
                             <div class="card-subtitle fst-italic">Recipe: {{ plan.recipeName }}</div>
