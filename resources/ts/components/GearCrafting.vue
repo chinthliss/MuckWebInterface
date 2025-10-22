@@ -275,7 +275,7 @@ onMounted(() => {
                         </tr>
 
                         <tr>
-                            <th class="pe-2" scope="row">Skills</th>
+                            <th class="pe-2 align-top" scope="row">Skills</th>
                             <td>
                                 <div v-for="(range, skill) in preview.skills">
                                     {{ capital(skill as string) }} of {{ range.worst }} to {{ range.best }}
@@ -284,7 +284,7 @@ onMounted(() => {
                         </tr>
 
                         <tr>
-                            <th class="pe-2" scope="row">Salvage</th>
+                            <th class="pe-2 align-top" scope="row">Salvage</th>
                             <td>
                                 <div v-for="(range, salvage) in preview.salvage">
                                     <b>{{ capital(salvage as string) }}</b>:
