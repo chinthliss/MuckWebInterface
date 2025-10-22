@@ -248,26 +248,24 @@ export default class ChannelGear extends Channel {
         }
     ];
 
-    savedPlans = [
-        {
-            name: 'Test Saved Plan',
-            recipeName: 'Test Recipe',
-            modifierNames: ['Test Modifier']
+    savedPlans = {
+        "Test Saved Plan": {
+            recipe: 'Test Recipe 1',
+            modifiers: ['Test Modifier']
         },
-        {
-            name: 'Broken Saved Plan',
-            recipeName: 'Broken Recipe',
-            modifierNames: ['Broken Modifier']
+        "Broken Saved Plan": {
+            recipe: 'Broken Recipe',
+            modifiers: ['Broken Modifier']
         }
-
-    ];
+    };
 
     handlers = {
         'bootCrafting': (connection, _data) => {
             let initialEnvironment = {
                 recipeCount: this.recipes.length,
                 modifierCount: this.modifiers.length,
-                savedPlans: this.savedPlans
+                savedPlans: this.savedPlans,
+                history: {}
             };
 
             this.sendMessageToConnection(connection, 'bootCrafting', initialEnvironment);

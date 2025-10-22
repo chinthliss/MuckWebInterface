@@ -32,10 +32,7 @@ export type Modifier = {
 export type RecipeAndModifiers = {
     name: string,
     recipeName: string,
-    recipe: Recipe | null, // Might be null if invalid
     modifierNames: string[]
-    modifiers: Modifier[]
-    valid: boolean
 }
 
 type CraftPreview = {
@@ -156,27 +153,34 @@ channel.on('modifier', (response: Modifier) => {
 
 
 channel.on('bootCrafting', (response: {
-    savedPlans: RecipeAndModifiers[],
-    history: RecipeAndModifiers[],
+    savedPlans: { [planName: string]: { recipe: string, modifiers: string[] } },
+    history: { [planName: string]: { recipe: string, modifiers: string[] } },
     recipeCount: number, // Individual entries are sent separately otherwise it'll break the muck's reliable string length
     modifierCount: number // Individual entries are sent separately otherwise it'll break the muck's reliable string length
 }) => {
-    savedPlans.value = response.savedPlans || [];
-    history.value = response.history || [];
     recipes.value = [];
     recipesToLoad.value = response.recipeCount;
     modifiers.value = [];
     modifiersToLoad.value = response.modifierCount;
-    // Connect up saved plans
-    for (const savedPlan of savedPlans.value) {
-        savedPlan.recipe = recipes.value.find(x => x.name === savedPlan.recipeName) || null;
-        if (!savedPlan.recipe) console.warn(`SavedPlan [${savedPlan.name}]: Recipe [${savedPlan.recipeName}] not found`);
-        savedPlan.modifiers = [];
-        for (const modifierName of savedPlan.modifierNames) {
-            const modifier = modifiers.value.find(x => x.name === modifierName) || null;
-            if (modifier) savedPlan.modifiers.push(modifier);
-            else console.warn(`SavedPlan [${savedPlan.name}]: Modifier [${modifierName}] not found`);
+
+    savedPlans.value = [];
+    for (const [planName, plan] of Object.entries(response.savedPlans)) {
+        const next: RecipeAndModifiers = {
+            name: planName,
+            recipeName: plan.recipe,
+            modifierNames: plan.modifiers,
         }
+        savedPlans.value.push(next);
+    }
+
+    history.value = []
+    for (const [planName, plan] of Object.entries(response.history)) {
+        const next: RecipeAndModifiers = {
+            name: planName,
+            recipeName: plan.recipe,
+            modifierNames: plan.modifiers,
+        }
+        history.value.push(next);
     }
 })
 
@@ -216,8 +220,8 @@ onMounted(() => {
             <gear-crafting-modifier-selector
                 v-model:selected="selectedModifiers"
                 :modifiers="modifiers"
-                @update="modifiersChanged"
                 @rpinfo="rpinfoRequest"
+                @update="modifiersChanged"
             >
             </gear-crafting-modifier-selector>
         </template>
