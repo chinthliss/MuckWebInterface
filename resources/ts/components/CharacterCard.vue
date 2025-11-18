@@ -38,7 +38,7 @@ const clicked = () => {
 </template>
 
 <style scoped lang="scss">
-@use 'resources/sass/variables' as *;
+@use "../../sass/variables" as *;
 @use 'sass:color';
 
 // Shared in all modes

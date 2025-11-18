@@ -322,7 +322,7 @@ channel.on('badge', (data: Badge) => {
 </template>
 
 <style scoped lang="scss">
-@use 'resources/sass/variables' as *;
+@use "../../sass/variables" as *;
 
 .label {
     font-weight: 600;

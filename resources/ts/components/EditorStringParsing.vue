@@ -30,7 +30,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use 'resources/sass/variables' as *;
+@use "../../sass/variables" as *;
 
 #stringparsing-scratchpad {
     border: 1px solid $primary;

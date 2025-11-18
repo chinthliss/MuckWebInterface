@@ -270,7 +270,8 @@ const layerListToString = (unparsed: DrawingStepLayer[]): string => {
 </template>
 
 <style scoped lang="scss">
-@use 'resources/sass/variables' as *;
+@use "../../sass/variables" as *;
+
 .avatarHolder img {
     border: 1px solid $primary;
     background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%);

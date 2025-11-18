@@ -11,14 +11,14 @@
     "devDependencies": {
         "@types/bootstrap": "^5.2.6",
         "@types/jquery": "^3.5.17",
-        "@vitejs/plugin-vue": "^5.0.0",
+        "@vitejs/plugin-vue": "^6.0.0",
         "@vue/language-server": "^2.2.0",
-        "laravel-vite-plugin": "^1.0.0",
+        "laravel-vite-plugin": "^2.0.0",
         "postcss": "^8.1.14",
         "rollup-plugin-visualizer": "^5.9.2",
         "sass": "^1.32.11",
         "typescript": "^5.2.2",
-        "vite": "^6.4.1",
+        "vite": "^7.0.0",
         "ws": "^8.13.0"
     },
     "dependencies": {
