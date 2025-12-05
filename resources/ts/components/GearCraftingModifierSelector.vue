@@ -13,14 +13,17 @@ const {
 
 const selectedModifiers = defineModel<string[]>('selected', {required: true});
 const showDescriptions: Ref<boolean> = ref(false);
+const showKnownOnly: Ref<boolean> = ref(false);
 const nameFilter: Ref<string> = ref('');
+
 
 const emit = defineEmits<{
     update: []
-    rpinfo: [{category: string, item: string}]
+    rpinfo: [{ category: string, item: string }]
 }>()
 
 const shouldShow = (modifier: Modifier): boolean => {
+    if (showKnownOnly.value && !modifier.known) return false;
     if (!nameFilter.value) return true;
     return (modifier.name.toLowerCase().includes(nameFilter.value.toLowerCase()))
 }
@@ -43,21 +46,34 @@ const rpinfo = (request: { category: string, item: string }) => {
 <template>
     <div class="row">
         <!-- Name filter -->
-        <div class="col-12 col-xl-6 d-flex mb-2">
+        <div class="col-12 col-xl-4 d-flex mb-2">
             <label class="col-form-label me-2" for="nameFilter">Name</label>
             <input id="nameFilter" v-model="nameFilter" class="form-control"
                    placeholder="Filter by name"
                    type="text">
         </div>
+
         <!-- Description toggle -->
         <div
-            class="col-12 col-xl-6 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
+            class="col-12 col-xl-4 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
             <input id="showDescriptionsSwitch" v-model="showDescriptions"
                    class="form-check-input me-2"
                    role="switch"
                    type="checkbox"
             >
             <label class="form-check-label" for="showDescriptionsSwitch">Show Descriptions?</label>
+
+        </div>
+
+        <!-- Known only toggle -->
+        <div
+            class="col-12 col-xl-4 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
+            <input id="showKnownOnlySwitch" v-model="showKnownOnly"
+                   class="form-check-input me-2"
+                   role="switch"
+                   type="checkbox"
+            >
+            <label class="form-check-label" for="showKnownOnlySwitch">Show Known Only?</label>
         </div>
     </div>
     <div class="row">

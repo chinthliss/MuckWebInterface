@@ -20,6 +20,7 @@ const {
 
 const collapseControl: Ref<InstanceType<typeof Collapse> | null> = useTemplateRef('collapseControl');
 const showDescriptions: Ref<boolean> = ref(false);
+const showKnownOnly: Ref<boolean> = ref(false);
 const nameFilter: Ref<string> = ref('');
 const showEquipment: Ref<boolean> = ref(true);
 const showUsable: Ref<boolean> = ref(true);
@@ -64,6 +65,7 @@ const shouldShow = (recipe: Recipe): boolean => {
     if (!showEquipment.value && recipe.item.useType == 'equipment') return false;
     if (!showUsable.value && recipe.item.useType == 'usable') return false;
     if (!showConsumable.value && recipe.item.useType == 'consumable') return false;
+    if (showKnownOnly.value && !recipe.known) return false;
     if (!nameFilter.value) return true;
     return (recipe.name.toLowerCase().includes(nameFilter.value.toLowerCase()))
 }
@@ -139,15 +141,16 @@ onMounted(() => {
 
                         <div class="row">
                             <!-- Name filter -->
-                            <div class="col-12 col-xl-6 d-flex mb-2">
+                            <div class="col-12 col-xl-4 d-flex mb-2">
                                 <label class="col-form-label me-2" for="nameFilter">Name</label>
                                 <input id="nameFilter" v-model="nameFilter" class="form-control"
                                        placeholder="Filter by name"
                                        type="text">
                             </div>
+
                             <!-- Description toggle -->
                             <div
-                                class="col-12 col-xl-6 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
+                                class="col-12 col-xl-4 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
                                 <input id="showDescriptionsSwitch" v-model="showDescriptions"
                                        class="form-check-input me-2"
                                        role="switch"
@@ -155,6 +158,18 @@ onMounted(() => {
                                 >
                                 <label class="form-check-label" for="showDescriptionsSwitch">Show Descriptions?</label>
                             </div>
+
+                            <!-- Known only toggle -->
+                            <div
+                                class="col-12 col-xl-4 form-check form-switch mb-2 d-flex align-items-center justify-content-center">
+                                <input id="showKnownSwitch" v-model="showKnownOnly"
+                                       class="form-check-input me-2"
+                                       role="switch"
+                                       type="checkbox"
+                                >
+                                <label class="form-check-label" for="showKnownSwitch">Show Known only?</label>
+                            </div>
+
                         </div>
                     </div>
 
