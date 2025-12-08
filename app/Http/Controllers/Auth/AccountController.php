@@ -109,6 +109,11 @@ class AccountController extends Controller
         return redirect()->intended(route('welcome'));
     }
 
+    public function showDeleteAccount(): View
+    {
+        return view('account.delete');
+    }
+
     #region Account Notifications
     // Presented as just 'notifications' to the user.
     // Named AccountNotifications internally to avoid collision with other potential classes
@@ -171,6 +176,5 @@ class AccountController extends Controller
     }
 
     #endregion Account Notifications
-
 
 }
