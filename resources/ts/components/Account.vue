@@ -13,12 +13,8 @@ DataTable.use(DataTablesLib);
 const props = defineProps<{
     accountIn: Account
     links: {
-        changePassword: string,
         changeEmail: string,
-        newEmail: string,
-        accountCurrencyHistory: string,
-        cardManagement: string,
-        transactions: string
+        newEmail: string
     }
 }>();
 
@@ -189,30 +185,6 @@ const subscriptionTableOptions: DataTableOptions = {
             </a>
             <div class="ms-2 text-muted">
                 Adding a new email will also cause the new email to become your primary email.
-            </div>
-        </div>
-
-        <h2 class="mt-2">Account Controls</h2>
-        <div class="row g-2">
-            <div class="col-12 col-sm-6">
-                <a :href="links.changePassword">
-                    <button class="w-100 btn btn-primary">Change Password</button>
-                </a>
-            </div>
-            <div class="col-12 col-sm-6">
-                <a :href="links.accountCurrencyHistory">
-                    <button class="w-100 btn btn-primary">{{ lex('accountCurrency') }} History</button>
-                </a>
-            </div>
-            <div class="col-12 col-sm-6">
-                <a :href="links.cardManagement">
-                    <button class="w-100 btn btn-primary">Card Management</button>
-                </a>
-            </div>
-            <div class="col-12 col-sm-6">
-                <a :href="links.transactions">
-                    <button class="w-100 btn btn-primary">Account Transactions</button>
-                </a>
             </div>
         </div>
 
