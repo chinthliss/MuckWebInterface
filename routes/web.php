@@ -107,8 +107,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('newemail', [EmailController::class, 'newEmail']);
     Route::post('changeemail', [EmailController::class, 'changeEmail'])
         ->name('auth.email.change');
+
     Route::get('account/delete', [AccountController::class, 'showDeleteAccount'])
         ->name('account.delete');
+    Route::post('account/delete', [AccountController::class, 'deleteAccount']);
 
     // Preference change
     Route::post('account/updateAvatarPreference', [AccountController::class, 'updateAvatarPreference'])

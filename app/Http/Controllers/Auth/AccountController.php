@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Nette\NotImplementedException;
 
 class AccountController extends Controller
 {
@@ -112,6 +113,11 @@ class AccountController extends Controller
     public function showDeleteAccount(): View
     {
         return view('account.delete');
+    }
+
+    public function deleteAccount()
+    {
+        throw new NotImplementedException();
     }
 
     #region Account Notifications
