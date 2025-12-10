@@ -9,6 +9,7 @@ use App\User as User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -110,14 +111,58 @@ class AccountController extends Controller
         return redirect()->intended(route('welcome'));
     }
 
-    public function showDeleteAccount(): View
+    private function getDeletionWindowStart(Carbon $lastRequestTime): Carbon
     {
-        return view('account.delete');
+        return $lastRequestTime->copy()->addDay();
     }
 
-    public function deleteAccount()
+    private function getDeletionWindowEnd(Carbon $lastRequestTime): Carbon
     {
-        throw new NotImplementedException();
+        return $lastRequestTime->copy()->addDays(4);
+    }
+
+    public function showDeleteAccount(): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $lastRequestTimestamp = $user->getAccountProperty('lastDeleteRequest');
+        if ($lastRequestTimestamp) {
+            $lastRequestTime = Carbon::createFromTimestamp($lastRequestTimestamp);
+            $windowOpens = $this->getDeletionWindowStart($lastRequestTime);
+            $windowCloses = $this->getDeletionWindowEnd($lastRequestTime);
+        } else {
+            $windowOpens = $windowCloses = null;
+        }
+
+        return view('account.delete', [
+            'windowOpens' => $windowOpens,
+            'windowCloses' => $windowCloses
+        ]);
+    }
+
+    public function deleteAccount(): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $lastRequestTimestamp = $user->getAccountProperty('lastDeleteRequest');
+        if ($lastRequestTimestamp) {
+            //Active request, need to check they're in the window
+            $lastRequestTime = Carbon::createFromTimestamp($lastRequestTimestamp);
+            $windowOpens = $this->getDeletionWindowStart($lastRequestTime);
+            $windowCloses = $this->getDeletionWindowEnd($lastRequestTime);
+            if (Carbon::now()->between($windowOpens, $windowCloses)) {
+                throw new NotImplementedException();
+            }
+            // This shouldn't happen unless a user triggers it by poking about
+            if (Carbon::now() < $windowOpens) {
+                return back();
+            }
+        }
+        // Anything else, we start a new request
+        $user->setAccountProperty('lastDeleteRequest', Carbon::now()->timestamp);
+        return back();
     }
 
     #region Account Notifications
