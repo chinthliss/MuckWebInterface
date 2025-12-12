@@ -8,6 +8,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Nette\NotImplementedException;
 
 class MuckService
 {
@@ -136,6 +137,15 @@ class MuckService
             'dbref' => $character->dbref,
             'password' => $credentials['password']
         ]);
+    }
+
+    public function deleteAccountOf(User $user): bool
+    {
+        throw new NotImplementedException();
+        $response = $this->connection->request('deleteAccountOf', [
+            'aid' => $user->id()
+        ]);
+        return $response == 'OK';
     }
 
     /**

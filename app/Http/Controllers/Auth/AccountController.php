@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\AccountHistoryManager;
 use App\AccountNotificationManager;
 use App\Http\Controllers\Controller;
+use App\Muck\MuckService;
 use App\User as User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -141,7 +142,7 @@ class AccountController extends Controller
         ]);
     }
 
-    public function deleteAccount(): RedirectResponse
+    public function deleteAccount(MuckService $muck): RedirectResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -153,7 +154,11 @@ class AccountController extends Controller
             $windowOpens = $this->getDeletionWindowStart($lastRequestTime);
             $windowCloses = $this->getDeletionWindowEnd($lastRequestTime);
             if (Carbon::now()->between($windowOpens, $windowCloses)) {
+                $response = $muck->deleteAccountOf($user);
+                if ($response) auth()->logout();
+                // TODO: Handle error on delete account
                 throw new NotImplementedException();
+
             }
             // This shouldn't happen unless a user triggers it by poking about
             if (Carbon::now() < $windowOpens) {

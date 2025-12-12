@@ -119,6 +119,11 @@ class MuckConnectionFaker implements MuckConnection
         return ($password == 'muckpassword');
     }
 
+    public function fake_deleteAccountOf(array $data): string
+    {
+        return 'OK';
+    }
+
     public function fake_findProblemsWithCharacterName(array $data): string
     {
         $name = $data['name'];
