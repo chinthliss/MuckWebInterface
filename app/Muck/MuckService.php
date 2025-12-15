@@ -141,7 +141,6 @@ class MuckService
 
     public function deleteAccountOf(User $user): bool
     {
-        throw new NotImplementedException();
         $response = $this->connection->request('deleteAccountOf', [
             'aid' => $user->id()
         ]);

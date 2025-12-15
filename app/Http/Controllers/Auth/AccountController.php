@@ -14,7 +14,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use Nette\NotImplementedException;
 
 class AccountController extends Controller
 {
@@ -146,26 +145,33 @@ class AccountController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-
         $lastRequestTimestamp = $user->getAccountProperty('lastDeleteRequest');
+
+        Log::Info("ACCOUNT - Delete request for $user.");
         if ($lastRequestTimestamp) {
             //Active request, need to check they're in the window
             $lastRequestTime = Carbon::createFromTimestamp($lastRequestTimestamp);
             $windowOpens = $this->getDeletionWindowStart($lastRequestTime);
             $windowCloses = $this->getDeletionWindowEnd($lastRequestTime);
+            Log::Info("ACCOUNT - Existing deletion window for $user found: $windowOpens to $windowCloses.");
             if (Carbon::now()->between($windowOpens, $windowCloses)) {
                 $response = $muck->deleteAccountOf($user);
-                if ($response) auth()->logout();
-                // TODO: Handle error on delete account
-                throw new NotImplementedException();
-
+                if ($response) {
+                    Log::info("ACCOUNT - Muck deleted account of $user.");
+                    auth()->logout();
+                } else {
+                    Log::warning("ACCOUNT - Muck denied deleting account of $user.");
+                }
+                return back();
             }
-            // This shouldn't happen unless a user triggers it by poking about
+            // The front end denies this, but we use it for testing.
             if (Carbon::now() < $windowOpens) {
+                Log::info("ACCOUNT - Ignored deletion request of $user since window isn't open yet.");
                 return back();
             }
         }
         // Anything else, we start a new request
+        Log::info("ACCOUNT - Opened new deletion window for $user.");
         $user->setAccountProperty('lastDeleteRequest', Carbon::now()->timestamp);
         return back();
     }
