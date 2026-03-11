@@ -267,11 +267,11 @@ class AvatarService
         $image = $this->getDollImage($dollName);
 
         // Image 0 is a cached flattened copy that might have things we don't want, such as a background
-        // However it holds the extent of the image, so we also need to add a transparent image of equal size
+        // However, it holds the extent of the image, so we also need to add a transparent image of equal size
         $image->setIteratorIndex(0);
         $imageDimensions = $image->getImageGeometry();
         $image->removeImage();
-        $image->newImage($imageDimensions['width'], $imageDimensions['height'], 'transparent');
+        $image->newImage($imageDimensions['width'], $imageDimensions['height'], 'transparent', 'png');
 
         //Iterating backwards since we're potentially removing layers
         for ($i = $image->getNumberImages() - 1; $i >= 0; $i--) {
@@ -669,8 +669,7 @@ class AvatarService
         Log::debug("(Avatar) Rendering an avatar doll from a drawing plan with " . count($drawingPlan) . " steps.");
         //Create a blank canvas
         $image = new Imagick();
-        $image->newImage(self::DOLL_WIDTH, self::DOLL_HEIGHT, 'transparent');
-        $image->setImageFormat("png");
+        $image->newImage(self::DOLL_WIDTH, self::DOLL_HEIGHT, 'transparent', 'png');
 
         foreach ($drawingPlan as $step) {
 
@@ -683,9 +682,9 @@ class AvatarService
 
                 // Take a copy of that relevant layer and use the gradient as a color lookup table (clut) on it
                 $subPart = new Imagick();
-                $subPart->newImage($extents['width'], $extents['height'], 'transparent');
+                $subPart->newImage($extents['width'], $extents['height'], 'transparent', 'png');
                 $subPart->compositeImage($doll, Imagick::COMPOSITE_OVER, 0, 0);
-                $subPart->clutImage($step->colorChannels[$colorChannel], Imagick::CHANNEL_DEFAULT);
+                $subPart->clutImage($step->colorChannels[$colorChannel], Imagick::CHANNEL_RED + Imagick::CHANNEL_GREEN + Imagick::CHANNEL_BLUE);
 
                 // Copy the subPage onto our final image, using its original offsets
                 $image->compositeImage($subPart, Imagick::COMPOSITE_OVER,
@@ -718,7 +717,7 @@ class AvatarService
 
         $finalImage = new Imagick();
         $finalImage->setFormat('png');
-        $finalImage->newImage(self::DOLL_WIDTH, self::DOLL_HEIGHT, 'transparent');
+        $finalImage->newImage(self::DOLL_WIDTH, self::DOLL_HEIGHT, 'transparent', 'png');
 
         $drawnAvatar = false;
         for ($i = 0; $i < count($itemsToRender); $i++) {
