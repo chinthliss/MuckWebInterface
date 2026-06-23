@@ -675,6 +675,11 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
     descr swap descrnotify
 ; selfcall handleRequest_stretchGoals
 
+(Expects {aid}, returns 'OK' or an error message.)
+: handleRequest_deleteAccountOf[ arr:webcall -- ]
+    "Unimplemented" abort
+; selfcall handleRequest_deleteAccountOf
+
 ( --------------------------------------------------
   Incoming Routing
   -------------------------------------------------- )
@@ -765,6 +770,11 @@ $def response503 descr "HTTP/1.1 503 Service Unavailable\r\n" descrnotify descr 
             "Debugging enabled - requests will be logged to logwall." .tell
         then
         exit
+    then
+    dup "#help" stringcmp not if pop
+        "MuckWebInterface-Gateway" .tell
+        "No help file available - this is just the code to bridge between the webpage and the muck." .tell
+        "If you're after examining web traffic, try 'websocket' instead." .tell
     then
     "This program only handles webcalls." .tell
 
