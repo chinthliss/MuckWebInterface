@@ -112,10 +112,6 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('account.delete');
     Route::post('account/delete', [AccountController::class, 'deleteAccount']);
 
-    // Preference change
-    Route::post('account/updateAvatarPreference', [AccountController::class, 'updateAvatarPreference'])
-        ->name('account.avatar.preference');
-
     // Notifications
     Route::get('notifications', [AccountController::class, 'showNotifications'])
         ->name('notifications');
