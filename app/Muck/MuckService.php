@@ -8,8 +8,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
-use Nette\NotImplementedException;
-
 class MuckService
 {
     /**
