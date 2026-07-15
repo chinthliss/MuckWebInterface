@@ -154,17 +154,33 @@ channel.send('bootDedications');
                                     <a :href="wikiRoot + power.replace(' ', '_')">{{ power }}</a>
                                 </div>
                             </template>
-                            <div v-else class="text-muted">No associated powers.</div>
+                            <div v-else class="text-muted">No powers.</div>
                         </div>
                         <div class="col-12 col-lg-4">
-                            <div class="text-primary fw-bold">Associated Item</div>
-                            <div v-if="dedication.item">{{ dedication.item }}</div>
-                            <div v-else class="text-muted">No associated item.</div>
+                            <div>
+                                <div class="text-primary fw-bold">Associated Item</div>
+                                <div v-if="dedication.item">{{ dedication.item }}</div>
+                                <div v-else class="text-muted">No associated item.</div>
+                            </div>
+                            <div>
+                                <div class="text-primary fw-bold">Associated Class</div>
+                                <div v-if="dedication.class">{{ dedication.class }}</div>
+                                <div v-else class="text-muted">No associated class.</div>
+                            </div>
                         </div>
                         <div class="col-12 col-lg-4">
-                            <div class="text-primary fw-bold">Associated Location</div>
-                            <div v-if="dedication.home">{{ dedication.home }}</div>
-                            <div v-else class="text-muted">No associated location.</div>
+                            <div>
+                                <div class="text-primary fw-bold">Associated Location</div>
+                                <div v-if="dedication.home">{{ dedication.home }}</div>
+                                <div v-else class="text-muted">No associated location.</div>
+                            </div>
+                            <div>
+                                <div class="text-primary fw-bold">Associated Form(s)</div>
+                                <div v-if="dedication.forms && dedication.forms.length">
+                                    {{ dedication.forms.join(', ') }}
+                                </div>
+                                <div v-else class="text-muted">No associated form(s).</div>
+                            </div>
                         </div>
                     </div>
                     <!-- Line 3 - optional, if owned or can free switch-->
