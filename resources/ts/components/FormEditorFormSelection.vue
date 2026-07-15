@@ -135,6 +135,7 @@ const refresh = () => {
 // Allow external reveal
 const expand = () => {
     expanded.value = true;
+    if (!initialLoadDone.value) getFormList();
 }
 defineExpose({refresh, expand});
 

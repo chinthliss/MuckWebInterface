@@ -217,6 +217,9 @@ const unloadForm = () => {
     presentFormId.value = null;
     presentForm.value = null;
     previews.value = {};
+}
+const unloadFormAndShowSelection = () => {
+    unloadForm();
     if (formSelector.value) formSelector.value.expand();
 }
 
@@ -443,7 +446,7 @@ channel.on('deleteForm', (response: { error?: string, formId?: string }) => {
 
     if (response.formId == presentFormId.value) {
         if (formSelector.value) formSelector.value.refresh();
-        unloadForm();
+        unloadFormAndShowSelection();
     }
 });
 
