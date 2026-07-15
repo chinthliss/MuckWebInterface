@@ -4,14 +4,14 @@ Modal dialog that shows a dismissible message
 
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {ref, Ref} from "vue";
 import ModalBase from "./ModalBase.vue";
 
 defineProps<{
     title?: string
 }>();
 
-const self = ref<ModalBase | null>(null);
+const self: Ref<typeof ModalBase | null> = ref(null);
 
 const show = () => {
     if (self.value) self.value.show();

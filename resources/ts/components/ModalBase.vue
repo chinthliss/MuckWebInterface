@@ -6,6 +6,7 @@ Emits a 'close' event.
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
+import * as bootstrap from "bootstrap";
 
 const self = ref<Element | null>(null);
 const emit = defineEmits(['close'])

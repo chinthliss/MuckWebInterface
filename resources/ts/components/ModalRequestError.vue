@@ -3,12 +3,11 @@ Modal dialog that intercepts axios communication errors and shows itself if one 
 -->
 <script setup lang="ts">
 
-import {ref, onMounted} from "vue";
-import type {Ref} from "vue";
+import {ref, Ref, onMounted} from "vue";
 import ModalBase from "./ModalBase.vue";
 
-const lastError = ref("");
-const self = ref<Element | null>(null);
+const lastError: Ref<string> = ref("");
+const self: Ref<typeof ModalBase | null> = ref(null);
 
 const show = () => {
     if (self.value) self.value.show();
