@@ -912,8 +912,8 @@ onMounted(() => {
 
                 <!-- Scent -->
                 <div class="d-flex mt-2">
-                    <label for="tags" class="col-form-label me-2">Scent</label>
-                    <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
+                    <label for="scent" class="col-form-label me-2">Scent</label>
+                    <input id="scent" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
                            placeholder="Smells like ... " v-model="presentForm.scent" @input="queueSaveFromElement"
                     >
                 </div>
