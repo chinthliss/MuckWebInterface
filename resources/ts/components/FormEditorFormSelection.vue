@@ -73,27 +73,29 @@ const tableOptions: DataTableOptions = {
     }
 };
 
-const statusFilterChanged = () => {
+const statusFilterChanged = (applyImmediately: boolean = true) => {
     if (dtApi) {
         let statusColumn = dtApi.columns('status:name');
         console.log(`Setting status filter to ${statusFilter.value} on:`, statusColumn);
-        statusColumn.search(statusFilter.value, {exact: true}).draw();
+        statusColumn.search(statusFilter.value, {exact: true});
+        if (applyImmediately) statusColumn.draw();
     }
 }
 
-const nameFilterChanged = () => {
+const nameFilterChanged = (applyImmediately: boolean = true) => {
     if (dtApi) {
         let nameColumn = dtApi.columns('name:name');
-        nameColumn.search(nameFilter.value).draw();
+        nameColumn.search(nameFilter.value);
+        if (applyImmediately) nameColumn.draw();
     }
 }
 
 /**
  * Utility function to reapply filters after the form list is reloaded
  */
-const reapplyFilters = () => {
-    nameFilterChanged();
-    statusFilterChanged();
+const reapplyFilters = (applyImmediately: boolean = true) => {
+    nameFilterChanged(applyImmediately);
+    statusFilterChanged(applyImmediately);
 }
 
 const loading = computed((): boolean => {
@@ -170,7 +172,8 @@ channel.on('formListing', (data: FormListing) => {
         showAccountColumn();
     }
     data.status = statusForFormListing(data);
-    if (!formsToLoadRemaining.value) reapplyFilters();
+    // Table might not be visible and reapplying filters whilst it isn't causes an error
+    if (!formsToLoadRemaining.value) reapplyFilters(false);
 });
 
 if (props.startExpanded) getFormList()
