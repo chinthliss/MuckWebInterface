@@ -88,6 +88,14 @@ const nameFilterChanged = () => {
     }
 }
 
+/**
+ * Utility function to reapply filters after the form list is reloaded
+ */
+const reapplyFilters = () => {
+    nameFilterChanged();
+    statusFilterChanged();
+}
+
 const loading = computed((): boolean => {
     return (!formsToLoad.value || formsToLoadRemaining.value > 0);
 });
@@ -162,6 +170,7 @@ channel.on('formListing', (data: FormListing) => {
         showAccountColumn();
     }
     data.status = statusForFormListing(data);
+    if (!formsToLoadRemaining.value) reapplyFilters();
 });
 
 if (props.startExpanded) getFormList()
