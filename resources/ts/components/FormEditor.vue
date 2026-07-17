@@ -914,7 +914,7 @@ onMounted(() => {
                 <div class="d-flex mt-2">
                     <label for="tags" class="col-form-label me-2">Scent</label>
                     <input id="tags" type="text" class="form-control flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of tags" v-model="presentForm.scent" @input="queueSaveFromElement"
+                           placeholder="Smells like ... " v-model="presentForm.scent" @input="queueSaveFromElement"
                     >
                 </div>
                 <div class="text-muted">Scent description that will follow phrasing like 'smells like ...'.</div>
