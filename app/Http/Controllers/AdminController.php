@@ -8,6 +8,7 @@ use App\MuckWebInterfaceUserProvider;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -118,4 +119,14 @@ class AdminController extends Controller
         return response()->file(LogManager::getLogFilePathForDate($date));
     }
     #endregion Site Logs
+
+    public function showCommunicationLogsViewer(): View
+    {
+        return view('admin.communicationlogviewer');
+    }
+
+    public function getCommunicationLogs(): Response
+    {
+        return response('Not Implemented');
+    }
 }

@@ -25,6 +25,7 @@
     @SiteAdmin
     <a class="nav-link rounded" href="{{ route('admin.transactions') }}">Account Transactions</a>
     <a class="nav-link rounded" href="{{ route('admin.logs') }}">Site Logs</a>
+    <a class="nav-link rounded" href="{{ route('admin.communicationlogs') }}">Communication Logs</a>
     @endSiteAdmin
     @endStaff
 @endsection
