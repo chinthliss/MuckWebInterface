@@ -40,6 +40,7 @@ const tableOptions: DataTableOptions = {
     info: false,
     paging: false,
     searching: false,
+    scrollX: true,
     language: {
         emptyTable: "No log entries found."
     },
