@@ -109,7 +109,7 @@ export const ansiToHtml = (text: string): string => {
  * TODO: One day make this actually process muck color codes
  */
 export const muckColorCodesToHtml = (text: string): string => {
-    text = text.replace(/\^\S\^/ig, '');
+    text = text.replace(/\^\S+\^/ig, '');
     return ansiToHtml(text);
 }
 
