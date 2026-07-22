@@ -40,14 +40,13 @@ const tableOptions: DataTableOptions = {
     info: false,
     paging: false,
     searching: false,
-    scrollX: true,
     language: {
         emptyTable: "No log entries found."
     },
     columns: [
-        {data: 'when_at', name: 'when'},
-        {data: null, name: 'from'},
-        {data: null, name: 'to'},
+        {data: 'when_at', name: 'when', className: 'small'},
+        {data: null, name: 'from', className: 'small'},
+        {data: null, name: 'to', className: 'small'},
         {data: 'content', name: 'content', orderable: false}
     ]
 };
