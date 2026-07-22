@@ -198,7 +198,9 @@ class AdminController extends Controller
             $query->whereNull('to_dbref');
         }
 
+        Log::debug("Final query: " . $query->toSql());
         $rows = $query->get();
+        Log::debug("Loaded {$rows->count()} rows.");
         return response(json_encode($rows));
     }
 }
