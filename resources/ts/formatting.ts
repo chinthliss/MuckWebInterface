@@ -100,8 +100,17 @@ export const escapeHTML = (text: string): string => {
  * Converts the parsed ANSI in a string into an HTML representation
  * Note that this will escape special characters so should not be used with escapeHTML
  */
-export const ansiToHtml = (ansi: string): string => {
-    return ansi_up.ansi_to_html(ansi);
+export const ansiToHtml = (text: string): string => {
+    return ansi_up.ansi_to_html(text);
+}
+
+/**
+ * This is actually a lie, it strips muck color codes.
+ * TODO: One day make this actually process muck color codes
+ */
+export const muckColorCodesToHtml = (text: string): string => {
+    text.replace(/\^\S\^/ig, '');
+    return ansiToHtml(text);
 }
 
 export const rankedSalvageListToHtml = (list: { [grade: string]: number }): string => {
