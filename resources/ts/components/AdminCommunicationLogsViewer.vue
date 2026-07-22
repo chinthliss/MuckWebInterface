@@ -99,7 +99,7 @@ const retrieveLog = (e: Event): void => {
         Channel logs. Enter the channel's name into the 'To' field.
     </div>
     <div v-else-if="logType == 'page'">
-        Page logs. At least one of the 'From' or 'To' fields must be entered.
+        Page logs. Both 'From' or 'To' fields must be entered.
         Both values can either be a complete name or a dbref.
     </div>
     <div v-else>

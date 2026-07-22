@@ -134,22 +134,20 @@ class AdminController extends Controller
         $values = $request->validate([
             'type' => 'required',
             'from' => 'sometimes',
-            'to' => 'sometimes'
+            'to' => 'required'
         ], [
-            'type.required' => 'You need to select a type.'
+            'type.required' => 'You need to select a type.',
+            'to.required' => 'To must be entered'
         ]);
         $type = $values['type'];
         $from = $values['from'];
         $to = $values['to'];
-        // Page requires either 'to' or 'from' set, everything else just needs 'to'.
-        if ($type == 'page') {
-            if (is_null($from) and is_null($to)) {
-                throw ValidationException::withMessages([
-                    'from' => 'Either From or To must be entered',
-                    'to' => 'Either From or To must be entered'
-                ]);
-            }
-        } else if (is_null($to)) throw ValidationException::withMessages(['to' => 'To must be entered.']);
+        // Page requires both to be set, everything else just needs 'to'.
+        if ($type == 'page' && is_null($from)) {
+            throw ValidationException::withMessages([
+                'from' => 'From must be entered',
+            ]);
+        }
 
         // Log request
         /** @var User $user */
@@ -183,18 +181,16 @@ class AdminController extends Controller
             $query->where('to_' . $toColumn, '=', $toValue);
         } else {
             // Pages are a pain as to get both sides of a conversation we need to flip 'from' and 'to'
-            if ($from) {
-                $query->where(function ($query) use ($fromColumn, $fromValue) {
-                    $query->where('from_' . $fromColumn, '=', $fromValue)
-                        ->orWhere('to_' . $fromColumn, '=', $fromValue);
-                });
-            }
-            if ($to) {
-                $query->where(function ($query) use ($toColumn, $toValue) {
-                    $query->where('from_' . $toColumn, '=', $toValue)
-                        ->orWhere('to_' . $toColumn, '=', $toValue);
-                });
-            }
+            $query->where(function ($query) use ($fromColumn, $fromValue) {
+                $query->where('from_' . $fromColumn, '=', $fromValue)
+                    ->orWhere('to_' . $fromColumn, '=', $fromValue);
+            });
+            $query->where(function ($query) use ($toColumn, $toValue) {
+                $query->where('from_' . $toColumn, '=', $toValue)
+                    ->orWhere('to_' . $toColumn, '=', $toValue);
+            });
+            // They both need to have something in though
+            $query->whereNotNull(['from_dbref', 'to_dbref']);
         }
 
         // Special addition - if we're doing pages from someone to anybody we only show the outgoing ones
