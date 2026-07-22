@@ -6,6 +6,7 @@ import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
 import {DataTablesNamedSlotProps} from "../defs";
 import {csrf} from "../siteutils";
 import {AxiosError} from "axios";
+import {ansiToHtml} from "../formatting";
 
 DataTable.use(DataTablesLib);
 
@@ -177,7 +178,9 @@ const retrieveLog = (e: Event): void => {
         <template #column-to="dt: DataTablesNamedSlotProps">
             {{ nameAndNumber((dt.rowData as LogEntry).to_name, (dt.rowData as LogEntry).to_dbref) }}
         </template>
-
+        <template #column-content="dt: DataTablesNamedSlotProps">
+            <span v-html="ansiToHtml((dt.rowData as LogEntry).content)"/>
+        </template>
     </DataTable>
 
 </template>
