@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Nette\NotImplementedException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AdminController extends Controller
@@ -141,7 +142,7 @@ class AdminController extends Controller
         $type = $values['type'];
         $from = $values['from'];
         $to = $values['to'];
-        // Page requires either 'to' or 'from' set, everything else just needs to.
+        // Page requires either 'to' or 'from' set, everything else just needs 'to'.
         if ($type == 'page') {
             if (is_null($from) and is_null($to)) {
                 throw ValidationException::withMessages([
@@ -154,29 +155,41 @@ class AdminController extends Controller
         // Log request
         /** @var User $user */
         $user = $request->user();
-        Log::info("CommunicationLog request by $user: $type, with values from=$from and to=$to");
+        Log::info("CommunicationLogs: Request by $user: $type, with values from=$from and to=$to");
 
         // And now the actual query
         $query = DB::table('log_communication')
             ->select(['when_at', 'from_dbref', 'from_name', 'to_dbref', 'to_name', 'content'])
-            ->where('type', $type);
+            ->where('type', '=',$type)
+            ->where('game', '=', config('muck.code'));
 
-        // From
-        if ($from) {
-            if (str_starts_with($from, '#')) {
-                $query->where('from_dbref', '=', intval(substr($from, 1, strlen($from))));
-            } else {
-                $query->where('from_name', '=', $from);
-            }
+        if (str_starts_with($from, '#')) {
+            $fromColumn = 'dbref';
+            $fromValue = intval(substr($from, 1, strlen($from)));
+        } else {
+            $fromColumn = 'name';
+            $fromValue = $from;
         }
 
-        // To
-        if ($to) {
-            if (str_starts_with($to, '#')) {
-                $query->where('to_dbref', '=', intval(substr($to, 1, strlen($to))));
-            } else {
-                $query->where('to_name', '=', $to);
-            }
+        if (str_starts_with($to, '#')) {
+            $toColumn = 'dbref';
+            $toValue = intval(substr($to, 1, strlen($to)));
+        } else {
+            $toColumn = 'name';
+            $toValue = $to;
+        }
+
+
+        if ($type !== 'page') {
+            // Non pages just look at 'To'
+            $query->where('to_' . $toColumn, '=', $toValue);
+        } else {
+            throw new NotImplementedException();
+        }
+
+        // Special addition - if we're doing pages from someone to anybody we only show the outgoing ones
+        if (!$to && $type == 'page') {
+            $query->whereNull('to_dbref');
         }
 
         $rows = $query->get();

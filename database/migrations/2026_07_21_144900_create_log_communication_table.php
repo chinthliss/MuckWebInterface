@@ -24,12 +24,12 @@ return new class extends Migration
                 $table->bigInteger('from_aid')->nullable()->default(null);
                 $table->integer('from_dbref');
                 $table->string('from_name', 24);
-                $table->timestamp('from_created')->default(0);
+                $table->timestamp('from_created')->default(null);
 
                 $table->bigInteger('to_aid')->nullable()->default(null);
                 $table->integer('to_dbref')->nullable()->default(null);
                 $table->string('to_name', 255);
-                $table->timestamp('to_created')->nullable()->default(0);
+                $table->timestamp('to_created')->nullable()->default(null);
 
                 $table->mediumText('content');
 
