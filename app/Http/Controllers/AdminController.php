@@ -142,11 +142,13 @@ class AdminController extends Controller
         $from = $values['from'];
         $to = $values['to'];
         // Page requires either 'to' or 'from' set, everything else just needs to.
-        if ($type == 'page' and is_null($from) and is_null($to)) {
-            throw ValidationException::withMessages([
-                'from' => 'Either From or To must be entered',
-                'to' => 'Either From or To must be entered'
-            ]);
+        if ($type == 'page') {
+            if (is_null($from) and is_null($to)) {
+                throw ValidationException::withMessages([
+                    'from' => 'Either From or To must be entered',
+                    'to' => 'Either From or To must be entered'
+                ]);
+            }
         } else if (is_null($to)) throw ValidationException::withMessages(['to' => 'To must be entered.']);
 
         // Log request

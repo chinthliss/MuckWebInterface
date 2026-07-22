@@ -66,6 +66,7 @@ const retrieveLog = (e: Event): void => {
     e.preventDefault();
     errors.value = {};
     loading.value = true;
+    log.value = [];
     axios.post(window.location.href, {
         'type': logType.value,
         'from': from.value,
