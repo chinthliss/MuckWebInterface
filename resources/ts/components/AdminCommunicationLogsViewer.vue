@@ -3,23 +3,35 @@ import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
-import {integer} from "@vue/language-server";
+import {DataTablesNamedSlotProps} from "../defs";
 import {csrf} from "../siteutils";
+import {AxiosError} from "axios";
 
 DataTable.use(DataTablesLib);
 
 type LogEntry = {
     when_at: string,
-    from_dbref: integer,
+    from_dbref: number,
     from_name: string,
-    to_dbref: integer,
+    to_dbref: number,
     to_name: string,
     content: string
+}
+
+type Errors = {
+    type?: string[],
+    from?: string[],
+    to?: string[]
+}
+
+type AxiosErrorWithOurResponse = {
+    errors: Errors
 }
 
 const logType: Ref<string> = ref('');
 const from: Ref<string> = ref('');
 const to: Ref<string> = ref('');
+const errors: Ref<Errors> = ref({});
 const log: Ref<LogEntry[]> = ref([]);
 let loading = ref(false);
 
@@ -37,6 +49,38 @@ const tableOptions: DataTableOptions = {
         {data: 'content', name: 'content', orderable: false}
     ]
 };
+
+const nameAndNumber = (name: string, dbref: number): string => {
+    let dbrefComponent = '';
+    if (dbref && dbref !== -1) dbrefComponent = '(#' + dbref + ')';
+    return name + dbrefComponent
+}
+
+const typeChanged = (): void => {
+    errors.value = {};
+}
+
+const retrieveLog = (e: Event): void => {
+    e.preventDefault();
+    errors.value = {};
+    loading.value = true;
+    axios.post(window.location.href, {
+        'type': logType.value,
+        'from': from.value,
+        'to': to.value,
+        '_token': csrf()
+    }).then((response) => {
+        log.value = response.data;
+    }).catch((error: AxiosError) => {
+        console.log(error);
+        if (error.status == 422) {
+            let data: AxiosErrorWithOurResponse = (error.response?.data as AxiosErrorWithOurResponse);
+            errors.value = (data.errors as Errors);
+        }
+    }).finally(() => {
+        loading.value = false;
+    })
+}
 </script>
 
 <template>
@@ -44,13 +88,13 @@ const tableOptions: DataTableOptions = {
     <hr/>
 
     <div v-if="logType == 'ooc'">
-        Room OOC logs. You'll need to enter the dbref of the room into the 'From' field'.
+        Room OOC logs. Enter the dbref of the room into the 'To' field'.
     </div>
     <div v-else-if="logType == 'ic'">
-        Room IC logs. You'll need to enter the dbref of the room into the 'From' field'.
+        Room IC logs. Enter the dbref of the room into the 'To' field'.
     </div>
     <div v-else-if="logType == 'channel'">
-        Channel logs. The 'From' field should be the channel's name.
+        Channel logs. Enter the channel's name into the 'To' field.
     </div>
     <div v-else-if="logType == 'page'">
         Page logs. At least one of the 'From' or 'To' fields must be entered.
@@ -62,12 +106,11 @@ const tableOptions: DataTableOptions = {
 
 
     <!-- Type selector -->
-    <form action="" method="POST">
-        <input type="hidden" name="_token" :value="csrf()">
+    <form action="" method="POST" @submit="retrieveLog">
 
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="me-2 text-primary">Type:</div>
-            <div class="btn-group" role="group" aria-label="Select Type buttons">
+        <div class="d-flex align-items-center justify-content-left">
+            <div class="me-2 text-primary" v-bind:class="{ 'is-invalid' : errors.type }">Type:</div>
+            <div class="btn-group" role="group" aria-label="Select Type buttons" @change="typeChanged">
 
                 <input type="radio" class="btn-check" name="type_select" id="type_ooc" autocomplete="off"
                        v-model="logType" value="ooc"
@@ -89,21 +132,31 @@ const tableOptions: DataTableOptions = {
                 >
                 <label class="btn btn-outline-primary" for="type_page">Page</label>
             </div>
+            <div class="invalid-feedback ms-2" role="alert">
+                <div v-for="error in errors?.type">{{ error }}</div>
+            </div>
 
         </div>
 
-        <div class="form-group">
-            <label for="from">From</label>
+        <!-- From -->
+        <div class="form-group mt-2" v-if="logType == 'page'">
+            <label for="from" v-bind:class="{ 'is-invalid' : errors.from }">From</label>
             <input type="text" class="form-control" id="from" v-model="from">
-
+            <div class="invalid-feedback" role="alert">
+                <p v-for="error in errors?.from">{{ error }}</p>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="to">To</label>
+        <!-- To -->
+        <div class="form-group mt-2">
+            <label for="to" v-bind:class="{ 'is-invalid' : errors.to }">To</label>
             <input type="text" class="form-control" id="to" v-model="to">
+            <div class="invalid-feedback" role="alert">
+                <p v-for="error in errors?.to">{{ error }}</p>
+            </div>
         </div>
 
-        <button type="submit" value="submit" class="btn btn-primary">Retrieve Logs</button>
+        <button type="submit" value="submit" class="btn btn-primary mt-2">Retrieve Logs</button>
     </form>
 
     <Spinner v-if="loading"/>
@@ -118,6 +171,13 @@ const tableOptions: DataTableOptions = {
             <th>Content</th>
         </tr>
         </thead>
+        <template #column-from="dt: DataTablesNamedSlotProps">
+            {{ nameAndNumber((dt.rowData as LogEntry).from_name, (dt.rowData as LogEntry).from_dbref) }}
+        </template>
+        <template #column-to="dt: DataTablesNamedSlotProps">
+            {{ nameAndNumber((dt.rowData as LogEntry).to_name, (dt.rowData as LogEntry).to_dbref) }}
+        </template>
+
     </DataTable>
 
 </template>

@@ -18,7 +18,7 @@
         </div>
 
         <p class="lead">
-            This page is only provided to investigate allegations in disputes.
+            This page is only provided to investigate allegations in disputes. Usage is recorded in the site logs.
         </p>
         <p>
             One of the following roles is required to view this page: 'communicationlogs' or 'siteadmin'.
@@ -27,5 +27,5 @@
         </p>
 
         <admin-communication-logs-viewer
-    ></admin-communication-logs-viewer>
+        ></admin-communication-logs-viewer>
 @endsection
