@@ -152,7 +152,7 @@ class AdminController extends Controller
         // Log request
         /** @var User $user */
         $user = $request->user();
-        Log::info("CommunicationLog request by {$user}: {$type}, with values from={$from} and to={$to}");
+        Log::info("CommunicationLog request by $user: $type, with values from=$from and to=$to");
 
         // And now the actual query
         $query = DB::table('log_communication')
