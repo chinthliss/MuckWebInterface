@@ -2,7 +2,7 @@
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
 import DataTable from 'datatables.net-vue3';
-import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
+import DataTablesLib, {Api, Config as DataTableOptions} from 'datatables.net-bs5';
 import {DataTablesNamedSlotProps} from "../defs";
 import {csrf} from "../siteutils";
 import {AxiosError} from "axios";
@@ -34,6 +34,7 @@ const from: Ref<string> = ref('');
 const to: Ref<string> = ref('');
 const errors: Ref<Errors> = ref({});
 const log: Ref<LogEntry[]> = ref([]);
+let dtApi: Api | null = null;
 let loading = ref(false);
 
 const tableOptions: DataTableOptions = {
@@ -48,7 +49,10 @@ const tableOptions: DataTableOptions = {
         {data: null, name: 'from', className: 'small'},
         {data: null, name: 'to', className: 'small'},
         {data: 'content', name: 'content', orderable: false}
-    ]
+    ],
+    initComplete: () => {
+        dtApi = new DataTablesLib.Api('table')
+    }
 };
 
 const nameAndNumber = (name: string, dbref: number): string => {
@@ -66,6 +70,7 @@ const retrieveLog = (e: Event): void => {
     errors.value = {};
     loading.value = true;
     log.value = [];
+    if (dtApi) dtApi.rows().clear();
     axios.post(window.location.href, {
         'type': logType.value,
         'from': from.value,
