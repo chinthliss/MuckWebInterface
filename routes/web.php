@@ -234,7 +234,7 @@ Route::prefix('/admin/')->group(function () {
     });
 
     // ----------------------------- Special - communicationlogs
-    Route::group(['middleware' => ['auth', 'role:siteadmin']], function () {
+    Route::group(['middleware' => ['auth', 'role:communicationlogs']], function () {
         Route::get('communicationlogs', [AdminController::class, 'showCommunicationLogsViewer'])
             ->name('admin.communicationlogs');
         Route::post('communicationlogs', [AdminController::class, 'getCommunicationLogs']);
