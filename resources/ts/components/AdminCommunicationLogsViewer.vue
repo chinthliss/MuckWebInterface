@@ -89,75 +89,83 @@ const retrieveLog = (e: Event): void => {
 
     <hr/>
 
-    <div v-if="logType == 'ooc'">
-        Room OOC logs. Enter the dbref of the room into the 'To' field'.
-    </div>
-    <div v-else-if="logType == 'ic'">
-        Room IC logs. Enter the dbref of the room into the 'To' field'.
-    </div>
-    <div v-else-if="logType == 'channel'">
-        Channel logs. Enter the channel's name into the 'To' field.
-    </div>
-    <div v-else-if="logType == 'page'">
-        Page logs. Both 'From' or 'To' fields must be entered.
-        Both values can either be a complete name or a dbref.
-    </div>
-    <div v-else>
-        Select a type to see additional criteria / instructions.
-    </div>
-
-
-    <!-- Type selector -->
     <form action="" method="POST" @submit="retrieveLog">
 
-        <div class="d-flex align-items-center justify-content-left">
-            <div class="me-2 text-primary" v-bind:class="{ 'is-invalid' : errors.type }">Type:</div>
-            <div class="btn-group" role="group" aria-label="Select Type buttons" @change="typeChanged">
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <!-- Type selector -->
+            <div class="d-flex align-items-center justify-content-left me-2">
+                <div class="me-2 text-primary" v-bind:class="{ 'is-invalid' : errors.type }">Type:</div>
+                <div class="btn-group" role="group" aria-label="Select Type buttons" @change="typeChanged">
 
-                <input type="radio" class="btn-check" name="type_select" id="type_ooc" autocomplete="off"
-                       v-model="logType" value="ooc"
-                >
-                <label class="btn btn-outline-primary" for="type_ooc">OOC</label>
+                    <input type="radio" class="btn-check" name="type_select" id="type_ooc" autocomplete="off"
+                           v-model="logType" value="ooc"
+                    >
+                    <label class="btn btn-outline-primary" for="type_ooc">OOC</label>
 
-                <input type="radio" class="btn-check" name="type_select" id="type_ic" autocomplete="off"
-                       v-model="logType" value="ic"
-                >
-                <label class="btn btn-outline-primary" for="type_ic">IC</label>
+                    <input type="radio" class="btn-check" name="type_select" id="type_ic" autocomplete="off"
+                           v-model="logType" value="ic"
+                    >
+                    <label class="btn btn-outline-primary" for="type_ic">IC</label>
 
-                <input type="radio" class="btn-check" name="type_select" id="type_channel" autocomplete="off"
-                       v-model="logType" value="channel"
-                >
-                <label class="btn btn-outline-primary" for="type_channel">Channel</label>
+                    <input type="radio" class="btn-check" name="type_select" id="type_channel" autocomplete="off"
+                           v-model="logType" value="channel"
+                    >
+                    <label class="btn btn-outline-primary" for="type_channel">Channel</label>
 
-                <input type="radio" class="btn-check" name="type_select" id="type_page" autocomplete="off"
-                       v-model="logType" value="page"
-                >
-                <label class="btn btn-outline-primary" for="type_page">Page</label>
+                    <input type="radio" class="btn-check" name="type_select" id="type_page" autocomplete="off"
+                           v-model="logType" value="page"
+                    >
+                    <label class="btn btn-outline-primary" for="type_page">Page</label>
+                </div>
+                <div class="invalid-feedback ms-2" role="alert">
+                    <div v-for="error in errors?.type">{{ error }}</div>
+                </div>
+
             </div>
-            <div class="invalid-feedback ms-2" role="alert">
-                <div v-for="error in errors?.type">{{ error }}</div>
+
+            <!-- Instructions -->
+            <div>
+                <div v-if="logType == 'ooc'">
+                    Room OOC logs. Enter the dbref of the room into the 'To' field'.
+                </div>
+                <div v-else-if="logType == 'ic'">
+                    Room IC logs. Enter the dbref of the room into the 'To' field'.
+                </div>
+                <div v-else-if="logType == 'channel'">
+                    Channel logs. Enter the channel's name into the 'To' field.
+                </div>
+                <div v-else-if="logType == 'page'">
+                    Page logs. Both 'From' or 'To' fields must be entered.
+                    Both values can either be a complete name or a dbref.
+                </div>
+                <div v-else>
+                    Select a type to see additional criteria / instructions.
+                </div>
             </div>
 
         </div>
 
-        <!-- From -->
-        <div class="form-group mt-2" v-if="logType == 'page'">
-            <label for="from" v-bind:class="{ 'is-invalid' : errors.from }">From</label>
-            <input type="text" class="form-control" id="from" v-model="from">
-            <div class="invalid-feedback" role="alert">
-                <p v-for="error in errors?.from">{{ error }}</p>
-            </div>
-        </div>
+        <div class="row">
 
-        <!-- To -->
-        <div class="form-group mt-2">
-            <label for="to" v-bind:class="{ 'is-invalid' : errors.to }">To</label>
-            <input type="text" class="form-control" id="to" v-model="to">
-            <div class="invalid-feedback" role="alert">
-                <p v-for="error in errors?.to">{{ error }}</p>
+            <!-- From -->
+            <div class="col-12 col-lg-6 form-group mt-2" v-if="logType == 'page'">
+                <label for="from" v-bind:class="{ 'is-invalid' : errors.from }">From</label>
+                <input type="text" class="form-control" id="from" v-model="from">
+                <div class="invalid-feedback" role="alert">
+                    <p v-for="error in errors?.from">{{ error }}</p>
+                </div>
             </div>
-        </div>
 
+            <!-- To -->
+            <div class="col-12 col-lg-6 form-group mt-2">
+                <label for="to" v-bind:class="{ 'is-invalid' : errors.to }">To</label>
+                <input type="text" class="form-control" id="to" v-model="to">
+                <div class="invalid-feedback" role="alert">
+                    <p v-for="error in errors?.to">{{ error }}</p>
+                </div>
+            </div>
+
+        </div>
         <button type="submit" value="submit" class="btn btn-primary mt-2">Retrieve Logs</button>
     </form>
 
