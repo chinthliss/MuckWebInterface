@@ -110,7 +110,7 @@ export const ansiToHtml = (text: string): string => {
  */
 export const muckColorCodesToHtml = (text: string): string => {
     text = text.replace(/\^\S+?\^/ig, '');
-    return ansiToHtml(text);
+    return escapeHTML(text);
 }
 
 export const rankedSalvageListToHtml = (list: { [grade: string]: number }): string => {
