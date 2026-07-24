@@ -1,22 +1,22 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import DataTable from 'datatables.net-vue3';
-import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
-import {DataTablesNamedSlotProps} from "../defs";
 import {csrf} from "../siteutils";
 import {AxiosError} from "axios";
-import {muckColorCodesToHtml} from "../formatting";
-
-DataTable.use(DataTablesLib);
+import {capital, muckColorCodesToHtml} from "../formatting";
 
 type LogEntry = {
     when_at: string,
+    time?: string
     from_dbref: number,
     from_name: string,
     to_dbref: number,
     to_name: string,
     content: string
+}
+
+type GroupedLogEntries = {
+    [date: string]: LogEntry[]
 }
 
 type Errors = {
@@ -32,29 +32,15 @@ type AxiosErrorWithOurResponse = {
 const logType: Ref<string> = ref('');
 const from: Ref<string> = ref('');
 const to: Ref<string> = ref('');
+const toTitle: Ref<string> = ref('');
 const errors: Ref<Errors> = ref({});
-const log: Ref<LogEntry[]> = ref([]);
+const logByDate: Ref<GroupedLogEntries> = ref({});
 let loading = ref(false);
-
-const tableOptions: DataTableOptions = {
-    info: false,
-    paging: false,
-    searching: false,
-    language: {
-        emptyTable: "No log entries found."
-    },
-    columns: [
-        {data: 'when_at', name: 'when', className: 'small'},
-        {data: null, name: 'from', className: 'small'},
-        {data: null, name: 'to', className: 'small'},
-        {data: 'content', name: 'content', orderable: false}
-    ]
-};
 
 const nameAndNumber = (name: string, dbref: number): string => {
     let dbrefComponent = '';
-    if (dbref && dbref !== -1) dbrefComponent = '(#' + dbref + ')';
-    return name + dbrefComponent
+    if (dbref && dbref !== -1) dbrefComponent = '<sup class="text-muted ">(#' + dbref + ')</sup>';
+    return capital(name) + dbrefComponent
 }
 
 const typeChanged = (): void => {
@@ -65,14 +51,21 @@ const retrieveLog = (e: Event): void => {
     e.preventDefault();
     errors.value = {};
     loading.value = true;
-    log.value = [];
+    logByDate.value = {};
+    toTitle.value = '';
     axios.post(window.location.href, {
         'type': logType.value,
         'from': from.value,
         'to': to.value,
         '_token': csrf()
     }).then((response) => {
-        log.value = response.data;
+        for (const entry of (response.data as LogEntry[])) {
+            const [date, time] = entry.when_at.split(" ", 2);
+            entry.time = time;
+            if (!logByDate.value[date]) logByDate.value[date] = [];
+            logByDate.value[date].push(entry);
+            if (!toTitle.value) toTitle.value = nameAndNumber(entry.to_name, entry.to_dbref);
+        }
     }).catch((error: AxiosError) => {
         console.log(error);
         if (error.status == 422) {
@@ -95,25 +88,25 @@ const retrieveLog = (e: Event): void => {
             <!-- Type selector -->
             <div class="d-flex align-items-center justify-content-left me-2">
                 <div class="me-2 text-primary" v-bind:class="{ 'is-invalid' : errors.type }">Type:</div>
-                <div class="btn-group" role="group" aria-label="Select Type buttons" @change="typeChanged">
+                <div aria-label="Select Type buttons" class="btn-group" role="group" @change="typeChanged">
 
-                    <input type="radio" class="btn-check" name="type_select" id="type_ooc" autocomplete="off"
-                           v-model="logType" value="ooc"
+                    <input id="type_ooc" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
+                           type="radio" value="ooc"
                     >
                     <label class="btn btn-outline-primary" for="type_ooc">OOC</label>
 
-                    <input type="radio" class="btn-check" name="type_select" id="type_ic" autocomplete="off"
-                           v-model="logType" value="ic"
+                    <input id="type_ic" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
+                           type="radio" value="ic"
                     >
                     <label class="btn btn-outline-primary" for="type_ic">IC</label>
 
-                    <input type="radio" class="btn-check" name="type_select" id="type_channel" autocomplete="off"
-                           v-model="logType" value="channel"
+                    <input id="type_channel" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
+                           type="radio" value="channel"
                     >
                     <label class="btn btn-outline-primary" for="type_channel">Channel</label>
 
-                    <input type="radio" class="btn-check" name="type_select" id="type_page" autocomplete="off"
-                           v-model="logType" value="page"
+                    <input id="type_page" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
+                           type="radio" value="page"
                     >
                     <label class="btn btn-outline-primary" for="type_page">Page</label>
                 </div>
@@ -148,9 +141,9 @@ const retrieveLog = (e: Event): void => {
         <div class="row">
 
             <!-- From -->
-            <div class="col-12 col-lg-6 form-group mt-2" v-if="logType == 'page'">
+            <div v-if="logType == 'page'" class="col-12 col-lg-6 form-group mt-2">
                 <label for="from" v-bind:class="{ 'is-invalid' : errors.from }">From</label>
-                <input type="text" class="form-control" id="from" v-model="from">
+                <input id="from" v-model="from" class="form-control" type="text">
                 <div class="invalid-feedback" role="alert">
                     <p v-for="error in errors?.from">{{ error }}</p>
                 </div>
@@ -159,38 +152,50 @@ const retrieveLog = (e: Event): void => {
             <!-- To -->
             <div class="col-12 col-lg-6 form-group mt-2">
                 <label for="to" v-bind:class="{ 'is-invalid' : errors.to }">To</label>
-                <input type="text" class="form-control" id="to" v-model="to">
+                <input id="to" v-model="to" class="form-control" type="text">
                 <div class="invalid-feedback" role="alert">
                     <p v-for="error in errors?.to">{{ error }}</p>
                 </div>
             </div>
 
         </div>
-        <button type="submit" value="submit" class="btn btn-primary mt-2">Retrieve Logs</button>
+        <button class="btn btn-primary mt-2" type="submit" value="submit">Retrieve Logs</button>
     </form>
 
     <Spinner v-if="loading"/>
-    <DataTable v-else v-once id="table" class="table table-dark table-hover table-striped"
-               :options="tableOptions" :data="log"
-    >
-        <thead>
-        <tr>
-            <th>When</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Content</th>
-        </tr>
-        </thead>
-        <template #column-from="dt: DataTablesNamedSlotProps">
-            {{ nameAndNumber((dt.rowData as LogEntry).from_name, (dt.rowData as LogEntry).from_dbref) }}
-        </template>
-        <template #column-to="dt: DataTablesNamedSlotProps">
-            {{ nameAndNumber((dt.rowData as LogEntry).to_name, (dt.rowData as LogEntry).to_dbref) }}
-        </template>
-        <template #column-content="dt: DataTablesNamedSlotProps">
-            <span v-html="muckColorCodesToHtml((dt.rowData as LogEntry).content)"/>
-        </template>
-    </DataTable>
+    <div v-else>
+        <div v-if="logType != 'page' && toTitle" class="mt-2">
+            To: <span v-html="toTitle"/>
+        </div>
+        <table class="table table-dark table-hover table-striped table-responsive mt-2">
+            <thead>
+            <tr>
+                <th scope="col">When</th>
+                <th scope="col">From</th>
+                <th v-if="logType == 'page'" scope="col">To</th>
+                <th scope="col">Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="!logByDate">
+                <td colspan="4">
+                    No log entries found.
+                </td>
+            </tr>
+            <template v-for="(logEntries, date) in logByDate" v-else>
+                <tr>
+                    <td class="fw-bold text-primary" colspan="4">{{ date }}</td>
+                </tr>
+                <tr v-for="logEntry in logEntries">
+                    <td>{{ logEntry.time }}</td>
+                    <td v-html="nameAndNumber(logEntry.from_name, logEntry.from_dbref)"/>
+                    <td v-if="logType == 'page'" v-html="nameAndNumber(logEntry.to_name, logEntry.to_dbref)"/>
+                    <td>{{ muckColorCodesToHtml(logEntry.content) }}</td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
 
 </template>
 
