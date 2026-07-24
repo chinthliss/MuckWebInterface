@@ -190,7 +190,7 @@ const retrieveLog = (e: Event): void => {
                     <td>{{ logEntry.time }}</td>
                     <td v-html="nameAndNumber(logEntry.from_name, logEntry.from_dbref)"/>
                     <td v-if="logType == 'page'" v-html="nameAndNumber(logEntry.to_name, logEntry.to_dbref)"/>
-                    <td>{{ muckColorCodesToHtml(logEntry.content) }}</td>
+                    <td v-html="muckColorCodesToHtml(logEntry.content)"/>
                 </tr>
             </template>
             </tbody>

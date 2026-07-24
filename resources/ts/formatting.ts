@@ -98,7 +98,7 @@ export const escapeHTML = (text: string): string => {
 
 /**
  * Converts the parsed ANSI in a string into an HTML representation
- * Note that this will escape special characters so should not be used with escapeHTML
+ * Note that this will escape special characters itself, so should not be used with escapeHTML
  */
 export const ansiToHtml = (text: string): string => {
     return ansi_up.ansi_to_html(text);
@@ -110,7 +110,7 @@ export const ansiToHtml = (text: string): string => {
  */
 export const muckColorCodesToHtml = (text: string): string => {
     text = text.replace(/\^\S+?\^/ig, '');
-    return escapeHTML(text);
+    return ansiToHtml(text);
 }
 
 export const rankedSalvageListToHtml = (list: { [grade: string]: number }): string => {
