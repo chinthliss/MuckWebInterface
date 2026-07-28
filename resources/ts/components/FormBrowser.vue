@@ -634,7 +634,7 @@ if (props.startingPlayerName) {
                 </div>
             </div>
 
-            <DataTable id="table" class="table table-dark table-hover table-striped"
+            <DataTable v-once id="table" class="table table-dark table-hover table-striped"
                        :options="tableOptions" :data="formDatabase"
             >
                 <thead>
