@@ -14,7 +14,7 @@ The following resources need to be downloaded separately:
 ### Production Deployment
 ```
 php composer.phar install --optimize-autoloader --no-dev  
-npm install
+npm ci
 php artisan key:generate
 php artisan config:cache
 php artisan route:cache
@@ -51,7 +51,7 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 // php artisan queue:restart
-npm install
+npm ci
 npm run build
 php artisan up
 ```
