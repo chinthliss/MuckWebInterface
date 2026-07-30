@@ -1,12 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import {DataTablesNamedSlotProps} from "../defs";
-
-import DataTable from 'datatables.net-vue3';
-import DataTablesLib, {Config as DataTableOptions} from 'datatables.net-bs5';
-
-DataTable.use(DataTablesLib);
+import {arrayToStringWithNewlines} from "../formatting";
 
 const logRegEx = /^\[\d{4}-\d\d-\d\d (\d\d:\d\d:\d\d)] (?:\S*)?\.(\S*): /mg;
 
@@ -19,32 +14,32 @@ type LogEntry = {
     level: string,
     lines: string[]
 }
+
+type LogLevel = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
+
 const log: Ref<LogEntry[]> = ref([]);
+const logLevel: Ref<LogLevel> = ref('INFO');
 
 let loading = ref(false);
 
-const renderLines = (lines: string[]): string => {
-    return lines.join('\n');
+const classForLevel = (line: LogEntry): string => {
+    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(line.level) != -1) return 'text-danger';
+    if (line.level == 'WARNING') return 'text-warning';
+    if (line.level == 'DEBUG') return 'text-muted';
+    return '';
 }
 
-const tableOptions: DataTableOptions = {
-    info: false,
-    paging: false,
-    searching: false,
-    language: {
-        emptyTable: "No lines in log file."
-    },
-    columns: [
-        {data: 'time'},
-        {data: 'level', name: 'level'},
-        {data: 'lines', render: renderLines, className: 'text-break'}
-    ]
-};
-
-const classForLevel = (data: LogEntry):string => {
-    if (['EMERGENCY', 'CRITICAL', 'ALERT', 'ERROR'].indexOf(data.level) !== -1) return 'text-danger';
-    if (data.level === 'WARNING') return 'text-warning';
-    return '';
+const shouldShow = (line: LogEntry): boolean => {
+    switch (logLevel.value) {
+        case 'DEBUG':
+            return true;
+        case 'INFO':
+            return line.level != 'DEBUG';
+        case 'WARNING':
+            return !['DEBUG', 'INFO'].includes(line.level);
+        case 'ERROR':
+            return !['WARNING', 'DEBUG', 'INFO'].includes(line.level);
+    }
 }
 
 
@@ -95,30 +90,69 @@ const parseLog = (rawText: string) => {
         <div class="d-flex align-items-start">
 
             <!-- Available log list -->
-            <div class="ps-2 pe-2 text-nowrap border border-secondary rounded" id="date-selector">
+            <div id="date-selector" class="ps-2 pe-2 text-nowrap border border-secondary rounded">
                 <div v-for="date in props.dates"><a href="#" @click="loadDate(date, $event)">{{ date }}</a></div>
             </div>
 
             <!-- View individual log -->
-            <div class="flex-grow-1 ps-4">
+            <div class="flex-grow-1 ps-2">
+                <!-- LogLevel Filter -->
+
+                <div class="d-flex align-items-center justify-content-end">
+                    <div class="me-2 text-primary">Log Level:</div>
+                    <div aria-label="Log Level Filter" class="btn-group" role="group">
+
+                        <input id="level_error" v-model="logLevel" autocomplete="off" class="btn-check"
+                               name="level_error"
+                               type="radio" value="ERROR"
+                        >
+                        <label class="btn btn-outline-primary" for="level_error">Error</label>
+
+                        <input id="level_warning" v-model="logLevel" autocomplete="off" class="btn-check"
+                               name="level_warning"
+                               type="radio" value="WARNING"
+                        >
+                        <label class="btn btn-outline-primary" for="level_warning">Warning</label>
+
+                        <input id="level_info" v-model="logLevel" autocomplete="off" class="btn-check" name="level_info"
+                               type="radio" value="INFO"
+                        >
+                        <label class="btn btn-outline-primary" for="level_info">Info</label>
+
+                        <input id="level_debug" v-model="logLevel" autocomplete="off" class="btn-check"
+                               name="level_debug"
+                               type="radio" value="DEBUG"
+                        >
+                        <label class="btn btn-outline-primary" for="level_debug">Debug</label>
+
+                    </div>
+
+                </div>
+
                 <Spinner v-if="loading"/>
                 <div v-else-if="!log.length">
                     Select a date to view log entries.
                 </div>
-                <DataTable v-else class="table table-dark table-hover table-striped"
-                           :options="tableOptions" :data="log"
-                >
-                    <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Level</th>
-                        <th>Log</th>
-                    </tr>
-                    </thead>
-                    <template #column-level="dt: DataTablesNamedSlotProps">
-                        <span :class="classForLevel(dt.rowData)">{{ (dt.rowData as LogEntry).level }}</span>
-                    </template>
-                </DataTable>
+                <div v-else>
+                    <table class="table table-dark table-hover table-striped table-responsive">
+                        <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Log</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <template v-for="line in log">
+                            <tr v-if="shouldShow(line)">
+                                <td>{{ line.time }}</td>
+                                <td :class="classForLevel(line)">{{ line.level }}</td>
+                                <td>{{ arrayToStringWithNewlines(line.lines) }}</td>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
