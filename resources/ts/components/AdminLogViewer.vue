@@ -17,6 +17,7 @@ type LogEntry = {
 
 type LogLevel = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
 
+const logDate: Ref<string> = ref('');
 const log: Ref<LogEntry[]> = ref([]);
 const logLevel: Ref<LogLevel> = ref('INFO');
 
@@ -46,6 +47,7 @@ const shouldShow = (line: LogEntry): boolean => {
 const loadDate = (date: string, event: Event) => {
     event.preventDefault();
     loading.value = true;
+    logDate.value = date;
     axios.get('/admin/logs/' + date)
         .then(response => parseLog(response.data))
         .finally(() => {
@@ -96,10 +98,13 @@ const parseLog = (rawText: string) => {
 
             <!-- View individual log -->
             <div class="flex-grow-1 ps-2">
-                <!-- LogLevel Filter -->
 
+                <!-- Date & LogLevel Filter -->
                 <div class="d-flex align-items-center justify-content-end">
-                    <div class="me-2 text-primary">Log Level:</div>
+                    <div v-if="logDate" class="me-4">
+                        <span class="fw-bold text-primary">Showing:</span> {{ logDate }}
+                    </div>
+                    <div class="me-2 text-primary">Filter Log Level:</div>
                     <div aria-label="Log Level Filter" class="btn-group" role="group">
 
                         <input id="level_error" v-model="logLevel" autocomplete="off" class="btn-check"
