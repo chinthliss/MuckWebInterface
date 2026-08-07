@@ -108,6 +108,10 @@ const retrieveLog = (e: Event): void => {
                     <input id="type_page" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
                            type="radio" value="page"
                     >
+
+                    <input id="type_whisper" v-model="logType" autocomplete="off" class="btn-check" name="type_select"
+                           type="radio" value="whisper"
+                    >
                     <label class="btn btn-outline-primary" for="type_page">Page</label>
                 </div>
                 <div class="invalid-feedback ms-2" role="alert">
@@ -131,6 +135,10 @@ const retrieveLog = (e: Event): void => {
                     Page logs. Both 'From' or 'To' fields must be entered.
                     Both values can either be a complete name or a dbref.
                 </div>
+                <div v-else-if="logType == 'whisper'">
+                    Whisper logs. Both 'From' or 'To' fields must be entered.
+                    Both values can either be a complete name or a dbref.
+                </div>
                 <div v-else>
                     Select a type to see additional criteria / instructions.
                 </div>
@@ -141,7 +149,7 @@ const retrieveLog = (e: Event): void => {
         <div class="row">
 
             <!-- From -->
-            <div v-if="logType == 'page'" class="col-12 col-lg-6 form-group mt-2">
+            <div v-if="logType == 'page' || logType == 'whisper'" class="col-12 col-lg-6 form-group mt-2">
                 <label for="from" v-bind:class="{ 'is-invalid' : errors.from }">From</label>
                 <input id="from" v-model="from" class="form-control" type="text">
                 <div class="invalid-feedback" role="alert">
@@ -164,7 +172,7 @@ const retrieveLog = (e: Event): void => {
 
     <Spinner v-if="loading"/>
     <div v-else>
-        <div v-if="logType != 'page' && toTitle" class="mt-2">
+        <div v-if="(logType != 'page' && logType != 'whisper') && toTitle" class="mt-2">
             To: <span v-html="toTitle"/>
         </div>
         <table class="table table-dark table-hover table-striped table-responsive mt-2">
@@ -172,7 +180,7 @@ const retrieveLog = (e: Event): void => {
             <tr>
                 <th scope="col">When</th>
                 <th scope="col">From</th>
-                <th v-if="logType == 'page'" scope="col">To</th>
+                <th v-if="logType == 'page' || logType == 'whisper'" scope="col">To</th>
                 <th scope="col">Content</th>
             </tr>
             </thead>
@@ -189,7 +197,8 @@ const retrieveLog = (e: Event): void => {
                 <tr v-for="logEntry in logEntries">
                     <td>{{ logEntry.time }}</td>
                     <td v-html="nameAndNumber(logEntry.from_name, logEntry.from_dbref)"/>
-                    <td v-if="logType == 'page'" v-html="nameAndNumber(logEntry.to_name, logEntry.to_dbref)"/>
+                    <td v-if="logType == 'page' || logType == 'whisper'"
+                        v-html="nameAndNumber(logEntry.to_name, logEntry.to_dbref)"/>
                     <td v-html="muckColorCodesToHtml(logEntry.content)"/>
                 </tr>
             </template>

@@ -176,11 +176,11 @@ class AdminController extends Controller
             $toValue = $to;
         }
 
-        if ($type !== 'page') {
-            // Non pages just look at 'To'
+        if ($type !== 'page' && $type !== 'whisper') {
+            // Non pages/whispers just look at 'To'
             $query->where('to_' . $toColumn, '=', $toValue);
         } else {
-            // Pages are a pain as to get both sides of a conversation we need to flip 'from' and 'to'
+            // Pages/Whispers are a pain as to get both sides of a conversation we need to flip 'from' and 'to'
             $query->where(function ($query) use ($fromColumn, $fromValue) {
                 $query->where('from_' . $fromColumn, '=', $fromValue)
                     ->orWhere('to_' . $fromColumn, '=', $fromValue);
@@ -193,8 +193,8 @@ class AdminController extends Controller
             $query->whereNotNull(['from_dbref', 'to_dbref']);
         }
 
-        // Special addition - if we're doing pages from someone to anybody we only show the outgoing ones
-        if (!$to && $type == 'page') {
+        // Special addition - if we're doing pages/whispers from someone to anybody we only show the outgoing ones
+        if (!$to && ($type == 'page' || $type == 'whisper')) {
             $query->whereNull('to_dbref');
         }
 
