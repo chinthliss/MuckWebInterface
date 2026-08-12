@@ -1087,14 +1087,11 @@ onMounted(() => {
                            @input="queueSaveFromElement"
                     >
                 </div>
-                <div class="mt-2">
-                    <label for="skinShortDescription" class="form-label">Short Description</label>
-                    <input id="skinShortDescription" type="text" class="form-control" :disabled="viewOnly"
-                           placeholder="Enter a phrase for an adjective (e.g. dry and scaly) "
-                           v-model="presentForm.skinShortDescription" @input="queueSaveFromElement"
-                    >
-                    <div class="text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
-                </div>
+                <div class="mt-2 text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
+                <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
+                                      prop-name="skinShortDescription" label="Short Description"
+                                      :prop-value="presentForm.skinShortDescription" @input="queueSaveFromEditor"
+                ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinTransformation" label="Transformation"
                                       :prop-value="presentForm.skinTransformation" @input="queueSaveFromEditor"
