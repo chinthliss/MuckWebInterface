@@ -12,7 +12,8 @@ const props = defineProps<{
     multiline?: boolean,
     propName: string,
     propValue?: string,
-    label: string
+    label: string,
+    note?: string
 }>();
 
 let view: EditorView;
@@ -66,7 +67,8 @@ onMounted(() => {
 
 <template>
     <div>
-        <label :for="propName" class="form-label fw-bold text-primary">{{ label }}</label>
+        <label :for="propName" class="form-label fw-bold text-primary mb-1">{{ label }}</label>
+        <div v-if="note" class="form-text text-muted mt-0 mb-1">{{ note }}</div>
         <div :id="propName" class="editor"></div>
     </div>
 </template>

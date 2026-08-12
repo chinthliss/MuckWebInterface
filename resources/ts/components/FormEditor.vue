@@ -1087,20 +1087,19 @@ onMounted(() => {
                            @input="queueSaveFromElement"
                     >
                 </div>
-                <div class="mt-2 text-muted">This should be 1 - 4 adjectives and is used during other messages.</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinShortDescription" label="Short Description"
                                       :prop-value="presentForm.skinShortDescription" @input="queueSaveFromEditor"
+                                      note="This should be 1 - 4 adjectives. The text is used during other messages."
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinTransformation" label="Transformation"
                                       :prop-value="presentForm.skinTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">Skin descriptions are prefixed by the text 'Their body is covered in..'
-                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinDescription" label="Description"
                                       :prop-value="presentForm.skinDescription" @input="queueSaveFromEditor"
+                                      note="Skin descriptions are prefixed by the text 'Their body is covered in.."
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinKemoDescription" label="Kemo Description"
@@ -1127,10 +1126,10 @@ onMounted(() => {
                                       prop-name="headTransformation" label="Transformation"
                                       :prop-value="presentForm.headTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their head is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="headDescription" label="Description"
                                       :prop-value="presentForm.headDescription" @input="queueSaveFromEditor"
+                                      note="Head descriptions are prefixed by the text 'Their head is..'"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="headKemoDescription" label="Kemo Description"
@@ -1157,10 +1156,10 @@ onMounted(() => {
                                       prop-name="torsoTransformation" label="Transformation"
                                       :prop-value="presentForm.torsoTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their torso is..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torsoDescription" label="Description"
                                       :prop-value="presentForm.torsoDescription" @input="queueSaveFromEditor"
+                                      note="Torso descriptions are prefixed by the text 'Their torso is..'"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="torsoKemoDescription" label="Kemo Description"
@@ -1187,10 +1186,10 @@ onMounted(() => {
                                       prop-name="armsTransformation" label="Transformation"
                                       :prop-value="presentForm.armsTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">Head descriptions are prefixed by the text 'Their arms are..'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="armsDescription" label="Description"
                                       :prop-value="presentForm.armsDescription" @input="queueSaveFromEditor"
+                                      note="Arm descriptions are prefixed by the text 'Their arms are..'"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="armsKemoDescription" label="Kemo Description"
@@ -1217,13 +1216,11 @@ onMounted(() => {
                                       prop-name="legsTransformation" label="Transformation"
                                       :prop-value="presentForm.legsTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">
-                    Leg descriptions are prefixed by the text 'Their legs are..'.
-                    They immediately follow with the ass description.
-                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legsDescription" label="Description"
                                       :prop-value="presentForm.legsDescription" @input="queueSaveFromEditor"
+                                      note="Leg descriptions are prefixed by the text 'Their legs are..'.
+                                      They immediately follow with the ass description."
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="legsKemoDescription" label="Kemo Description"
@@ -1250,10 +1247,10 @@ onMounted(() => {
                                       prop-name="assTransformation" label="Transformation"
                                       :prop-value="presentForm.assTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">Ass descriptions immediately follow the leg description'</div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="assDescription" label="Description"
                                       :prop-value="presentForm.assDescription" @input="queueSaveFromEditor"
+                                      note="Ass descriptions immediately follow the leg description."
                 ></FormEditorCodeEditor>
 
                 <!-- Groin -->
@@ -1276,13 +1273,12 @@ onMounted(() => {
                                       prop-name="groinTransformation" label="Transformation"
                                       :prop-value="presentForm.groinTransformation" @input="queueSaveFromEditor"
                 ></FormEditorCodeEditor>
-                <div class="mt-2 text-muted">
-                    Groin descriptions are more complicated and will be prefixed with a count and size adjective,
-                    and follow with what's being described. E.g. 'they have one huge ... cock'
-                </div>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="groinCockDescription" label="Cock Description"
                                       :prop-value="presentForm.groinCockDescription" @input="queueSaveFromEditor"
+                                      note="Groin descriptions are more complicated than most.
+                                            They will be prefixed with a count and size adjective,
+                                            and follow with what's being described. E.g. 'they have one huge ... cock'"
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="groinCuntDescription" label="Cunt Description"
@@ -1301,11 +1297,9 @@ onMounted(() => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="defeat" label="Player defeated by Form"
                                       :prop-value="presentForm.defeat.join('\n')" @input="queueSaveFromEditor"
+                                      note="2nd person from the defeated player's perspective,
+                                            e.g. 'You are defeated by a mutant!'"
                 ></FormEditorCodeEditor>
-                <div class="text-muted">
-                    2nd person from the defeated player's perspective,
-                    e.g. 'You are defeated by a mutant!'
-                </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.defeat"></p>
                 <div class="mt-2 text-center">
@@ -1319,11 +1313,9 @@ onMounted(() => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="victory" label="Player (as form) defeats Monster"
                                       :prop-value="presentForm.victory.join('\n')" @input="queueSaveFromEditor"
+                                      note="2nd person from the victorious player's perspective when they're in this form,
+                                            e.g. 'You beat a mutant, using your mutant ways!'"
                 ></FormEditorCodeEditor>
-                <div class="text-muted">
-                    2nd person from the victorious player's perspective when they're in this form,
-                    e.g. 'You beat a mutant, using your mutant ways!'
-                </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.victory"></p>
                 <div class="mt-2 text-center">
@@ -1337,11 +1329,9 @@ onMounted(() => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly" :multiline="true"
                                       prop-name="oVictory" label="Form seen defeating Monster"
                                       :prop-value="presentForm.oVictory.join('\n')" @input="queueSaveFromEditor"
+                                      note="3rd person from somebody else observing this form's victory,
+                                            e.g. 'Bob defeats a mutant in a weird mutant way!'"
                 ></FormEditorCodeEditor>
-                <div class="text-muted">
-                    3rd person from somebody else observing this form's victory,
-                    e.g. 'Bob defeats a mutant in a weird mutant way!'
-                </div>
                 <div class="mt-2 text-secondary">Preview</div>
                 <p v-html="previews.oVictory"></p>
                 <div class="mt-2 text-center">
