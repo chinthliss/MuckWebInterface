@@ -695,7 +695,7 @@ class User implements Authenticatable, MustVerifyEmail
             $hostLogManager = App::make(HostLogManager::class);
             $logins = $hostLogManager->getHostsAndIPsForUser($this);
             $filteredLogins = [];
-            $timeLimit = Carbon::now()->subDays(30);
+            $timeLimit = Carbon::now()->subDays(90);
             foreach ($logins as $login) {
                 if ($login->when > $timeLimit) $filteredLogins[] = $login;
             }

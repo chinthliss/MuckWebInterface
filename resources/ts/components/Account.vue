@@ -201,7 +201,7 @@ const subscriptionTableOptions: DataTableOptions = {
         </modal-confirmation>
 
         <h2 class="mt-2">Logins</h2>
-        <p>This is a list of places where your account has been logged in.</p>
+        <p>This is a list of places where your account has been logged in over the last 90 days.</p>
         <p>
             If any of these addresses look strange, raise a ticket for investigation.
             You may also wish to change your account password.
