@@ -697,7 +697,7 @@ class User implements Authenticatable, MustVerifyEmail
             $filteredLogins = [];
             $timeLimit = Carbon::now()->subDays(90);
             foreach ($logins as $login) {
-                if ($login->when > $timeLimit) $filteredLogins[] = $login;
+                if ($login['when']->gte($timeLimit)) $filteredLogins[] = $login;
             }
             $array['logins'] = $filteredLogins;
         }
