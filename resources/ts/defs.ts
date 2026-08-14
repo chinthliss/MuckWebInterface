@@ -7,6 +7,12 @@ export type ResponseError = {
     error: string
 }
 
+type AccountLogin = {
+    when: string
+    hostname: string
+    ip: string
+}
+
 export type Account = {
     id: number
     createdAt: string
@@ -38,6 +44,7 @@ export type Account = {
     subscriptionRenewing: boolean
     subscriptionExpires: string
     subscriptions: any[]
+    logins: AccountLogin[]
 }
 
 export type AccountTransaction = {
@@ -167,7 +174,7 @@ export type AvatarGradient = {
 }
 
 // Taken from Datatables documentation - https://datatables.net/manual/vue
-// Figure there should be an alternative in its own typescript exports but couldn't find one
+// Figure there should be an alternative in its own TypeScript exports but couldn't find one
 
 export interface DataTablesNamedSlotProps {
     /** The data to show in the cell (from the `columns.data` configuration) */

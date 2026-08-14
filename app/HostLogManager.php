@@ -15,7 +15,7 @@ class HostLogManager
     public function logHost(string $ip, ?User $user): void
     {
         if (!$user) return;
-        //Not ideal but we don't want to log proxy entries in production and in testing everything comes from localhost
+        //Not ideal, but we don't want to log proxy entries in production, and in testing everything comes from localhost
         if (App::environment() === 'production' && $ip === '127.0.0.1') {
             Log::Debug("Disregarded logging a host because it was from 127.0.0.1, User= $user");
             return;
@@ -45,5 +45,24 @@ class HostLogManager
             'game_code' => config('muck.code')
         ])->value('tstamp');
         return $value ? Carbon::createFromTimestamp($value) : null;
+    }
+
+    public function getHostsAndIPsForUser(User $user): array
+    {
+        $rows = DB::table('log_hosts')->where([
+            'aid' => $user->id(),
+        ])->select([
+            'host_ip', 'host_name', 'tstamp'
+        ])->orderBy('tstamp', direction: 'desc')->get();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'when' => Carbon::createFromTimestamp($row->tstamp),
+                'ip' => $row->host_ip,
+                'hostname' => $row->host_name
+            ];
+        }
+        return $result;
     }
 }

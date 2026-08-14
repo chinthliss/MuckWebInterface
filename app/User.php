@@ -7,6 +7,7 @@ use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use App\Payment\PatreonManager;
 use App\Payment\PaymentSubscriptionManager;
+use App\HostLogManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -689,6 +690,11 @@ class User implements Authenticatable, MustVerifyEmail
             $array['subscriptionActive'] = $subscriptionActive;
             $array['subscriptionRenewing'] = $subscriptionRenewing;
             $array['subscriptionExpires'] = $subscriptionExpires;
+
+            // Last hosts
+            /** @var HostLogManager $hostLogManager */
+            $hostLogManager = App::make(HostLogManager::class);
+            $array['logins'] = $hostLogManager->getHostsAndIPsForUser($this);
         }
 
         if ($scope == 'all') {

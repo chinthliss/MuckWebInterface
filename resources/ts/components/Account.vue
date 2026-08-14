@@ -200,6 +200,31 @@ const subscriptionTableOptions: DataTableOptions = {
             <p>If it hasn't been verified, you'll be prompted to verify it after changing to it.</p>
         </modal-confirmation>
 
+        <h2 class="mt-2">Logins</h2>
+        <p>This is a list of places where your account has been logged in.</p>
+        <p>
+            If any of these addresses look strange, raise a ticket for investigation.
+            You may also wish to change your account password.
+        </p>
+        <p>Keep in mind that if you've used a VPN, you may see strange values in here.</p>
+        <table class="table table-dark table-hover table-striped table-responsive mt-2">
+            <thead>
+            <tr>
+                <th scope="col">Last Used</th>
+                <th scope="col">IP</th>
+                <th scope="col">Hostname (if available)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <template v-for="entry in account.logins">
+                <tr>
+                    <td>{{ carbonToString(entry.when) }}</td>
+                    <td>{{ entry.ip }}</td>
+                    <td>{{ entry.hostname }}</td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
     </div>
 </template>
 
