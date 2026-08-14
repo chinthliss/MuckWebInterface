@@ -1090,7 +1090,8 @@ onMounted(() => {
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinShortDescription" label="Short Description"
                                       :prop-value="presentForm.skinShortDescription" @input="queueSaveFromEditor"
-                                      note="This should be 1 - 4 adjectives. The text is used during other messages."
+                                      note="Should be a short (1-4 word) description.
+                                      The text isn't displayed by itself, instead becoming part of other messages."
                 ></FormEditorCodeEditor>
                 <FormEditorCodeEditor class="mt-2" :viewOnly="viewOnly"
                                       prop-name="skinTransformation" label="Transformation"
