@@ -7,7 +7,6 @@ use App\Muck\MuckDbref;
 use App\Notifications\VerifyEmail;
 use App\Payment\PatreonManager;
 use App\Payment\PaymentSubscriptionManager;
-use App\HostLogManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -694,7 +693,13 @@ class User implements Authenticatable, MustVerifyEmail
             // Last hosts
             /** @var HostLogManager $hostLogManager */
             $hostLogManager = App::make(HostLogManager::class);
-            $array['logins'] = $hostLogManager->getHostsAndIPsForUser($this);
+            $logins = $hostLogManager->getHostsAndIPsForUser($this);
+            $filteredLogins = [];
+            $timeLimit = Carbon::now()->subDays(30);
+            foreach ($logins as $login) {
+                if ($login->when > $timeLimit) $filteredLogins[] = $login;
+            }
+            $array['logins'] = $filteredLogins;
         }
 
         if ($scope == 'all') {
