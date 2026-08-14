@@ -210,7 +210,7 @@ const subscriptionTableOptions: DataTableOptions = {
         <table class="table table-dark table-hover table-striped table-responsive mt-2">
             <thead>
             <tr>
-                <th scope="col">Last Used</th>
+                <th scope="col">Last Seen</th>
                 <th scope="col">IP</th>
                 <th scope="col">Hostname (if available)</th>
             </tr>

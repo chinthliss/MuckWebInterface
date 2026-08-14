@@ -47,7 +47,7 @@ class HostLogManager
         return $value ? Carbon::createFromTimestamp($value) : null;
     }
 
-    public function getHostsAndIPsForUser(User $user): array
+    public function getAllLoginsForUser(User $user): array
     {
         $rows = DB::table('log_hosts')->where([
             'aid' => $user->id(),
@@ -65,4 +65,25 @@ class HostLogManager
         }
         return $result;
     }
+
+    public function getMostRecentLoginsForUser(User $user): array
+    {
+        $rows = DB::table('log_hosts')
+            ->select(DB::raw('max(tstamp) as tstamp, host_ip, host_name'))
+            ->groupBy('host_ip', 'host_name')
+            ->where('aid', '=', $user->id())
+            ->orderBy('tstamp', direction: 'desc')
+            ->get();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'when' => Carbon::createFromTimestamp($row->tstamp),
+                'ip' => $row->host_ip,
+                'hostname' => $row->host_name
+            ];
+        }
+        return $result;
+    }
+
 }

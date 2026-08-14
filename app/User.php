@@ -693,7 +693,7 @@ class User implements Authenticatable, MustVerifyEmail
             // Last hosts
             /** @var HostLogManager $hostLogManager */
             $hostLogManager = App::make(HostLogManager::class);
-            $logins = $hostLogManager->getHostsAndIPsForUser($this);
+            $logins = $hostLogManager->getMostRecentLoginsForUser($this);
             $filteredLogins = [];
             $timeLimit = Carbon::now()->subDays(90);
             foreach ($logins as $login) {
