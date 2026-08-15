@@ -36,6 +36,7 @@ const satyr: Ref<boolean> = ref(false);
 const chubby: Ref<boolean> = ref(false);
 const armsDivider: Ref<boolean> = ref(false);
 const legsDivider: Ref<boolean> = ref(false);
+const submitted: Ref<boolean> = ref(false);
 
 type PreviewConfig = {
     name?: string
@@ -46,6 +47,7 @@ type PreviewConfig = {
     chubby?: boolean
     armsDivider?: boolean
     legsDivider?: boolean
+    submitted?: boolean
 }
 
 const getConfig = (): PreviewConfig => {
@@ -59,6 +61,7 @@ const getConfig = (): PreviewConfig => {
     if (chubby.value) config.chubby = true;
     if (armsDivider.value) config.armsDivider = true;
     if (legsDivider.value) config.legsDivider = true;
+    if (submitted.value) config.submitted = true;
     return config;
 }
 
@@ -140,6 +143,12 @@ defineExpose({getConfig});
                 <input class="form-check-input" type="checkbox" role="switch"
                        :id="role + '_legdivider'" v-model="legsDivider">
                 <label class="form-check-label" for="role + '_legdivider'">Has 'Leg Splitter' toy?</label>
+            </div>
+            <!-- Submitted (in defeat), only shows in 'other' -->
+            <div v-if="role =='other'" class="form-check form-switch mt-3">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       :id="role + '_submitted'" v-model="submitted">
+                <label class="form-check-label" for="role + '_submitted'">Submitted (in defeat)?</label>
             </div>
         </div>
     </div>
