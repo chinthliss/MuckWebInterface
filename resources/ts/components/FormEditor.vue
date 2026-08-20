@@ -86,30 +86,35 @@ export type Form = {
     skinDescription: string
     skinKemoDescription: string
     skinTemplate: boolean
+    skinAbsent: boolean
 
     headFlags: string
     headTransformation: string
     headDescription: string
     headKemoDescription: string
     headTemplate: boolean
+    headAbsent: boolean
 
     torsoFlags: string
     torsoTransformation: string
     torsoDescription: string
     torsoKemoDescription: string
     torsoTemplate: boolean
+    torsoAbsent: boolean
 
     armsFlags: string
     armsTransformation: string
     armsDescription: string
     armsKemoDescription: string
     armsTemplate: boolean
+    armsAbsent: boolean
 
     legsFlags: string
     legsTransformation: string
     legsDescription: string
     legsKemoDescription: string
     legsTemplate: boolean
+    legsAbsent: boolean
 
     groinFlags: string
     groinTransformation: string
@@ -117,11 +122,13 @@ export type Form = {
     groinCuntDescription: string
     groinClitDescription: string
     groinTemplate: boolean
+    groinAbsent: boolean
 
     assFlags: string
     assTransformation: string
     assDescription: string
     assTemplate: boolean
+    assAbsent: boolean
 }
 
 const presentFormId: Ref<string | null> = ref(null);
@@ -207,6 +214,18 @@ const hasTemplatedParts = computed((): boolean => {
         presentForm.value.groinTemplate ||
         presentForm.value.assTemplate;
 });
+
+const hasAbsentParts = computed((): boolean => {
+    if (!presentForm.value) return false;
+    return presentForm.value.skinAbsent ||
+        presentForm.value.headAbsent ||
+        presentForm.value.torsoAbsent ||
+        presentForm.value.armsAbsent ||
+        presentForm.value.legsAbsent ||
+        presentForm.value.groinAbsent ||
+        presentForm.value.assAbsent;
+});
+
 
 const friendlyFormPreview = computed(() => {
     if (!presentForm.value) return 'No form loaded.';
@@ -345,7 +364,7 @@ const queueSaveFromElement = (e: Event) => {
         console.log("Couldn't queue save value as the element triggering it has no id: ", e);
         return;
     }
-    // Because checkboxes are weird, we can't just use their value..
+    // Because checkboxes are weird, we can't just use their value.
     if (element.type !== 'checkbox')
         queueSave(element.id, element.value);
     else
@@ -544,7 +563,9 @@ onMounted(() => {
     </div>
     <div v-if="presentForm">
         <h3>Editing - {{ presentFormId }}
-            <a @click="copyPresentFormLinkToClipboard" :href="trackLinkToPresentFormId">
+            <span v-if="hasTemplatedParts" class="ms-1 badge rounded-pill text-bg-info">Template</span>
+            <span v-if="hasAbsentParts" class="ms-1 badge rounded-pill text-bg-warning">Partial</span>
+            <a class="ms-1" @click="copyPresentFormLinkToClipboard" :href="trackLinkToPresentFormId">
                 <i class="fas fa-link" role="button"></i>
             </a>
         </h3>
@@ -629,18 +650,16 @@ onMounted(() => {
                 <!-- Allowed Viewers -->
                 <div class="d-flex mt-2">
                     <label for="_viewers" class="col-form-label">Allowed Viewers</label>
-                    <input id="_viewers" type="text" class="form-control ms-2 flex-grow-1" :disabled="viewOnly"
-                           placeholder="List of Viewers" v-model="presentForm._viewers" @input="queueSaveFromElement"
-                    >
-                </div>
-                <div class="text-muted">Space separated list of other people who are allowed to view this form,
-                    in case you want to seek assistance or review.
-                    A direct link to this form is available besides the title above.
-                </div>
+                    <div class="ms-2 flex-grow-1">
+                        <input id="_viewers" type="text" class="form-control" :disabled="viewOnly"
+                               placeholder="List of Viewers" v-model="presentForm._viewers" @input="queueSaveFromElement"
+                        >
+                        <div class="text-muted">Space separated list of other people who are allowed to view this form,
+                                                in case you want to seek assistance or review.<br/>
+                                                A direct link to this form is available besides the title above.
+                        </div>
 
-                <!-- Template status -->
-                <div v-if="hasTemplatedParts" class="mt-2 p-2 rounded text-bg-info">
-                    This form has at least one part with template flagged, so will be considered as a template form.
+                    </div>
                 </div>
 
                 <!-- Notes -->
@@ -1074,12 +1093,28 @@ onMounted(() => {
                 <!-- Skin -->
                 <hr/>
                 <h4 class="mt-2">Skin</h4>
+
                 <div class="mt-2 form-check">
                     <input class="form-check-input" type="checkbox" id="skinTemplate"
                            v-model="presentForm.skinTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="skinTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
                 </div>
+
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="skinAbsent"
+                           v-model="presentForm.skinAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="skinTemplate">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
+                </div>
+
+
                 <div class="mt-2">
                     <label for="skinFlags" class="form-label">Flags</label>
                     <input id="skinFlags" type="text" class="form-control" :disabled="viewOnly"
@@ -1115,6 +1150,19 @@ onMounted(() => {
                            v-model="presentForm.headTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="headTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="headAbsent"
+                           v-model="presentForm.headAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="headAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="headFlags" class="form-label">Flags</label>
@@ -1141,10 +1189,22 @@ onMounted(() => {
                 <hr/>
                 <h4 class="mt-2">Torso</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="torsoTemplate" @input="queueSaveFromElement"
-                           v-model="presentForm.torsoTemplate" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="torsoTemplate"
+                           v-model="presentForm.torsoTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="torsoTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="torsoAbsent"
+                           v-model="presentForm.torsoAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="torsoAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="torsoFlags" class="form-label">Flags</label>
@@ -1171,10 +1231,22 @@ onMounted(() => {
                 <hr/>
                 <h4 class="mt-2">Arms</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="armsTemplate" @input="queueSaveFromElement"
-                           v-model="presentForm.armsTemplate" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="armsTemplate"
+                           v-model="presentForm.armsTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="armsTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="armsAbsent"
+                           v-model="presentForm.armsAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="armsAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="armsFlags" class="form-label">Flags</label>
@@ -1201,10 +1273,22 @@ onMounted(() => {
                 <hr/>
                 <h4 class="mt-2">Legs</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="legsTemplate" @input="queueSaveFromElement"
-                           v-model="presentForm.legsTemplate" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="legsTemplate"
+                           v-model="presentForm.legsTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="legsTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="legsAbsent"
+                           v-model="presentForm.legsAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="legsAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="legsFlags" class="form-label">Flags</label>
@@ -1232,10 +1316,22 @@ onMounted(() => {
                 <hr/>
                 <h4 class="mt-2">Ass or Tail</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="assTemplate" @input="queueSaveFromElement"
-                           v-model="presentForm.assTemplate" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="assTemplate"
+                           v-model="presentForm.assTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="assTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="assAbsent"
+                           v-model="presentForm.assAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="assAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="assFlags" class="form-label">Flags</label>
@@ -1258,10 +1354,22 @@ onMounted(() => {
                 <hr/>
                 <h4 class="mt-2">Groin</h4>
                 <div class="mt-2 form-check">
-                    <input class="form-check-input" type="checkbox" id="groinTemplate" @input="queueSaveFromElement"
-                           v-model="presentForm.groinTemplate" :disabled="viewOnly"
+                    <input class="form-check-input" type="checkbox" id="groinTemplate"
+                           v-model="presentForm.groinTemplate" :disabled="viewOnly" @input="queueSaveFromElement"
                     >
                     <label class="form-check-label" for="groinTemplate">Template?</label>
+                    <div class="text-muted">
+                        If checked, this part won't replace the previous part, but instead applies over the top of it.
+                    </div>
+                </div>
+                <div class="mt-2 form-check">
+                    <input class="form-check-input" type="checkbox" id="groinAbsent"
+                           v-model="presentForm.groinAbsent" :disabled="viewOnly" @input="queueSaveFromElement"
+                    >
+                    <label class="form-check-label" for="groinAbsent">Absent?</label>
+                    <div class="text-muted">
+                        If checked, this part isn't present on this form.
+                    </div>
                 </div>
                 <div class="mt-2">
                     <label for="groinFlags" class="form-label">Flags</label>
