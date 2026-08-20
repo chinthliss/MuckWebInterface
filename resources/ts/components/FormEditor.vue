@@ -564,7 +564,7 @@ onMounted(() => {
     <div v-if="presentForm">
         <h3>Editing - {{ presentFormId }}
             <span v-if="hasTemplatedParts" class="ms-1 badge rounded-pill text-bg-info">Template</span>
-            <span v-if="hasAbsentParts" class="ms-1 badge rounded-pill text-bg-warning">Partial</span>
+            <span v-if="hasAbsentParts" class="ms-1 badge rounded-pill text-bg-info">Partial</span>
             <a class="ms-1" @click="copyPresentFormLinkToClipboard" :href="trackLinkToPresentFormId">
                 <i class="fas fa-link" role="button"></i>
             </a>
