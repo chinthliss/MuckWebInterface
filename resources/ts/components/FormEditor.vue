@@ -8,6 +8,7 @@ import FormEditorTestConfigurator from "./FormEditorTestConfigurator.vue";
 import {timestampToString} from "../formatting";
 import FormEditorCodeEditor from "./FormEditorCodeEditor.vue";
 import FormEditorCompareToLive from "./FormEditorCompareToLive.vue";
+import Callout from "./Callout.vue";
 
 const props = defineProps<{
     links: {
@@ -563,8 +564,9 @@ onMounted(() => {
     </div>
     <div v-if="presentForm">
         <h3>Editing - {{ presentFormId }}
-            <span v-if="hasTemplatedParts" class="ms-1 badge rounded-pill text-bg-info">Template</span>
             <span v-if="hasAbsentParts" class="ms-1 badge rounded-pill text-bg-info">Partial</span>
+            <span v-if="presentForm.sexless" class="ms-1 badge rounded-pill text-bg-info">Sexless</span>
+            <span v-if="hasTemplatedParts" class="ms-1 badge rounded-pill text-bg-info">Template</span>
             <a class="ms-1" @click="copyPresentFormLinkToClipboard" :href="trackLinkToPresentFormId">
                 <i class="fas fa-link" role="button"></i>
             </a>
@@ -891,6 +893,10 @@ onMounted(() => {
             <!-- Properties -->
             <div class="tab-pane show" id="nav-properties" role="tabpanel" aria-labelledby="nav-properties-tab">
 
+                <callout v-if="presentForm.torsoAbsent" class="mt-4 col-12" type="warning">
+                    Because the form's torso is set to absent, height and mass from this form won't be used.
+                </callout>
+
                 <!-- Height -->
                 <div class="d-flex align-items-center mt-2">
                     <div class="sliderLabel">Height</div>
@@ -991,6 +997,10 @@ onMounted(() => {
 
                 <div class="row" v-if="!presentForm.sexless">
 
+                    <callout v-if="presentForm.torsoAbsent" class="mt-4 col-12" type="warning">
+                        Because the form's torso is set to absent, breast count won't do anything.
+                    </callout>
+
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="breastCount" class="form-label">Breast Count</label>
                         <input id="breastCount" type="number" class="form-control" :disabled="viewOnly"
@@ -1004,6 +1014,10 @@ onMounted(() => {
                                placeholder="#" v-model="presentForm.breastSize" @input="queueSaveFromElement"
                         >
                     </div>
+
+                    <callout v-if="presentForm.groinAbsent" class="mt-4 col-12" type="warning">
+                        Because the form's groin is set to absent, none of the counts below will be used.
+                    </callout>
 
                     <div class="mt-2 col-12 col-lg-6">
                         <label for="cuntCount" class="form-label">Cunt Count</label>
@@ -1451,9 +1465,9 @@ onMounted(() => {
 
             </div>
         </div>
-        <div class="text-center">
+        <callout type="info" class="mt-4 text-center">
             Changes are saved automatically as you make them.
-        </div>
+        </callout>
 
     </div>
 
