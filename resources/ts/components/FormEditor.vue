@@ -61,7 +61,8 @@ export type Form = {
     ballSize: number
     scent: string
     heat: boolean
-    template: boolean // This is set but actually computed and auto-controlled muck side.
+    template: boolean // This is set, but actually computed and auto-controlled muck side.
+    partial: boolean // This is set, but actually computed and auto-controlled muck side.
     sexless: boolean
 
     noExtract: boolean
