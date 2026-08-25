@@ -66,10 +66,24 @@ export const arrayToList = (arrayToParse: string[], emptyWord: string = '', join
 };
 
 /**
+ * At the moment replaces %r with newlines and %t with tabs.
+ */
+export const fixCommonMuckCharacters = (text: string): string => {
+    return text.replace(/%r/gi, '\r').replace(/%t/gi, '\t');
+}
+
+/**
  * Joins an array of strings into one string with newlines
  */
 export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
     return arrayToList(arrayToParse, emptyWord, '\n');
+};
+
+/**
+ * Same as arrayToStringWithNewlines, but also runs the result through fixCommonMuckCharacters
+ */
+export const ArrayWithCommonMuckCharactersToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
+    return fixCommonMuckCharacters(arrayToList(arrayToParse, emptyWord, '\n'));
 };
 
 /**
