@@ -1,5 +1,6 @@
 /**
  * Frequently used formatting functions
+ * 'MuckFormatting' refers to the special strings '%r' and '%t' for newline and tab respectively.
  */
 
 import {AnsiUp} from "ansi_up";
@@ -66,13 +67,6 @@ export const arrayToList = (arrayToParse: string[], emptyWord: string = '', join
 };
 
 /**
- * At the moment replaces %r with newlines and %t with tabs.
- */
-export const fixCommonMuckCharacters = (text: string): string => {
-    return text.replace(/%r/gi, '\r').replace(/%t/gi, '\t');
-}
-
-/**
  * Joins an array of strings into one string with newlines
  */
 export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
@@ -82,40 +76,24 @@ export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: str
 /**
  * Same as arrayToStringWithNewlines, but also runs the result through fixCommonMuckCharacters
  */
-export const ArrayWithCommonMuckCharactersToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
-    return fixCommonMuckCharacters(arrayToList(arrayToParse, emptyWord, '\n'));
+export const ArrayWithMuckFormattingToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
+    return arrayToList(arrayToParse, emptyWord, '%r')
+        .replace(/%r/gi, '\n')
+        .replace(/%t/gi, '\t');
 };
 
 /**
- * Joins an array of strings into one string with breaks
- */
-export const arrayToStringWithBreaks = (arrayToParse: string[], emptyWord: string = ''): string => {
-    return arrayToList(arrayToParse, emptyWord, '<br\>');
-};
-
-/**
- * Replaces key parts of HTML so that it can be used without being parsed
- */
-export const escapeHTML = (text: string): string => {
-    return text.replace(
-        /[&<>'"]/g,
-        found =>
-            ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                "'": '&#39;',
-                '"': '&quot;'
-            }[found] || found)
-    );
-}
-
-/**
- * Converts the parsed ANSI in a string into an HTML representation
- * Note that this will escape special characters itself, so should not be used with escapeHTML
+ * Converts the parsed ANSI in a string into an HTML representation.
+ * Mostly for proplists. If parsing text that a user can include %r and %t, use 'ansiWithMuckFormattingToHtml'
  */
 export const ansiToHtml = (text: string): string => {
     return ansi_up.ansi_to_html(text);
+}
+
+export const ansiWithMuckFormattingToHtml = (text: string): string => {
+    return ansi_up.ansi_to_html(text)
+        .replace(/%r/gi, '<br/>')
+        .replace(/%t/gi, '&nbsp;'); // Not ideal, but no tab in HTML!
 }
 
 /**

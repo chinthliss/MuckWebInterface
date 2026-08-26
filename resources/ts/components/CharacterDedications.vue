@@ -2,7 +2,7 @@
 
 import {ref, Ref} from "vue";
 import Spinner from "./Spinner.vue";
-import {ansiToHtml} from "../formatting";
+import {ansiWithMuckFormattingToHtml} from "../formatting";
 import {lex} from "../siteutils";
 import ModalMessage from "./ModalMessage.vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
@@ -143,7 +143,7 @@ channel.send('bootDedications');
                 <div class="card-body">
                     <!-- Line 1 -->
                     <div>
-                        <span v-html="ansiToHtml(dedication.description)"></span>
+                        <span v-html="ansiWithMuckFormattingToHtml(dedication.description)"></span>
                     </div>
                     <!-- Line 2 -->
                     <div class="row mt-2">

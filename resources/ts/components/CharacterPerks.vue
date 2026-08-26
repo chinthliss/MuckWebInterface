@@ -2,7 +2,7 @@
 
 import {ref, Ref} from "vue";
 import ModalConfirmation from "./ModalConfirmation.vue";
-import {ansiToHtml, capital} from "../formatting";
+import {ansiWithMuckFormattingToHtml, capital} from "../formatting";
 import {lex} from "../siteutils";
 
 type Perk = {
@@ -253,7 +253,7 @@ channel.send('bootPerks');
                     </h5>
 
                     <p class="card-text muck-whitespace" v-bind:class="{ 'text-muted': perk.excluded }"
-                       v-html="ansiToHtml(perk.description)"
+                       v-html="ansiWithMuckFormattingToHtml(perk.description)"
                     ></p>
 
                     <template v-if="perk.owned">

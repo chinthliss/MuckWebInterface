@@ -2,7 +2,7 @@
 import {Ref, ref} from 'vue';
 import {
     ansiToHtml,
-    ArrayWithCommonMuckCharactersToStringWithNewlines,
+    ArrayWithMuckFormattingToStringWithNewlines,
     carbonToString
 } from "../formatting";
 import Spinner from "./Spinner.vue";
@@ -120,7 +120,7 @@ const badgeTableOptions: DataTableOptions = {
     },
     columns: [
         {data: 'name'},
-        {data: 'description', render: ArrayWithCommonMuckCharactersToStringWithNewlines},
+        {data: 'description', render: ArrayWithMuckFormattingToStringWithNewlines},
         {data: 'awarded', render: carbonToString}
     ]
 };

@@ -3,7 +3,7 @@
 import type {Modifier, Recipe, RecipeAndModifiers} from "./GearCrafting.vue"
 import {onMounted, ref, Ref, useTemplateRef} from "vue";
 import Collapse from "./Collapse.vue";
-import {ansiToHtml, arrayToList, capital} from "../formatting";
+import {ansiWithMuckFormattingToHtml, arrayToList, capital} from "../formatting";
 import RpinfoButton from "./RpinfoButton.vue";
 import Callout from "./Callout.vue";
 
@@ -201,7 +201,7 @@ onMounted(() => {
                                                                                            }}
                                             </div>
                                             <p v-if="showDescriptions" class="card-text mt-2"
-                                               v-html="ansiToHtml(recipe.description)"></p>
+                                               v-html="ansiWithMuckFormattingToHtml(recipe.description)"></p>
                                         </div>
                                     </div>
                                     <div class="align-self-center text-center px-3 flex-shrink-0">

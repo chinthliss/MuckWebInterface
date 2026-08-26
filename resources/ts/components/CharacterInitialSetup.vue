@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, Ref} from 'vue';
 import {csrf} from "../siteutils";
-import {arrayToList, ansiToHtml} from "../formatting";
+import {arrayToList, ansiWithMuckFormattingToHtml} from "../formatting";
 
 type CharacterSubmission = {
     gender: string,
@@ -197,7 +197,7 @@ const updateExclusions = (type: string) => {
                             }}</label>
                     </td>
                     <td class="ps-2 pb-2">
-                        <div v-html="ansiToHtml(faction.description)"></div>
+                        <div v-html="ansiWithMuckFormattingToHtml(faction.description)"></div>
                     </td>
                 </tr>
             </table>
@@ -213,7 +213,7 @@ const updateExclusions = (type: string) => {
                 points or to get more information.</p>
             <div v-for="category in perkCategories">
                 <h3>• {{ category.label }}</h3>
-                <p v-html="ansiToHtml(category.description)"></p>
+                <p v-html="ansiWithMuckFormattingToHtml(category.description)"></p>
                 <table>
                     <template v-for="perk in perks">
                         <tr v-if="perk && perk.category === category.category" class="align-top">
@@ -228,7 +228,7 @@ const updateExclusions = (type: string) => {
                                     }}</label>
                             </td>
                             <td class="ps-2 pb-2">
-                                <div v-html="ansiToHtml(perk.description)"></div>
+                                <div v-html="ansiWithMuckFormattingToHtml(perk.description)"></div>
                                 <div class="small text-muted" v-if="perk.excludes.length">Excludes: {{
                                         arrayToList(perk.excludes)
                                     }}
@@ -253,7 +253,7 @@ const updateExclusions = (type: string) => {
                         <label class="btn btn-outline-primary w-100" :for="'flaw-' + flaw.name">{{ flaw.name }}</label>
                     </td>
                     <td class="ps-2 pb-2">
-                        <div v-html="ansiToHtml(flaw.description)"></div>
+                        <div v-html="ansiWithMuckFormattingToHtml(flaw.description)"></div>
                         <div class="small text-muted" v-if="flaw.excludes.length">Excludes: {{
                                 arrayToList(flaw.excludes)
                             }}
