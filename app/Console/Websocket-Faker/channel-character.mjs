@@ -107,7 +107,7 @@ export default class ChannelCharacter extends Channel {
             this.sendCustomFields(connection, character);
         },
 
-        'updateShortDescription': (connection, data) => {
+        'editShortDescription': (connection, data) => {
             setTimeout(() => {
                 this.sendMessageToConnection(connection, 'shortDescription', data)
             }, 1000);

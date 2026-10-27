@@ -22,7 +22,10 @@ const fieldEditValue: Ref<string> = ref('');
 
 const saveShortDescription = () => {
     blockShortDescriptionEdit.value = true;
-    channel.send('updateShortDescription', shortDescription.value);
+    channel.send('editShortDescription', {
+        dbref: dbref,
+        value: shortDescription.value
+    });
 }
 
 const startEditingCustomField = (field: CustomField) => {
