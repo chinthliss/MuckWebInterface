@@ -42,6 +42,15 @@ export const usdToString = (usd: number | string | null): string => {
     return "$" + usd;
 };
 
+export const replaceHtmlTags = (text: string | null | undefined): string => {
+    if (!text) return '';
+    text = text.replace(/&/g, '&amp;');
+    text = text.replace(/"/g, '&quot;');
+    text = text.replace(/</g, '&lt;');
+    text = text.replace(/>/g, '&gt;');
+    return text;
+};
+
 /**
  * Converts the first letter of a string to be a capital
  */
@@ -74,7 +83,7 @@ export const arrayToStringWithNewlines = (arrayToParse: string[], emptyWord: str
 };
 
 /**
- * Same as arrayToStringWithNewlines, but also runs the result through fixCommonMuckCharacters
+ * Same as arrayToStringWithNewlines, but also accepts muck usage of %r and %t
  */
 export const ArrayWithMuckFormattingToStringWithNewlines = (arrayToParse: string[], emptyWord: string = ''): string => {
     return arrayToList(arrayToParse, emptyWord, '%r')
@@ -87,11 +96,12 @@ export const ArrayWithMuckFormattingToStringWithNewlines = (arrayToParse: string
  * Mostly for proplists. If parsing text that a user can include %r and %t, use 'ansiWithMuckFormattingToHtml'
  */
 export const ansiToHtml = (text: string): string => {
+    text = replaceHtmlTags(text);
     return ansi_up.ansi_to_html(text);
 }
 
 export const ansiWithMuckFormattingToHtml = (text: string): string => {
-    return ansi_up.ansi_to_html(text)
+    return ansiToHtml(text)
         .replace(/%r/gi, '<br/>')
         .replace(/%t/gi, '&nbsp;'); // Not ideal, but no tab in HTML!
 }

@@ -3,7 +3,7 @@ import {Ref, ref} from 'vue';
 import {
     ansiToHtml,
     ArrayWithMuckFormattingToStringWithNewlines,
-    carbonToString
+    carbonToString, replaceHtmlTags
 } from "../formatting";
 import Spinner from "./Spinner.vue";
 import type {Character} from "../defs";
@@ -84,7 +84,8 @@ const customTableOptions: DataTableOptions = {
     },
     columns: [
         {data: 'field'},
-        {data: 'value'}
+        // Custom fields don't get ansi rendering on the muck, but DT will render HTML so need to strip
+        {data: 'value', render: replaceHtmlTags}
     ]
 };
 
@@ -96,7 +97,7 @@ const viewTableOptions: DataTableOptions = {
     },
     columns: [
         {data: 'view'},
-        {data: 'content'}
+        {data: 'content', render: ansiToHtml}
     ]
 };
 

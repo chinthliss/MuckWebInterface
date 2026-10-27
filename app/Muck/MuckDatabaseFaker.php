@@ -17,6 +17,12 @@ class MuckDatabaseFaker
      */
     private static array $database = [];
 
+    // Some constants to help testing muck ANSI
+    private const ESCAPE_CHAR = "\x1b";
+    private const ANSI_RED = self::ESCAPE_CHAR . "[31m";
+    private const ANSI_PURPLE = self::ESCAPE_CHAR . "[35m";
+    private const ANSI_RESET = self::ESCAPE_CHAR . "[0m";
+
     private static function populateDatabaseIfRequired(): void
     {
         if (count(self::$database)) return;
@@ -31,13 +37,16 @@ class MuckDatabaseFaker
             'role' => 'Test Role',
             'faction' => 'Test Faction',
             'group' => 'Test Group',
-            'shortDescription' => 'Test Short Description',
+            'shortDescription' => 'Test Short Description with ' . self::ANSI_PURPLE . 'color' . self::ANSI_RESET . '.',
             'whatIs' => 'Test WI',
-            'views' => [
-                ['view' => 'Test View', 'content' => 'Test View Content']
+            'views' => [ // Ansi allowed
+                ['view' => 'Test View with ANSI', 'content' => 'This should be ' . self::ANSI_RED . 'red' . self::ANSI_RESET . '.'],
+                ['view' => 'Test View with HTML', 'content' => '<button class="btn btn-primary">This should not be a button</button>']
+
             ],
-            'custom' => [
-                ['field' => 'Test Field', 'value' => 'Test Custom Content']
+            'custom' => [ // No ansi allowed
+                ['field' => 'Test Field with ANSI', 'value' => 'This should NOT be ' . self::ANSI_RED . 'red' . self::ANSI_RESET . '.'],
+                ['field' => 'Test Field with HTML', 'value' => '<button class="btn btn-primary">This should not be a button</button>']
             ],
             'equipment' => [
                 ['name' => 'Test Equipment', 'description' => 'Test Equipment Description']
