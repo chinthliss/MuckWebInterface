@@ -49,4 +49,7 @@ return [
         'time' => 4,
     ],
 
+    // Since this isn't supported by the muck side.
+    'rehash_on_login' => false,
+
 ];

@@ -358,6 +358,13 @@ class User implements Authenticatable, MustVerifyEmail
             return self::getProvider()->retrieveByCredentials(['email' => $email]);
     }
 
+
+    public function getAuthPasswordName()
+    {
+        return 'password';
+    }
+
+
     #endregion Retrieval
 
     #region Roles

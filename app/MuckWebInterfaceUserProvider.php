@@ -591,4 +591,10 @@ class MuckWebInterfaceUserProvider implements UserProvider
             'game' => config('muck.name')
         ]);
     }
+
+    public function rehashPasswordIfRequired(Authenticatable $user, #[\SensitiveParameter] array $credentials, bool $force = false)
+    {
+        // This shouldn't try to run
+        throw new \Exception("Rehashing passwords is not supported by the Muck side.");
+    }
 }
