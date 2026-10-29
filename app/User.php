@@ -670,7 +670,7 @@ class User implements Authenticatable, MustVerifyEmail
         }
 
         if ($scope == 'user' || $scope == 'all') {
-            $array['veterancy'] = $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
+            $array['veterancy'] = (int) $this->createdAt?->diffInMonths(Carbon::now()) ?? 0;
             $array['currency'] = $this->getAccountCurrency();
             $array['flags'] = $this->getAccountFlags();
             $array['referrals'] = $this->getReferralCount();
